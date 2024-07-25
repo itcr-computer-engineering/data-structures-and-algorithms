@@ -43,3 +43,5 @@ Televisor lg = new Televisor();
 lg.Encender();
 Console.WriteLine(samsung.encendido); // Imprime false
 ```
+
+Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos diferentes. Cada objeto es un bloque de memoria independiente que contiene sus propios datos y métodos.
