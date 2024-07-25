@@ -1,6 +1,6 @@
 # Discos Duros (Hard-disk drives)
 
-> No deben confundirse con discos de estado sólido (SDD).
+> No deben confundirse con discos de estado sólido (SSD).
 
 Son dispositivos de almacenameinto persistente que mantiene la información almacenada incluso cuando no están siendo alimentados con electricidad.
 
