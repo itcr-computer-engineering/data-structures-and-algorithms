@@ -7,53 +7,70 @@ Los principios de POO son los siguientes:
 - Herencia
 - Polimorfismo
 
-# **Herencia**
--Reutilización de codigo
--Clase en jerarquía:
-Estudiante ---> Ciudadano ---> Persona
-Carné           Cedula         Nombre
-                               Apellido
--Es-un
--Cuando se sube en la jerarquia, se vuelve más genérico
--Cuando se baja en la jerarquia, se vuelve más especializa
--Solo un padre, si hay transitividad:
-    A=>B=>C
-    A=>C
--La clase padre se llama base
--La clase hija, se llama derivada
-```Java
-public persona{
-    String nombre;
-    String apellido;
-    protected void decirnombre(){
-        Sys.out("Soy" + nombre)
+# Abstracción
+Es la principal característica de POO. Permite modelar el problema por resolver en términos de objetos de alto nivel que ocultan los detalles de su implementación. La abstracción se logra a través de la creación de clases y objetos que representan entidades del mundo real. Por ejemplo, una clase `Persona` puede representar a una persona en el mundo real, con atributos como nombre, edad, etc., y métodos que permiten interactuar con la persona.
+
+Al interactuar con objetos, pensamos en términos de su comportamiento y atributos en vez de variables y procedimientos.
+
+> La abstracción permite que los objetos se comporten como piezas de LEGO que tienen una interfaz específica para interactuar con ellos, pero no necesitamos saber cómo están construidos internamente. En cambio, al trabajar con plasticina, no hay una clara separación, sino que todo forma part de un todo.
+
+# Encapsulamiento
+Los objetos son módulos autocontenidos que asocian código con sus datos. Los datos dentro de los objetos pueden o no exponerse según el programador lo decida. El **encapsulamiento** permite ocultar los detalles de implementación de un objeto y exponer solo la interfaz necesaria para interactuar con él.
+
+Los lenguajes orientados a objetos permiten establecer el nivel de visibilidad que tiene un atributo o método con respeto a otros objetos o clases. Por ejemplo, C# soporta muchos modificadores de acceso, entre los que se incluyen:
+
+- `public`: Accesible desde cualquier parte del código.
+- `private`: Accesible solo desde la misma clase.
+- `protected`: Accesible desde la misma clase y sus clases derivadas.
+
+
+
+# Herencia
+La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. La clase padre se llama superclase y la clase hija se llama subclase. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que un automóvil es un vehículo.
+
+
+```csharp
+// Definición de la clase base
+public class Animal
+{
+    public string Nombre { get; set; }
+    public int Edad { get; set; }
+
+    public void Comer()
+    {
+        Console.WriteLine("El animal está comiendo");
     }
 }
-persona p1 = new persona();
-p1.nombre = "Isaac";
-p1.apellido = "Ramirez";
-p1.decirnombre();
-class ciudadano extends persona{
-    String cedula;
-    
-    void foo(){
-        decirnombre();
+
+// Definición de una subclase que hereda de Animal
+public class Perro : Animal
+{
+    public void Ladrar()
+    {
+        Console.WriteLine("El perro está ladrando");
     }
 }
-ciudadano c1 = new ciudadano();
-//si hacemos c1. apareceran los atributos y metodos de persona y ciudadano (cedula, nombre, apellido, decirnombre() y foo())
 
-class estudiante extends ciudadano{
-    String carne;
+// Uso de la herencia en el programa principal
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        // Creación de una instancia de la clase base
+        Animal animal = new Animal();
+        animal.Nombre = "Animal";
+        animal.Edad = 5;
+        animal.Comer();
+
+        // Creación de una instancia de la subclase
+        Perro perro = new Perro();
+        perro.Nombre = "Firulais";
+        perro.Edad = 3;
+        perro.Comer();
+        perro.Ladrar();
+    }
 }
-
-ciudadano c1 = new ciudadano();
-c1.nombre = "Pedro";
-c1.cedula = 7;
-c1.decir nombre();
 ```
--Override: Cuando se sobreescribe el metodo padre
-
 
 # Polimorfismo
 
@@ -207,7 +224,6 @@ public class Persona {
         System.out.println("Nombre de persona2: " + persona2.getNombre());
     }
 }
-
 ```
 
 * En este ejemplo:
