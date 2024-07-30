@@ -17,6 +17,56 @@ Al interactuar con objetos, pensamos en términos de su comportamiento y atribut
 # Encapsulamiento
 Los objetos son módulos autocontenidos que asocian código con sus datos. Los datos dentro de los objetos pueden o no exponerse según el programador lo decida. El **encapsulamiento** permite ocultar los detalles de implementación de un objeto y exponer solo la interfaz necesaria para interactuar con él.
 
+```csharp
+// Example of encapsulation in C#
+
+public class BankAccount
+{
+    private string accountNumber;
+    private decimal balance;
+
+    public BankAccount(string accountNumber)
+    {
+        this.accountNumber = accountNumber;
+        this.balance = 0;
+    }
+
+    public decimal GetBalance()
+    {
+        return balance;
+    }
+
+    public void Deposit(decimal amount)
+    {
+        balance += amount;
+    }
+
+    public void Withdraw(decimal amount)
+    {
+        if (amount <= balance)
+        {
+            balance -= amount;
+        }
+        else
+        {
+            Console.WriteLine("Insufficient funds");
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        BankAccount account = new BankAccount("1234567890");
+        account.Deposit(1000);
+        account.Withdraw(500);
+        decimal balance = account.GetBalance();
+        Console.WriteLine("Account balance: " + balance);
+    }
+}
+```
+
 Los lenguajes orientados a objetos permiten establecer el nivel de visibilidad que tiene un atributo o método con respeto a otros objetos o clases. Por ejemplo, C# soporta muchos modificadores de acceso, entre los que se incluyen:
 
 - `public`: Accesible desde cualquier parte del código.
@@ -45,7 +95,10 @@ public class Persona
 En este ejemplo, el atributo nombre está declarado como private, lo que significa que solo es accesible desde la misma clase. Sin embargo, se proporcionan métodos públicos `GetNombre()` y `SetNombre()` para acceder y modificar el valor de nombre de manera controlada.
 
 # Herencia
-La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. La clase padre se llama superclase y la clase hija se llama subclase. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que un automóvil es un vehículo.
+- La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. 
+- Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. 
+- La clase padre se llama superclase y la clase hija se llama subclase. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. 
+- La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que un automóvil es un vehículo.
 
 
 ```csharp
@@ -92,37 +145,52 @@ public class Program
 ```
 
 # Polimorfismo
+Etimológicamente significa _"muchas formas"_ y se refiere a la capacidad de un objeto de comportarse de diferentes maneras. Hay dos tipos: _run-time_ y _compile time_.
 
-* Etimologicamnete muchas formas
-* Hay dos tipos: run-tinme y compile time
+## Run-time (tiempo de ejecución)
 
-## Run-time 
+* Cuando una clase hija anula (override) un método public/protected de la clase padre. Por ejemplo:
 
-* Cuando una clase hija sobrecarga(override)un metodo public/protected der la clase padre.Cuando el codigo cliente llama el metodo en la clase hija, elmetodo  se "resuelve" en ese mmomento invocando el metodo sobre cargo.
-
-``` java
-class Padre {
-    public voidd foo(){
-        sys.out("Algo");
+```csharp
+public class Shape
+{
+    public virtual void Draw()
+    {
+        Console.WriteLine("Drawing a shape");
     }
 }
 
-class Hija{
-    public void foo(){
-        super.foo(); //opcional
-        sys.out("Algo mas")
+public class Circle : Shape
+{
+    public override void Draw()
+    {
+        Console.WriteLine("Drawing a circle");
     }
 }
 
+public class Square : Shape
+{
+    public override void Draw()
+    {
+        Console.WriteLine("Drawing a square");
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Shape shape1 = new Circle();
+        Shape shape2 = new Square();
+
+        shape1.Draw(); // Output: Drawing a circle
+        shape2.Draw(); // Output: Drawing a square
+    }
+}
 ```
+* Cuando el código cliente llama el método, el método se "resuelve" en ese mmomento invocando el método correcto. Para encontrar el método correcto, el compilador busca en la clase real del objeto en tiempo de ejecución y en caso de no estar, sigue subiendo por la jerarquía de clases.
+
 * Polimorfismo permite tratar la clase hija como si fuera la padre.
-
-```java
-
-Padre p = new Hija();
-p.foo() -> se resuelve en un run-time e invoca Hija.foo
-
-```
 
 * Cualquier metodo visible de la clase Padre se puede acceder a traves de la Hija.
 
@@ -135,48 +203,43 @@ h.|     | -> Aparece todo lo visible del Padre
 
 ```
 
-* Al reves no. A traves de la Padre, solo lo que es visible de la hija que es comun con la del Padre se puede acceder.
+* Al revés no. A través de la Padre, sólo lo que es visible de la hija que es común con la del Padre se puede acceder.
 
 
 ``` java
 
 Padre p = new Hija;
    _____ 
-p.|     | -> Aparece solo lo ccmun delPpadre e Hija
+p.|     | -> Aparece solo lo común del padre e hija
   |     |
   |_____|
 
 ```
 
-* Algunos Lenguajes permiten crear claes abstractas que son utles para polimorfismos
+* Algunos lenguajes permiten crear claes abstractas que son útiles para polimorfismo.
 
-``` java
-//no se puede instanciar
-
+```csharp
 abstract class Animal{ 
     void respirar(){
-        sys.out("Respirando")
+        Console.Write("Respirando")
     }
-    abstract void(); //no tiene cuerpo
+    abstract void(); //no tiene definición
 }
 
-//Obliga a pverride los metodos abstract
-
-class Perro{
+class Perro : Animal {
     void comer(){  
     }
 }
 
 ```
-
-* Las clases tambien permiten crear interfases. Las interfases proveen polimorfismos sin formar parte de una jerarquia.
+* Algunos lenguajes tambien permiten crear _interfaces_ las cuales proveen polimorfismo sin formar parte de una jerarquía.
 
 ``` java
 interface Alimentable{
     void alimentar();
 }
 
-class Persona implements Alimentable{
+class Persona : Alimentable {
     void alimentar();
 }
 
@@ -184,22 +247,24 @@ class Persona implements Alimentable{
 
 ## Compile-time
 
-* La habilidad para sobre cargar(ovrerride) metodos, esdecir crear varios metodos con el mimismo nombre pero diferentes parametros.
+* La habilidad para sobrecargar (overload) métodos, es decir, crear varios métodos con el mismo nombre pero diferentes parámetros.
  
  ``` java
- class test{
-    void foo(){
+ class TestClass {
+    void foo() {
     }
-    void foo(int x){
+    
+    void foo(int x) {
     }
-    void foo(strin s, int x){
+
+    void foo(string s, int x) {
     }
  }
 
 ```
  # Abstraccion
 
- * Algo propio de POO>
+ * Algo propio de POO.
  * Permite modelar el problema em terminos de odjetos(odjetos de alto nivel que ocultan detalles de su implementacion).
  * Uno no interactua  con variables, procedimientos o instrcciones.
 
