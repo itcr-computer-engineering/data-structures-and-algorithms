@@ -23,7 +23,26 @@ Los lenguajes orientados a objetos permiten establecer el nivel de visibilidad q
 - `private`: Accesible solo desde la misma clase.
 - `protected`: Accesible desde la misma clase y sus clases derivadas.
 
+Por ejemplo, considera la siguiente clase Persona:
 
+```csharp
+public class Persona
+{
+    private string nombre;
+
+    public string GetNombre()
+    {
+        return nombre;
+    }
+
+    public void SetNombre(string nombre)
+    {
+        this.nombre = nombre;
+    }
+}
+```
+
+En este ejemplo, el atributo nombre está declarado como private, lo que significa que solo es accesible desde la misma clase. Sin embargo, se proporcionan métodos públicos `GetNombre()` y `SetNombre()` para acceder y modificar el valor de nombre de manera controlada.
 
 # Herencia
 La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. La clase padre se llama superclase y la clase hija se llama subclase. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que un automóvil es un vehículo.
