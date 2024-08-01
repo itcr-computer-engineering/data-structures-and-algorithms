@@ -188,7 +188,7 @@ public class Program
     }
 }
 ```
-* Cuando el código cliente llama el método, el método se "resuelve" en ese mmomento invocando el método correcto. Para encontrar el método correcto, el compilador busca en la clase real del objeto en tiempo de ejecución y en caso de no estar, sigue subiendo por la jerarquía de clases.
+* Cuando el código cliente llama el método, el método se "resuelve" en ese momento invocando el método correcto. Para encontrar el método correcto, el compilador busca en la clase real del objeto en tiempo de ejecución y en caso de no estar, sigue subiendo por la jerarquía de clases.
 
 * Polimorfismo permite tratar la clase hija como si fuera la padre.
 
@@ -203,7 +203,7 @@ h.|     | -> Aparece todo lo visible del Padre
 
 ```
 
-* Al revés no. A través de la Padre, sólo lo que es visible de la hija que es común con la del Padre se puede acceder.
+* Al revés no. A través de la clase Padre, sólo lo que es visible de la hija que es común con la del Padre se puede acceder.
 
 
 ``` java
@@ -216,7 +216,7 @@ p.|     | -> Aparece solo lo común del padre e hija
 
 ```
 
-* Algunos lenguajes permiten crear claes abstractas que son útiles para polimorfismo.
+* Algunos lenguajes permiten crear clases abstractas que son útiles para polimorfismo.
 
 ```csharp
 abstract class Animal{ 
@@ -265,8 +265,8 @@ class Persona : Alimentable {
  # Abstraccion
 
  * Algo propio de POO.
- * Permite modelar el problema em terminos de odjetos(odjetos de alto nivel que ocultan detalles de su implementacion).
- * Uno no interactua  con variables, procedimientos o instrcciones.
+ * Permite modelar el problema en terminos de odjetos (objetos de alto nivel que ocultan detalles de su implementación).
+ * Uno no interactua  con variables, procedimientos o instrucciones.
 
  # Punteros
 
@@ -275,7 +275,7 @@ class Persona : Alimentable {
  1. int()
  2. clear()
  3. long()
- + -> Estos son algunos ejemplos de "value type", son copias
+ + -> Estos son algunos ejemplos de "value type", son copias.
 
  * Sin embargo los String() no son value type, es un reference type.
 
