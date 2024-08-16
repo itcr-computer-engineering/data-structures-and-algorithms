@@ -47,13 +47,14 @@ for (int i = 1; i < array.length; i++) { ---> T + 2nT
     if (array[i] > max) { ------------------> 2T(n-1)
         max = array[i]; --------------------> 2T(n-1)
     }
+}
 ```
 
 Por lo tanto, `f(n) = 4T + 6nT`
 
 ## Análisis asintótico
 
-Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápidp, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
+Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
 
 ![](../images/03-analisis-teorico-1.png)
 
