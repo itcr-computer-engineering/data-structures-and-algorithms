@@ -8,6 +8,7 @@ jobs:
       - name: create file list
         id: files_list
         run: |
+          mkdir output  # create output dir
           echo "Listing all Markdown files..."
           echo "files=$(find . -type f -name "*.md" | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
