@@ -53,7 +53,7 @@ Solicitud → SWAP
 
 - El layout depende del lenguaje/compilador que el sistema operativo respeta.
 - No es un bloque contiguo, la estrategia/enfoque de administración de memoria se aplica sobre todo el layout transparentemente.
-  ![](Clase-14-Feb-2024/Memory-Layout.png)
+  <!-- ![](Clase-14-Feb-2024/Memory-Layout.png) -->
 
 ## Stack
 
