@@ -14,12 +14,7 @@ jobs:
 
       - uses: docker://pandoc/latex:3.5
         with:
-          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }} --resource-path=./ce-1103/images:./ce-2103/images
-          
-      - uses: actions/upload-artifact@v4
-        with:
-          name: output
-          path: output
+          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }} --resource-path=./ce-1103/images:./ce-2103/images              
           
       - uses: actions/create-release@v1
         env:
@@ -29,3 +24,11 @@ jobs:
           release_name: Release ${{ github.ref }}          
           draft: false
           prerelease: false
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: output
+          asset_name: result.pdf          
