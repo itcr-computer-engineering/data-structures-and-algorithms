@@ -11,7 +11,7 @@ Por ejemplo:
 - Inicialmente no permitía la multiprogramación
 
 Multiprogramación
-![memoria.png](https://github.com/JBB092/Datos-II/blob/main/LayoutMemoria.png?raw=true)
+<!-- ![memoria.png](https://github.com/JBB092/Datos-II/blob/main/LayoutMemoria.png?raw=true) -->
 
 - Posteriormente se logra la multiprogramación mediante _static relocation_. El _static recolation_ consiste en que al cargar el programa, se ajustan las direcciones considerando la dirección inicial de donde se carga un programa.
 
@@ -23,7 +23,7 @@ Multiprogramación
 - Esta traducción se le conoce como Dynamic Relocation.
 - El programa completo debe caber en el RAM para poder ejecutarse.
 
-![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled.jpeg)
+<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled.jpeg) -->
 
 # 3^er^ enfoque: Memoria virtual
 
@@ -31,19 +31,19 @@ Multiprogramación
 - Programa requiere de 16GB de RAM, pero tengo 512 MB → Funciona lento, pero funciona.
 - En un sistema operativo de 32 bits un proceso tendrá un espacio de direcciones de ~ 4GB. Si la memoria física son solo 16 B :
 
-![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%201.jpeg)
+<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%201.jpeg) -->
 
 - La memoria virtual agrega una capa de indirección que “traduce”. Requiere Hardware especializado, conocido como
 
 MMU → Memory Mapping Unit
 
-![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%202.jpeg)
+<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%202.jpeg) -->
 
 - El address space del programa se divide en Frames
 
 Page size = framesize
 
-![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%203.jpeg)
+<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%203.jpeg) -->
 
 - Dado que los frames se acaban, se utilizan un algoritmo de reemplazo para quitar el contenido de un frame, guardarlo a disco, y subir la página.
 
