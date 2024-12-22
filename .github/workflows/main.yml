@@ -9,7 +9,7 @@ jobs:
         id: files_list
         run: |
           echo "Lorem ipsum" > lorem_1.md  # create two example files
-          find . -type f -name "*.md" | tee /dev/tty | tr '\n' ',' | sed 's/,$//' >> $GITHUB_OUTPUT
+          find . -type f -name "*.md" | tee /dev/tty | tr '\n' ' ' >> $GITHUB_OUTPUT
 
       - uses: docker://pandoc/latex:3.5
         with:
