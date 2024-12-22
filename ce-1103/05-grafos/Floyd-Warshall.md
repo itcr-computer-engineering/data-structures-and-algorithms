@@ -5,7 +5,7 @@ Existe una solucón más directa que usar dijsktra de nodo en nodo.
 
 El algoritmo de Floyd calcula mediante programación dinámica el camino más corto de cada nodo a cada nodo.
 
-El algoritmo de Floyd representa el gráfico como una matriz ponderada. Cada arco (vi, vj) tiene un peso c~ij~. Si el arco no existe, el valor es ∞.
+El algoritmo de Floyd representa el gráfico como una matriz ponderada. Cada arco (vi, vj) tiene un peso c~ij~. Si el arco no existe, el valor es infinito.
 La diagonal de la matriz es igual a cero.
 
 El algoritmo de Floyd determina una nueva matriz D de nxn elementos, donde cada D~ij~ es el camino mínimo de v~i~ a v~j~
