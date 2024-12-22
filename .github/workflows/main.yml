@@ -1,0 +1,23 @@
+name: PDF book generation
+on: push
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: create file list
+        id: files_list
+        run: |
+          echo "Lorem ipsum" > lorem_1.md  # create two example files
+          echo "dolor sit amet" > lorem_2.md
+          mkdir output  # create output dir          
+          echo "files=$(printf '"%s" ' *.md)" > $GITHUB_OUTPUT
+
+      - uses: docker://pandoc/latex:3.5
+        with:
+          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }}
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: output
