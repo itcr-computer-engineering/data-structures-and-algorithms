@@ -10,7 +10,7 @@ jobs:
         run: |
           mkdir output  # create output dir
           echo "Listing all Markdown files..."
-          echo "files=$(find . -type f -name "*.md" | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          echo "files=$(find . -type f -name "*.md" | sort | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - uses: docker://pandoc/latex:3.5
         with:
