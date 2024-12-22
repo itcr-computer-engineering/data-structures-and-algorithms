@@ -15,8 +15,10 @@ jobs:
       - uses: docker://pandoc/latex:3.5
         with:
           args: --output=output/result.pdf ${{ steps.files_list.outputs.files }} --resource-path=./ce-1103/images:./ce-2103/images              
-          
-      - uses: actions/create-release@v1
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
