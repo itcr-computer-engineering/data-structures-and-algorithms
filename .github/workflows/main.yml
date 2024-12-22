@@ -1,0 +1,21 @@
+name: PDF book generation
+on: push
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: create file list
+        id: files_list
+        run: |
+          echo "Listing all Markdown files..."
+          echo "files=$(find . -type f -name "*.md" | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - uses: docker://pandoc/latex:3.5
+        with:
+          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }}
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: output
