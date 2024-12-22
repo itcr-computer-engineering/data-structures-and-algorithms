@@ -8,8 +8,8 @@ jobs:
       - name: create file list
         id: files_list
         run: |
-          echo "Lorem ipsum" > lorem_1.md  # create two example files
-          find . -type f -name "*.md" | tee /dev/tty | tr '\n' ' ' >> $GITHUB_OUTPUT
+          echo "Listing all Markdown files..."
+          echo "files=$(find . -type f -name "*.md" | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - uses: docker://pandoc/latex:3.5
         with:
