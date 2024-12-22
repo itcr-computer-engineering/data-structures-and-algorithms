@@ -69,7 +69,7 @@ _Consideraciones importantes:_ - Las variables locales almacenables en el stack 
 - Espacio para las variables locales (automáticas).
 - Número de instrucción donde regresar una vez terminada la función.
 - Espacio para los argumentos y el return value.
-
+<!-- 
 A continuación un ejemplo del comportamiento de los stack frames a partir del código siguiente:
 ![](Clase-14-Feb-2024/Sample-Code.png)
 
@@ -80,4 +80,4 @@ La función _main_ hace una llamada a la función _foo_ así que se crea el stac
 Dado que la función _foo_ hace otra llamada a la función _bar_, se crea otro stack frame para la función _bar_.
 ![](Clase-14-Feb-2024/Stack-F3.png)
 Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se continúa con la siguiente línea de la función _foo_ que también termina de ejecutarse, entonces, nuevamente, se libera un frame stack y volvemos a _main_ para ejecutar la siguiente instrucción de la misma. Dado que nuevamente es una llamada a _foo_, el ciclo que vimos se repetirá una vez más.
-![](Clase-14-Feb-2024/Stack-F4.png)
+![](Clase-14-Feb-2024/Stack-F4.png) -->
