@@ -33,4 +33,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: output
-          asset_name: result.pdf          
+          asset_name: result.pdf
+          asset_content_type: application/pdf
