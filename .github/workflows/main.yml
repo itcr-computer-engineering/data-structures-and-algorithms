@@ -13,7 +13,7 @@ jobs:
 
       - uses: docker://pandoc/latex:3.5
         with:
-          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }}
+          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }} --resource-path=./ce-1103/images:./ce-2103/images
           
       - uses: actions/upload-artifact@v4
         with:
