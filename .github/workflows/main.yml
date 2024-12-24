@@ -1,5 +1,8 @@
 name: PDF book generation
-on: push
+on:
+  push:    
+    tags:
+      - 'v*'
 jobs:
   convert_via_pandoc:
     runs-on: ubuntu-22.04
@@ -22,8 +25,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v0.0.1"
-          release_name: Release v0.0.1
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
 
@@ -33,5 +36,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: output/result.pdf
-          asset_name: result.pdf
+          asset_name: DSA-${{ github.token }}.pdf
           asset_content_type: application/pdf
