@@ -15,8 +15,7 @@ Un árbol B de orden _m_, tiene las siguientes características:
 - Cada nodo se compone de llaves y ramas. Las llaves están ordenadas y dividen las ramas en el órden esperado. Por ejemplo, entre las llaves 15 y 20, hay un nodo hijo, cuyas llaves serán mayores a 15 pero menores a 20.
 - Todas las hojas están al mismo nivel.
 - Se define con un orden _m_, que depende del tamaño del bloque del disco
-- Cada nodo excepto la raíz **debe** contener al menos _m-1_ llaves. La raíz contiene un mínimo de una una llave.
-- Todos los nodos (incluída la raíz) tienen a lo sumo _2\*m-1_ llaves.
+- Cada nodo excepto la raíz **debe** contener al menos _m/2_ llaves. La raíz contiene un mínimo de una una llave.
 - La inserción siempre ocurre en las hojas.
 - Crecen o decrecen desde la raíz.
 
@@ -73,7 +72,7 @@ El proceso de inserción para una llave _k_ sería:
   - Si el nodo no está lleno, se inserta en la posición correspondiente del arreglo de llaves
   - Si el nodo está lleno, se divide el nodo.
 
-El proceso de división de un nodo _n_ con _2\*m-1_ llaves es el siguiente:
+El proceso de división de un nodo _n_ con _m-1_ llaves es el siguiente:
 
 1. Se selecciona la llave mediana _m_ y se sube al nodo padre.
 2. Se crean dos nuevos nodos, _n1_ y _n2_.

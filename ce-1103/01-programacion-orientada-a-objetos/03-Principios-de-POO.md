@@ -264,55 +264,5 @@ class Persona : Alimentable {
 ```
  # Abstraccion
 
- * Algo propio de POO.
- * Permite modelar el problema em terminos de odjetos(odjetos de alto nivel que ocultan detalles de su implementacion).
- * Uno no interactua  con variables, procedimientos o instrcciones.
+* La abstracción es la capacidad de ignorar los detalles de partes para enfocarse en un nivel de mayor importancia. En programación orientada a objetos, la abstracción se logra a través de la creación de clases y objetos que representan entidades del mundo real. Por ejemplo, una clase `Persona` puede representar a una persona en el mundo real, con atributos como nombre, edad, etc., y métodos que permiten interactuar con la persona.
 
- # Punteros
-
- * Un puntero es una variable que almacena la direccion de memoria
-
- 1. int()
- 2. clear()
- 3. long()
- + -> Estos son algunos ejemplos de "value type", son copias
-
- * Sin embargo los String() no son value type, es un reference type.
-
-![Definicion de un puntero con una imagen de  referencia haciendo ilusion a la memoria](https://image.slidesharecdn.com/punteros-120105064722-phpapp01/95/punteros-2-1024.jpg?cb=1325746331)
-
-* Ejemplo de puntero en Java
-
-``` java
-
-public class Persona {
-    private String nombre;
-    public Persona(String nombre) {
-        this.nombre = nombre;
-    }
-    public String getNombre() {
-        return nombre;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-    public static void main(String[] args) {
-        // Creamos una instancia de Persona
-        Persona persona1 = new Persona("Juan");
-        // Creamos otra referencia a la misma instancia
-        Persona persona2 = persona1;
-        // Modificamos el nombre a través de la referencia persona2
-        persona2.setNombre("Pedro");
-        // Imprimimos el nombre desde ambas referencias
-        System.out.println("Nombre de persona1: " + persona1.getNombre());
-        System.out.println("Nombre de persona2: " + persona2.getNombre());
-    }
-}
-```
-
-* En este ejemplo:
-
-1. Creamos una instancia de Persona llamada persona1.
-2. Luego, creamos otra referencia llamada persona2 que apunta a la misma instancia.
-3. Al modificar el nombre a través de persona2, también afectamos a persona1.
-4. Ambas referencias apuntan al mismo objeto en memoria.

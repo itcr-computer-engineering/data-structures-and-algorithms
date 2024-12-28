@@ -36,5 +36,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: output/result.pdf
-          asset_name: DSA-${{ github.token }}.pdf
+          asset_name: DSA${{ github.ref }}.pdf
           asset_content_type: application/pdf

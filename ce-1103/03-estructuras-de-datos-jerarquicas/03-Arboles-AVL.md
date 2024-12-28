@@ -226,7 +226,7 @@ public class AVLTree {
     private int getBalance(AVLNode node) {
         if (node == null)
             return 0;
-        return height(node.left) - height(node.right);
+        return height(node.right) - height(node.left);
     }
 
     // Right rotate subtree rooted with y
@@ -384,7 +384,7 @@ Se eliminan 2 y 4:
                17 25 
 </pre>
 
-Estos nos dejan con un factor de valance en 10 de 2, por lo que se debe rebalancear usando rotación izquierda en 10:
+Estos nos dejan con un factor de balance en 10 de 2, por lo que se debe rebalancear usando rotación izquierda en 10:
 
 <pre>
           15

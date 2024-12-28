@@ -44,13 +44,17 @@ public class BinarySearchTree {
     }
 
     private boolean searchRecursive(TreeNode root, int key) {
-        if (root == null || root.key == key)
-            return root != null;
-
-        if (root.key < key)
+        if (root == null) {
+            return false
+        } 
+        if (root.key == key) {
+            return true;
+        }
+        else if (key > root.key) {
             return searchRecursive(root.right, key);
-
-        return searchRecursive(root.left, key);
+        } else {
+            return searchRecursive(root.left, key);
+        }
     }
 ```
 
