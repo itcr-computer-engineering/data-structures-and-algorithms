@@ -16,14 +16,14 @@ Un grafo G agrupa entidades físicas o conceptuales. Un grafo está compuesto po
 
 Un grafo está denotado como G = {V,A}
 
-![Grafo básico](image.png)
+![Grafo básico](images/image.png)
 
 V = { 1, 4, 5, 7, 9 } 
 A = { (1,4), (4,1), (1,5), (5,1), (4,9), (9,4), (5,7),(7,5) (7,9),(9,7) }
 
 
 Un grafo puede  dirigido y no dirigido):
-![Tipos de grafos](image-1.png)
+![Tipos de grafos](images/image-1.png)
 
 - En los dirigidos se muestra la dirección de la relación entre los nodos.
 - En los no dirigidos los nodos conectados son adyacentes.
@@ -38,11 +38,11 @@ La ruta P = (v~0~, v~1~, v~2~, … , v~n~) es una serie de vertices que forman l
 Si los vértices entre v~0~ y v~n~ son diferentes, la ruta se llama ruta simple.
 
 Un ciclo es una ruta simple que empieza y termina en el mismo nodo.
-![ciclo](image-2.png)
+![ciclo](images/image-2.png)
 
 Un DAG es un grafo aciclico dirigido, o sea que no existen ciclos.
 
-![grafo conexo y fuertemente conexo](image-3.png)
+![grafo conexo y fuertemente conexo](images/image-3.png)
 Un grafo es conexo si existe un camino entre cualquier par de nodos que lo componen.
 Un grafo es fuertemente conexo si el grafo es conexo y es un dígrafo.
 
@@ -60,7 +60,7 @@ Elegir entre una representación u otra depende del tipo de array y de las opera
 
 Sea G = {V, A} donde V = {v~0~, v~1~, v~2~,…, v~n-1~} y A = {(vi, vj)}. Los nodos se pueden representar mediante la matriz A de nxn conocida como matriz de adyacencia. Cada elemento de aij puede tomar uno de los siguientes valores:
 
-![Matriz de adyacencia](image-4.png)
+![Matriz de adyacencia](images/image-4.png)
 
 - Por ejemplo, digamos que los nodos son {D, F, K, L , R} la matriz sería
 ```
@@ -71,17 +71,17 @@ A = |0  0  0  0  0 |
     |1  0  0  0  0 |
 ```
 
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 - Si el grafo es ponderado
 
-![matriz grafo ponderado](image-6.png)
+![matriz grafo ponderado](images/image-6.png)
 
 ### Lista de adyacencia
 
 Una lista de adyacencia es una lista vinculada donde cada elemento representa un nodo del grafo. Cada elemento contiene una lista de relaciones con otros nodos, siendo el nodo del elemento, el origen.
 
-![Lista de adyacencia](image-7.png)
+![Lista de adyacencia](images/image-7.png)
 
 ## Recorridos de un grafo
 
@@ -107,7 +107,7 @@ Algoritmo:
 5. Ponga en cola todos los nodos adyacentes a w que no estén marcados, nodos en cola marcados
 6. Fin
 
-![breadth first alg](image-8.png)
+![breadth first alg](images/image-8.png)
 
 ### Depth-First
 
@@ -116,7 +116,7 @@ Atravesar el grafo con un nodo v. v se marca como visitado y se empuja a la pila
 
 Esto continua hasta que no haya más elementos en la pila.
 
-![depth first](image-9.png)
+![depth first](images/image-9.png)
 
 ## Camino más corto: Dijkstra
 
@@ -129,7 +129,7 @@ El algoritmo de Dijkstra encuentra el camino más corto desde un nodo de origen 
 Edsger Dijkstra (1930 - 2002) fue un informático holandés que dio forma a la programación informática como una ciencia reconocida.
 ¿Cómo funciona?
 
-![Dijkstra technique](image-10.png)
+![Dijkstra technique](images/image-10.png)
 
 1. Se utilizará una tabla donde la primera columna es el vertice, la segunda es el peso temporal que se le dará a un camino y en la tercera columna el peso final. 
 
@@ -194,15 +194,15 @@ El algoritmo de Floyd determina una nueva matriz D de nxn elementos, donde cada 
 
 - En cada paso desde D~0~ se genera una nueva matriz D~1~, D~2~, ..., D~k~, D~n~. En cada paso se incluye un nuevo vértice para determinar si ese vértice mejora los caminos para que sean más cortos. 
 
-![D matrix](image-11.png)
+![D matrix](images/image-11.png)
 
 - Otra matriz Q~1~, Q~2~,..., Q~k~, Qn se genera en cada paso desde Q~0~. Q es la matriz predecesora.
 
-![Q matrix](image-12.png)
+![Q matrix](images/image-12.png)
 
 ----------------------------
 
-![Floyd alg](image-13.png)
+![Floyd alg](images/image-13.png)
 
 
 ## Warshall
@@ -210,9 +210,9 @@ El algoritmo de Floyd determina una nueva matriz D de nxn elementos, donde cada 
 Similar al algoritmo de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A.
 
 Define una secuencia de matrices nxn P~0~, P~1~, P~2~, P~3~,… P~n~
-![Warshall algorithm](image-14.png)
+![Warshall algorithm](images/image-14.png)
 
-![warshall algorithm2](image-15.png)
+![warshall algorithm2](images/image-15.png)
 
 ## Minimal Spanning tree
 
@@ -232,7 +232,7 @@ Si todos los vértices están en el árbol, entonces es un grafo conexo.
 
 Dado un grafo no dirigido, encuentre el árbol de expansión mínimo
 
-![minimal spanning tree](image-16.png)
+![minimal spanning tree](images/image-16.png)
 
 - El mismo grafo puede tener varios arboles de expansión, pero no tofos son el mínimo.
 
@@ -249,17 +249,17 @@ En cualquier punto tenemos un conjunto de vértices que ya han sido incluidos en
 
 El algoritmo encuentra un nuevo vértice para agregar al árbol eligiendo el borde (u,v), tal como el costo de (u,v) es el más pequeño entre todos los bordes donde u está en el árbol y v no.
 
-![prim 1](image-17.png)
+![prim 1](images/image-17.png)
 
-![prim table](image-18.png)
+![prim table](images/image-18.png)
 
 *Peso mínimo conectado a un nodo conocido*
 
 Al realizar todo el algoritmo el resultado se vería así:
 
-![prim result](image-19.png)
+![prim result](images/image-19.png)
 
-![prim table result](image-20.png)
+![prim table result](images/image-20.png)
 
 
 ### Kruskal
@@ -270,4 +270,4 @@ Mantiene un bosque (colección de árboles). Inicialmente todos son árboles de 
 
 Si u y v están en el mismo conjunto, la arista (u,v) se rechaza, porque sumarla causaría un ciclo. u y v están en el mismo conjunto si están conectados.
 
-![Kruskal](image-21.png)
+![Kruskal](images/image-21.png)

@@ -117,7 +117,7 @@ Es una estructura de datos que almacena datos en pares _llave-valor_:
 
 La llave _k_ se utiliza como entrada para una función de hashing _h(k)_ que genera un índice i donde el valor se almancenará dentro de la tabla. Visualmente se puede representar de esta forma:
 
-<img src="../images/hashing-1.png" width="400">
+<img src="images/hashing-1.png" width="400">
 
 Por ejemplo, suponga que se tiene un conjunto de datos que representan ciudadadanos costarricenses, donde cada registro, contiene una cédula numérica que identifica cada registro.
 
@@ -148,7 +148,7 @@ El reto de las funciones hash es generar un índice único para cada llave. Si d
 
 - **Separate chaining**: Cada índice de la tabla _hash_ almacena una lista enlazada de elementos que colisionan. Visualmente se puede ver de la sigueinte forma:
 
-<img src="../images/hashing-2.png" width="400">
+<img src="images/hashing-2.png" width="400">
 
 - **Open addressing**: Se busca un índice alternativo para almacenar el elemento que colisiona.
 

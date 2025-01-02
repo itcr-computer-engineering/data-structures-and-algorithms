@@ -72,9 +72,9 @@ Estructura de datos que agrupa atributos (datos) y métodos (funciones) que oper
 
 La **interfaz** de un objeto se define por los métodos y atributos públicos (considerado como una mala practica) que son accesibles desde fuera del objeto.
 
-La mayoría de lenguajes de programación orientados a objetos, requieren la definición de clases para crear objetos. 
+La mayoría de lenguajes de programsción orientados a objetos, requieren la definición de clases para crear objetos. 
 
-![image](https://github.com/user-attachments/assets/dbec3045-cc31-4a1a-9b54-abc9db45388f)
+![image](images/poo-1.png)
 
 ### Definición de Clase
 Las clases son _plantillas que definen la estructura y comportamiento de los objetos_. Por ejemplo, la clase Televisor en C# se puede definir de la siguiente manera:

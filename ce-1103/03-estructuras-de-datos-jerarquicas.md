@@ -23,7 +23,7 @@ A excepción de algunos árboles que puede implementarse con arreglos, la mayor�
 
 ## Terminología básica
 
-![Árbol binario](../images/trees-1.png)
+![Árbol binario](images/trees-1.png)
 
 ## Tipo de dato abstracto Árbol
 
@@ -310,7 +310,7 @@ Los BST pueden degenerar en listas enlazadas si los elementos se insertan en ord
 
 - Visualmente, un árbol _heap_ se puede representar de la siguiente forma:
 
-![Árbol Heap](../images/heap-tree-1.png)
+![Árbol Heap](images/heap-tree-1.png)
 
 - Son una opción natural para implementar colas de prioridad.
 
@@ -339,7 +339,7 @@ public interface IHeap {
 
 Normalmente se implementan sobre un array. La raíz del árbol se almacena en la posición 0 del array, y los hijos de un nodo en la posición `i` se almacenan en las posiciones `2 * i + 1` y `2 * i + 2`.
 
-![Árbol Heap](../images/heap-tree-2.png)
+![Árbol Heap](images/heap-tree-2.png)
 
 ```java
 public class HeapTree {
@@ -844,11 +844,11 @@ private void inOrderRecursive(TreeNode root) {
 
 | Árbol                                                   | Expresión                 |
 | ------------------------------------------------------- | ------------------------- |
-| <img src="../images/expression-tree-1.png" width="200"> | `(x + y) * (a - b)`       |
-| <img src="../images/expression-tree-2.png" width="200"> | `(x * (y - z)) * (a - f)` |
-| <img src="../images/expression-tree-3.png" width="200"> | `(x * (y / -Z))`          |
-| <img src="../images/expression-tree-4.png" width="200"> | `(A + (B * - (C + D)))`   |
-| <img src="../images/expression-tree-5.png" width="200"> | `((A * (X + Y)) * C)`     |
+| <img src="images/expression-tree-1.png" width="200"> | `(x + y) * (a - b)`       |
+| <img src="images/expression-tree-2.png" width="200"> | `(x * (y - z)) * (a - f)` |
+| <img src="images/expression-tree-3.png" width="200"> | `(x * (y / -Z))`          |
+| <img src="images/expression-tree-4.png" width="200"> | `(A + (B * - (C + D)))`   |
+| <img src="images/expression-tree-5.png" width="200"> | `((A * (X + Y)) * C)`     |
 
 ### Conversión de expresión a árbol de expresión
 
@@ -865,23 +865,23 @@ El algoritmo utiliza dos estructuras de datos: una pila para almacenar los opera
 
 Por ejemplo,
 
-<img src="../images/expression-tree-6.png" width="200">
+<img src="images/expression-tree-6.png" width="200">
 
-<img src="../images/expression-tree-7.png" width="200">
+<img src="images/expression-tree-7.png" width="200">
 
-<img src="../images/expression-tree-8.png" width="200">
+<img src="images/expression-tree-8.png" width="200">
 
-<img src="../images/expression-tree-9.png" width="200">
+<img src="images/expression-tree-9.png" width="200">
 
 La cola (que contiene la expresión en postfijo) se utiliza como input para generar el árbol de expresión.
 
-<img src="../images/expression-tree-10.png" width="200">
+<img src="images/expression-tree-10.png" width="200">
 
-<img src="../images/expression-tree-11.png" width="200">
+<img src="images/expression-tree-11.png" width="200">
 
-<img src="../images/expression-tree-12.png" width="200">
+<img src="images/expression-tree-12.png" width="200">
 
-<img src="../images/expression-tree-13.png" width="200">
+<img src="images/expression-tree-13.png" width="200">
 
 ## Árboles B
 
@@ -891,7 +891,7 @@ Descritos por Rudolf Bayer y Edward M. McCreight en 1972, los árboles B son ár
 
 Visualmente se pueden representar de la siguiente forma:
 
-![Árbol B](../images/b-tree-1.png)
+![Árbol B](images/b-tree-1.png)
 
 ### Características
 
@@ -968,19 +968,19 @@ El proceso de división se repite hasta llegar a la raíz.
 
 Graficamente se puede ver de la siguiente manera (orden 5):
 
-![Árbol B](../images/b-tree-insertion-1.png)
+![Árbol B](images/b-tree-insertion-1.png)
 
 > La raíz está llena. Al insertar la llave 8:
 
-![Árbol B](../images/b-tree-insertion-2.png)
+![Árbol B](images/b-tree-insertion-2.png)
 
 > Varios elementos después:
 
-![Árbol B](../images/b-tree-insertion-3.png)
+![Árbol B](images/b-tree-insertion-3.png)
 
 > Varios elementos después...:
 
-![Árbol B](../images/b-tree-insertion-4.png)
+![Árbol B](images/b-tree-insertion-4.png)
 
 ### Eliminación
 Eliminar en un árbol B consiste de:
@@ -995,31 +995,31 @@ En este caso, la llave por eliminar está en un nodo _hoja_. Hay dos sub-casos:
 
 Por ejemplo en este árbol de orden 3:
 
-![Árbol B](../images/b-tree-deletion-1.png)
+![Árbol B](images/b-tree-deletion-1.png)
 
 *1.2* El nodo tiene _m-1_ llaves. En este caso, se _pide prestado_ una llave de uno de los nodos hermanos. Primero se visita el hermano izquierdo. Si el hermano izquierdo tiene más de _m-1_ llaves, se toma la llave más grande del hermano izquierdo Si no, se chequea el hermano derecho
 
-![Árbol B](../images/b-tree-deletion-2.png)
+![Árbol B](images/b-tree-deletion-2.png)
 
 Si los dos hermanos tienen _m-1_ llaves, se fusionan los nodos y se elimina la llave del nodo padre. La mezcla de los nodos se haces mediante el nodo padre.
 
-![Árbol B](../images/b-tree-deletion-3.png)
+![Árbol B](images/b-tree-deletion-3.png)
 
 #### Caso #2 - El nodo es interno
 Si la llave por eliminar está dentro de un nodo interno, los siguientes casos pueden ocurrir:
 
 *2.1* La llave eliminada se reemplaza por la llave inmediatamente mayor (o menor) del sub-árbol derecho (o izquierdo) del nodo, siuempre y cuando el sub-árbol derecho (o izquierdo) más del mínimo de llaves.
 
-![Árbol B](../images/b-tree-deletion-4.png)
+![Árbol B](images/b-tree-deletion-4.png)
 
 *2.2* Si ninguno de los hijos izquierdo o derecho tiene más de _m-1_ llaves, se fusionan los nodos y se elimina la llave del nodo padre.
 
-![Árbol B](../images/b-tree-deletion-5.png)
+![Árbol B](images/b-tree-deletion-5.png)
 
 #### Caso #3
 La eliminación ocurre en un nodo interno. Si no se puede realizar el caso #2 (anterior), se unen los hijos junto con el padre. 
 
-![Árbol B](../images/b-tree-deletion-6.png)
+![Árbol B](images/b-tree-deletion-6.png)
 
 ## Tries
 
@@ -1029,7 +1029,7 @@ Un Trie (del inglés _reTRIEval_) es una estructura de datos que permite almacen
 
 Visualmente, un trie se puede ilustrar como:
 
-![Trie](../images/trie-1.png)
+![Trie](images/trie-1.png)
 
 Cada rama de un nodo corresponde a un caracter de la llave insertada. El último nodo de cada llave se conoce como _EndOfWord_. La raíz no tiene un valor asignado.
 
@@ -1073,7 +1073,7 @@ Insertar una _llave_ en un Trie es un proceso simple:
 
 La longitud de la llave determina la profundidad del Trie.
 
-![Trie](../images/trie-2.png)
+![Trie](images/trie-2.png)
 
 ```java
 void insert(String key) {
