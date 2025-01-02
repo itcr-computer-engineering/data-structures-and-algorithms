@@ -1,4 +1,4 @@
-# Introducción a los grafos
+# Grafos
 
 Los grafos son estructuras de datos generales que tienen un gran rango de aplicaciones. 
 
@@ -46,7 +46,7 @@ Un DAG es un grafo aciclico dirigido, o sea que no existen ciclos.
 Un grafo es conexo si existe un camino entre cualquier par de nodos que lo componen.
 Un grafo es fuertemente conexo si el grafo es conexo y es un dígrafo.
 
-# Representación 
+## Representación 
 
 Los grafos se pueden representar utilizando dos enfoques diferentes:
 - Usando una matriz bidimensional conocida como matriz de adyacencia
@@ -56,7 +56,7 @@ Elegir entre una representación u otra depende del tipo de array y de las opera
 - Si el grafo (muchas aristas), lo mejor es escoger la matriz.
 - Si el grafo es disperso, lo mejor es escoger la lista enlazada.
 
-## Matriz de adyacencia
+### Matriz de adyacencia
 
 Sea G = {V, A} donde V = {v~0~, v~1~, v~2~,…, v~n-1~} y A = {(vi, vj)}. Los nodos se pueden representar mediante la matriz A de nxn conocida como matriz de adyacencia. Cada elemento de aij puede tomar uno de los siguientes valores:
 
@@ -77,13 +77,13 @@ A = |0  0  0  0  0 |
 
 ![matriz grafo ponderado](image-6.png)
 
-## Lista de adyacencia
+### Lista de adyacencia
 
 Una lista de adyacencia es una lista vinculada donde cada elemento representa un nodo del grafo. Cada elemento contiene una lista de relaciones con otros nodos, siendo el nodo del elemento, el origen.
 
 ![Lista de adyacencia](image-7.png)
 
-# Transversales de un grafo
+## Recorridos de un grafo
 
 Atravesar un grafo implica visitar todos los nodos accesibles comenzando desde un nodo específico
 Algoritmo de recorrido básico:
@@ -93,7 +93,7 @@ Algoritmo de recorrido básico:
 - En cada paso del algoritmo, se elimina un nodo w, se procesa y para cada borde de w, si no se visita, se agregará a w
 - El algoritmo termina cuando W está vacío
 
-## Breadth-First 
+### Breadth-First 
 
 Utiliza una cola que mantiene los vértices marcados.
 
@@ -109,7 +109,7 @@ Algoritmo:
 
 ![breadth first alg](image-8.png)
 
-## Depth-First
+### Depth-First
 
 En Depth-First, el orden de procesamiento viene dado por un enfoque LIFO
 Atravesar el grafo con un nodo v. v se marca como visitado y se empuja a la pila. La parte superior de la pila está reventada. Cada nodo adyacente de v no visitado se empuja a la pila.
@@ -118,7 +118,7 @@ Esto continua hasta que no haya más elementos en la pila.
 
 ![depth first](image-9.png)
 
-# Camino más corto: Dijkstra
+## Camino más corto: Dijkstra
 
 Uno de los problemas más comunes es determinar el camino más corto entre un par de nodos.
 Para este tipo de problema consideramos un grafo dirigido y ponderado.
@@ -180,7 +180,7 @@ evaluatedNeighbors(evaluationNode){
 }
 ```
 
-# Camino más corto: Floyd
+## Camino más corto: Floyd
 
 ¿Cómo calcular el camino más corto de cada nodo a cada nodo?
 Existe una solucón más directa que usar dijsktra de nodo en nodo.
@@ -205,7 +205,7 @@ El algoritmo de Floyd determina una nueva matriz D de nxn elementos, donde cada 
 ![Floyd alg](image-13.png)
 
 
-# Warshall
+## Warshall
 
 Similar al algoritmo de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A.
 
@@ -214,7 +214,7 @@ Define una secuencia de matrices nxn P~0~, P~1~, P~2~, P~3~,… P~n~
 
 ![warshall algorithm2](image-15.png)
 
-# Minimal Spanning tree
+## Minimal Spanning tree
 
 Se utiliza un grafo no dirigido para modelar relaciones simétricas entre vértices del gráfico. Cualquier arco (v,w) de un grafo no dirigido es igual que el arco de (w,v).
 
@@ -236,12 +236,12 @@ Dado un grafo no dirigido, encuentre el árbol de expansión mínimo
 
 - El mismo grafo puede tener varios arboles de expansión, pero no tofos son el mínimo.
 
-### ¿Como conseguirlo?
+¿Como conseguirlo?
 
     - Prim algorithm
     - Kruskal algorithm
     
-# Prim
+### Prim
 
 El árbol crece en etapas sucesivas. En cada etapa, se elige un nodo como raíz y agregamos un borde y el vértice asociado al árbol.
 
@@ -262,7 +262,7 @@ Al realizar todo el algoritmo el resultado se vería así:
 ![prim table result](image-20.png)
 
 
-# Kruskal
+### Kruskal
 
 Selecciona bordes si el orden es de menor peso y acepta un borde si no causa un ciclo
 

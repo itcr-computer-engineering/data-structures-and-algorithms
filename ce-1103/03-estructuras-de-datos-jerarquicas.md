@@ -38,7 +38,7 @@ Los árboles tienen las siguientes operaciones básicas:
   - **Postorden**: primero se visita el subárbol izquierdo, luego el subárbol derecho y finalmente la raíz.
   - **Por niveles**: se recorren todos los nodos de un nivel antes de pasar al siguiente nivel.
 
-## Introducción a Árboles Binarios de Búsqueda (BST)
+## Árboles Binarios de Búsqueda (BST)
 Un BST es un árbol binario que cumple con la siguiente propiedad: para cada nodo, todos los nodos del subárbol izquierdo tienen un valor menor que el nodo y todos los nodos del subárbol derecho tienen un valor mayor que el nodo.
 
 Gráficamente, un BST se ve de la siguiente forma:
@@ -55,7 +55,7 @@ Gráficamente, un BST se ve de la siguiente forma:
 
 Los BST se pueden implementar mediante arrays o nodos enlazados. En este curso, BST se verán como nodos enlazados. Los _árboles Heap_ que veremos más adelante, se implementarán con arrays.
 
-## Implementación
+### Implementación
 La estructura básica de un BST se puede implementar de la siguiente forma:
 ```java
 class TreeNode {
@@ -77,7 +77,7 @@ public class BinarySearchTree {
 }
 ```
 
-## Búsqueda de elementos
+### Búsqueda de elementos
 ```java
     public boolean search(int key) {
         return searchRecursive(root, key);
@@ -100,7 +100,7 @@ public class BinarySearchTree {
 
 > Dado que los árboles son una estructura jerárquica, la búsqueda se puede realizar de forma recursiva (preferida por simplicidad). De tal forma, la mayoría de los métodos van en parejas: _uno público que recibe los parámetros iniciales_ y _otro privado que realiza la operación recursiva_. 
 
-## Inserción de elementos
+### Inserción de elementos
 La inserción usa el mismo principio de búsqueda para encontrar el lugar donde se debe insertar el nuevo nodo. **Si el nodo ya existe, no se inserta**.
 
 ```java
@@ -143,7 +143,7 @@ Note que el método insert re-asigna el valor de root al resultado de insertRecu
 ```
 No funciona puesto que **las referencias en Java se pasan por valor**. Esto significa que el valor de root no cambia en el método insert, por lo que el árbol no se modifica.
 
-## Eliminación de elementos
+### Eliminación de elementos
 La eliminación en un BST considera varios casos:
 - El nodo a eliminar es una hoja.
 - El nodo a eliminar tiene un solo hijo.
@@ -186,7 +186,7 @@ La eliminación en un BST considera varios casos:
     }
 ```
 
-## Recorridos
+### Recorridos
 Recorrer un árbol no solo es útil para imprimirlo, sino que también es útil para realizar operaciones en todos los nodos. Los recorridos más comunes son:
 
 - Inorden (izquierda, raíz, derecha)
@@ -231,7 +231,7 @@ Recorrer un árbol no solo es útil para imprimirlo, sino que también es útil 
     }
 ```
 
-### In-orden
+#### In-orden
 El recorrido in-orden de un árbol BST imprime los nodos en *orden ascendente*. Esto se debe a que el recorrido in-orden visita primero el subárbol izquierdo, luego la raíz y finalmente el subárbol derecho. 
 
 Por ejemplo, el siguiente árbol:
@@ -248,7 +248,7 @@ Por ejemplo, el siguiente árbol:
 
 Se imprime como `1 3 4 6 7 8 10 13 14`.
 
-## Pre-orden
+#### Pre-orden
 El recorrido pre-orden de un árbol BST imprime la raíz antes que los subárboles. Esto se debe a que el recorrido pre-orden visita primero la raíz, luego el subárbol izquierdo y finalmente el subárbol derecho.
 
 <pre>
@@ -264,7 +264,7 @@ El recorrido pre-orden de un árbol BST imprime la raíz antes que los subárbol
 Se imprime como `8 3 1 6 4 7 10 14 13`.
 
 
-## Post-orden
+#### Post-orden
 El recorrido post-orden de un árbol BST imprime los subárboles antes que la raíz. Esto se debe a que el recorrido post-orden visita primero el subárbol izquierdo, luego el subárbol derecho y finalmente la raíz.
 
 <pre>
@@ -279,7 +279,7 @@ El recorrido post-orden de un árbol BST imprime los subárboles antes que la ra
 
 Se imprime como `1 4 7 6 3 13 14 10 8`.
 
-## El problema de los BST de no ser balanceados
+* El problema de los BST de no ser balanceados *
 Los BST pueden degenerar en listas enlazadas si los elementos se insertan en orden. Esto puede ocurrir si los elementos se insertan en orden ascendente o descendente. En este caso, la búsqueda, inserción y eliminación se convierten en operaciones de tiempo lineal.
 
 <pre>
@@ -316,7 +316,7 @@ Los BST pueden degenerar en listas enlazadas si los elementos se insertan en ord
 
 - Son la estructura esencial para posteriormente implementar _heap sort_ (lo veremos más adelante en los algoritmos de ordenamiento).
 
-## Tipo de dato abstracto
+### Tipo de dato abstracto
 
 Un heap tiene las siguientes operaciones:
 
@@ -335,7 +335,7 @@ public interface IHeap {
 }
 ```
 
-## Implementación de árboles heap
+### Implementación de árboles heap
 
 Normalmente se implementan sobre un array. La raíz del árbol se almacena en la posición 0 del array, y los hijos de un nodo en la posición `i` se almacenan en las posiciones `2 * i + 1` y `2 * i + 2`.
 
@@ -423,7 +423,7 @@ Los árboles AVL son árboles binarios de búsqueda **balanceados**. Fueron los 
 
 Dado que se mantienen balanceados, las operaciones de búsqueda, inserción y eliminación tienen un tiempo de ejecución garantizado de O(log n) y no sufren de la degradación de rendimiento que sufren los árboles binarios de búsqueda no balanceados.
 
-## Características
+### Características
 - Es un árbol binario de búsqueda.
 - Está balanceado en altura.
 - El factor de balance de cada nodo es -1, 0 o 1.
@@ -459,17 +459,17 @@ Factores de balance de cada nodo:
 | 25   | 1 - 1 = 0       |
 
 
-## Ventajas
+### Ventajas
 - Búsquedas rápidas
 - Auto-balanceados
 
-## Desventajas
+### Desventajas
 - Requieren más memoria que los árboles binarios de búsqueda no balanceados.
 - Las operaciones de inserción y eliminación son más lentas que en los árboles binarios de búsqueda no balanceados.
 - Las rotaciones pueden ser costosas.
 - Difíciles de implementar.
 
-## Inserción
+### Inserción
 Para insertar un nodo _w_: 
 - Se realiza una inserción normal de un árbol binario de búsqueda para el nodo _w_.
 - Iniciando en _w_, se recorre el camino de búsqueda hacia la raíz. Sea _z_ el primero nodo no balanceado, _y_ el hijo de _z_ que está en el camino de _w_ a _z_ y _x_ el nieto de _z_ que está en el camino de _w_ a _z_.
@@ -481,7 +481,7 @@ Para insertar un nodo _w_:
     - **Rotación Derecha-izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo izquierdo de _y_.
 
 
-## Ejemplo de rotación derecha
+#### Ejemplo de rotación derecha
 
 Dado el siguiente árbol AVL:
 
@@ -536,7 +536,7 @@ Se obtiene:
 
 > La rotación izquieda es la versión espejo de la rotación derecha.
 
-## Ejemplo de rotación izquierda-derecha
+#### Ejemplo de rotación izquierda-derecha
 Dado el siguiente árbol AVL:
 
   <pre>
@@ -619,7 +619,7 @@ Luego, se rota a la derecha el nodo 4:
 > La rotación derecha-izquierda es la versión espejo de la rotación izquierda-derecha.
 
 
-## Implementación de inserción
+#### Implementación de inserción
 ```java	
 class AVLNode {
     int key, height;
@@ -729,11 +729,7 @@ public class AVLTree {
         return node;
     }
 ```
-
-
-
-
-## Eliminación
+### Eliminación
 Para eliminar en un árbol AVL:
 - Se realiza una eliminación normal de un árbol binario de búsqueda.
 - Comenzando desde w, avanza hacia arriba y encuentra el primer nodo desequilibrado. Sea z el primer nodo desequilibrado, y el hijo de mayor altura de z, y x el hijo de mayor altura de y. Ten en cuenta que las definiciones de x e y son diferentes a las de la inserción aquí.
@@ -780,7 +776,6 @@ En este punto, no se cumple la propiedad de AVL. Se elimina 8:
 </pre>
 
 Se puede notar que 4 tiene un factor de balance -2, por lo que debe rebalancear usando rotación derecha en 4:
-
 
 <pre>
           10
@@ -833,7 +828,7 @@ Por ejemplo, la expresión matemática `3 + (4 * 5)` se puede representar con el
     4   5
 ```
 
-## Conversión de arboles de expresión a notación infija
+### Conversión de arboles de expresión a notación infija
 
 La notación infija es la forma tradicional de escribir expresiones matemáticas, en la que los operadores se escriben entre los operandos. Para generar la expresión, únicamente se requiere recorrer el árbol en inorden (izquierda, raíz, derecha).
 
@@ -898,7 +893,7 @@ Visualmente se pueden representar de la siguiente forma:
 
 ![Árbol B](../images/b-tree-1.png)
 
-## Características
+### Características
 
 Un árbol B de orden _m_, tiene las siguientes características:
 
@@ -911,7 +906,7 @@ Un árbol B de orden _m_, tiene las siguientes características:
 
 > Pueden implementarse en memoria principal o en secundaria (propósito original). En este curso, nos enfocaremos en la implementación en memoria principal.
 
-## Estructura básica en Java
+### Estructura básica en Java
 
 ```java
 class BTreeNode {
@@ -922,7 +917,7 @@ class BTreeNode {
 }
 ```
 
-## Búsqueda
+### Búsqueda
 Es muy similar a la búsqueda de un elemento en un BST. Los pasos se pueden resumir de la siguiente manera para buscar una llave _k_:
 
 1. Iniciando en la raíz, se compara _k_ con las llaves del nodo. Si _k_ se encuentra, se retorna el nodo o `true`. 
@@ -950,7 +945,7 @@ private Node Search(Node x, int key) {
   }
 ```  
 
-## Inserción
+### Inserción
 
 El árbol B crece hacia arriba desde la raíz. La inserción siempre ocurre en las hojas.
 
@@ -987,13 +982,13 @@ Graficamente se puede ver de la siguiente manera (orden 5):
 
 ![Árbol B](../images/b-tree-insertion-4.png)
 
-## Eliminación
+### Eliminación
 Eliminar en un árbol B consiste de:
 1. Encontrar el nodo que contiene la llave a eliminar.
 2. Eliminar la llave del nodo.
 3. Balancear el árbol para 
 
-## Caso #1 - El nodo es hoja
+#### Caso #1 - El nodo es hoja
 En este caso, la llave por eliminar está en un nodo _hoja_. Hay dos sub-casos:
  
 *1.1* El nodo tiene más de _m-1_ llaves. En este caso, simplemente se elimina la llave.
@@ -1010,7 +1005,7 @@ Si los dos hermanos tienen _m-1_ llaves, se fusionan los nodos y se elimina la l
 
 ![Árbol B](../images/b-tree-deletion-3.png)
 
-## Caso #2 - El nodo es interno
+#### Caso #2 - El nodo es interno
 Si la llave por eliminar está dentro de un nodo interno, los siguientes casos pueden ocurrir:
 
 *2.1* La llave eliminada se reemplaza por la llave inmediatamente mayor (o menor) del sub-árbol derecho (o izquierdo) del nodo, siuempre y cuando el sub-árbol derecho (o izquierdo) más del mínimo de llaves.
@@ -1021,12 +1016,12 @@ Si la llave por eliminar está dentro de un nodo interno, los siguientes casos p
 
 ![Árbol B](../images/b-tree-deletion-5.png)
 
-## Caso #3
+#### Caso #3
 La eliminación ocurre en un nodo interno. Si no se puede realizar el caso #2 (anterior), se unen los hijos junto con el padre. 
 
 ![Árbol B](../images/b-tree-deletion-6.png)
 
-## Introducción a Tries
+## Tries
 
 Un Trie (del inglés _reTRIEval_) es una estructura de datos que permite almacenar un conjunto de cadenas de caracteres y realizar búsquedas de palabras en ellas. Los Tries son árboles de búsqueda n-arios que almacenan cadenas de caracteres, donde cada nodo del árbol representa un carácter. Los Tries son útiles para realizar búsquedas de palabras en un conjunto de cadenas de caracteres, como en diccionarios o en motores de búsqueda.
 
@@ -1038,15 +1033,13 @@ Visualmente, un trie se puede ilustrar como:
 
 Cada rama de un nodo corresponde a un caracter de la llave insertada. El último nodo de cada llave se conoce como _EndOfWord_. La raíz no tiene un valor asignado.
 
-## El TDA Trie
+### El TDA Trie
 
 El TDA Trie tiene las siguientes operaciones básicas:
 
 - **Insertar (insert)**: añade una cadena de caracteres al trie,
 - **Buscar (search)**: busca una cadena de caracteres en el trie,
 - **Eliminar (delete)**: elimina una cadena de caracteres del trie.
-
-## Implementación de un Trie
 
 ### Estructura básica
 

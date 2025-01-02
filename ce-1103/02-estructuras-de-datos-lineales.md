@@ -1,6 +1,8 @@
 # Estructuras de Datos Lineales
 
-## Tipo de Dato Abstracto Lista
+## Listas
+
+### Tipo de Dato Abstracto Lista
 
 Pueden implementarse se muchas formas. Las más comunes son:
 
@@ -9,7 +11,7 @@ Pueden implementarse se muchas formas. Las más comunes son:
 - **DoubleLinkedList**: Implementación mediante listas doblemente enlazadas
 - **CircularLinkedList**: Implementación mediante listas enlazadas circulares
 
-## Implementación mediante arreglos
+### Implementación mediante arreglos
 
 ```java
 public class ArrayList implements List {
@@ -74,7 +76,7 @@ public class ArrayList implements List {
 - **La principal ventaja** que proveen en vez de usar directamente es la abstracción de más alto nivel. El programador no tiene que lidiar con _shifts_, re-sizes u otros problemas de usar arreglos directamente
 - Una estrategia que se puede utilizar para evitar lanzar una excepción al llegar al tamaño máximo, es crear un nuevo array de mayor tamaño y copiar los elementos del array actual. Pero si tendrá un _hit_ de performance.
 
-## Implementación mediante listas simples enlazadas
+### Implementación mediante listas simples enlazadas
 
 > Todos los enfoques utilizando listas enlazadas utilizan memoria dinámica en vez de un arreglo, es decir, asigna memoria en el _heap_ cada vez que un elemento se agrega
 >
@@ -89,7 +91,7 @@ public class ArrayList implements List {
   - Es esencial llevar y mantener una referencia a la cabeza de la lista. Si la cabeza de la lista se pierde, se pierde toda la lista.
   - Opcionalmente y para mejorar la eficiencia de la inserción al final, se puede llevar una referencia a la cola de la lista. Este tipo se conoce como _DoubleEndedLinkedList_.
 
-### Estructura general en Java
+#### Estructura general en Java
 
 ```java
 // No es public, es una clase interna para no exponer la clase nodo a
@@ -176,14 +178,14 @@ public class SinglyLinkedList implements List {
 
 ```
 
-## Implementación mediante lista doblemente enlazada
+### Implementación mediante lista doblemente enlazada
 
 - La lista doblemente enlazada es similar a la lista simple enlazada, pero cada nodo tiene una referencia al nodo anterior y al siguiente
 - Visualmente, una lista doblemente enlazada se puede representar como:
   ![](../images/double-linked-list-1.png)
 - La ventaja sobre la lista simple enlazada es que se puede recorrer la lista en ambas direcciones. La desventaja es que cada nodo tiene que mantener una referencia adicional al nodo anterior, lo que consume más memoria e implica mayor complejidad en la implementación.
 
-### Estructura general en Java
+#### Estructura general en Java
 
 ```java
 class Node {
@@ -277,11 +279,11 @@ public class DoubleLinkedList implements List {
 
 ```
 
-### Aplicabilidad
+#### Aplicabilidad
 
 - Cuando se necesita recorrer la lista en ambas direcciones, por ejemplo, en un editor de texto, donde se necesita recorrer el texto hacia adelante y hacia atrás o en un navegador web, donde se necesita recorrer el historial de navegación hacia adelante y hacia atrás.
 
-## Implementación mediante lista enlazada circular
+### Implementación mediante lista enlazada circular
 
 - La lista enlazada circular es similar a la lista simple enlazada, pero el último nodo apunta al primer nodo
 - Visualmente, una lista enlazada circular se puede representar como:
@@ -290,7 +292,7 @@ public class DoubleLinkedList implements List {
 - Para mejorar las inserciones, en vez de mantener la referencia a _head_ se utiliza una referencia a _tail_ únicamente:
   ![](../images/circular-linked-list-2.png)
 
-### Estructura general en Java
+#### Estructura general en Java
 
 ```java
 class Node {
@@ -384,11 +386,11 @@ public class CircularSinglyLinkedList {
 }
 ```
 
-### Aplicabilidad
+#### Aplicabilidad
 
 Cuando se necesita una lista que no tenga un final o un principio, por ejemplo, una lista de reproducción de música, donde la última canción apunta a la primera o una lista de tareas pendientes, donde la última tarea apunta a la primera.
 
-## Tabla comparativa de implementaciones
+### Tabla comparativa de implementaciones
 
 | Implementación | Ventajas                                                                                                                      | Desventajas                                                                                                                                           |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -399,7 +401,7 @@ Cuando se necesita una lista que no tenga un final o un principio, por ejemplo, 
 
 Una pila es una estructura de datos lineal que sigue el principio de LIFO (del inglés Last In, First Out), es decir, el último elemento en entrar es el primero en salir.
 
-## Tipo de dato abstracto Pila
+### Tipo de dato abstracto Pila
 
 La pila tiene dos operaciones básicas:
 
@@ -428,7 +430,7 @@ public interface IStack {
 
 Al igual que en el caso de las listas, se pueden implementar pilas con arreglos o con listas enlazadas.
 
-## Implementación de pilas con arreglos
+### Implementación de pilas con arreglos
 
 En la implementación de pilas con arreglos, se utiliza un arreglo unidimensional para almacenar los elementos de la pila.
 
@@ -472,7 +474,7 @@ public class ArrayStack implements IStack {
 }
 ```
 
-## Implementación de pilas con listas enlazadas
+### Implementación de pilas con listas enlazadas
 
 ```java
 public class LinkedListStack implements IStack {
@@ -522,7 +524,7 @@ public class LinkedListStack implements IStack {
 
 Es una estructura de datos que sigue el principio de FIFO (del inglés First In, First Out), es decir, el primer elemento en entrar es el primero en salir. Respeta el orden de llegada de los elementos.
 
-## Tipo de dato abstracto Cola
+### Tipo de dato abstracto Cola
 
 ```java
 public interface IQueue {
@@ -562,7 +564,7 @@ Quitando dos elementos:
 Frente --> [ 4 ] --> [ 5 ] --> [ 6 ] <-- Final
 </pre>
 
-## Implementación de colas con arreglos
+### Implementación de colas con arreglos
 
 ```java
 public class ArrayQueue implements IQueue {
@@ -673,7 +675,7 @@ public class CircularArrayQueue implements IQueue {
 
 Con una cola circular, el frente y el final no necesariamente estan al principio y al final del arreglo, respectivamente. En lugar de eso, el frente y el final se mueven a lo largo del arreglo. Cuando el final llega al final del arreglo, se mueve al principio del arreglo.
 
-## Implementación de colas con listas enlazadas
+### Implementación de colas con listas enlazadas
 
 ```java
 public class LinkedListQueue {
@@ -734,7 +736,7 @@ public class LinkedListQueue {
 
 Una cola de prioridad es una estructura de datos que almacena elementos en una cola, pero en lugar de seguir un orden de llegada, los elementos se organizan de acuerdo a su prioridad. Los elementos con mayor prioridad se desencolan antes que los elementos con menor prioridad.
 
-## Tipo de dato abstracto Cola de prioridad
+### Tipo de dato abstracto Cola de prioridad
 
 ```java
 public interface IPriorityQueue {
@@ -748,12 +750,12 @@ public interface IPriorityQueue {
 - **Desencolar (dequeue)**: Se elimina el elemento con mayor prioridad primero.
 - **Tope (front)**: Permite ver el elemento con mayor prioridad sin desencolarlo.
 
-## Tipos de colas de prioridad
+### Tipos de colas de prioridad
 
 - Orden ascendente: el elemento con menor valor numérico tiene mayor prioridad.
 - Orden descendente: el elemento con mayor valor numérico tiene mayor prioridad.
 
-## Implementación de colas de prioridad con listas enlazadas
+### Implementación de colas de prioridad con listas enlazadas
 
 Las colas de proridad se pueden implementar de muchas maneras:
 

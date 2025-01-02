@@ -1,9 +1,9 @@
-# Introducción a búsqueda lineal
+# Algoritmos de búsqueda y ordenamiento
+
+## Búsqueda lineal
 La búsqueda lineal es el método más sencillo para buscar un elemento en un arreglo (o una lista). Consiste en recorrer el arreglo desde el primer elemento hasta el último, comparando cada elemento con el valor que se busca.
 
 Cuando el arreglo **no está ordenado**, la búsqueda lineal es la **única opción**. Sin embargo, cuando el arreglo está ordenado, existen algoritmos más eficientes para realizar la búsqueda, como la búsqueda binaria.
-
-# Ejecución de búsqueda lineal
 
 Dado el siguiente arreglo:
 
@@ -34,7 +34,7 @@ Este proceso se puede representar visualmenete de la siguiente manera:
     7 == 7                        ^              
 ```
 
-# Implementación en Java
+### Implementación en Java
 ```java
 public static int linearSearch(int[] arr, int target) {
     for (int i = 0; i < arr.length; i++) {
@@ -46,14 +46,13 @@ public static int linearSearch(int[] arr, int target) {
 }
 ```
 
-# Introducción a búsqueda binaria
+## Búsqueda binaria
 Búsqueda binaria es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo ordenado. A diferencia de la búsqueda lineal, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
 - Si el valor buscado es menor que el elemento en el medio, la búsqueda continúa en la mitad izquierda del arreglo. 
 - Si el valor buscado es mayor que el elemento en el medio, la búsqueda continúa en la mitad derecha del arreglo. 
 
 Este proceso se repite hasta que el valor buscado sea encontrado o hasta que el subarreglo de búsqueda sea vacío.
 
-# Ejecución de búsqueda binaria
 Dado el siguiente arreglo:
 
 ```
@@ -82,7 +81,7 @@ Visualmente, se puede representar de la siguiente manera:
     9 == 9                                    ^
 ```
 
-# Implementación en Java
+### Implementación en Java
 ```java	
 public static int binarySearch(int[] arr, int target) {
     int left = 0;
@@ -105,11 +104,11 @@ public static int binarySearch(int[] arr, int target) {
     return -1;
 }
 ```
-# Introducción a Hash Search
+## Búsqueda Hash
 
 Para buscar en grandes colecciones de datos, no necesariamente ordenados, _hashing_ (dispersión) provee una técnica para buscar de una forma más eficiente. La función de hash se utiliza para transformar una o más características de cada elemento del universo de búsqueda en una valor numérico que corresponde a un índice de un array. La búsqueda con _hash_, tiene un mejor rendimiento promedio que otros algoritmos de búsqueda.
 
-## Hash tables
+### Hash tables
 
 Es una estructura de datos que almacena datos en pares _llave-valor_:
 
@@ -161,7 +160,7 @@ El reto de las funciones hash es generar un índice único para cada llave. Si d
 
 ## Quick sort
 
-# Introducción a Shellsort
+## Shellsort
 
 Fue propuesto por Donald Shell en 1959.
 
@@ -170,8 +169,6 @@ La idea básica de Shellsort es que los elementos de un arreglo se ordenan en in
 Shellsort trabaja realizando sus Insertion Sorts en sublistas cuidadosamente seleccionadas, primero en sublistas pequeñas y luego en sublistas cada vez más grandes.
 
 Shellsort rompe la lista en subconjuntos disjuntos, donde un subconjunto está definido por un "incremento", I. Cada registro en un subconjunto dado está separado por I posiciones. Por ejemplo, si el incremento fuera 4, entonces cada registro en el subconjunto estaría separado por 4 posiciones.
-
-# Ejecución de Shellsort
 
 Usando un enfoque sencillo, podemos definir los gaps (o incrementos) de la siguiente manera:
 
