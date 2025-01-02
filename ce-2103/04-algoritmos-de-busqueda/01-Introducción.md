@@ -1,2 +1,0 @@
-# Algoritmos de búsqueda
-Este tema abarca los algoritmos de búsqueda en estructuras de datos como arrays y expande para incluir búsquedas en planos (aplicables a juegos por ejemplo). No incluye motores de búsqueda textuales.
