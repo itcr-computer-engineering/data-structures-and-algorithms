@@ -1,46 +1,29 @@
-# Introducción
+# Análisis de algoritmos
 
 ## Definición de algoritmo:
-
-- Conjunto de instrucciones finitas para resolver un problema
-
-- ### <u> Recta de cocina:</u>
-
+Conjunto de instrucciones finitas para resolver un problema. Un ejemplo cotidiano puede ser una receta de cocina:
 - Input: Ingredientes
-
 - Output: Comida
-
 - Instrucciones: Algoritmo
 
-### <u>Características:</u>
-
-- <u>No son ambiguos</u>: cada paso tiene un solo significado
-
-- <u>Entrada bien definida</u>: Debe ser clara y consistente
-
-- <u>Salida bien definida</u>: Debe indicar que tipo de output genera
-
-- <u>Finitos</u>: Terminan en un tiempo determinado.
-
-- <u>Factibles</u>: Pueden ser ejecutados con los recursos tecnológicos
+### Características:
+- No son ambiguos: cada paso tiene un solo significado
+- Entrada bien definida: Debe ser clara y consistente
+- Salida bien definida: Debe indicar que tipo de output genera
+- Finitos: Terminan en un tiempo determinado.
+- Factibles: Pueden ser ejecutados con los recursos tecnológicos
   disponibles
 
----
+> **¿Programa vs Algoritmo?**
+>
+> Un programa es la implementación de un algoritmo en un lenguaje de
+> programación.
 
-¿Programa vs Algoritmo?  
-Un programa es la implementación de un algoritmo en un lenguaje de
-programación.
-
----
 
 ## Representación de un algoritmo:
-
 - Pseudo código
-
 - Lenguaje natural
-
 - Definición formal
-
 - Diagramas de flujo
 
 ### Complejidad:
@@ -53,7 +36,7 @@ programación.
 
 - Meta: Reducir tiempo y memoria
 
-<u>Time complexity:</u> Función del tiempo según el tamaño del imput
+Time complexity: Función del tiempo según el tamaño del imput
 
 F(input) -\> tiempo
 
@@ -69,11 +52,8 @@ claro en la complejidad.
 
 ---
 
-## Análisis de algoritmos:
-
-- Determinar tiempo y espacio requerido para ejecutar un algoritmo
-
-## ¿Porqué analizar algoritmos?
+## Definición de  Análisis de algoritmos
+Determinar tiempo y espacio requerido para ejecutar un algoritmo. ¿Porqué analizar algoritmos?
 
 - Predecir comportamiento
 
@@ -83,13 +63,7 @@ claro en la complejidad.
 
 - Clasificar según complejidad
 
-### <u>Tipos:</u>
-
-- Empírico
-
-- Teórico
-
-### Análisis empírico
+## Análisis empírico
 
 - Ejecutar un programa para evaluar el desempeño real
 
@@ -116,9 +90,9 @@ análisis dinámico para encontrar cuellos de botella o secciones de la
 app econ mal rendimiento. Provee una visión completa: CPU, rendering,
 caching.
 
-## Notas adicionales:
-
-- El algoritmo es la abstracción del programa
+> Notas adicionales:
+> 
+> El algoritmo es la abstracción del programa
 
 ### Complejidad:
 
@@ -128,25 +102,25 @@ constante.
 Las estructuras de datos evolucionan con el fin de mejorar el tema de la
 complejidad.
 
-### <u>Big Data:</u>
+> Big Data:
+> 
+> Surge cuando comienzan a haber fuentes de datos no
+> estructurados.
+> 
+> Datos estructurados:
+> 
+> Tienen una estructura fija (como una tabla de
+> Excel)
+> 
+> Datos no estructurados:
+> 
+> Se encuentran en redes sociales (Mensajes en
+> json, comentarios en publicaciones…)
+> 
+> Es un conjunto de tecnologías que se usan con el fin de tratar
+> cantidades descomunales de datos estructurados y no estructurados.
 
-Surge cuando comienzan a haber fuentes de datos no
-estructurados.
-
-### <u>Datos estructurados:</u>
-
-Tienen una estructura fija (como una tabla de
-Excel)
-
-### <u>Datos no estructurados:</u>
-
-Se encuentran en redes sociales (Mensajes en
-json, comentarios en publicaciones…)
-
-Es un conjunto de tecnologías que se usan con el fin de tratar
-cantidades descomunales de datos estructurados y no estructurados.
-
-### <u>Empírico:</u>
+### Empírico
 
 Algo que no tiene una formación básica. Ejemplo (Un ingeniero
 que aprendió todo por medio de tutoriales de youtube)
@@ -170,14 +144,8 @@ Análisis de algoritmos es determinar el tiempo y espacio requerido por un algor
 
 > La máquina analítica de Babbage requería esfuerzo físico para configurarse, es por tanto entendible el interés de Babbage en la eficiencia de los algoritmos, dado que esto reduciría el esfuerzo físico requerido.
 
-## ¿Por qué analizar algoritmos?
 
-- Predecir el comportamiento
-- Comparar distintos algoritmos para el mismo propósito (búsqueda, ordenamiento, etc.)
-- Optimización
-- Clasificar problemas según su complejidad
-
-# Análisis empírico de algoritmos
+#### Análisis empírico de algoritmos
 
 Ejecutar un programa paara evaluar el desempeño. Conocido también como _benchmark_.
 
@@ -193,7 +161,7 @@ Se utiliza un enfoque de percentil para evaluar el rendimiento de un algoritmo.
 
 Otra forma de análisis empírico es el _profiling_. Es una técnica de análisis dinámico que permite encontrar "cuellos de botella" o secciones de la aplicación que consumen más recursos. Provee una visión muy completa: tiempo de ejecución, uso de memoria, uso de CPU, etc.
 
-# Análisis teórico de algoritmos
+## Análisis teórico de algoritmos
 
 Parte de la teoría de complejidad computacional que provee estimación teórica de los recursos (tiempo, espacio) que un algoritmo requiere para ejecutarse.
 
@@ -206,7 +174,7 @@ El output del análisis teórico es una función que describe el comportamiento 
 
 - Si la función crece lento para valores grandes de _n_, el algoritmo es eficiente.
 
-# Enfoques de análisis teórico
+### Enfoques de análisis teórico
 
 - _Complejidad como función del input_: calcular una función contando las operaciones elementales que el algoritmo realiza.
 
@@ -214,7 +182,7 @@ El output del análisis teórico es una función que describe el comportamiento 
 
 - _Comportamiento asintótico_: sin calcular una función exacta, se busca una función que describa el comportamiento del algoritmo para valores grandes de _n_.
 
-## Complejidad como función del input
+#### Complejidad como función del input
 
 Se consideran operaciones fundamentales, es decir, operaciones que se realizan en tiempo constante. Por ejemplo, una suma, una multiplicación, una comparación, etc.
 
@@ -247,7 +215,7 @@ for (int i = 1; i < array.length; i++) { ---> T + 2nT
 
 Por lo tanto, `f(n) = 4T + 6nT`
 
-## Análisis asintótico
+#### Análisis asintótico
 
 Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
 
@@ -257,7 +225,7 @@ No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo
 
 Análisis asistóntico busca encontrar la función que represente el crecimiento con respecto a _n_.
 
-### Eliminar las constantes
+**Eliminar las constantes**
 
 Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Análisis asintótico elimina los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
 
@@ -283,7 +251,7 @@ Son notaciones para describir la ejecución de un algoritmo en términos de su c
 
 > De estas notaciones, la más usada es _Big O_
 
-## Mejor, peor y caso esperado/promedio
+### Mejor, peor y caso esperado/promedio
 
 Formas de describir la ejecución del algoritmo. Por ejemplo, considerando la búsqueda en una lista enlazada sin ordenar:
 

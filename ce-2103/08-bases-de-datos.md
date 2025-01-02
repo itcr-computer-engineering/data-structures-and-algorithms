@@ -1,7 +1,4 @@
-# Introducción a las Bases de Datos
-
-## ¿Qué es una Base de Datos?
-
+# Bases de Datos
 Una **base de datos** es una colección organizada de información estructurada, o datos, almacenada típicamente de manera electrónica en un sistema informático. Está diseñada para permitir el acceso, gestión y actualización de datos de manera eficiente.
 
 ## Conceptos Clave
@@ -41,85 +38,86 @@ Una **base de datos** es una colección organizada de información estructurada,
 - **Escalabilidad**: Capacidad para manejar grandes cantidades de datos.
 - **Seguridad**: Protege los datos contra accesos no autorizados.
 
-
-Introducción a SQL
+## Introducción a SQL
 SQL (Structured Query Language) es un lenguaje estándar utilizado para interactuar con bases de datos relacionales. Permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa.
 
-Operaciones Básicas en SQL
+### Operaciones Básicas en SQL
 1. Consultas SELECT
 La operación más común en SQL es la consulta SELECT, que se utiliza para recuperar datos de una o más tablas.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 SELECT columna1, columna2
 FROM tabla
 WHERE condición;
+```
+
 2. Inserción de Datos
 Para insertar nuevos registros en una tabla, se utiliza la instrucción INSERT.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 INSERT INTO tabla (columna1, columna2)
 VALUES (valor1, valor2);
+```
 3. Actualización de Datos
 Para actualizar registros existentes en una tabla, se utiliza la instrucción UPDATE.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 UPDATE tabla
 SET columna1 = nuevo_valor
 WHERE condición;
+```
 4. Eliminación de Datos
 Para eliminar registros de una tabla, se utiliza la instrucción DELETE.
 
 Ejemplo:
-
-sql
-Copy code
+```sql
 DELETE FROM tabla
 WHERE condición;
+```
+
 Cláusulas y Expresiones SQL
 1. Cláusula WHERE
 La cláusula WHERE se utiliza para filtrar registros basados en una condición específica.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 SELECT columna1, columna2
 FROM tabla
 WHERE columna1 = 'valor';
+```
+
 2. Cláusula ORDER BY
 La cláusula ORDER BY se utiliza para ordenar los resultados de una consulta en orden ascendente o descendente.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 SELECT columna1, columna2
 FROM tabla
 ORDER BY columna1 DESC;
+```
+
 3. Funciones Agregadas
 SQL proporciona funciones agregadas como COUNT, SUM, AVG, MIN y MAX para realizar cálculos en conjuntos de datos.
 
 Ejemplo:
 
-sql
-Copy code
+```sql
 SELECT COUNT(*)
 FROM tabla;
-
+```
 ## Introducción a NoSQL
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
 
-## Características de NoSQL
+### Características de NoSQL
 
 - **Estructura Flexible**: Permite almacenar datos con estructuras flexibles sin necesidad de un esquema fijo.
   
@@ -127,7 +125,7 @@ NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que 
 
 - **Modelos de Datos Diversos**: Soporta varios modelos de datos como documentos, grafos, columnas y clave-valor, optimizados para diferentes tipos de aplicaciones y cargas de trabajo.
 
-## Tipos de Bases de Datos NoSQL
+### Tipos de Bases de Datos NoSQL
 
 1. **Bases de Datos de Documentos**
    - **Ejemplo**: MongoDB
@@ -145,19 +143,19 @@ NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que 
    - **Ejemplo**: Redis
    - **Características**: Almacena datos en pares clave-valor. Muy rápido y eficiente para almacenamiento en caché y sesiones.
 
-## Casos de Uso de NoSQL
+### Casos de Uso de NoSQL
 
 - **Aplicaciones Web Escalables**: Ideal para aplicaciones web que requieren escalabilidad horizontal y manejo eficiente de grandes volúmenes de datos.
 
 - **Análisis de Datos en Tiempo Real**: Utilizado en bases de datos como Apache Kafka o Elasticsearch para análisis de datos en tiempo real y búsqueda de texto completo.
 
-## Consideraciones y Limitaciones
+### Consideraciones y Limitaciones
 
 - **Consistencia**: Algunas bases de datos NoSQL pueden sacrificar consistencia eventualmente consistente.
   
 - **Herramientas y Ecosistema**: Aunque cada vez más robusto, el ecosistema y las herramientas de NoSQL pueden ser menos maduras en comparación con las bases de datos relacionales establecidas.
 
-Ventajas de las bases de datos NoSQL
-Sintaxis más flexible: A diferencia de SQL, que tiene una sintaxis rígida, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
-Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
-Rendimiento: Operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura.
+### Ventajas de las bases de datos NoSQL
+- Sintaxis más flexible: A diferencia de SQL, que tiene una sintaxis rígida, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
+- Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
+- Rendimiento: Operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura.

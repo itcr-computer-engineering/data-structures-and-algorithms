@@ -1,12 +1,11 @@
-# Definición de Sistema Operativo (S.O)
+# Administración de Memoria
 
-- Capa de software que interactúa directamente con el hardware.
+## El rol del Sistema Operativo
+Capa de software que interactúa directamente con el hardware, intermediario entre el hardware que posee una computadora y las aplicaciones de software, así facilitando la gestión de recursos del sistema.
 
-Por así decirlo, el S.O interactúa como un intermediario entre el hardware que posee una computadora y las aplicaciones de software, así facilitando la gestión de recursos del sistema.
+### Funciones
 
-## Funciones
-
-### API para los developers
+#### API para los developers
 
 API corresponde a las siglas de la palabra _Application Programming Interface_, la cual es una interface para los recursos del hardware. Es utilizado para varias cosas, como por ejemplo API web, API S.O, API class libraries, etc; en nuestro caso, nos interesa el API S.O.
 
@@ -15,7 +14,7 @@ Un estándar para las API de los S.O es el **posix**. El posix son las siglas de
 Un ejemplo de API, para archivos es el _pointer_ o _handler_ al archivo:
 `fptr = fopen("archivo.txt")`
 
-### Administrar los recursos de la máquina.
+#### Administrar los recursos de la máquina.
 
 La idea de estos recursos administrados por el S.O es buscar una transpariencia con los componentes del hardware. La idea es poder interactuar con ellos de forma directa sin la necesidad de usarlos o visualizarlos físicamente, lo cual se vuelve más complejo.
 
@@ -34,7 +33,7 @@ Respecto a la memoria principal, se tienen las abstracciones de _heap_ y _stack_
 
 La administración de memoria viene de la pregunta ¿cómo distribuyo la RAM? Donde estas corresponde a tareas que realia el S.O para distinguir la memoria principal entre los procesos. Incluye la gestión de RAM y disco (memoria virtual).
 
-## ¿Por qué se necesita?
+### ¿Por qué se necesita?
 
 - Asignar/Liberar memoria al inicio/fin de un proceso.
 - Controlar la memoria asignada a un proceso.
@@ -63,63 +62,64 @@ Así teniendo lo siguiente al realizar la desfragmentación:
 
 Por lo tanto, ahora si se puede realizar el proceso que necesita tres espacios en memoria.
 
-# Thread vs Process
+> **Thread vs Process**
+> 
+> *Programa*
+> 
+> Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco.
+> 
+> *Process*
+> 
+> Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**.
+> 
+> Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse
+> 
+> Ejemplos de procesos pueden ser:
+> 
+> 1. Registros de procesador.
+> 2. Contadores de programas.
+> 3. Punteros de pila.
+> 4. Páginas de memoria.
+> 
+> Cabe mencionar que cada proceso tiene su propio espacio de direcciones de memoria, por lo cual no pueden corromper el espacio de memoria de otro proceso.
+> 
+> *Thread*
+> 
+> Un **hilo**, traducido al español, es la unidad de ejecución dentro de un proceso.
+> 
+> Todo proceso tiene al menos un hilo, llamado hilo principal.
+> 
+> Un programa suele tener varios hilos, también llamados subprocesos, y cada hilo tiene su propia pila.
+> 
+> Los hilos dentro de un proceso comparten un espacio de direcciones de memoria, haciendo posible comunicarse entre hilos utilizando ese espacio de memoria compartido.
+> 
+> Sin embargo, un hilo que se comporte mal podría arruinar todo el proceso.
+> 
+> **¿Cómo el sistema operativo ejecuta un proceso o un hilo en un procesador?**
+> 
+> Esto se maneja mediante el **cambio de contexto,** tanto para procesos como hilos**.**
+> 
+> Durante un cambio de contexto, un proceso se desconecta del procesador para que se pueda ejecutar otro proceso.
+> 
+> El sistema operativo almacena los estados del proceso en ejecución actual para que el proceso pueda restaurarse y reanudar la ejecución en un momento posterior.
+> 
+> Luego restaura los estados previamente guardados de un proceso diferente y reanuda la ejecución de ese proceso.
+> 
+> El cambio de proceso es costoso, este implica guardar y cargar registros, cambiar paginas de memoria y actualizar varias estructuras de datos del kernel.
+> 
+> Generalmente es más rápido cambiar de contexto entre hilos que entre procesos, ya que hay menos estados que rastrear, y la principal razón, es que dado que los hilos comparten el mismo espacio de direcciones de memoriam, no hay necesidad de cambiar páginas de memoria virtual, que es una de las operaciones más costosas durante un cambio de contexto.
+> 
+> Existen mecanismos para minimizar el costo de los cambios de contexto, como las fibras y corrutinas, que intercambian complejidad por costos de cambio de contexto aún más bajos. En general, se programan de forma cooperativa, es decir, deben ceder el control para que otros los ejecuten.
+> 
 
-## Programa
-
-Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco.
-
-## Process
-
-Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**.
-
-Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse
-
-Ejemplos de procesos pueden ser:
-
-1. Registros de procesador.
-2. Contadores de programas.
-3. Punteros de pila.
-4. Páginas de memoria.
-
-Cabe mencionar que cada proceso tiene su propio espacio de direcciones de memoria, por lo cual no pueden corromper el espacio de memoria de otro proceso.
-
-## Thread
-
-Un **hilo**, traducido al español, es la unidad de ejecución dentro de un proceso.
-
-Todo proceso tiene al menos un hilo, llamado hilo principal.
-
-Un programa suele tener varios hilos, también llamados subprocesos, y cada hilo tiene su propia pila.
-
-Los hilos dentro de un proceso comparten un espacio de direcciones de memoria, haciendo posible comunicarse entre hilos utilizando ese espacio de memoria compartido.
-
-Sin embargo, un hilo que se comporte mal podría arruinar todo el proceso.
-
-## ¿Cómo el sistema operativo ejecuta un proceso o un hilo en un procesador?
-
-Esto se maneja mediante el **cambio de contexto,** tanto para procesos como hilos**.**
-
-Durante un cambio de contexto, un proceso se desconecta del procesador para que se pueda ejecutar otro proceso.
-
-El sistema operativo almacena los estados del proceso en ejecución actual para que el proceso pueda restaurarse y reanudar la ejecución en un momento posterior.
-
-Luego restaura los estados previamente guardados de un proceso diferente y reanuda la ejecución de ese proceso.
-
-El cambio de proceso es costoso, este implica guardar y cargar registros, cambiar paginas de memoria y actualizar varias estructuras de datos del kernel.
-
-Generalmente es más rápido cambiar de contexto entre hilos que entre procesos, ya que hay menos estados que rastrear, y la principal razón, es que dado que los hilos comparten el mismo espacio de direcciones de memoriam, no hay necesidad de cambiar páginas de memoria virtual, que es una de las operaciones más costosas durante un cambio de contexto.
-
-Existen mecanismos para minimizar el costo de los cambios de contexto, como las fibras y corrutinas, que intercambian complejidad por costos de cambio de contexto aún más bajos. En general, se programan de forma cooperativa, es decir, deben ceder el control para que otros los ejecuten.
-
-# Evolución de la Administración de memoria
+### Evolución de la Administración de memoria
 
 Los sistemas operativos evolucionan y mejoran la administración, esto con el fin de cumplir con los requerimientos de los clientes finales.
 Por ejemplo:
 
 - Ejecutar varios procesos "a la vez" con un solo CPU el S.O "presta" el CPU por tiempo (QUANTA), cambia contexto y ejecuta otro programa.
 
-## 1^er^ Enfoque: Ninguna Abstracción
+### 1^er^ Enfoque: Ninguna Abstracción
 
 - Acceso directo a la memoria principal, fisica, sin ninguna abstracción. Direcciones de memoria generadas en tiempo de compilación o carga (se generan de forma estática)
 - Inicialmente no permitía la multiprogramación
@@ -129,7 +129,7 @@ Multiprogramación
 
 - Posteriormente se logra la multiprogramación mediante _static relocation_. El _static recolation_ consiste en que al cargar el programa, se ajustan las direcciones considerando la dirección inicial de donde se carga un programa.
 
-# 2^do^ enfoque: espacios de direcciones
+### 2^do^ enfoque: espacios de direcciones
 
 - Similar a los números telefónicos: Un bloque de números asignados a ciertas zonas.
 - Cada programa tiene un grupo de direcciones asignadas.
@@ -139,7 +139,7 @@ Multiprogramación
 
 <!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled.jpeg) -->
 
-# 3^er^ enfoque: Memoria virtual
+### 3^er^ enfoque: Memoria virtual
 
 - Nuevo requerimiento: Ejecutar un programa más grande que la memoria total.
 - Programa requiere de 16GB de RAM, pero tengo 512 MB → Funciona lento, pero funciona.
@@ -163,7 +163,7 @@ Page size = framesize
 
 Solicitud → SWAP
 
-# Memory layout de un programa en C / C++
+## Memory layout de un programa en C / C++
 
 - El layout depende del lenguaje/compilador que el sistema operativo respeta.
 - No es un bloque contiguo, la estrategia/enfoque de administración de memoria se aplica sobre todo el layout transparentemente.
@@ -178,7 +178,7 @@ Solicitud → SWAP
 
 _Consideraciones importantes:_ - Las variables locales almacenables en el stack deben ser de tamaño conocido al momento de la compilación. Por esta razón, memoria dinámica como listas enlazadas no puede almacenarse en stacks. - El stack es bug-free y amigable.
 
-## Componentes de cada FRAME
+### Componentes de cada stack frame
 
 - Espacio para las variables locales (automáticas).
 - Número de instrucción donde regresar una vez terminada la función.
@@ -196,9 +196,7 @@ Dado que la función _foo_ hace otra llamada a la función _bar_, se crea otro s
 Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se continúa con la siguiente línea de la función _foo_ que también termina de ejecutarse, entonces, nuevamente, se libera un frame stack y volvemos a _main_ para ejecutar la siguiente instrucción de la misma. Dado que nuevamente es una llamada a _foo_, el ciclo que vimos se repetirá una vez más.
 ![](Clase-14-Feb-2024/Stack-F4.png) -->
 
-# Tema #1 - Administración De Memoria
-
----
+## Heap
 
 ## Punteros
 
@@ -269,7 +267,7 @@ Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se 
 
 * Un bad pointer tiene un valor random
 
-## Operador &
+### Operador &
 
 - Unario
 - Retorna la dirección de memoria de una variable
@@ -282,7 +280,7 @@ Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se 
 | 0x05      | ptr   | 0x01 (—> apunta a 20) |
 | 0x06      | b     | 20                    |
 
-## Operador\*
+### Operador\*
 
 - Unario
 - Accede a la dirección de memoria contenida en la variable pointer
@@ -329,7 +327,7 @@ Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se 
       Person* p = new Person();
       p->name = “Hola”;
 
-## Sharing
+### Sharing
 
 - Dos o mas pointers hacia la misma memoria
 

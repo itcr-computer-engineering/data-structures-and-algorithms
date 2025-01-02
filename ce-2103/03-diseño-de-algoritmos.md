@@ -1,4 +1,6 @@
-# Programación dinámica (DP)
+# Diseño de Algoritmos
+
+## Programación dinámica (DP)
 Aunque tiene el término _programación_ en su nombre, no se refiere a escritura de código fuente. Acuñado por Richard Bellman en los años 50, _programar_ se referiere a _planificar_, es decir, planificar óptimamente procesos de múltiples etapas.
 - Comparte similutudes con la técnica de _divide y vencerás_.
 - DP divide problemas en sub-problemas y _memoiza_ las soluciones de los sub-problemas para resolverlos una *sola vez*.
@@ -42,7 +44,7 @@ El siguiente diagrama ilustra el enfoque DP vs Divide y Vencerás de forma gener
 
 ![](../images/programacion-dinamica-2.png)
 
-## Ejemplo de programación dinámica: Longest Common Subsequence (LCS)
+### Ejemplo de programación dinámica: Longest Common Subsequence (LCS)
 Cadena más larga común entre dos strings, no necesariamente contigua. Por ejemplo,
 
 ```
@@ -111,7 +113,7 @@ static int lcs(String X, String Y, int m, int n)
 
 Esto resulta en complejidad temporal `O(nm)`
 
-# Backtracking
+## Backtracking
 - Popularizado por Henry Lehmer, matemático estadounidense.
 - Es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione
 - Se puede conceptualizar como un árbol de decisiones
@@ -136,7 +138,7 @@ backtrack(x) {
 }
 ```    
 
-## Ejemplo: el problema de las N-reinas
+### Ejemplo: el problema de las N-reinas
 Dado un tablero de ajedrez de NxN, colocar N reinas de tal forma que no se ataquen entre sí. Una reina puede atacar a otra si están en la misma fila, columna o diagonal.
 
 ```java
@@ -158,7 +160,7 @@ bool solve(board[][] col) {
 ```
 }
 
-# Introducción
+## Algoritmos Probabilísticos
 
 Son algoritmos que utilizan aleatoriedad para tener una mejora en desempeño sacrificando la confiabilidad de los resultados obtenidos:
 
@@ -168,12 +170,12 @@ Son algoritmos que utilizan aleatoriedad para tener una mejora en desempeño sac
 
 Ejecuciones distintas pueden producir respuestas distintas.
 
-# Clasificación
+### Clasificación
 
 - **Monte Carlo**: Algoritmos que **siempre** retornan un resultado, pero puede no ser correcto. Se intenta minimizar la probabilidad de error. Multiples ejecuciones reducen dicha probabilidad.
 - **Las Vegas**: Algoritmos que **siempre** retornan un resultado correcto, pero pueden producir ningún resultado. Múltiples ejecuciones reducen la probabilidad de no obtener un resultado.
 
-# Aleatoriedad
+### Aleatoriedad
 
 - Provisto por un generador de números random. Estos generadores son pseudo-aleatorios, ya que generan una secuencia de números que parecen ser aleatorios, pero son deterministas. El único valor random que existe en nuestra realidad es la decadencia radioactiva.
 - Los generadores de pseudo-random generan números en una secuencia dentro de un rango y requieren un elemento inicial llamado semilla (seed). Cada número en la secuencia se genera a partir del anterior.
@@ -181,7 +183,7 @@ Ejecuciones distintas pueden producir respuestas distintas.
 
 ![](../images/algoritmos-probabilisticos-1.png)
 
-## Ejemplo de pseudo-random: Método de cuadrado medio
+#### Ejemplo de pseudo-random: Método de cuadrado medio
 
 Eleve el número inicial (seed) al cuadrado y tome los dígitos del medio como el nuevo número. Por ejemplo, si el seed es 1234, el cuadrado es 1522756 y el número medio es 2275.
 
@@ -194,7 +196,7 @@ Una secuencia sería:
 
 y así sucesivamente. Dependiento de la semilla, la secuencia puede ser cíclica muy rápido.
 
-# Algoritmos de Monte Carlo
+### Algoritmos de Monte Carlo
 
 Considere el siguiente requerimiento: "Dado un array de N elementos, determinar si hay un elemento que sea mayoritario, es decir que aparezca más de N/2 veces"
 
@@ -225,7 +227,7 @@ Como se puede notar, podría devolver `false` aún cuando no haya un elemento ma
 
 Ejecutar varias veces el algoritmo reduce la probabilidad de error (si el psuedo-random es bueno). Después de k ejecuciones, la probabilidad de error es de 1/2^k.
 
-# Algoritmos de Las Vegas
+### Algoritmos de Las Vegas
 
 Características:
 
@@ -240,7 +242,7 @@ Considere el problema de las n-reinas. La solución clásica es mediante backtra
 3. Si no hay colisiones, retornar la solución
 4. Si hay colisiones, repetir el proceso
 
-# Estructuras de datos probabilísticas
+### Estructuras de datos probabilísticas
 
 - Proveen respuestas aproximadas a consultas sobre grandes sets de datos.
 - Sacrifican precisión para fomentar eficiencia temporal.
@@ -248,7 +250,7 @@ Considere el problema de las n-reinas. La solución clásica es mediante backtra
 
 > Una diferencia clave de las estructuras probabilísticas con respecto a los algoritmos probabilísticos, es que estos últimos no necesariamente se comportan de forma impredecible para el usuario. Es decir, pueden devolver resultados correctos. Las estructuras de datos probabilisticas, no dan respuestas definitivas.
 
-## Filtros de Bloom
+#### Filtros de Bloom
 
 Considere el siguiente escenario:
 
@@ -266,7 +268,7 @@ Un filtro de Bloom permite determinar si un elemento pertenece a un set o no. Al
 - Nunca genera falsos negativos
 - No se pueden eliminar elementos del set
 
-### Implementación
+**Implementación**
 
 Se utiliza un arreglo de bits de largo m.
 
@@ -302,25 +304,25 @@ Depende del tipo de aplicación, puede ser que esto sea aceptable. Por ejemplo, 
 
 > Probabilidad de un falso positivo: `P(1 - [1 - 1/m]ˆkn)^k`
 
-### Complejidad:
+##### Complejidad:
 
 - Tiempo de inserción: O(k)
 - Tiempo de búsqueda: O(k)
 - Espacio requerido: O(m)
 
-### Selección de la función de hash
+##### Selección de la función de hash
 
 - Deben ser funciones rápidas
 - Usar hash criptográfico proveerá una mayor estabilidad pero tiene un hit de performance muy importante
 
-### Aplicaciones conocidas de filtros de bloom
+##### Aplicaciones conocidas de filtros de bloom
 
 - Medium.com lo utiliza para identificar los post ya vistos por el usuario
 - Cloudflare lo utiliza para identificar IPs maliciosas
 - Google Chrome lo utiliza para identificar URLs maliciosas
 - Apache Cassandra lo utiliza para buscar registros inexistentes en disco
 
-# Introducción
+## Algoritmos Genéticos
 
 Se fundamentan en el trabajo de John Holland en 1962, quien luego publica en 1975 su libro "Adaptation in Natural and Artificial Systems". Los algoritmos genéticos son una técnica de optimización y búsqueda basada en la teoría de la evolución de Darwin.
 
@@ -334,7 +336,7 @@ Se consideran como algoritmos heurísticos, ya que no garantizan la obtención d
 
 Utilizan técnicas inspiradas en la biología evolutiva, como la selección natural, la reproducción y la mutación.
 
-# Definiciones esenciales
+### Definiciones esenciales
 
 - **Individuo**: Representa una solución al problema. Puede ser una cadena de bits, un vector de números, una estructura de datos, etc.
 - **Población**: Conjunto de individuos/posibles soluciones.
@@ -344,11 +346,11 @@ Utilizan técnicas inspiradas en la biología evolutiva, como la selección natu
 
 > Dependiendo del problema se pueden usar multiples cromosomas para representar un individuo.
 
-# Representación de un individuo
+### Representación de un individuo
 
 El objetivo es optimizar el espacio de búsqueda escogiendo uan representación adecuada para el problema. Usualmente se recomienda el uso de bit-vectors, donde cada entrada indica si cierta característica está presente o no.
 
-# Funcionamiento general
+### Funcionamiento general
 
 Inician con una población de individuos aleatorios. En cada generación, se evalúa el fitness de cada individuo, se seleccionan los mejores y se reproducen para generar una nueva generación.
 
@@ -358,14 +360,14 @@ La nueva población reemplaza a la anterior y se repite el proceso hasta que se 
 
 <img src="../images/algoritmos-geneticos-1.png" style="background-color: white">
 
-## ¿Cómo seleccionar los padres?
+### ¿Cómo seleccionar los padres?
 
 Después de aplicar la función de fitness, se obtiene un grupo de posibles padres:
 
 - Secuencia: 1 - 2, 3 - 4...
 - Random
 
-## Introducir variabilidad
+### Introducir variabilidad
 
 Después de seleccionar los padres, se aplica recombinación y mutaciones.
 

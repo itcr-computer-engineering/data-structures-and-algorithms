@@ -1,7 +1,7 @@
 # Algoritmos de búsqueda
 Este tema abarca los algoritmos de búsqueda en estructuras de datos como arrays y expande para incluir búsquedas en planos (aplicables a juegos por ejemplo). No incluye motores de búsqueda textuales.
 
-# Introducción
+## Búsqueda secuencial
 
 Búsqueda secuencial es la solución trivial para buscar en una colección de elementos. Cuando la colección está desordenada, es la única opción. Revisa/procesa cada elemento hasta encontrar el elemento deseado.
 
@@ -13,7 +13,7 @@ Por ejemplo, dado el siguiente array, para buscar el elemento `20`, se seguiría
 
 ![](../images/search-algo-1.png)
 
-# Implementación
+### Implementación
 
 ```java
 public class SequentialSearch {
@@ -28,24 +28,24 @@ public class SequentialSearch {
 }
 ```
 
-# Time complexity
+### Time complexity
 
 - Worst-case: O(n)
 - Best-case: O(1)
 
-# Consideraciones importantes
+### Consideraciones importantes
 
 - Es ineficiente para colecciones grandes
 - Si el array no está ordenado o se quiere evitar ordenar, es la única opción
 
-# Introducción a búsqueda binaria
+## Búsqueda binaria
 Búsqueda binaria es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo ordenado. A diferencia de la búsqueda lineal, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
 - Si el valor buscado es menor que el elemento en el medio, la búsqueda continúa en la mitad izquierda del arreglo. 
 - Si el valor buscado es mayor que el elemento en el medio, la búsqueda continúa en la mitad derecha del arreglo. 
 
 Este proceso se repite hasta que el valor buscado sea encontrado o hasta que el subarreglo de búsqueda sea vacío.
 
-# Ejecución de búsqueda binaria
+### Ejecución de búsqueda binaria
 Dado el siguiente arreglo:
 
 ```
@@ -74,7 +74,7 @@ Visualmente, se puede representar de la siguiente manera:
     9 == 9                                    ^
 ```
 
-# Implementación en Java
+### Implementación en Java
 ```java	
 public static int binarySearch(int[] arr, int target) {
     int left = 0;
@@ -98,7 +98,7 @@ public static int binarySearch(int[] arr, int target) {
 }
 ```
 
-# Introducción
+## Búsqueda por interpolación
 
 - Es una mejora sobre `búsqueda binaria`, especificamente si los valores en el array están distribuídos uniformemente. La búsqueda por interpolación calcula la posición de la mitad del array basado en el valor del elemento buscado y los valores en los extremos del array.
 
@@ -114,11 +114,12 @@ mid = low + ((high - low) / (arr[high] - arr[low])) * (x - arr[low])
 
 La mejora en rendimiento con respecto a búsqueda binaria se da en el caso promedio (que depende de la distribución uniforme de los elementos en el array), con una complejidad de tiempo de `O(log log n)`.
 
-# Referencias
+### Referencias
 
 - https://iq.opengenus.org/time-complexity-of-interpolation-search/
 
-# Introducción
+
+## Búsqeda por salto (Jump Search)
 
 - Aplicable para arrays ordenados
 - Compara menos elementos que búsqueda lineal saltándose _n_ elementos a la vez
@@ -127,15 +128,15 @@ La mejora en rendimiento con respecto a búsqueda binaria se da en el caso prome
 
 ![](../images/search-algo-2.png)
 
-# Complejidad
+### Complejidad
 
 Complejidad temporal: O(sqrt(n))
 
-# Referencias
+### Referencias
 
 - https://www.geeksforgeeks.org/jump-search/
 
-# Introducción
+## Pathfinding
 
 _Pathfinding_ se refiere a búsqueda de caminos entre dos puntos en un plano, especialmente útil para video juegos y simulaciones. Incluye una amplia variedad de algoritmos y no hay una solución única para todos los casos. Por ejemplo, la elección del algoritmo depende de:
 
@@ -143,11 +144,11 @@ _Pathfinding_ se refiere a búsqueda de caminos entre dos puntos en un plano, es
 - ¿Hay obstáculos en el mapa?
 - ¿Hay diferente tipos de terreno en el mapa?
 
-# Pathfinding básico
+### Pathfinding básico
 
-# Pathfinding basado en grafos
+### Pathfinding basado en grafos
 
-## Dijkstra
+#### Dijkstra
 
 Cuando hay costos de movimiento según la dirección. Se lleva el costo acumulado de llegar a cada nodo y se elige el camino con menor costo.
 
@@ -177,7 +178,7 @@ while not frontier.empty() {
 
 > Visualmente, se puede entender la diferencia entre BFS y Dijkstra en el siguiente gráfico: https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search
 
-## A\*
+#### A\*
 
 Considera el costo real (similar a Dijkstra) y una heurística que estima el costo restante. La heurística es una función que estima el costo de llegar al destino desde un nodo dado. La heurística debe ser admisible, es decir, nunca sobreestimar el costo real.
 
@@ -223,7 +224,7 @@ A* y Dijkstra son similares, pero A* es más rápido porque la heurística guía
 Aunque A* y Dijkstra encuentran el camino, la cantidad de comparaciones realizadas por A* es mucho menor. En el peor caso, A* es igual a Dijkstra, pero en el mejor caso, A* es mucho más rápido.
 e
 
-# Referencias
+### Referencias
 
 - [Pathfinding](https://en.wikipedia.org/wiki/Pathfinding)
 - [Pathfinding on Grids](https://www.redblobgames.com/pathfinding/a-star/introduction.html)
