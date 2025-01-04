@@ -11,7 +11,7 @@ Búsqueda secuencial es la solución trivial para buscar en una colección de el
 
 Por ejemplo, dado el siguiente array, para buscar el elemento `20`, se seguiría el siguiente proceso:
 
-![](../images/search-algo-1.png)
+![](images/search-algo-1.png)
 
 ### Implementación
 
@@ -126,7 +126,7 @@ La mejora en rendimiento con respecto a búsqueda binaria se da en el caso prome
 - Determinar el tamaño del bloque de saltos es crucial para el rendimiento del algoritmo
 - Normalmente se utiliza sqrt(n) como tamaño de bloque, donde n es el tamaño del array
 
-![](../images/search-algo-2.png)
+![](images/search-algo-2.png)
 
 ### Complejidad
 

@@ -2,7 +2,7 @@
 
 La jerarquía de memoria, se puede representar con la siguiente pirámide:
 
-<img src="../images/estructuras-almacenamiento-externo-01.png" width="500px">
+<img src="images/estructuras-almacenamiento-externo-01.png" width="500px">
 
 Conforme se "sube" en la jerarquía, la cantidad de memoria disminuye pero el costo y velocidad de la misma aumentan. Conforme se desciende, el costo y velocidad disminuyen pero la cantidad de memoria aumenta. Es por eso, que el cache, es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es una memoria lenta pero de gran capacidad.
 
@@ -47,11 +47,11 @@ La velocidad del giro inflencia directamente a la velocidad de I/O. A mayor velo
 
 Los datos se escriben en círculos concentricos llamados _pistas_ y se dividen en _sectores_. Un sector es la unidad mínima de almacenamiento en un disco duro y generalmente tiene un tamaño de 512 bytes.
 
-<img src="../images/estructuras-almacenamiento-externo-02.png" width="500px">
+<img src="images/estructuras-almacenamiento-externo-02.png" width="500px">
 
-<img src="../images/estructuras-almacenamiento-externo-03.jpeg" width="500px">
+<img src="images/estructuras-almacenamiento-externo-03.jpeg" width="500px">
 
-<img src="../images/estructuras-almacenamiento-externo-04.jpg" width="500px">
+<img src="images/estructuras-almacenamiento-externo-04.jpg" width="500px">
 
 ### Tiempos de acceso
 

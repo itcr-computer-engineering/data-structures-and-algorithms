@@ -11,7 +11,7 @@ Aunque tiene el término _programación_ en su nombre, no se refiere a escritura
 
 Por ejemplo, para calcular _fibonacci(4)_ utilizando un enfoque tradicional:
 
-![](../images/programacion-dinamica-1.png)
+![](images/programacion-dinamica-1.png)
 
 Se puede notar un claro traslape de sub-problemas, lo que implica un desperdicio de recursos computacionales. Utilizando un enfoque de DP, el problema se puede resolver de la siguiente manera:
 
@@ -42,7 +42,7 @@ En el enfoque divide y conquista, el algoritmo de Fibonacci tiene una complejida
 
 El siguiente diagrama ilustra el enfoque DP vs Divide y Vencerás de forma general:
 
-![](../images/programacion-dinamica-2.png)
+![](images/programacion-dinamica-2.png)
 
 ### Ejemplo de programación dinámica: Longest Common Subsequence (LCS)
 Cadena más larga común entre dos strings, no necesariamente contigua. Por ejemplo,
@@ -181,7 +181,7 @@ Ejecuciones distintas pueden producir respuestas distintas.
 - Los generadores de pseudo-random generan números en una secuencia dentro de un rango y requieren un elemento inicial llamado semilla (seed). Cada número en la secuencia se genera a partir del anterior.
 - Hay posibilidad de ciclos dado que un número puede repetirse en la secuencia.
 
-![](../images/algoritmos-probabilisticos-1.png)
+![](images/algoritmos-probabilisticos-1.png)
 
 #### Ejemplo de pseudo-random: Método de cuadrado medio
 
@@ -272,7 +272,7 @@ Un filtro de Bloom permite determinar si un elemento pertenece a un set o no. Al
 
 Se utiliza un arreglo de bits de largo m.
 
-<img src="../images/algoritmos-probabilisticos-2.png" style="background-color: white">
+<img src="images/algoritmos-probabilisticos-2.png" style="background-color: white">
 
 Se necesitan k funciones de hash. Para agregar un elemento, se calculan las k funciones de hash y se setean los bits correspondientes a 1. Por ejemplo, si se define que se van a usar 3 funciones de hash, y se va a insertar la palabra "TEC" en el set:
 
@@ -280,7 +280,7 @@ h1(TEC) % m = 1
 h2(TEC) % m = 3
 h3(TEC) % m = 5
 
-<img src="../images/algoritmos-probabilisticos-3.png" style="background-color: white">
+<img src="images/algoritmos-probabilisticos-3.png" style="background-color: white">
 
 Ahora agregamos la palabra "QUIZ":
 
@@ -288,7 +288,7 @@ h1(QUIZ) % m = 3
 h2(QUIZ) % m = 5
 h3(QUIZ) % m = 4
 
-<img src="../images/algoritmos-probabilisticos-4.png" style="background-color: white">
+<img src="images/algoritmos-probabilisticos-4.png" style="background-color: white">
 
 Como se puede notar, en este caso, TEC y QUIZ tuvieron algunos resultados similares. El set se comienza a llenar, activando bits que no necesariamente corresponden a elementos diferentes.
 
@@ -358,7 +358,7 @@ La nueva población reemplaza a la anterior y se repite el proceso hasta que se 
 
 > ¿Cuando se detiene el algoritmo? Puede ser cuando se alcanza un número máximo de generaciones, cuando se alcanza un fitness mínimo, cuando se alcanza un fitness máximo, etc.
 
-<img src="../images/algoritmos-geneticos-1.png" style="background-color: white">
+<img src="images/algoritmos-geneticos-1.png" style="background-color: white">
 
 ### ¿Cómo seleccionar los padres?
 

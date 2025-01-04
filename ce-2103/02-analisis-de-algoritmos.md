@@ -219,7 +219,7 @@ Por lo tanto, `f(n) = 4T + 6nT`
 
 Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
 
-![](../images/03-analisis-teorico-1.png)
+![](images/03-analisis-teorico-1.png)
 
 No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente.
 
@@ -298,7 +298,7 @@ No hay llamadas anidadas => `O(1)`
 
 ## Big-O conocidas
 
-![](../images/03-analisis-teorico-2.png)
+![](images/03-analisis-teorico-2.png)
 
 ## Reglas generales para calcular complejidad espacial con Big-O
 

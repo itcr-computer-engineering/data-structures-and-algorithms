@@ -1,10 +1,11 @@
 # Programación Orientada a Objetos
-En esta sección se introducen algunos conceptos esenciales sobre tipos de datos que será esencial para la compresión de la programación orientada a objetos.
+En este capítulo, se introduce la programación orientada a objetos junto a conceptos esenciales para comprender su funcionamiento e implementación en lenguajes de programación comunes.
 
 ## Conceptos esenciales
+Antes de entrar en detalle en POO, es importante entender algunos conceptos básicos de programación y tipos de datos. Estos conceptos son fundamentales para comprender cómo funciona la programación orientada a objetos y cómo se pueden utilizar en la práctica.
 
 ### Tipos de Datos
-Un *tipo de dato* es una clasificación que especifica qué tipo de valores puede tomar una variable, así como las operaciones que se pueden realizar con esos valores. Los tipos de datos se utilizan en la declaración de variables y en la definición de funciones, entre otros usos.
+Un *tipo de dato* es una clasificación que especifica qué tipo de valores puede tomar una variable, así como las operaciones que se pueden realizar sobre estos valores. Los tipos de datos se utilizan en la declaración de variables y en la definición de funciones, entre otros usos.
 
 Por ejemplo, en `Python`, los tipos de datos más comunes son:
 
@@ -15,18 +16,21 @@ Por ejemplo, en `Python`, los tipos de datos más comunes son:
 
 Con respecto a las operaciones que se pueden realizar con estos tipos de datos, por ejemplo, se pueden realizar operaciones aritméticas con enteros y flotantes, concatenar cadenas, y realizar operaciones lógicas con booleanos.
 
-### Tipo de dato simple 
+Los IDEs suelen proporcionar herramientas para trabajar con tipos de datos, como autocompletado y resaltado de sintaxis, lo que facilita la escritura y comprensión del código tal y como se muestra en la siguiente imagen:
+
+![Ejemplo de autocompletado en el IDE según el tipo de dato](images/01-programación-orientada-a-objectos/image-00.png)
+
+### Tipo de dato simple y compuesto
 Un *tipo de dato simple* es un tipo de dato que representa un único valor. Los tipos de datos simples son los tipos de datos básicos que se utilizan para representar valores individuales. No tiene sentido práctico separalos en partes más pequeñas.
 
-### Tipo de dato compuesto
-Un *tipo de dato compuesto* es un tipo de dato que representa una colección de valores. Los tipos de datos compuestos se utilizan para representar estructuras de datos más complejas que contienen múltiples valores de otros tipos de datos. Por ejemplo, un tipo de dato Cliente, puede contener los datos de nombre, edad, dirección, etc.
+Un *tipo de dato compuesto* es un tipo de dato que representa una colección de valores. Los tipos de datos compuestos se utilizan para representar estructuras de datos más complejas que contienen múltiples valores de otros tipos de datos. Por ejemplo, un tipo de dato Cliente, puede contener los datos de nombre, edad, dirección, etc. **Los objetos se consideran tipos de datos compuestos**.
 
 ### Tipo referencia y tipo valor
-Un *tipo de referencia* es un tipo de dato que almacena una referencia a un objeto en memoria. Los tipos de referencia se utilizan para representar objetos que pueden ser compartidos y modificados por múltiples partes de un programa. Por ejemplo, en `Python`, las listas y los diccionarios son tipos de referencia.
+Un *tipo de referencia* es un tipo de dato que almacena una referencia a un ubicación en memoria. Los tipos de referencia se utilizan para acceder memoria que puede ser compartida y modificada por múltiples partes de un programa. Por ejemplo, en `Python`, las listas y los diccionarios son tipos de referencia. **Los objetos en la mayoría de lenguajes orientados a objetos también son tipos de referencia**.
 
-Un *tipo de valor* es un tipo de dato que almacena un valor directamente en la memoria. Los tipos de valor se utilizan para representar valores que no pueden ser compartidos ni modificados por múltiples partes de un programa. Por ejemplo, en `Python`, los enteros y los flotantes son tipos de valor.
+Un *tipo valor* es un tipo de dato que almacena un valor directamente en la memoria. Los tipos de valor se utilizan para representar valores que no pueden ser compartidos ni modificados por múltiples partes de un programa. Por ejemplo, en `Python`, los enteros y los flotantes son tipos de valor.
 
-"Usualmente" los tipos de datos simples son tipos de valor, mientras que los tipos de datos compuestos son tipos de referencia.
+Usualmente los tipos de datos simples son tipos de valor, mientras que los tipos de datos compuestos son tipos de referencia. Puede leer más para el caso de C# [aquí](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types).
 
 ### Tipos de Datos Abstractos
 Un *tipo de dato abstracto (TDA)* es un modelo matemático que define un conjunto de valores y un conjunto de operaciones que se pueden realizar con esos valores. Los TDAs son una forma de abstracción que permite a los programadores trabajar con datos de manera más abstracta y genérica.
