@@ -33,7 +33,7 @@ Un *tipo valor* es un tipo de dato que almacena un valor directamente en la memo
 Usualmente los tipos de datos simples son tipos de valor, mientras que los tipos de datos compuestos son tipos de referencia. Puede leer más para el caso de C# [aquí](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types).
 
 ### Tipos de Datos Abstractos
-Un *tipo de dato abstracto (TDA)* es un modelo matemático que define un conjunto de valores y un conjunto de operaciones que se pueden realizar con esos valores. Los TDAs son una forma de abstracción que permite a los programadores trabajar con datos de manera más abstracta y genérica.
+Un *tipo de dato abstracto (TDA)* es un modelo conceptual que define un conjunto de valores y un conjunto de operaciones que se pueden realizar con esos valores. Los TDAs son una forma de abstracción que permite a los programadores trabajar con datos de manera más abstracta y genérica.
 
 Un TDA especifica una interfaz que define las operaciones que se pueden realizar con los datos, **pero no especifica cómo se implementan esas operaciones**. Esto permite a los programadores utilizar los TDAs sin tener que preocuparse por los detalles de implementación subyacentes. Por tanto, se puede decir que un TDA tiene una vista lógica y una vista física o de implementación. 
 
@@ -62,23 +62,19 @@ LinkedList ..|> List
 ```
 En el diagrama anterior, se ilustra como un TDA Lista, puede ser implementado mediante Nodos con memoria dinámica o mediante un arreglo con memoria estática. El API expuesto por el tipo Lista, no debe dar detalles de cómo se implementa internamente.
 
-Una estructura de datos se puede entender como la implementación de TDA. En Programación Orientada a Objetos, un TDA + implementación forman una clase. Algunos lenguajes permiten definir *interfaces* que son un TDA puro.
+Una estructura de datos se puede entender como la implementación de TDA. En Programación Orientada a Objetos, **un TDA + implementación forman una clase**. Algunos lenguajes permiten definir *interfaces* que son un TDA puro.
 
-## Conceptos de programación orientada a objetos
-Paradigma de programación que modela conceptos del mundo real como _objetos_ que tienen atributos y comportamientos. Los objetos son ciudadanos de primera clase en la programación orientada a objetos (POO), lo que significa que pueden ser manipulados y pasados como argumentos a funciones.
+## Conceptos esenciales de programación orientada a objetos (POO)
+POO es un paradigma de programación que modela conceptos del mundo real como _objetos_ que tienen atributos y comportamientos. Los objetos son *ciudadanos de primera clase* en la programación orientada a objetos (POO), lo que significa que pueden ser manipulados y pasados como argumentos a funciones. Construir software orientado a objetos implica definir clases que representan tipos de objetos y crear instancias de esas clases (objetos) para interactuar entre sí.
 
-Construir software orientado a objetos implica definir clases que representan tipos de objetos y crear instancias de esas clases (objetos) para interactuar entre sí.
+> Puede leer más sobre otros paradigmas de programación [aquí](https://es.wikipedia.org/wiki/Paradigma_de_programaci%C3%B3n).
 
 ### Definición de Objeto
-Estructura de datos que agrupa atributos (datos) y métodos (funciones) que operan sobre esos datos. Los objetos son instancias de clases, que definen la estructura y comportamiento de los objetos.
-- La estructura o características de un objeto se define mediante sus **atributos**.
-- El comportamiento de un objeto se define mediante sus **métodos**.
+Estructura de datos que agrupa atributos (datos) y métodos (funciones) que operan sobre esos datos. Los objetos son instancias de clases, que definen la estructura (definida mediante los *atributos*) y comportamiento de los objetos (definido mediante los *métodos*).
 
-La **interfaz** de un objeto se define por los métodos y atributos públicos (considerado como una mala practica) que son accesibles desde fuera del objeto.
+La **interfaz** de un objeto se define por los métodos y atributos **públicos** que son accesibles desde fuera del objeto. Es decir, por otros objetos que usen el objecto en cuestión.
 
-La mayoría de lenguajes de programsción orientados a objetos, requieren la definición de clases para crear objetos. 
-
-![image](images/poo-1.png)
+La mayoría de lenguajes de programación orientados a objetos, requieren la definición de clases para crear objetos. 
 
 ### Definición de Clase
 Las clases son _plantillas que definen la estructura y comportamiento de los objetos_. Por ejemplo, la clase Televisor en C# se puede definir de la siguiente manera:
@@ -112,10 +108,16 @@ lg.Encender();
 Console.WriteLine(samsung.encendido); // Imprime false
 ```
 
-Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos diferentes. Cada objeto es un bloque de memoria independiente que contiene sus propios datos y métodos.
+Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos diferentes. **Cada objeto es un bloque de memoria independiente que contiene sus propios datos y métodos.**
+
+> *Clase vs Objeto*
+>
+> La clase define una plantilla, plano o molde para crear objetos basados en estos. Es decir, a partir de una clase se crean o instancian objetos
+
+Definir clases es una forma de extender el lenguaje de programación, definiendo nuevos tipos de datos compuestos.
 
 ## Principios de programación orientada a objetos
-Prinicipios de POO se refiere a los conceptos fundamentales que rigen la programación orientada a objetos. Estos conceptos son la base para entender cómo se estructura y cómo se trabaja con la programación orientada a objetos. Son los elementos distintivos que diferencian la programación orientada a objetos de otros paradigmas de programación.
+Son los conceptos fundamentales que rigen la programación orientada a objetos, la base para entender cómo se estructura y cómo se trabaja con este paradigma. Son los elementos distintivos que diferencian la programación orientada a objetos de otros paradigmas.
 
 Los principios de POO son los siguientes:
 - Abstracción
@@ -128,60 +130,18 @@ Es la principal característica de POO. Permite modelar el problema por resolver
 
 Al interactuar con objetos, pensamos en términos de su comportamiento y atributos en vez de variables y procedimientos.
 
-> La abstracción permite que los objetos se comporten como piezas de LEGO que tienen una interfaz específica para interactuar con ellos, pero no necesitamos saber cómo están construidos internamente. En cambio, al trabajar con plasticina, no hay una clara separación, sino que todo forma part de un todo.
+> Piezas de LEGO vs Plasticina
+>
+> La abstracción permite que los objetos se comporten como piezas de LEGO que tienen una interfaz específica para interactuar con ellos, pero no necesitamos saber cómo están construidos internamente. En cambio, al trabajar con plasticina, no hay una clara separación, sino que todo forma parte de un todo.
+
+Aunque algunos lenguajes tienen la palabra reservada *Abstract*, esto no tiene relación con la abstracción como principio de POO.
 
 ### Encapsulamiento
 Los objetos son módulos autocontenidos que asocian código con sus datos. Los datos dentro de los objetos pueden o no exponerse según el programador lo decida. El **encapsulamiento** permite ocultar los detalles de implementación de un objeto y exponer solo la interfaz necesaria para interactuar con él.
 
-```csharp
-// Example of encapsulation in C#
+Por ejemplo, en el código siguiente, los objetos de tipo *BankAccount*, ocultan los detalles de implementación de los métodos `Deposit` y `Withdraw`, y exponen solo la interfaz necesaria para interactuar con ellos. Ningún objecto externo a *BankAccount* puede acceder directamente a los atributos `accountNumber` y `balance`.
 
-public class BankAccount
-{
-    private string accountNumber;
-    private decimal balance;
-
-    public BankAccount(string accountNumber)
-    {
-        this.accountNumber = accountNumber;
-        this.balance = 0;
-    }
-
-    public decimal GetBalance()
-    {
-        return balance;
-    }
-
-    public void Deposit(decimal amount)
-    {
-        balance += amount;
-    }
-
-    public void Withdraw(decimal amount)
-    {
-        if (amount <= balance)
-        {
-            balance -= amount;
-        }
-        else
-        {
-            Console.WriteLine("Insufficient funds");
-        }
-    }
-}
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        BankAccount account = new BankAccount("1234567890");
-        account.Deposit(1000);
-        account.Withdraw(500);
-        decimal balance = account.GetBalance();
-        Console.WriteLine("Account balance: " + balance);
-    }
-}
-```
+![Ejemplo de encapsulamiento](./images/01-programación-orientada-a-objectos/image-01.png)
 
 Los lenguajes orientados a objetos permiten establecer el nivel de visibilidad que tiene un atributo o método con respeto a otros objetos o clases. Por ejemplo, C# soporta muchos modificadores de acceso, entre los que se incluyen:
 
@@ -189,7 +149,7 @@ Los lenguajes orientados a objetos permiten establecer el nivel de visibilidad q
 - `private`: Accesible solo desde la misma clase.
 - `protected`: Accesible desde la misma clase y sus clases derivadas.
 
-Por ejemplo, considera la siguiente clase Persona:
+Por ejemplo, considere la siguiente clase Persona:
 
 ```csharp
 public class Persona
@@ -210,11 +170,14 @@ public class Persona
 
 En este ejemplo, el atributo nombre está declarado como private, lo que significa que solo es accesible desde la misma clase. Sin embargo, se proporcionan métodos públicos `GetNombre()` y `SetNombre()` para acceder y modificar el valor de nombre de manera controlada.
 
+> Puede leer sobre los modificadores de acceso en C# [<u>aquí</u>](https://learn.microsoft.com/es-es/dotnet/csharp/language-reference/keywords/access-modifiers). Igualmente puede leer más sobre get y set en C# [<u>aquí</u>](https://learn.microsoft.com/es-es/dotnet/csharp/programming-guide/classes-and-structs/properties).
+
 ### Herencia
-- La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. 
-- Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. 
-- La clase padre se llama superclase y la clase hija se llama subclase. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. 
-- La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que un automóvil es un vehículo.
+La herencia permite definir jerarquías de objetos con el objetivo de reutilizar código. Cada clase puede tener máximo una clase padre de la que hereda atributos y métodos. 
+
+La clase padre se llama *superclase* y la clase hija se llama *subclase*. La superclase provee comportamiento general, mientras que las subclases proveen comportamiento especializado. 
+
+La herencia define una relación de tipo "es un/a" entre la superclase y la subclase. Por ejemplo, si tenemos una clase `Vehículo` y una clase `Automóvil`, podemos decir que *un automóvil es un vehículo*.
 
 
 ```csharp
@@ -251,6 +214,8 @@ public class Program
         animal.Comer();
 
         // Creación de una instancia de la subclase
+        // Nótese que Perro hereda de Animal
+        // las propiedas como Nombre y Edad
         Perro perro = new Perro();
         perro.Nombre = "Firulais";
         perro.Edad = 3;
@@ -264,8 +229,7 @@ public class Program
 Etimológicamente significa _"muchas formas"_ y se refiere a la capacidad de un objeto de comportarse de diferentes maneras. Hay dos tipos: _run-time_ y _compile time_.
 
 #### Run-time (tiempo de ejecución)
-
-* Cuando una clase hija anula (override) un método public/protected de la clase padre. Por ejemplo:
+Cuando una clase hija anula (override) un método public/protected de la clase padre. Por ejemplo:
 
 ```csharp
 public class Shape
@@ -304,81 +268,76 @@ public class Program
     }
 }
 ```
-* Cuando el código cliente llama el método, el método se "resuelve" en ese mmomento invocando el método correcto. Para encontrar el método correcto, el compilador busca en la clase real del objeto en tiempo de ejecución y en caso de no estar, sigue subiendo por la jerarquía de clases.
+Cuando el código cliente llama el método, el método se "resuelve" en ese momento invocando el método correcto. Para encontrar el método correcto, el compilador busca en la clase real del objeto en tiempo de ejecución y en caso de no estar, sigue subiendo por la jerarquía de clases.
 
-* Polimorfismo permite tratar la clase hija como si fuera la padre.
+Polimorfismo permite tratar la clase hija como si fuera la padre. Cualquier atributo o método visible de la clase Padre se puede acceder a traves de la Hija. Cualquier método o atributo que sea específico de la hija, no es accesible a traves de la clase padre.
 
-* Cualquier metodo visible de la clase Padre se puede acceder a traves de la Hija.
-
-``` java
-Hija h= new Hija;
-   _____ 
-h.|     | -> Aparece todo lo visible del Padre
-  |     |
-  |_____|
-
-```
-
-* Al revés no. A través de la Padre, sólo lo que es visible de la hija que es común con la del Padre se puede acceder.
-
-
-``` java
-
-Padre p = new Hija;
-   _____ 
-p.|     | -> Aparece solo lo común del padre e hija
-  |     |
-  |_____|
-
-```
-
-* Algunos lenguajes permiten crear claes abstractas que son útiles para polimorfismo.
+Algunos lenguajes permiten crear claes abstractas que son útiles para polimorfismo.
 
 ```csharp
-abstract class Animal{ 
-    void respirar(){
+public abstract class Animal
+{ 
+    void Respirar()
+    {
         Console.Write("Respirando")
     }
-    abstract void(); //no tiene definición
+    
+    abstract PorDefinir(); // no tiene definición y fuerza a las hijas a implementarla
 }
 
-class Perro : Animal {
-    void comer(){  
+public class Perro : Animal 
+{
+    void Comer()
+    { 
+        Console.Write("Comiendo") 
+    }
+
+    // implementa el método abstracto de la clase padre. 
+    // Si no lo hace, el compilador arroja un error.
+    void PorDefinir() 
+    { 
+        Console.Write("Foo...") 
     }
 }
 
 ```
-* Algunos lenguajes tambien permiten crear _interfaces_ las cuales proveen polimorfismo sin formar parte de una jerarquía.
+Algunos lenguajes tambien permiten crear _interfaces_ las cuales proveen polimorfismo sin formar parte de una jerarquía.
 
-``` java
-interface Alimentable{
+```csharp
+public interface Alimentable
+{
     void alimentar();
 }
 
-class Persona : Alimentable {
-    void alimentar();
+public class Persona : Alimentable {
+
+    // Implementa el método de la interfaz. Si no 
+    // lo hace, el compilador arroja un error.
+    void alimentar() 
+    { 
+        Console.Write("Comiendo") 
+    }
 }
 
 ```
 
 #### Compile-time
-
-* La habilidad para sobrecargar (overload) métodos, es decir, crear varios métodos con el mismo nombre pero diferentes parámetros.
+La habilidad para sobrecargar (overload) métodos, es decir, crear varios métodos con el mismo nombre pero diferentes parámetros.
  
- ``` java
- class TestClass {
-    void foo() {
+ ```csharp
+ public class TestClass 
+ {
+    void foo() 
+    {
     }
     
-    void foo(int x) {
+    void foo(int x) 
+    {
     }
 
-    void foo(string s, int x) {
+    void foo(string s, int x) 
+    {
     }
  }
 
 ```
- ### Abstraccion
-
-* La abstracción es la capacidad de ignorar los detalles de partes para enfocarse en un nivel de mayor importancia. En programación orientada a objetos, la abstracción se logra a través de la creación de clases y objetos que representan entidades del mundo real. Por ejemplo, una clase `Persona` puede representar a una persona en el mundo real, con atributos como nombre, edad, etc., y métodos que permiten interactuar con la persona.
-
