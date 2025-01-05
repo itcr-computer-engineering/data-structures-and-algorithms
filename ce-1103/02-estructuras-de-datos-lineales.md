@@ -1,6 +1,41 @@
 # Estructuras de Datos Lineales
 
+> **¿Qué es una estructura de datos?**
+>
+> Una estructura de datos es una forma particular de organizar datos en una computadora para que puedan ser utilizados de manera eficiente. Se utilizan para procesar, recuperar y almacenador datos. Existe una colección minima de estructuras de datos comunes que son utilizadas en la mayoría de los lenguajes de programación.
+
+Las estructuras de datos lineales son estructuras de datos cuyos elementos se organizan secuencialmente, uno tras de otro. Hay un solo nivel de lementos y se recorren en una sola pasada. Cada elemento de la estructura tiene un predecesor y un sucesor, excepto el primer y el último elemento.
+
+## Arreglos y Matrices
+
+### Arreglos
+Los *arreglos* son colecciones de elementos del mismo tipo. Los elementos se almacenan en posiciones contiguas de memoria. Es la estructura de datos más básica y se utiliza en la mayoría de los lenguajes de programación.
+
+Terminología básica de arreglos incluye:
+
+- *Índice*: los elementos en un array se identifican por su índice (empieza en cero usualmente). Por ejemplo, el primer elemento de un array tiene índice 0, el segundo tiene índice 1, y así sucesivamente.
+- *Longitud*: el número de elementos en un array. Por ejemplo, un array con 5 elementos tiene longitud 5 y sus índices van de 0 a 4.
+- *Elemento*: un valor almacenado en una posición específica del array. Por ejemplo, el elemento en la posición 0 del array es el primer elemento del array.
+
+Visualmente, un arreglo se puede representar con la imagen siguiente. Nótese que cada elemento tiene una posición de memoria contigua (en la imagen se muestran direcciones de memoria en decimal). Cada "espacio" del arreglo es del mismo tamaño según el tipo de dato que se almacene (por ejemplo, un `int` ocupa 4 bytes, por eso observe como las direcciones aumentan de cuatro en cuatro).
+
+![Representación de un arreglo en memoria](images/02-estructuras-de-datos-lineales/image-00.png)
+
+En C# una arreglo se declara de la siguiente manera:
+
+```csharp
+// This array will store integer type element
+int[] arr;
+
+// This array will store char type element
+char[] arr2;
+
+// This array will store float type element
+float[] arr3;
+```
+
 ## Listas
+
 
 ### Tipo de Dato Abstracto Lista
 
@@ -86,7 +121,9 @@ public class ArrayList implements List {
   - El **valor**: es el elemento relevante para el programador. El valor que solicitó registrar en la lista. Por ejemplo, `add(3)`, el 3 es el valor de interés para el programador
   - Una **referencia** al nodo siguiente que actua como el elemento que encadena la lista.
 - Visualmente, una lista enlazada se puede representar como:
+  
   ![](images/linked-list-1.png)
+
   - Como se puede notar, el último elemento apunta a _null_ indicando el fin de la lista
   - Es esencial llevar y mantener una referencia a la cabeza de la lista. Si la cabeza de la lista se pierde, se pierde toda la lista.
   - Opcionalmente y para mejorar la eficiencia de la inserción al final, se puede llevar una referencia a la cola de la lista. Este tipo se conoce como _DoubleEndedLinkedList_.
@@ -893,3 +930,6 @@ Para cualquier tipo de datos _personalizado_, se debe implmentar la interfaz `Co
 
 - Clase `Persona`: comparar por cédula
 - Clase `Estudiante`: comparar por número de carné
+
+# Referencias
+- https://www.geeksforgeeks.org/introduction-to-arrays-data-structure-and-algorithm-tutorials/

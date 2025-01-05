@@ -1,0 +1,27 @@
+% change style of quote, see also https://tex.stackexchange.com/a/436253/114857
+\usepackage[most]{tcolorbox}
+
+\definecolor{linequote}{RGB}{224,215,188}
+\definecolor{backquote}{RGB}{249,245,233}
+\definecolor{bordercolor}{RGB}{221,221,221}
+
+% change left border: https://tex.stackexchange.com/a/475716/114857
+% change left margin: https://tex.stackexchange.com/a/457936/114857
+\newtcolorbox{myquote}[1][]{%
+    enhanced,
+    breakable,
+    size=minimal,
+    left=10pt,
+    top=5pt,
+    bottom=5pt,
+    right=10pt,
+    frame hidden,
+    boxrule=0pt,
+    sharp corners=all,
+    colback=backquote,
+    borderline west={2pt}{0pt}{bordercolor},
+    #1
+}
+
+% redefine quote environment to use the myquote environment, see https://tex.stackexchange.com/a/337587/114857
+\renewenvironment{quote}{\begin{myquote}}{\end{myquote}}

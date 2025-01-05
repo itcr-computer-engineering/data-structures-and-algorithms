@@ -18,6 +18,7 @@ if ((Test-Path -Path $pandoc) -eq $false)
     --number-sections `
     --top-level-division=chapter `
     --resource-path=ce-1103 `
+    -H custom.tex `
     ./metadata-ce1103.yaml `
     ./ce-1103/01-Programacion-orientada-a-objetos.md `
     ./ce-1103/02-estructuras-de-datos-lineales.md `
@@ -30,6 +31,7 @@ if ((Test-Path -Path $pandoc) -eq $false)
     --number-sections `
     --top-level-division=chapter `
     --resource-path=ce-2103 `
+    -H custom.tex `
     ./metadata-ce2103.yaml `
     ./ce-2103/01-administracion-de-memoria.md `
     ./ce-2103/02-analisis-de-algoritmos.md `
