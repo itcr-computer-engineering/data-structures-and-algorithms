@@ -24,20 +24,129 @@ Visualmente, un arreglo se puede representar con la imagen siguiente. Nótese qu
 En C# una arreglo se declara de la siguiente manera:
 
 ```csharp
-// This array will store integer type element
+// Arreglo de enteros. Cada posición es de 4 bytes
 int[] arr;
 
-// This array will store char type element
+// Arreglo de enteros. Cada posición es de 1 byte
 char[] arr2;
 
-// This array will store float type element
+// Arreglo de flotantes. Cada posición es de 4 bytes
 float[] arr3;
+
+// Ejemplo de inicialización en línea
+int[] arr = { 1, 2, 3, 4, 5 };
+char[] arr = { 'a', 'b', 'c', 'd', 'e' };
+float[] arr = { 1.4f, 2.0f, 24f, 5.0f, 0.0f };
+
+// Ejemplo de inicialización con tamaño
+int[] arr = new int[5];
+
+// Ejemplo de acceso a elementos
+arr[0] = 1;
+int x = arr[0];
+
 ```
 
-## Listas
+> **¿ArrayList?**
+>
+> Algunos lenguajes como C# proveen la clase ArrayList o similar. Esto corresponde a una implementación de una lista que se verá más adelante en este documento. No se debe confundir con un arreglo estático de posiciones contiguas
 
+#### Ventajas y desventajas de los arreglos
+Algunas de las ventajas de los arreglos son:
+
+1. Tiene acceso aleatorio a los elementos. Es decir, se puede acceder a cualquier elemento en tiempo constante.
+
+2. Es fácil de implementar y usar.
+
+3. Cero overhead de memoria. No se necesita almacenar información adicional para mantener la estructura.
+
+Por su parte, algunas de las desventajas de los arreglos son:
+
+1. El tamaño del arreglo es fijo. No se puede cambiar el tamaño del arreglo una vez que se ha creado. Si se ocupa espacio adicional, se tiene que crear un nuevo arreglo y copiar los elementos del arreglo original al nuevo arreglo.
+
+2. Es difícil de insertar y eliminar elementos. Se necesita mover todos los elementos que están después del elemento que se quiere insertar o eliminar.
+
+> ¿Acceso rápido?
+>
+> Acceder un elemento de un arreglo, se reduce a realizar una operación de suma y una operación de acceso a memoria. Por ejemplo, si queremos acceder al elemento en la posición 3 de un arreglo de enteros, se realiza la siguiente operación: `arr + 3 * sizeof(int)`. Donde `arr` es la dirección de memoria del primer elemento del arreglo y `sizeof(int)` es el tamaño en bytes de un entero. Esta operación se realiza en tiempo constante, es decir, no importa el tamaño del arreglo, la operación siempre se realiza en el mismo tiempo.
+
+### Matrices 
+Son arreglos de dos dimensiones. Es decir, son arreglos de arreglos. Se utilizan para representar datos en forma de tabla. Por ejemplo, una matriz de 3x3 se puede representar gráficamente como:
+
+![Representación de una matríz](images/02-estructuras-de-datos-lineales/image-01.png)
+
+Para declarar e inicializar una matríz en Java, se utiliza la siguiente sintaxis:
+
+```java
+int[][] matriz = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+};
+
+// También se puede declarar sin inicializar
+int[][] matriz = new int[3][3];
+
+// Y luego inicializar
+matriz[0][0] = 1;
+matriz[0][1] = 2;    
+```
+
+C# provee una forma más compacta de declarar e inicializar matrices:
+
+```csharp
+int[,] matriz = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+};
+```
+
+Dado que son arreglos de arreglos, se puede acceder a los elementos de la matriz utilizando dos índices. Por ejemplo, para acceder al elemento en la fila 1 y columna 2 de la matriz anterior, se utiliza la siguiente sintaxis: `matriz[1][2]`.
+
+> **¿Memoria contigua en las matrices?**
+> 
+> Las matrices no necesariamente se almacenan en memoria contigua. Por ejemplo, en C# las matrices se almacenan en memoria contigua, pero en Java no. En Java, las matrices se almacenan como un arreglo de arreglos, es decir, un arreglo de referencias a otros arreglos. Por lo tanto, no se puede acceder a un elemento de la matriz utilizando una sola operación de suma y una operación de acceso a memoria. Se necesita realizar dos operaciones de acceso a memoria y una operación de suma. Esto se debe a que primero se necesita acceder a la referencia del arreglo que contiene el elemento y luego acceder al elemento dentro de ese arreglo.
+
+Aunque el término matríz se utiliza comúnmente para referirse a arreglos de dos dimensiones, también se puede utilizar para referirse a arreglos de más de dos dimensiones. Por ejemplo, un arreglo de tres dimensiones se puede inicializar en Java de la siguiente manera:
+
+```java
+int[][][] matriz3D = {
+    {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    },
+    {
+        {10, 11, 12},
+        {13, 14, 15},
+        {16, 17, 18}
+    },
+    {
+        {19, 20, 21},
+        {22, 23, 24},
+        {25, 26, 27}
+    }
+};
+
+// También se puede declarar sin inicializar
+int[][][] matriz3D = new int[3][3][3];
+
+// Y luego inicializar
+matriz3D[0][0][0] = 1;
+matriz3D[0][0][1] = 2;
+```
+## Listas
+Son colecciones de elementos del mismo tipo. A diferencia de los arreglos, las listas no tienen un tamaño fijo. Se pueden agregar y eliminar elementos de la lista. El orden de inserción de los elementos se respeta.
 
 ### Tipo de Dato Abstracto Lista
+Las operaciones básicas que se pueden realizar en una lista son:
+
+- **Obtener (get)**: devuelve el elemento en una posición específica.
+- **Agregar (add)**: añade un elemento a la lista.
+- **Eliminar (remove)**: elimina un elemento de la lista.
+- **Contiene (contains)**: verifica si un elemento está en la lista.
+- **Tamaño (size)**: devuelve el número de elementos en la lista.
 
 Pueden implementarse se muchas formas. Las más comunes son:
 
