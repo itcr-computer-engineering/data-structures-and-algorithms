@@ -220,6 +220,7 @@ El algoritmo de Floyd determina una nueva matriz D de nxn elementos, donde cada 
 Similar al algoritmo de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A.
 
 Define una secuencia de matrices nxn P~0~, P~1~, P~2~, P~3~,… P~n~
+
 ![Warshall algorithm](images/image-14.png)
 
 ![warshall algorithm2](images/image-15.png)
@@ -244,12 +245,13 @@ Dado un grafo no dirigido, encuentre el árbol de expansión mínimo
 
 ![minimal spanning tree](images/image-16.png)
 
-- El mismo grafo puede tener varios arboles de expansión, pero no tofos son el mínimo.
+- El mismo grafo puede tener varios arboles de expansión, pero no todos son el mínimo.
 
 ¿Como conseguirlo?
 
-    - Prim algorithm
-    - Kruskal algorithm
+- Prim algorithm
+
+- Kruskal algorithm
     
 ### Prim
 
