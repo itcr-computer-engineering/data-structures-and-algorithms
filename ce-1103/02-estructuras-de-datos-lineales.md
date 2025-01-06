@@ -969,10 +969,11 @@ public class LinkedListPriorityQueue implements IPriorityQueue {
 }
 ```
 ## Generics
+> Generics es aplicable a cualquier estructura de datos, no solo a las lineales.
 
 Hasta ahora, los ejemplos vistos de las estructuras de datos, han sido únicamente para el tipo de dato `integer`. ¿Qué pasa si queremos implementar una estructura de datos para otro tipo de dato? Por ejemplo, si queremos implementar una pila para `String` o para `double`. En este caso, tendríamos que implementar una pila para cada tipo de dato que necesitemos. Esto no es eficiente y no es escalable.
 
-Otra opción es utilizar el tipo de dato `Object` que es la superclase de todos los tipos de datos en Java. Sin embargo, esto no es una solución óptima ya que se pierde el tipo de dato específico y se tendría que hacer un _casting_ cada vez que se quiera utilizar el dato. Esto puede resultar en errores en tiempo de ejecución.
+Otra opción es utilizar el tipo de dato `Object` que es la superclase de todos los tipos de datos en Java/C#. Sin embargo, esto no es una solución óptima ya que se pierde el tipo de dato específico y se tendría que hacer un _casting_ cada vez que se quiera utilizar el dato. Esto puede resultar en errores en tiempo de ejecución.
 
 Java y muchos otros lenguajes, proveen el concepto de **generics** para solucionar este problema. Los **generics** permiten definir clases, interfaces y métodos con un tipo de dato que se especifica en el momento de la creación de la instancia.
 
@@ -1045,5 +1046,5 @@ Para cualquier tipo de datos _personalizado_, se debe implmentar la interfaz `Co
 - Clase `Persona`: comparar por cédula
 - Clase `Estudiante`: comparar por número de carné
 
-# Referencias
+## Referencias adicionales
 - https://www.geeksforgeeks.org/introduction-to-arrays-data-structure-and-algorithm-tutorials/

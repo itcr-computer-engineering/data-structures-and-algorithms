@@ -41,18 +41,6 @@ Los árboles tienen las siguientes operaciones básicas:
 ## Árboles Binarios de Búsqueda (BST)
 Un BST es un árbol binario que cumple con la siguiente propiedad: para cada nodo, todos los nodos del subárbol izquierdo tienen un valor menor que el nodo y todos los nodos del subárbol derecho tienen un valor mayor que el nodo.
 
-Gráficamente, un BST se ve de la siguiente forma:
-
-<pre>
-        8
-       / \
-      3   10
-     / \    \
-    1   6   14
-       / \  /
-      4   7 13
-</pre>
-
 Los BST se pueden implementar mediante arrays o nodos enlazados. En este curso, BST se verán como nodos enlazados. Los _árboles Heap_ que veremos más adelante, se implementarán con arrays.
 
 ### Implementación
@@ -145,8 +133,11 @@ No funciona puesto que **las referencias en Java se pasan por valor**. Esto sign
 
 ### Eliminación de elementos
 La eliminación en un BST considera varios casos:
+
 - El nodo a eliminar es una hoja.
+
 - El nodo a eliminar tiene un solo hijo.
+
 - El nodo a eliminar tiene dos hijos.
 
 **Cuando el nodo es hoja**, simplemente se elimina. **Cuando el nodo tiene un solo hijo**, se reemplaza el nodo por su hijo. **Cuando el nodo tiene dos hijos**, se reemplaza el nodo por el nodo más pequeño del subárbol derecho o por el nodo mayor del súbarbol izquierdo (**solo se puede usar una de estas estrategias** en toda la implementación)
@@ -236,7 +227,7 @@ El recorrido in-orden de un árbol BST imprime los nodos en *orden ascendente*. 
 
 Por ejemplo, el siguiente árbol:
 
-<pre>
+```java
         8
        / \
       3   10
@@ -244,14 +235,14 @@ Por ejemplo, el siguiente árbol:
     1   6   14
        / \  /
       4   7 13
-</pre>
+```
 
 Se imprime como `1 3 4 6 7 8 10 13 14`.
 
 #### Pre-orden
 El recorrido pre-orden de un árbol BST imprime la raíz antes que los subárboles. Esto se debe a que el recorrido pre-orden visita primero la raíz, luego el subárbol izquierdo y finalmente el subárbol derecho.
 
-<pre>
+```java
         8
        / \
       3   10
@@ -259,7 +250,7 @@ El recorrido pre-orden de un árbol BST imprime la raíz antes que los subárbol
     1   6   14
        / \  /
       4   7 13
-</pre>
+```
 
 Se imprime como `8 3 1 6 4 7 10 14 13`.
 
@@ -267,7 +258,7 @@ Se imprime como `8 3 1 6 4 7 10 14 13`.
 #### Post-orden
 El recorrido post-orden de un árbol BST imprime los subárboles antes que la raíz. Esto se debe a que el recorrido post-orden visita primero el subárbol izquierdo, luego el subárbol derecho y finalmente la raíz.
 
-<pre>
+```java
         8
        / \
       3   10
@@ -275,14 +266,14 @@ El recorrido post-orden de un árbol BST imprime los subárboles antes que la ra
     1   6   14
        / \  /
       4   7 13
-</pre>
+```
 
 Se imprime como `1 4 7 6 3 13 14 10 8`.
 
 * El problema de los BST de no ser balanceados *
 Los BST pueden degenerar en listas enlazadas si los elementos se insertan en orden. Esto puede ocurrir si los elementos se insertan en orden ascendente o descendente. En este caso, la búsqueda, inserción y eliminación se convierten en operaciones de tiempo lineal.
 
-<pre>
+```java
         1
          \
           2
@@ -300,7 +291,7 @@ Los BST pueden degenerar en listas enlazadas si los elementos se insertan en ord
                       8
                        \
                         9
-</pre>                        
+```
 
 ## Árboles Heap (montículo)
 
@@ -431,7 +422,7 @@ Dado que se mantienen balanceados, las operaciones de búsqueda, inserción y el
 
 > El factor de balance de un nodo es la diferencia entre la altura del subárbol derecho y la altura del subárbol izquierdo.
 
-<pre>
+```java
           10
         /    \
        5      15
@@ -439,7 +430,7 @@ Dado que se mantienen balanceados, las operaciones de búsqueda, inserción y el
      3   8  12   20
     / \         /   \
    2   4       17    25
-</pre>
+```
 
 
 Factores de balance de cada nodo:
@@ -485,7 +476,7 @@ Para insertar un nodo _w_:
 
 Dado el siguiente árbol AVL:
 
- <pre>
+ ```java
         10
       /    \
      5      15
@@ -493,11 +484,11 @@ Dado el siguiente árbol AVL:
    3   8  12   20
   / \         /   \
  2   4       17    25
-</pre>
+```
 
 Se inserta el nodo 1:
  
- <pre>
+ ```java
           10
         /    \
        5      15  -------> 5 es z
@@ -507,7 +498,7 @@ Se inserta el nodo 1:
    2   4       17    25 -------> 2 es x
   /
  1
-</pre>
+```
 
 El factor de balance del nodo 5 es 2, por lo que se debe rebalancear el árbol. El nodo 3 es el hijo de 5 que está en el camino de 1 a 5 y el nodo 2 es el nieto de 5 que está en el camino de 1 a 5. Estamos en el caso de rotación derecha.
 
@@ -524,7 +515,7 @@ void rotateRight(Node node) {
 
 Se obtiene: 
 
- <pre>
+ ```java
         10
       /    \
      3      15
@@ -532,14 +523,14 @@ Se obtiene:
    2   5  12   20
   /   / \    /   \
  1   4   8  17    25   
-</pre>
+```
 
 > La rotación izquieda es la versión espejo de la rotación derecha.
 
 #### Ejemplo de rotación izquierda-derecha
 Dado el siguiente árbol AVL:
 
-  <pre>
+  ```java
           10
         /    \
        5     15
@@ -547,11 +538,11 @@ Dado el siguiente árbol AVL:
      4   8 12  20
     /         / \
    2         17 25 
-</pre>
+```
 
 Se inserta el nodo 3:
 
-  <pre>
+  ```java
           10
         /    \
        5     15 
@@ -561,7 +552,7 @@ Se inserta el nodo 3:
    2         17 25  --------> 2 es y
     \
      3 ----------------------> 3 es x
-</pre>
+```
 
 El factor de balance del nodo 5 es 2, por lo que se debe rebalancear el árbol. El nodo 4 es el hijo de 5 que está en el camino de 3 a 5 y el nodo 2 es el nieto de 5 que está en el camino de 3 a 5. Estamos en el caso de rotación izquierda-derecha.
 
@@ -591,7 +582,7 @@ void rotateRight(Node node) {
 
 Primero, se rota a la izquierda el nodo 2:
   
-<pre>
+```java
           10
         /    \
        5     15 
@@ -601,12 +592,12 @@ Primero, se rota a la izquierda el nodo 2:
    3         17 25
   /  
  2    
-</pre>  
+```  
 
 
 Luego, se rota a la derecha el nodo 4:
 
-<pre>
+```java
           10
         /    \
        5     15 
@@ -614,7 +605,7 @@ Luego, se rota a la derecha el nodo 4:
      3   8 12  20
     / \        / \
    2   4       17 25
-</pre>  
+```  
 
 > La rotación derecha-izquierda es la versión espejo de la rotación izquierda-derecha.
 
@@ -731,17 +722,24 @@ public class AVLTree {
 ```
 ### Eliminación
 Para eliminar en un árbol AVL:
+
 - Se realiza una eliminación normal de un árbol binario de búsqueda.
+
 - Comenzando desde w, avanza hacia arriba y encuentra el primer nodo desequilibrado. Sea z el primer nodo desequilibrado, y el hijo de mayor altura de z, y x el hijo de mayor altura de y. Ten en cuenta que las definiciones de x e y son diferentes a las de la inserción aquí.
+
 - Rebalancea el árbol realizando rotaciones apropiadas en el subárbol con raíz en z. Puede haber 4 casos posibles que deben ser manejados, ya que x, y y z pueden estar dispuestos de 4 formas diferentes. A continuación se presentan las 4 disposiciones posibles:
+
     - **Rotación derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo izquierdo de _y_. 
+
     - **Rotación Izquierda-derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo derecho de _y_.
+
     - **Rotación Izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo derecho de _y_.
+
     - **Rotación Derecha-izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo izquierdo de _y_.
 
 
 Dado el siguiente árbol, eliminemos 5:
-<pre>
+```java
           10
         /    \
        5     15 
@@ -749,11 +747,11 @@ Dado el siguiente árbol, eliminemos 5:
      3   8 12  20
     / \        / \
    2   4       17 25
-</pre>
+```
 
 Se elimina el nodo 5 usando la lógica de eliminación de un árbol binario de búsqueda:
 
-<pre>
+```java
           10
         /    \
        4     15 
@@ -761,11 +759,11 @@ Se elimina el nodo 5 usando la lógica de eliminación de un árbol binario de b
      3   8 12  20
     /          / \
    2          17 25
-</pre>
+```
 
 En este punto, no se cumple la propiedad de AVL. Se elimina 8:
 
-<pre>
+```java
           10
         /    \
        4     15 
@@ -773,11 +771,11 @@ En este punto, no se cumple la propiedad de AVL. Se elimina 8:
      3     12  20
     /          / \
    2          17 25
-</pre>
+```
 
 Se puede notar que 4 tiene un factor de balance -2, por lo que debe rebalancear usando rotación derecha en 4:
 
-<pre>
+```java
           10
         /    \
        3     15  -------> 4 es z
@@ -785,11 +783,11 @@ Se puede notar que 4 tiene un factor de balance -2, por lo que debe rebalancear 
      2   4   12  20 -------> 3 es y
                 / \
                17 25 -------> 2 es x
-</pre>
+```
 
 Se eliminan 2 y 4:
 
-<pre>
+```java
           10-------> 10 es z
         /    \
        3      15----> 17 es y  
@@ -797,17 +795,17 @@ Se eliminan 2 y 4:
             12  20-------> 15 es x
                 / \
                17 25 
-</pre>
+```
 
 Estos nos dejan con un factor de balance en 10 de 2, por lo que se debe rebalancear usando rotación izquierda en 10:
 
-<pre>
+```java
           15
         /    \
        10     20
       /  \   /  \    
      3   12 17  25 
-</pre>
+```
 
 ### Búsquedas y recorridos
 No hay cambios con respecto a BST
@@ -844,7 +842,7 @@ private void inOrderRecursive(TreeNode root) {
 
 | Árbol                                                   | Expresión                 |
 | ------------------------------------------------------- | ------------------------- |
-| <img src="images/expression-tree-1.png" width="200"> | `(x + y) * (a - b)`       |
+| <img src="images/expression-tree-1.png" width="200"/> | `(x + y) * (a - b)`       |
 | <img src="images/expression-tree-2.png" width="200"> | `(x * (y - z)) * (a - f)` |
 | <img src="images/expression-tree-3.png" width="200"> | `(x * (y / -Z))`          |
 | <img src="images/expression-tree-4.png" width="200"> | `(A + (B * - (C + D)))`   |
