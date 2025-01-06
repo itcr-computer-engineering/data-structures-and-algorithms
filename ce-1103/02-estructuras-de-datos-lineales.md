@@ -328,7 +328,9 @@ public class SinglyLinkedList implements List {
 
 - La lista doblemente enlazada es similar a la lista simple enlazada, pero cada nodo tiene una referencia al nodo anterior y al siguiente
 - Visualmente, una lista doblemente enlazada se puede representar como:
-  ![](images/double-linked-list-1.png)
+
+![](images/double-linked-list-1.png)
+
 - La ventaja sobre la lista simple enlazada es que se puede recorrer la lista en ambas direcciones. La desventaja es que cada nodo tiene que mantener una referencia adicional al nodo anterior, lo que consume más memoria e implica mayor complejidad en la implementación.
 
 #### Estructura general en Java
@@ -433,10 +435,13 @@ public class DoubleLinkedList implements List {
 
 - La lista enlazada circular es similar a la lista simple enlazada, pero el último nodo apunta al primer nodo
 - Visualmente, una lista enlazada circular se puede representar como:
-  ![](images/circular-linked-list-1.png)
+
+![](images/circular-linked-list-1.png)
+
 - Usualmente se implementan como cirular doblemente enlazada.
 - Para mejorar las inserciones, en vez de mantener la referencia a _head_ se utiliza una referencia a _tail_ únicamente:
-  ![](images/circular-linked-list-2.png)
+
+![](images/circular-linked-list-2.png)
 
 #### Estructura general en Java
 
@@ -538,10 +543,10 @@ Cuando se necesita una lista que no tenga un final o un principio, por ejemplo, 
 
 ### Tabla comparativa de implementaciones
 
-| Implementación | Ventajas                                                                                                                      | Desventajas                                                                                                                                           |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ArrayList      | - Acceso aleatorio rápido                                                                                                     | - Inserciones y eliminaciones son costosas<br/>- Uso ineficiente de memoria (Un arreglo grande poco usado, sigue utilizando toda la memoria asignada) |
-| LinkedList     | - Inserciones y eliminaciones son rápidas<br/>-Uso más eficiente de la memoria aunque cada nodo tiene un _overhead_ adicional | - Acceso aleatorio a los elementos es costoso                                                                                                         |
+| Implementación | Acceso | Insertar/Eliminar | Uso de Memoria | 
+| - | - | - | - |
+| ArrayList | Rápido | Costoso | Siempre ocupa todo el espacio. No tiene overhead | 
+| LinkedList | Lento | Rápido | Solo usa lo que ocupa. Tiene overhead. | 
 
 ## Pilas
 
