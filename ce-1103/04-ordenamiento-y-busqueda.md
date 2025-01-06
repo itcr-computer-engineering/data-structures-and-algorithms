@@ -184,7 +184,7 @@ Rendondeando hacia el entero más cercano hacia arriba. Entonces, dado un array 
 
 Dado el siguiente arreglo:
 
-<pre>
+```java
 | Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |  
 | Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
 =================================================
@@ -242,6 +242,6 @@ Dado el siguiente arreglo:
 |           | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 |           |                             ^---^ |
 =================================================
-</pre>
+```
 
 ## Radix sort
