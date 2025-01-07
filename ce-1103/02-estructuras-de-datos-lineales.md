@@ -560,7 +560,7 @@ La pila tiene dos operaciones básicas:
 - **Desapilar (pop)**: elimina el último elemento apilado.
 - **Tope (top)**: permite ver el elemento que está en la cima de la pila sin desapilarlo.
 
-<pre>
+```java
 | Before Push | After Push 3 | After Push 5 | After Pop | After Pop |
 |-------------|--------------|--------------|-----------|-----------|
 |             |              |   +---+      |           |           |
@@ -568,7 +568,7 @@ La pila tiene dos operaciones básicas:
 |             |   +---+      |   +---+      |   +---+   |           |
 |   +---+     |   | 3 |      |   | 3 |      |   | 3 |   |   +---+   |
 |   +---+     |   +---+      |   +---+      |   +---+   |   +---+   |
-</pre>
+```
 
 
 ```java
@@ -687,33 +687,33 @@ public interface IQueue {
 
 Cola vacía:
 
-<pre>
+```java
 Frente -->  Cola Vacía  <-- Final
-</pre>
+```
 
 Agregando elementos 1, 2, 3, 4 y 5:
 
-<pre>
+```java
 Frente --> [ 1 ] --> [ 2 ] --> [ 3 ] --> [ 4 ] --> [ 5 ] <-- Final
-</pre>
+```
 
 Quitando un elemento:
 
-<pre>
+```java
 Frente --> [ 2 ] --> [ 3 ] --> [ 4 ] --> [ 5 ] <-- Final
-</pre>
+```
 
 Agregando el elemento 6:
 
-<pre>
+```java
 Frente --> [ 2 ] --> [ 3 ] --> [ 4 ] --> [ 5 ] --> [ 6 ] <-- Final
-</pre>
+```
 
 Quitando dos elementos:
 
-<pre>
+```java
 Frente --> [ 4 ] --> [ 5 ] --> [ 6 ] <-- Final
-</pre>
+```
 
 ### Implementación de colas con arreglos
 

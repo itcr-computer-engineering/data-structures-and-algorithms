@@ -1,6 +1,9 @@
 # Algoritmos de búsqueda y ordenamiento
 
-## Búsqueda lineal
+## Algoritmos de búsqueda
+Como lo indica su nombre, permiten buscar un elemento dentro de una colección de datos. La colección puede ser sobre arreglos o listas enlazadas, sin embargo, en este curso se enfocará en arreglos.
+
+### Búsqueda lineal
 La búsqueda lineal es el método más sencillo para buscar un elemento en un arreglo (o una lista). Consiste en recorrer el arreglo desde el primer elemento hasta el último, comparando cada elemento con el valor que se busca.
 
 Cuando el arreglo **no está ordenado**, la búsqueda lineal es la **única opción**. Sin embargo, cuando el arreglo está ordenado, existen algoritmos más eficientes para realizar la búsqueda, como la búsqueda binaria.
@@ -11,18 +14,8 @@ Dado el siguiente arreglo:
 | Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
 ```
+Para buscar el número 7, se sigue el siguiente proceso:
 
-Buscamos el número 7.
-
-- Comenzamos comparando el número 7 con el primer elemento del arreglo, que es 5. 
-- Como no son iguales, pasamos al siguiente elemento, que es 3. 
-- Tampoco es igual, así que pasamos al siguiente elemento, que es 8. 
-- Tampoco es igual, así que pasamos al siguiente elemento, que es 6. 
-- Tampoco es igual, así que pasamos al siguiente elemento, que es 2. 
-- Tampoco es igual, así que pasamos al siguiente elemento, que es 7. 
-- Como son iguales, hemos encontrado el número que buscábamos.
-
-Este proceso se puede representar visualmenete de la siguiente manera:
 ```
 | Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
@@ -33,9 +26,9 @@ Este proceso se puede representar visualmenete de la siguiente manera:
     2 != 7                    ^
     7 == 7                        ^              
 ```
+#### Implementación
 
-### Implementación en Java
-```java
+```csharp
 public static int linearSearch(int[] arr, int target) {
     for (int i = 0; i < arr.length; i++) {
         if (arr[i] == target) {
@@ -46,10 +39,12 @@ public static int linearSearch(int[] arr, int target) {
 }
 ```
 
-## Búsqueda binaria
-Búsqueda binaria es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo ordenado. A diferencia de la búsqueda lineal, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
-- Si el valor buscado es menor que el elemento en el medio, la búsqueda continúa en la mitad izquierda del arreglo. 
-- Si el valor buscado es mayor que el elemento en el medio, la búsqueda continúa en la mitad derecha del arreglo. 
+### Búsqueda binaria
+Es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo ordenado. A diferencia de la búsqueda lineal, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
+
+- Si el valor buscado _es menor_ que el elemento en el medio, la búsqueda continúa en la mitad **izquierda** del arreglo. 
+
+- Si el valor buscado _es mayor_ que el elemento en el medio, la búsqueda continúa en la mitad **derecha** del arreglo. 
 
 Este proceso se repite hasta que el valor buscado sea encontrado o hasta que el subarreglo de búsqueda sea vacío.
 
@@ -60,14 +55,7 @@ Dado el siguiente arreglo:
 | Elementos | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 ```
 Para buscar el número 9:
-- Comenzamos comparando el número 9 con el elemento en el medio del arreglo, que es 5.
-- Como 9 es mayor que 5, la búsqueda continúa en la mitad derecha del arreglo.
-- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha del arreglo, que es 8.
-- Como 9 es mayor que 8, la búsqueda continúa en la mitad derecha de la mitad derecha del arreglo.
-- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha de la mitad derecha del arreglo, que es 9.
-- Como 9 es igual a 9, hemos encontrado el número que buscábamos.
 
-Visualmente, se puede representar de la siguiente manera:
 ```
 | Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | Elementos | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
@@ -81,8 +69,10 @@ Visualmente, se puede representar de la siguiente manera:
     9 == 9                                    ^
 ```
 
-### Implementación en Java
-```java	
+#### Implementación
+Puede implementarse recursivamente o iterativamente. A continuación se muestra la implementación iterativa:
+
+```csharp
 public static int binarySearch(int[] arr, int target) {
     int left = 0;
     int right = arr.length - 1;
@@ -104,20 +94,20 @@ public static int binarySearch(int[] arr, int target) {
     return -1;
 }
 ```
-## Búsqueda Hash
 
-Para buscar en grandes colecciones de datos, no necesariamente ordenados, _hashing_ (dispersión) provee una técnica para buscar de una forma más eficiente. La función de hash se utiliza para transformar una o más características de cada elemento del universo de búsqueda en una valor numérico que corresponde a un índice de un array. La búsqueda con _hash_, tiene un mejor rendimiento promedio que otros algoritmos de búsqueda.
+### Búsqueda Hash
+Para buscar en grandes colecciones de datos, no necesariamente ordenados, _hashing_ (dispersión) provee una técnica para buscar de una forma más eficiente. La función de _hash_ se utiliza para transformar una o más características de cada elemento del universo de búsqueda en un valor numérico que corresponde a un índice de un array. La búsqueda con _hash_, tiene un mejor rendimiento promedio que otros algoritmos de búsqueda.
 
-### Hash tables
-
+#### Hash tables
 Es una estructura de datos que almacena datos en pares _llave-valor_:
 
 - _Llave_: llave única para identificar un valor
+
 - _Valor_: dato asociado con la llave
 
-La llave _k_ se utiliza como entrada para una función de hashing _h(k)_ que genera un índice i donde el valor se almancenará dentro de la tabla. Visualmente se puede representar de esta forma:
+La llave _k_ se utiliza como entrada para una función de hashing _h(k)_ que genera un índice _i_ donde el valor se almancenará dentro de la tabla. Visualmente se puede representar de esta forma:
 
-<img src="images/hashing-1.png" width="400">
+![](images/hashing-1.png)
 
 Por ejemplo, suponga que se tiene un conjunto de datos que representan ciudadadanos costarricenses, donde cada registro, contiene una cédula numérica que identifica cada registro.
 
@@ -142,25 +132,210 @@ Para buscar un ciudadano en particular, se puede utilizar la cédula como llave 
 | 8      |           |        |           |           |
 | 9      | 123456789 | Juan   | Pérez     | San José  |
 
-La función de hash seleccionada, determine la cantidad de _buckets_ (espacios de almacenamiento) que se utilizarán para almacenar los datos. En este caso, se utilizó el módulo 10 para determinar el índice de almacenamiento.
+La función de hash seleccionada, determina la cantidad de _buckets_ (espacios de almacenamiento) que se utilizarán para almacenar los datos. En este caso, se utilizó el módulo 10 para determinar el índice de almacenamiento.
 
 El reto de las funciones hash es generar un índice único para cada llave. Si dos llaves generan el mismo índice, se produce una colisión. Las colisiones se pueden resolver de diferentes formas:
 
 - **Separate chaining**: Cada índice de la tabla _hash_ almacena una lista enlazada de elementos que colisionan. Visualmente se puede ver de la sigueinte forma:
 
-<img src="images/hashing-2.png" width="400">
+![](images/hashing-2.png)
 
 - **Open addressing**: Se busca un índice alternativo para almacenar el elemento que colisiona.
 
-## Insertion sort
+## Algoritmos de ordenamiento
+Son algoritmos que reciben una colección de elementos en desorden y la ordenan ascendente o descendentemente. Hay muchos algoritmos, y la razón de su existencia es que cada uno tiene diferentes características de rendimiento.
 
-## Selection sort
+### Ordenamiento por selección
+Este algoritmo es el más sencillo de implementar. Funciona de la siguiente manera:
 
-## Bubble sort
+1. Busca el elemento más pequeño (o el más grande si es orden descendente) en el arreglo.
+2. Intercambia el elemento más pequeño con el primer elemento del arreglo.
+3. Busca el segundo elemento más pequeño en el arreglo.
+4. Intercambia el segundo elemento más pequeño con el segundo elemento del arreglo.
+5. Repite el proceso hasta que el arreglo esté ordenado.
 
-## Quick sort
+Visualmente se puede ver de la siguiente forma:
 
-## Shellsort
+![Ordenamiento por selección](images/04-ordenamiento-y-busqueda/image-00.png)
+
+El arreglo se "divide" en dos arreglos "lógicos":
+
+![División lógica del arreglo](images/04-ordenamiento-y-busqueda/image-01.png)
+
+La implementación en C# es la siguiente:
+
+```csharp
+public static void selectionSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        int temp = arr[minIndex];
+        arr[minIndex] = arr[i];
+        arr[i] = temp;
+    }
+}
+```
+#### Ventajas y desventajas
+| Ventajas | Desventajas |
+|----------|-------------|
+| Es fácil de entender e implementar. | Tiene una complejidad de tiempo O(n^2), lo que lo hace ineficiente para grandes conjuntos de datos. |
+| No requiere memoria adicional significativa. | Siempre realiza el mismo número de comparaciones, independientemente de cómo estén ordenados los datos. |
+| Funciona bien con listas pequeñas. |  |
+
+### Ordenamiento de burbuja
+El algoritmo de burbuja es otro algoritmo de ordenamiento simple. Funciona de la siguiente manera:
+
+1. Compara el primer elemento con el segundo. Si el primer elemento es mayor que el segundo, los intercambia.
+2. Compara el segundo elemento con el tercero. Si el segundo elemento es mayor que el tercero, los intercambia.
+3. Repite el proceso hasta que el arreglo esté ordenado.
+
+Visualmente se puede ver de la siguiente forma:
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-02.png)
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-03.png)
+
+Al final de la primera pasada:
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-04.png)
+
+La implementación en C# es la siguiente:
+
+```csharp
+public static void bubbleSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        for (int j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+```
+#### Ventajas y desventajas
+Igual que el ordenamiento por selección, el ordenamiento de burbuja es fácil de entender e implementar. Sin embargo, tiene una complejidad de tiempo O(n^2), lo que lo hace ineficiente para grandes conjuntos de datos.
+
+### Ordenamiento por inserción (Insertion sort)
+El ordenamiento por inserción es un algoritmo de ordenamiento simple que funciona de la siguiente manera:
+
+1. Comienza con el segundo elemento del arreglo. Este primer elemento se considera parte de la lista "logica" de elementos ordenados. El resto de los elementos se consideran parte de la lista "logica" de elementos desordenados.
+
+2. Se toma cada uno de los elementos de la lista de elementos desordenados y se inserta en la lista de elementos ordenados en la posición correcta, de atrás hacia adelante.
+
+3. La lista de ordenados crece a medida que se insertan los elementos de la lista de desordenados. La lista de desordenados disminuye a medida que se insertan los elementos.
+
+Visualmente se puede ver de la siguiente forma:
+
+![Insertion sort](images/04-ordenamiento-y-busqueda/image-05.png)
+
+#### Implementación
+```csharp
+void sort(int arr[])
+{
+    int n = arr.length;
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;        
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+```
+
+#### Ventajas y desventajas
+El ordenamiento por inserción es un algoritmo de ordenamiento eficiente para listas pequeñas o parcialmente ordenadas. En el peor de los casos degenera a una complejidad de tiempo O(n^2), pero en el mejor de los casos, tiene una complejidad de tiempo O(n).
+
+### Quick sort
+El ordenamiento rápido (Quick sort) es un algoritmo de ordenamiento eficiente y rápido. Sigue los siguientes pasos:
+
+1. _Selección de un elemento como pivote_. Usualmente es el elemento central del arreglo.
+
+2. _Partición del arreglo alrededor del pivote_. Se colocan los elementos menores que el pivote a la izquierda y los elementos mayores a la derecha.
+
+3. _Recursión_. Se aplica el algoritmo de forma recursiva a los subarreglos generados (izquierda y derecha del pivote).
+
+4. _Caso base_. Cuando el subarreglo tiene un solo elemento, se considera ordenado.
+
+Considere el siguiente arreglo:
+
+```java
+| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
+```
+Se selecciona el elemento central como pivote: `0 + (8 - 0) / 2 = 4`, por lo que el pivote es `2`.
+
+```java
+| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
+=================================================
+| i         | i               ^               j |
+|           | i                       j         |
+| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
+|           | i                   j             |
+
+```
+
+
+#### Implementación
+```csharp
+ // Partition function
+static int partition(int[] arr, int low, int high) {
+    
+    // Choose the pivot
+    int pivot = arr[high];
+    
+    // Index of smaller element and indicates 
+    // the right position of pivot found so far
+    int i = low - 1;
+
+    // Traverse arr[low..high] and move all smaller
+    // elements to the left side. Elements from low to 
+    // i are smaller after every iteration
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr, i, j);
+        }
+    }
+    
+    // Move pivot after smaller elements and
+    // return its position
+    swap(arr, i + 1, high);  
+    return i + 1;
+}
+
+// Swap function
+static void swap(int[] arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+// The QuickSort function implementation
+static void quickSort(int[] arr, int low, int high) {
+    if (low < high) {
+        
+        // pi is the partition return index of pivot
+        int pi = partition(arr, low, high);
+
+        // Recursion calls for smaller elements
+        // and greater or equals elements
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+```    
+
+### Shellsort
 
 Fue propuesto por Donald Shell en 1959.
 
@@ -184,7 +359,7 @@ Rendondeando hacia el entero más cercano hacia arriba. Entonces, dado un array 
 
 Dado el siguiente arreglo:
 
-<pre>
+```java
 | Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |  
 | Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
 =================================================
@@ -242,6 +417,8 @@ Dado el siguiente arreglo:
 |           | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 |           |                             ^---^ |
 =================================================
-</pre>
+```
 
-## Radix sort
+### Radix sort
+
+### Merge sort
