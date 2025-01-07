@@ -23,6 +23,7 @@ A = { (1,4), (4,1), (1,5), (5,1), (4,9), (9,4), (5,7),(7,5) (7,9),(9,7) }
 
 
 Un grafo puede  dirigido y no dirigido):
+
 ![Tipos de grafos](images/image-1.png)
 
 - En los dirigidos se muestra la dirección de la relación entre los nodos.
