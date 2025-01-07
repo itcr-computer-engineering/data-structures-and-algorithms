@@ -222,8 +222,90 @@ public static void bubbleSort(int[] arr) {
 Igual que el ordenamiento por selección, el ordenamiento de burbuja es fácil de entender e implementar. Sin embargo, tiene una complejidad de tiempo O(n^2), lo que lo hace ineficiente para grandes conjuntos de datos.
 
 ### Ordenamiento por inserción (Insertion sort)
+El ordenamiento por inserción es un algoritmo de ordenamiento simple que funciona de la siguiente manera:
+
+1. Comienza con el segundo elemento del arreglo. Este primer elemento se considera parte de la lista "logica" de elementos ordenados. El resto de los elementos se consideran parte de la lista "logica" de elementos desordenados.
+
+2. Se toma cada uno de los elementos de la lista de elementos desordenados y se inserta en la lista de elementos ordenados en la posición correcta, de atrás hacia adelante.
+
+3. La lista de ordenados crece a medida que se insertan los elementos de la lista de desordenados. La lista de desordenados disminuye a medida que se insertan los elementos.
+
+Visualmente se puede ver de la siguiente forma:
+
+![Insertion sort](images/04-ordenamiento-y-busqueda/image-05.png)
+
+#### Implementación
+```csharp
+void sort(int arr[])
+{
+    int n = arr.length;
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;        
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+```
+
+#### Ventajas y desventajas
+El ordenamiento por inserción es un algoritmo de ordenamiento eficiente para listas pequeñas o parcialmente ordenadas. En el peor de los casos degenera a una complejidad de tiempo O(n^2), pero en el mejor de los casos, tiene una complejidad de tiempo O(n).
 
 ### Quick sort
+El ordenamiento rápido (Quick sort) es un algoritmo de ordenamiento eficiente y rápido. Funciona de la siguiente manera:
+
+#### Implementación
+```csharp
+ // Partition function
+static int partition(int[] arr, int low, int high) {
+    
+    // Choose the pivot
+    int pivot = arr[high];
+    
+    // Index of smaller element and indicates 
+    // the right position of pivot found so far
+    int i = low - 1;
+
+    // Traverse arr[low..high] and move all smaller
+    // elements to the left side. Elements from low to 
+    // i are smaller after every iteration
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr, i, j);
+        }
+    }
+    
+    // Move pivot after smaller elements and
+    // return its position
+    swap(arr, i + 1, high);  
+    return i + 1;
+}
+
+// Swap function
+static void swap(int[] arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+// The QuickSort function implementation
+static void quickSort(int[] arr, int low, int high) {
+    if (low < high) {
+        
+        // pi is the partition return index of pivot
+        int pi = partition(arr, low, high);
+
+        // Recursion calls for smaller elements
+        // and greater or equals elements
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+```    
 
 ### Shellsort
 
