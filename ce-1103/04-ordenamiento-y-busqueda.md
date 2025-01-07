@@ -179,8 +179,47 @@ public static void selectionSort(int[] arr) {
     }
 }
 ```
+#### Ventajas y desventajas
+| Ventajas | Desventajas |
+|----------|-------------|
+| Es fácil de entender e implementar. | Tiene una complejidad de tiempo O(n^2), lo que lo hace ineficiente para grandes conjuntos de datos. |
+| No requiere memoria adicional significativa. | Siempre realiza el mismo número de comparaciones, independientemente de cómo estén ordenados los datos. |
+| Funciona bien con listas pequeñas. |  |
 
-### Bubble sort
+### Ordenamiento de burbuja
+El algoritmo de burbuja es otro algoritmo de ordenamiento simple. Funciona de la siguiente manera:
+
+1. Compara el primer elemento con el segundo. Si el primer elemento es mayor que el segundo, los intercambia.
+2. Compara el segundo elemento con el tercero. Si el segundo elemento es mayor que el tercero, los intercambia.
+3. Repite el proceso hasta que el arreglo esté ordenado.
+
+Visualmente se puede ver de la siguiente forma:
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-02.png)
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-03.png)
+
+Al final de la primera pasada:
+
+![Bubble sort](images/04-ordenamiento-y-busqueda/image-04.png)
+
+La implementación en C# es la siguiente:
+
+```csharp
+public static void bubbleSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        for (int j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+```
+#### Ventajas y desventajas
+Igual que el ordenamiento por selección, el ordenamiento de burbuja es fácil de entender e implementar. Sin embargo, tiene una complejidad de tiempo O(n^2), lo que lo hace ineficiente para grandes conjuntos de datos.
 
 ### Ordenamiento por inserción (Insertion sort)
 
