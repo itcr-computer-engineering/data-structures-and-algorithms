@@ -474,7 +474,28 @@ void merge(int[] a, int low, int high, int mid) {
     for (i = low; i < k; i++) {
         a[i] = c[i];
     }
-}```
+}
+```
 
-### Radix sort
+### Ordenamiento por Raíz (Radix sort)  
+Es un algoritmo de ordenamiento que ordena los elementos procesando los dígitos individuales. Radix sort puede ser usado para ordenar números enteros, strings, o cualquier otro tipo de datos que puedan ser procesados en dígitos individuales.
 
+Los algoritmos vistos previamente, consideran cada elemento como un todo. Radix sort, por otro lado, considera cada elemento como una secuencia de dígitos. Por ejemplo, para ordenar los números `[170, 45, 75, 90, 802, 24, 2, 66]`, se ordenan primero por el dígito de las unidades, luego por el dígito de las decenas, y así sucesivamente.
+
+Radix significa "raíz" en latín, y se refiere a la base de un sistema numérico. Por ejemplo, en el sistema decimal, la base es 10. En el sistema binario, la base es 2.
+
+#### Ejecución de ejemplo
+
+![](images/04-ordenamiento-y-busqueda/image-08.png)
+
+Nóte que el arreglo intermedio tiene 10 posiciones, una por cada dígito posible de la base 10. Este arreglo contiene el conteo de la aparición de cada dígito en el arreglo original. A este arreglo se le hace un ajuste (se le suma la posición anterior) para obtener la posición final de cada dígito en el arreglo ordenado.
+
+![](images/04-ordenamiento-y-busqueda/image-09.png)
+
+El arreglo ajustado, mapea la posición de cada dígito en el arreglo ordenado. Al mapear, el valor correspondiente del arreglo intermedio se reduce en 1.
+
+![](images/04-ordenamiento-y-busqueda/image-10.png)
+
+En resumen,
+
+![](images/04-ordenamiento-y-busqueda/image-11.png)
