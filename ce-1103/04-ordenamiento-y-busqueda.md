@@ -255,7 +255,35 @@ void sort(int arr[])
 El ordenamiento por inserción es un algoritmo de ordenamiento eficiente para listas pequeñas o parcialmente ordenadas. En el peor de los casos degenera a una complejidad de tiempo O(n^2), pero en el mejor de los casos, tiene una complejidad de tiempo O(n).
 
 ### Quick sort
-El ordenamiento rápido (Quick sort) es un algoritmo de ordenamiento eficiente y rápido. Funciona de la siguiente manera:
+El ordenamiento rápido (Quick sort) es un algoritmo de ordenamiento eficiente y rápido. Sigue los siguientes pasos:
+
+1. _Selección de un elemento como pivote_. Usualmente es el elemento central del arreglo.
+
+2. _Partición del arreglo alrededor del pivote_. Se colocan los elementos menores que el pivote a la izquierda y los elementos mayores a la derecha.
+
+3. _Recursión_. Se aplica el algoritmo de forma recursiva a los subarreglos generados (izquierda y derecha del pivote).
+
+4. _Caso base_. Cuando el subarreglo tiene un solo elemento, se considera ordenado.
+
+Considere el siguiente arreglo:
+
+```java
+| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
+```
+Se selecciona el elemento central como pivote: `0 + (8 - 0) / 2 = 4`, por lo que el pivote es `2`.
+
+```java
+| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
+=================================================
+| i         | i               ^               j |
+|           | i                       j         |
+| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
+|           | i                   j             |
+
+```
+
 
 #### Implementación
 ```csharp
@@ -392,3 +420,5 @@ Dado el siguiente arreglo:
 ```
 
 ### Radix sort
+
+### Merge sort
