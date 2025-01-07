@@ -3,6 +3,8 @@
 ## Algoritmos de búsqueda
 Como lo indica su nombre, permiten buscar un elemento dentro de una colección de datos. La colección puede ser sobre arreglos o listas enlazadas, sin embargo, en este curso se enfocará en arreglos.
 
+Se recomienda este [video](https://www.youtube.com/watch?v=WaNLJf8xzC4) introductorio.
+
 ### Búsqueda lineal
 La búsqueda lineal es el método más sencillo para buscar un elemento en un arreglo (o una lista). Consiste en recorrer el arreglo desde el primer elemento hasta el último, comparando cada elemento con el valor que se busca.
 
@@ -265,75 +267,78 @@ El ordenamiento rápido (Quick sort) es un algoritmo de ordenamiento eficiente y
 
 4. _Caso base_. Cuando el subarreglo tiene un solo elemento, se considera ordenado.
 
-Considere el siguiente arreglo:
+#### Ejecución de ejemplo
 
-```java
-| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| Elementos | 5 | 3 | 8 | 6 | 2 | 7 | 1 | 4 | 9 |
+Por ejemplo, dado el arreglo `[8, 3, 1, 7, 0, 10, 2]`,
+
+```csharp
+[8, 3, 1, 7, 0, 10, 2]
+       Pivote: 7
+[3, 1, 0, 2]   |   7   |   [8, 10]
+
+[3, 1, 0, 2] → Pivote: 0 → [ ] | 0 | [3, 1, 2]
+[3, 1, 2] → Pivote: 1 → [ ] | 1 | [3, 2]
+[3, 2] → Pivote: 2 → [ ] | 2 | [3]
+
+[8, 10] → Pivote: 10 → [8] | 10 | [ ]
+
+Final: [0, 1, 2, 3] | 7 | [8, 10] → [0, 1, 2, 3, 7, 8, 10]
 ```
-Se selecciona el elemento central como pivote: `0 + (8 - 0) / 2 = 4`, por lo que el pivote es `2`.
-
-```java
-| Indices   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
-=================================================
-| i         | i               ^               j |
-|           | i                       j         |
-| Elementos | 5 | 3 | 4 | 6 | 2 | 7 | 1 | 8 | 9 |
-|           | i                   j             |
-
-```
-
 
 #### Implementación
 ```csharp
- // Partition function
-static int partition(int[] arr, int low, int high) {
-    
-    // Choose the pivot
-    int pivot = arr[high];
-    
-    // Index of smaller element and indicates 
-    // the right position of pivot found so far
-    int i = low - 1;
+static void QuickSort(int[] array, int left, int right)
+{
+    if (left < right)
+    {
+        // Obtener el índice del pivote tras la partición
+        int pivotIndex = Partition(array, left, right);
 
-    // Traverse arr[low..high] and move all smaller
-    // elements to the left side. Elements from low to 
-    // i are smaller after every iteration
-    for (int j = low; j <= high - 1; j++) {
-        if (arr[j] < pivot) {
-            i++;
-            swap(arr, i, j);
+        // Aplicar QuickSort recursivamente a las sublistas
+        QuickSort(array, left, pivotIndex - 1);
+        QuickSort(array, pivotIndex + 1, right);
+    }
+}
+
+static int Partition(int[] array, int left, int right)
+{
+    // Elegir el pivote como el elemento central
+    int pivotIndex = left + (right - left) / 2;
+    int pivot = array[pivotIndex];
+
+    // Mover el pivote al final (swap con el último elemento)
+    Swap(array, pivotIndex, right);
+
+    int partitionIndex = left;
+
+    for (int i = left; i < right; i++)
+    {
+        if (array[i] <= pivot)
+        {
+            Swap(array, i, partitionIndex);
+            partitionIndex++;
         }
     }
-    
-    // Move pivot after smaller elements and
-    // return its position
-    swap(arr, i + 1, high);  
-    return i + 1;
+
+    // Mover el pivote a su posición final
+    Swap(array, partitionIndex, right);
+
+    return partitionIndex;
 }
 
-// Swap function
-static void swap(int[] arr, int i, int j) {
-    int temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-}
-
-// The QuickSort function implementation
-static void quickSort(int[] arr, int low, int high) {
-    if (low < high) {
-        
-        // pi is the partition return index of pivot
-        int pi = partition(arr, low, high);
-
-        // Recursion calls for smaller elements
-        // and greater or equals elements
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
-    }
+static void Swap(int[] array, int a, int b)
+{
+    int temp = array[a];
+    array[a] = array[b];
+    array[b] = temp;
 }
 ```    
+#### Recursos adicionales
+Puede aprender más sobre Quick sort en los siguientes enlaces:
+
+- http://me.dt.in.th/page/Quicksort/
+- https://www.geeksforgeeks.org/quick-sort/
+- https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html
 
 ### Shellsort
 
@@ -418,7 +423,58 @@ Dado el siguiente arreglo:
 |           |                             ^---^ |
 =================================================
 ```
+### Ordenamiento por mezcla (Merge sort)
+Es un algorithmo de ordenamiento que sigue el paradigma de dividir y conquistar. Divide el arreglo en dos mitades, ordena las dos mitades de forma recursiva y luego combina las dos mitades ordenadas.
+
+![Merge sort, fase de división](images/04-ordenamiento-y-busqueda/image-06.png)
+
+Luego en la fase de unión,
+
+![Merge sort, fase de unión](images/04-ordenamiento-y-busqueda/image-07.png)
+
+#### Implementación
+```csharp
+void mergeSort(int[] a, int low, int high) {
+   int mid;
+   if (low < high) {
+       mid = (low + high) / 2;
+       mergesort(a, low, mid);
+       mergesort(a, mid + 1, high);
+       merge(a, low, high, mid);
+   }
+   return;
+}
+
+void merge(int[] a, int low, int high, int mid) {
+   int i, j, k, c[50];
+   i = low;
+   k = low;
+   j = mid + 1;
+   while (i <= mid && j <= high) {
+       if (a[i] < a[j]) {
+           c[k] = a[i];
+           k++;
+           i++;
+       } else {
+           c[k] = a[j];
+           k++;
+           j++;
+       }
+   }
+    while (i <= mid) {
+        c[k] = a[i];
+        k++;
+        i++;
+    }
+    while (j <= high) {
+        c[k] = a[j];
+        k++;
+        j++;
+    }
+    for (i = low; i < k; i++) {
+        a[i] = c[i];
+    }
+}```
 
 ### Radix sort
 
-### Merge sort
