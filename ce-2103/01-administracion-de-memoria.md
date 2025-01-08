@@ -1,39 +1,41 @@
 # Administración de Memoria
+La administración de memoria conlleva diferentes ideas según el contexto. En el caso de los sistemas operativos, la administración de memoria se refiere a la gestión de la memoria principal de un sistema informático. En el caso del desarrollo de software, la administración de memoria se refiere a la gestión de la memoria de un programa en ejecución. Para lograr existosamente la segunda, se requiere comprender la primera.
 
-## El rol del Sistema Operativo
-Capa de software que interactúa directamente con el hardware, intermediario entre el hardware que posee una computadora y las aplicaciones de software, así facilitando la gestión de recursos del sistema.
+En este capítulo, se abordarán los conceptos básicos de la administración de memoria en sistemas operativos y se entra en detalle a la administración de memoria en programas en ejecución.
 
-### Funciones
+## Breve introducción a sistemas operativos
+Capa de software que interactúa directamente con el hardware, intermediario entre el hardware que posee una computadora y las aplicaciones de software, facilitando la gestión de recursos del sistema.
 
-#### API para los developers
+### El sistema operativo como API para los developers
 
-API corresponde a las siglas de la palabra _Application Programming Interface_, la cual es una interface para los recursos del hardware. Es utilizado para varias cosas, como por ejemplo API web, API S.O, API class libraries, etc; en nuestro caso, nos interesa el API S.O.
+API corresponde a las siglas de la palabra _Application Programming Interface_, concepto aplicable a varios contextos: API web, API del sistema operativo, API class libraries, etc; en nuestro caso, nos interesa el API del sistema operativo. Sea cual sea el contexto, la idea es la misma: _proveer una capa de abstracción para que los desarrolladores puedan interactuar con un sistema sin necesidad de conocer los detalles de su implementación_.
 
-Un estándar para las API de los S.O es el **posix**. El posix son las siglas de la palabra en inglés _portable operative interface for unix_. Como se mencionó, el posix es un **estándar del IEEE para los APIS del S.O**.
+> Un estándar para las API de los S.O es el **posix**. El posix son las siglas de la palabra en inglés _portable operative interface for unix_. Es un **estándar del IEEE para los APIS del S.O**.
 
-Un ejemplo de API, para archivos es el _pointer_ o _handler_ al archivo:
+Un ejemplo de API por ejemplo para abrir un archivo, se utiliza la función `fopen` que retorna un  _pointer_ o _handler_ al archivo.
+
 `fptr = fopen("archivo.txt")`
 
-#### Administrar los recursos de la máquina.
+### El sistema operativo como administrador de los recursos de la máquina.
+El hardware es complejo. Si no hubiera un ente especializado en la administración de los recursos de la máquina, los desarrolladores tendrían que lidiar con la complejidad del hardware directamente. El sistema operativo se encarga de la administración de los recursos de la máquina, permitiendo a los desarrolladores interactuar con la máquina de forma más sencilla. _El sistema operativo, hace transparentes los recursos de la máquina_.
 
-La idea de estos recursos administrados por el S.O es buscar una transpariencia con los componentes del hardware. La idea es poder interactuar con ellos de forma directa sin la necesidad de usarlos o visualizarlos físicamente, lo cual se vuelve más complejo.
+Los recursos administrados son: 
 
-Ejemplos de estos recursos son los siguientes:
+- CPU
+- Memoria Principal
+- Discos
+- I/O
 
-- Procesos (CPU): Programas en ejecución con recursos asignados.
-- Memoria Principal: RAM (_Random Acces Memory_).
-- Archivos: Discos.
-- I/O (_Input/Output_): Entrada y salida del sistema, como por ejemplo el teclado, mouse, red, entre otros.
+> **Thread vs Process**
+> 
+> Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco. Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**. Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse: registros de procesador, contadores de programas. punteros de pila, páginas de memoria, etc.
+> 
+> Un **thread (hilo)** es un flujo de control dentro de un proceso, y cada hilo tiene su propia pila de llamadas, registros de procesador y estado de ejecución. Multiples hilos comparten el mismo espacio de direcciones de memoria, archivos abiertos, etc. 
 
-Dentro de los procesos, se encuentran los _threads_ (hilos) y los procesos como tal. Los hilos son procesos que se realizan de forma "aparte", siendo tareas muy pequeñas a la cual el procesador pueda dedicarle tiempo. A diferencia de un hilo, un proceso corresponde al programa que se encuentra en "acción".
+## Definición de Administración de Memoria
+Es el conjunto de tareas que realiza el sistema operativo para gestionar la memoria principal de una computadora. La administración de memoria es una parte fundamental de los sistemas operativos modernos, ya que permite a los programas ejecutarse sin tener que preocuparse por la gestión de la memoria.
 
-Respecto a la memoria principal, se tienen las abstracciones de _heap_ y _stack_.
-
-## Definición de Administración de Memoria (ADM)
-
-La administración de memoria viene de la pregunta ¿cómo distribuyo la RAM? Donde estas corresponde a tareas que realia el S.O para distinguir la memoria principal entre los procesos. Incluye la gestión de RAM y disco (memoria virtual).
-
-### ¿Por qué se necesita?
+Algunas de las responsabilidades de la administración de memoria son:
 
 - Asignar/Liberar memoria al inicio/fin de un proceso.
 - Controlar la memoria asignada a un proceso.
@@ -42,76 +44,6 @@ La administración de memoria viene de la pregunta ¿cómo distribuyo la RAM? Do
 
 La idea de controlar la memoria asignada a un proceso, tiene como fin hacer que el mismo tenga un límite y aislamiento, para que así no afecte a otros procesos en la memoria que se estén ejecutando.
 
-Además, al ser disminuida la fragmentación se puede brindar una memoria continua a los procesos (desfragmentación).
-
-A continuación se comparte un par de imágenes para explicar la fragmentación.
-
-![Desfragmentacion.png](https://github.com/devrepox/img/blob/main/Desfragmentacion.PNG?raw=true)
-
-En la imagen anterior se puede visualizar una malla de cuadrados donde cada uno tiene o no tiene una equis dentro, donde cada cuadrado representa un espacio en memoria y cada equis (del mismo color) representa un proceso.
-
-La idea de realizar una desfragmentación en la memoria permite evitar el siguiente tipo de situación:
-
-![Desfragmentacion2.png](https://github.com/devrepox/img/blob/main/Desfragmentacion2.PNG?raw=true)
-
-Si se desea realizar un proceso que requiera tres espacios en memoria, no se podría realizar la ejecución del mismo, ya que requiere los tres espacios de memoria continuos y no "separados".
-
-Así teniendo lo siguiente al realizar la desfragmentación:
-
-![Desfragmentacion2.png](https://github.com/devrepox/img/blob/main/Desfragmentacion3.PNG?raw=true)
-
-Por lo tanto, ahora si se puede realizar el proceso que necesita tres espacios en memoria.
-
-> **Thread vs Process**
-> 
-> *Programa*
-> 
-> Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco.
-> 
-> *Process*
-> 
-> Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**.
-> 
-> Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse
-> 
-> Ejemplos de procesos pueden ser:
-> 
-> 1. Registros de procesador.
-> 2. Contadores de programas.
-> 3. Punteros de pila.
-> 4. Páginas de memoria.
-> 
-> Cabe mencionar que cada proceso tiene su propio espacio de direcciones de memoria, por lo cual no pueden corromper el espacio de memoria de otro proceso.
-> 
-> *Thread*
-> 
-> Un **hilo**, traducido al español, es la unidad de ejecución dentro de un proceso.
-> 
-> Todo proceso tiene al menos un hilo, llamado hilo principal.
-> 
-> Un programa suele tener varios hilos, también llamados subprocesos, y cada hilo tiene su propia pila.
-> 
-> Los hilos dentro de un proceso comparten un espacio de direcciones de memoria, haciendo posible comunicarse entre hilos utilizando ese espacio de memoria compartido.
-> 
-> Sin embargo, un hilo que se comporte mal podría arruinar todo el proceso.
-> 
-> **¿Cómo el sistema operativo ejecuta un proceso o un hilo en un procesador?**
-> 
-> Esto se maneja mediante el **cambio de contexto,** tanto para procesos como hilos**.**
-> 
-> Durante un cambio de contexto, un proceso se desconecta del procesador para que se pueda ejecutar otro proceso.
-> 
-> El sistema operativo almacena los estados del proceso en ejecución actual para que el proceso pueda restaurarse y reanudar la ejecución en un momento posterior.
-> 
-> Luego restaura los estados previamente guardados de un proceso diferente y reanuda la ejecución de ese proceso.
-> 
-> El cambio de proceso es costoso, este implica guardar y cargar registros, cambiar paginas de memoria y actualizar varias estructuras de datos del kernel.
-> 
-> Generalmente es más rápido cambiar de contexto entre hilos que entre procesos, ya que hay menos estados que rastrear, y la principal razón, es que dado que los hilos comparten el mismo espacio de direcciones de memoriam, no hay necesidad de cambiar páginas de memoria virtual, que es una de las operaciones más costosas durante un cambio de contexto.
-> 
-> Existen mecanismos para minimizar el costo de los cambios de contexto, como las fibras y corrutinas, que intercambian complejidad por costos de cambio de contexto aún más bajos. En general, se programan de forma cooperativa, es decir, deben ceder el control para que otros los ejecuten.
-> 
-
 ### Evolución de la Administración de memoria
 
 Los sistemas operativos evolucionan y mejoran la administración, esto con el fin de cumplir con los requerimientos de los clientes finales.
@@ -119,7 +51,7 @@ Por ejemplo:
 
 - Ejecutar varios procesos "a la vez" con un solo CPU el S.O "presta" el CPU por tiempo (QUANTA), cambia contexto y ejecuta otro programa.
 
-### 1^er^ Enfoque: Ninguna Abstracción
+#### 1^er^ Enfoque: Ninguna Abstracción
 
 - Acceso directo a la memoria principal, fisica, sin ninguna abstracción. Direcciones de memoria generadas en tiempo de compilación o carga (se generan de forma estática)
 - Inicialmente no permitía la multiprogramación
@@ -129,7 +61,7 @@ Multiprogramación
 
 - Posteriormente se logra la multiprogramación mediante _static relocation_. El _static recolation_ consiste en que al cargar el programa, se ajustan las direcciones considerando la dirección inicial de donde se carga un programa.
 
-### 2^do^ enfoque: espacios de direcciones
+#### 2^do^ enfoque: espacios de direcciones
 
 - Similar a los números telefónicos: Un bloque de números asignados a ciertas zonas.
 - Cada programa tiene un grupo de direcciones asignadas.
@@ -139,7 +71,7 @@ Multiprogramación
 
 <!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled.jpeg) -->
 
-### 3^er^ enfoque: Memoria virtual
+#### 3^er^ enfoque: Memoria virtual
 
 - Nuevo requerimiento: Ejecutar un programa más grande que la memoria total.
 - Programa requiere de 16GB de RAM, pero tengo 512 MB → Funciona lento, pero funciona.
@@ -163,13 +95,15 @@ Page size = framesize
 
 Solicitud → SWAP
 
-## Memory layout de un programa en C / C++
+
+
+### Memory layout de un programa en C / C++
 
 - El layout depende del lenguaje/compilador que el sistema operativo respeta.
 - No es un bloque contiguo, la estrategia/enfoque de administración de memoria se aplica sobre todo el layout transparentemente.
   <!-- ![](Clase-14-Feb-2024/Memory-Layout.png) -->
 
-## Stack
+### Stack
 
 - Utiliza un stack (estructura de datos) cuya naturaleza es _LIFO_.
 - Cada entrada se llama STACK FRAME.
@@ -178,7 +112,7 @@ Solicitud → SWAP
 
 _Consideraciones importantes:_ - Las variables locales almacenables en el stack deben ser de tamaño conocido al momento de la compilación. Por esta razón, memoria dinámica como listas enlazadas no puede almacenarse en stacks. - El stack es bug-free y amigable.
 
-### Componentes de cada stack frame
+#### Componentes de cada stack frame
 
 - Espacio para las variables locales (automáticas).
 - Número de instrucción donde regresar una vez terminada la función.
@@ -196,9 +130,9 @@ Dado que la función _foo_ hace otra llamada a la función _bar_, se crea otro s
 Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se continúa con la siguiente línea de la función _foo_ que también termina de ejecutarse, entonces, nuevamente, se libera un frame stack y volvemos a _main_ para ejecutar la siguiente instrucción de la misma. Dado que nuevamente es una llamada a _foo_, el ciclo que vimos se repetirá una vez más.
 ![](Clase-14-Feb-2024/Stack-F4.png) -->
 
-## Heap
+### Heap
 
-## Punteros
+### Punteros
 
 - La memoria se puede representar como celdas o filas. 
 
