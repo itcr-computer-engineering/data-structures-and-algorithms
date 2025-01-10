@@ -45,59 +45,61 @@ Algunas de las responsabilidades de la administración de memoria son:
 La idea de controlar la memoria asignada a un proceso, tiene como fin hacer que el mismo tenga un límite y aislamiento, para que así no afecte a otros procesos en la memoria que se estén ejecutando.
 
 ### Evolución de la Administración de memoria
+La memoria ha sido un componente fundamental en las computadoras desde sus inicios y por ende ha necesitado del sistema operativo para administrarla. Conforme los recursos computacionales se adaptan a las necesidades de los usuarios y las prestaciones de hardware, la  administración de memoria se adapta para reducir el _overhead_ y mejorar la eficiencia.
 
-Los sistemas operativos evolucionan y mejoran la administración, esto con el fin de cumplir con los requerimientos de los clientes finales.
-Por ejemplo:
+A continuación se presenta la evolución de la abstracción de la memoria en los sistemas operativos.
 
-- Ejecutar varios procesos "a la vez" con un solo CPU el S.O "presta" el CPU por tiempo (QUANTA), cambia contexto y ejecuta otro programa.
+#### Ninguna abstracción de memoria
 
-#### 1^er^ Enfoque: Ninguna Abstracción
+La abstracción más simple es no tener ninguna. Las computadoras mainframe de los años 60, minicomputadoras de los 70s y computadoras personales en los 80s, no tenían abstracción de memoria. Los programas accedían directamente a la memoria **física**. Un programa con la instrucción `MOV REGISTER1, 1000` en realidad accedía a la dirección de memoria 1000.
 
-- Acceso directo a la memoria principal, fisica, sin ninguna abstracción. Direcciones de memoria generadas en tiempo de compilación o carga (se generan de forma estática)
-- Inicialmente no permitía la multiprogramación
+Había cierta organización de la memoria:
 
-Multiprogramación
-<!-- ![memoria.png](https://github.com/JBB092/Datos-II/blob/main/LayoutMemoria.png?raw=true) -->
+![Organización de la memoria sin abstracción](images/01-administracion-de-memoria/image.png)
 
-- Posteriormente se logra la multiprogramación mediante _static relocation_. El _static recolation_ consiste en que al cargar el programa, se ajustan las direcciones considerando la dirección inicial de donde se carga un programa.
+Bajo estas condiciones, era imposible ejecutar más de un programa a la vez (_multiprogramación_), ya que cada programa accedía directamente a la memoria física. Dos o más programas cargados en memoria, podían afectarse entre sí causando errores en la ejecución. El uso de threads era posible dado que compartían la misma memoria, pero de poco valor.
 
-#### 2^do^ enfoque: espacios de direcciones
+![El problema de la re-ubicación](images/01-administracion-de-memoria/image-01.png)
 
-- Similar a los números telefónicos: Un bloque de números asignados a ciertas zonas.
-- Cada programa tiene un grupo de direcciones asignadas.
-- Requiere cambios en el hardware para “ajustar” las direcciones. En tiempo real.
-- Esta traducción se le conoce como Dynamic Relocation.
-- El programa completo debe caber en el RAM para poder ejecutarse.
+El _swapping_ se introduce como técnica para "pausar" la ejecución de un, guardar su estado en disco y cargar otro programa en memoria. Esta técnica permitió la multiprogramación _a cierto grado_, dado que solo un programa podía estar cargado en memoria en un momento dado. La idea era que mientras un programa estaba esperando por una operación de I/O, otro programa podía ejecutarse.
 
-<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled.jpeg) -->
+La computadora _IBM 360_, introduce una técnica para poder tener dos programas en memoria: _static relocation_. Cuando un programa se cargaba en memoria, se le asignaba una dirección base (la dirección inicial en la que se carga) y se modificaban todas las referencias a memoria para sumarles la dirección base. Esto funcionaba pero claramente no era eficiente puesto que entre más grande fuera el programa, más tarda en cargarse.
 
-#### 3^er^ enfoque: Memoria virtual
+> Multiprogramación
+>
+> Se denomina multiprogramación a una técnica por la que dos o más procesos pueden alojarse en la memoria principal y ser ejecutados concurrentemente por el procesador o CPU. [...] la ejecución de los procesos (o hilos) se va solapando en el tiempo a tal velocidad, que causa la impresión de realizarse en paralelo (simultáneamente)
+> 
+> [...] En los antiguos sistemas monoprogramados, cuando un proceso en ejecución requería hacer uso de un dispositivo de E/S, el procesador quedaba ocioso mientras el proceso permaneciese en espera y no retomara su ejecución 
+> _de Wikipedia_
 
-- Nuevo requerimiento: Ejecutar un programa más grande que la memoria total.
-- Programa requiere de 16GB de RAM, pero tengo 512 MB → Funciona lento, pero funciona.
-- En un sistema operativo de 32 bits un proceso tendrá un espacio de direcciones de ~ 4GB. Si la memoria física son solo 16 B :
+#### Espacios de direcciones
+Constituye una abstracción para la memoria física. Cada programa tiene su propio espacio de direcciones, que va desde 0 a un valor máximo. El sistema operativo se encarga de mapear las direcciones virtuales a direcciones físicas. Dos programas puede ver la dirección `28`, pero en realidad se refieren a direcciones físicas diferentes.
 
-<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%201.jpeg) -->
+Bajo este enfoque, el hardware provee dos registros llamados _base_ y _limite_. Cuando un programa específico se ejecuta, el sistema operativo carga el _base_ y _limite_ con los valores correspondientes al espacio de direcciones del programa. Cada vez que el programa accede a una dirección de memoria, el hardware verifica que la dirección esté dentro del rango permitido por el _base_ y _limite_ y genera la dirección física correspondiente.
 
-- La memoria virtual agrega una capa de indirección que “traduce”. Requiere Hardware especializado, conocido como
+Una limitante de este enfoque es que el programa completo debe caber en la memoria, lo cual es claramente poco práctico para los programas modernos con requerimientos de memoria cada vez más agresivos y que compiten con muchos otros programas ejecutándose concurrentemente.
 
-MMU → Memory Mapping Unit
+> Concurrencia vs Paralelismo
+> 
+> La concurrencia se refiere a la capacidad de un sistema de llevar a cabo múltiples tareas en un mismo periodo de tiempo traslapándose entre sí, pero no implica que se ejecuten a la misma vez. En paralelismo, las tareas se ejecutan al mismo tiempo. Paralelismo implica múltiples núcleos de procesamiento. La concurrencia puede lograrse con un solo núcleo bajo multiprogramación.
 
-<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%202.jpeg) -->
+#### Memoria virtual
+La memoría virtual es la solución para poder ejecutar programas que no caben en la memoria física. La idea básica es que cada programa tiene su propio espacio de direcciones dividido en bloques llamados _páginas_. Cada página es es un rango contiguo de direcciones. 
 
-- El address space del programa se divide en Frames
+Las páginas se mapean a bloques de memoria física llamados _frames_, pero no notas las páginas necesitan estar cargadas. Cuando un programa referencia una página que está cargada en memoria (_page-hit_), el hardware mapea la dirección virtual a la dirección física correspondiente. Si la página no está cargada, el sistema operativo la carga desde el disco a un frame libre en memoria y re-ejecuta la instrucción que causó el fallo de página (_page-fault_).
 
-Page size = framesize
+Entonces, cuando un programa tiene una instrucción `MOV REGISTER1, 1000`, la dirección 1000 es una dirección virtual parte de su espacio de direcciones virtuales.
 
-<!-- ![Untitled](Clase%202%20-%209%202%202024%20bc85ecfa5c4e49f49e41b79383c208ee/Untitled%203.jpeg) -->
+![Funcionamiento del MMU](images/01-administracion-de-memoria/image-02.png)
 
-- Dado que los frames se acaban, se utilizan un algoritmo de reemplazo para quitar el contenido de un frame, guardarlo a disco, y subir la página.
+Como se nota en la imagen anterior, hay hardware especializado, el _Memory Management Unit (MMU)_ que se encarga de mapear las direcciones virtuales a direcciones físicas. El MMU tiene una tabla de páginas que mapea las direcciones virtuales a direcciones físicas. La tabla de páginas se mantiene en memoria y el MMU la consulta cada vez que necesita mapear una dirección virtual a una dirección física.
 
-Solicitud → SWAP
+![Relación entre direcciones virtuales y físicas](images/01-administracion-de-memoria/image-02.png)
 
+El MMU tiene una tabla que lleva el inventario de páginas cargadas y su correspondiente frame. Dicha tabla aloja información estadística sobre las páginas, como la frecuencia de uso, para poder tomar decisiones sobre qué páginas mantener en memoria y cuáles sacar. Dado que los frames son limitados, se utilizan algoritmos de reemplazo de páginas para decidir cuál página sacar de memoria cuando se necesita cargar una nueva y no hay espacio.
 
-
-### Memory layout de un programa en C / C++
+## Administración de memoria a nivel del programa
+ Memory layout de un programa en C / C++
 
 - El layout depende del lenguaje/compilador que el sistema operativo respeta.
 - No es un bloque contiguo, la estrategia/enfoque de administración de memoria se aplica sobre todo el layout transparentemente.
@@ -117,18 +119,6 @@ _Consideraciones importantes:_ - Las variables locales almacenables en el stack 
 - Espacio para las variables locales (automáticas).
 - Número de instrucción donde regresar una vez terminada la función.
 - Espacio para los argumentos y el return value.
-<!-- 
-A continuación un ejemplo del comportamiento de los stack frames a partir del código siguiente:
-![](Clase-14-Feb-2024/Sample-Code.png)
-
-Se crea el stack frame de la función _main_ y se ejecuta la primera instrucción de la misma.
-![](Clase-14-Feb-2024/Stack-F1.png)
-La función _main_ hace una llamada a la función _foo_ así que se crea el stack frame de la función _foo_ y se ejecuta la primera instrucción de la misma.
-![](Clase-14-Feb-2024/Stack-F2.png)
-Dado que la función _foo_ hace otra llamada a la función _bar_, se crea otro stack frame para la función _bar_.
-![](Clase-14-Feb-2024/Stack-F3.png)
-Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se continúa con la siguiente línea de la función _foo_ que también termina de ejecutarse, entonces, nuevamente, se libera un frame stack y volvemos a _main_ para ejecutar la siguiente instrucción de la misma. Dado que nuevamente es una llamada a _foo_, el ciclo que vimos se repetirá una vez más.
-![](Clase-14-Feb-2024/Stack-F4.png) -->
 
 ### Heap
 
@@ -272,3 +262,6 @@ Luego de terminar de ejecutar la función _bar_, se elimina su stack frame y se 
 | 0x06      | Ptr 2 | 0x05 (—> apunta a 20) |
 
 - Dos formas de acceder a la misma memoria.
+
+# Referencias adicionales
+- Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.
