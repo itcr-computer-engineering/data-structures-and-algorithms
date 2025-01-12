@@ -1,12 +1,22 @@
 # Análisis de algoritmos
+En este capítulo se aborda el tema de análisis de algoritmos. Dicho conocimiento es esencial para el diseño de algoritmos eficientes y para la toma de decisiones en el desarrollo de software. La industria ha hecho estandar las entrevistas enfocadas en algoritmos y estructuras de datos junto con análisis de complejidad.
 
-## Definición de algoritmo:
-Conjunto de instrucciones finitas para resolver un problema. Un ejemplo cotidiano puede ser una receta de cocina:
+## Definición de Algoritmo
+Es un procedimiento para cumplir una tarea. Es la idea detrás de un programa. 
+
+> **¿Programa vs Algoritmo?**
+>
+> Un programa es la implementación de un algoritmo en un lenguaje de
+> programación.
+
+Opera sobre un problema bien definido, toma un input y lo transforma en un output deseado. Un ejemplo cotidiano puede ser una receta de cocina:
+
 - Input: Ingredientes
 - Output: Comida
-- Instrucciones: Algoritmo
+- Instrucciones: Algoritm
 
-### Características:
+Las características de un algoritmo son:
+
 - No son ambiguos: cada paso tiene un solo significado
 - Entrada bien definida: Debe ser clara y consistente
 - Salida bien definida: Debe indicar que tipo de output genera
@@ -14,58 +24,58 @@ Conjunto de instrucciones finitas para resolver un problema. Un ejemplo cotidian
 - Factibles: Pueden ser ejecutados con los recursos tecnológicos
   disponibles
 
-> **¿Programa vs Algoritmo?**
->
-> Un programa es la implementación de un algoritmo en un lenguaje de
-> programación.
+Un algoritmo puede ser representado de varias formas:
 
-
-## Representación de un algoritmo:
 - Pseudo código
 - Lenguaje natural
 - Definición formal
 - Diagramas de flujo
 
-### Complejidad:
+![Representación de un algoritmo](images/02-analisis-algoritmos/image-00.png)
 
-- Cantidad de recursos utilizados para resolver una tarea
-  (Tiempo/Memoria/Disco)
+## Análisis de Algoritmos
+En términos simples, analizar un algoritmo es el proceso para determinar la eficiencia de un algoritmo, medida en términos de tiempo y espacio. 
 
-- Complejidad Temporal es la más común seguida por la complejidad
-  especial/memoria
+### ¿Por qué analizar algoritmos?
+Desde los inicios de la computación, se ha buscado determinar la forma óptima de resolver un problema. Charles Babbage observó que:
 
-- Meta: Reducir tiempo y memoria
+>  “As soon as an Analytic Engine exists, it will necessarily guide the future course of the science.Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the shortest time?”
 
-Time complexity: Función del tiempo según el tamaño del imput
+De manera similar y décadas despúes, Turing observó:
 
-F(input) -\> tiempo
+> “It is convenient to have a measure of the amount of work involved in a computing process, even though it be a very crude one. We may count up the number of times that various elementary operations are applied in the whole process”
 
-Tiempo se refiere a la cantidad de comparaciones, Accesos a mem,
-…Operaciones elementales
+Ambos visionarios se referían a la necesidad de determinar la eficiencia de un algoritmo. La realidad es que hay muchos factores que pueden afectar la eficiencia de un algoritmo. Dado que hay familias de algoritmos, analizarlos es una forma objetiva de escoger el más adecuado para un problema dado.
 
-- <u>Space complexity</u>: f(input) -\> memoria usada
+En resumen, podemos concluir que el análisis de algoritmos es importante porque:
 
----
+- Permite predecir comportamiento de un algoritmo y el programa que lo implementa.
+- Es útil para comparar distintos algoritmos para el mismo propósito.
+- Conociendo el comportamiento, podemos optimizar
+- Clasificar el algoritmo según complejidad.
 
-La(s) estructuras(s) de datos usadas en un algoritmo, tienen un efecto
-claro en la complejidad.
+En las siguientes secciones se abordan dos forma de análizar algoritmos: _análisis empírico_ y _análisis teórico_.
 
----
+## Análisis empírico de algoritmos
+El término empírico se refiere a algo que se basa en la experiencia y la observación. En el análisis empírico, se evalúa el desempeño de un algoritmo ejecutándolo, conocido como _benchmarking_. El proceso entonces sería:
 
-## Definición de  Análisis de algoritmos
-Determinar tiempo y espacio requerido para ejecutar un algoritmo. ¿Porqué analizar algoritmos?
+1. Marcar un tiempo de inicio
+1. Ejecutar un programa con un input dado
+1. Marcar el tiempo final
+1. Calcular el tiempo transcurrido
 
-- Predecir comportamiento
+La siguiente tabla resumen las ventajas y desventajas de este enfoque:
 
-- Comparar distintos algoritmos para el mismo propósito.
+| Ventajas | Desventajas |
+| --- | --- |
+| Fácil de entender y calcular | No es independiente de la máquina |
+| No requiere conocimiento matemático avanzado | Requiere ejecutar el programa |
 
-- Optimizar
+Aunque pueda parecer poco científico, el análisis empírico es muy utilizado en la práctica profesional dado a que hay ambientes controladores donde se puede medir el desempeño de un algoritmo. Se utiliza mucho en conjunto con pruebas A/B para identificar mejoras o regresiones en una aplicación.
 
-- Clasificar según complejidad
 
-## Análisis empírico
 
-- Ejecutar un programa para evaluar el desempeño real
+Se utiliza junto con pruebas A/B para identificar mejoras o regresiones en una aplicación.
 
 - Conocido como bench mark
 
@@ -90,9 +100,8 @@ análisis dinámico para encontrar cuellos de botella o secciones de la
 app econ mal rendimiento. Provee una visión completa: CPU, rendering,
 caching.
 
-> Notas adicionales:
-> 
-> El algoritmo es la abstracción del programa
+
+
 
 ### Complejidad:
 
@@ -317,4 +326,8 @@ for (int b : arrayB) {
 
 La complejidad es `O(n) + O(m) = O(n+m)` donde n es el tamaño de arrayA y m es el tamaño de arrayB.
 
-De esto también podemos concluir que hacer dos iteraciones de un mismo array, sería: `O(n) + O(n) = O(2n) = O(n)`
+De esto también podemos concluir que hacer dos iteraciones de un mismo array, 
+sería: `O(n) + O(n) = O(2n) = O(n)`
+
+## Referencias
+Skiena S. 2020. The Algorithm Design Manual. Springer.
