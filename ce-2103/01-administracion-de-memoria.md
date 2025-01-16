@@ -98,12 +98,52 @@ Como se nota en la imagen anterior, hay hardware especializado, el _Memory Manag
 
 El MMU tiene una tabla que lleva el inventario de páginas cargadas y su correspondiente frame. Dicha tabla aloja información estadística sobre las páginas, como la frecuencia de uso, para poder tomar decisiones sobre qué páginas mantener en memoria y cuáles sacar. Dado que los frames son limitados, se utilizan algoritmos de reemplazo de páginas para decidir cuál página sacar de memoria cuando se necesita cargar una nueva y no hay espacio.
 
-## Administración de memoria a nivel del programa
- Memory layout de un programa en C / C++
+## Administración de memoria a nivel de proceso
+Para un proceso (programa en ejecución con recursos asignados), la administración de memoria se refiere a la gestión de la memoria asignada. La abstracción utilizada por el sistema operativo, es transparente para el proceso, el cuál únicamente utiliza los mecanismos disponibles para manupular la memoria.
 
-- El layout depende del lenguaje/compilador que el sistema operativo respeta.
-- No es un bloque contiguo, la estrategia/enfoque de administración de memoria se aplica sobre todo el layout transparentemente.
-  <!-- ![](Clase-14-Feb-2024/Memory-Layout.png) -->
+Dependiendo del lenguaje y compilador, el layout de memoria puede variar. Un programa en C, usualmente tiene el siguiente layout de memoria:
+
+![Layout de memoria de un programa en C](images/01-administracion-de-memoria/image-04.png)
+
+A continuación se describen a mayor detalle cada una de estas partes.
+
+### Text
+Contiene el código **ejecutable**. Usualmente es compartido entre procesos de un mismo programa. Es de solo lectura.
+
+### Initialized Data
+Llamado también el segmento de datos. Contiene las variables **globales y/o estáticas** inicializadas. Es de lectura y escritura. Tiene dos áreas: una para variables read-only y otra para variables read-write. Por ejemplo
+
+```c
+int x = 10; //read-write
+const int y = 20; //read-only
+char s[] = "hola"; //read-write
+
+
+int main() {
+  // Código principal
+}
+```
+> **¿static en C?**
+> Al usarlo sobre variables que están dentro de una función, permite que el valor de las mismas persista entre llamadas Al usarlo sobre funciones o variables de ámbito global, garantiza que dicho elemento sólo exista en la unidad de compilación en la que se encuentre declarado.
+> _fuente: [stackoverflow](https://es.stackoverflow.com/questions/297656/para-que-sirve-static-en-c)_
+
+
+### Uninitialized Data Segment
+Usualmente llamado el segmento bss (block started by symbol). Contiene las variables **globales y/o estáticas** no inicializadas. Es de lectura y escritura. Los datos en este segmento, son inicializados en cero por el compilador antes de que el programa empiece a ejecutarse.
+
+Por ejemplo, 
+
+```c
+int x; //uninitialized
+int y; //uninitialized
+
+int main() {
+  // Código principal
+
+  static int z; //uninitialized
+}
+```
+> Se recomienda leer [este](https://www.geeksforgeeks.org/memory-layout-of-c-program/) artículo de GeeksForGeeks con detalles sumamente relevantes del memory layout 
 
 ### Stack
 
@@ -265,3 +305,4 @@ _Consideraciones importantes:_ - Las variables locales almacenables en el stack 
 
 # Referencias adicionales
 - Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.
+- https://www.geeksforgeeks.org/memory-layout-of-c-program/
