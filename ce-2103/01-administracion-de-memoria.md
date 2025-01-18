@@ -107,10 +107,14 @@ Dependiendo del lenguaje y compilador, el layout de memoria puede variar. Un pro
 
 A continuación se describen a mayor detalle cada una de estas partes.
 
-### Text
+> Se recomienda leer [este](https://www.geeksforgeeks.org/memory-layout-of-c-program/) artículo de GeeksForGeeks con detalles sumamente relevantes del memory layout 
+
+### Secciones del memory layout
+
+#### Text
 Contiene el código **ejecutable**. Usualmente es compartido entre procesos de un mismo programa. Es de solo lectura.
 
-### Initialized Data
+#### Initialized Data
 Llamado también el segmento de datos. Contiene las variables **globales y/o estáticas** inicializadas. Es de lectura y escritura. Tiene dos áreas: una para variables read-only y otra para variables read-write. Por ejemplo
 
 ```c
@@ -128,7 +132,7 @@ int main() {
 > _fuente: [stackoverflow](https://es.stackoverflow.com/questions/297656/para-que-sirve-static-en-c)_
 
 
-### Uninitialized Data Segment
+#### Uninitialized Data Segment
 Usualmente llamado el segmento bss (block started by symbol). Contiene las variables **globales y/o estáticas** no inicializadas. Es de lectura y escritura. Los datos en este segmento, son inicializados en cero por el compilador antes de que el programa empiece a ejecutarse.
 
 Por ejemplo, 
@@ -143,24 +147,75 @@ int main() {
   static int z; //uninitialized
 }
 ```
-> Se recomienda leer [este](https://www.geeksforgeeks.org/memory-layout-of-c-program/) artículo de GeeksForGeeks con detalles sumamente relevantes del memory layout 
+#### Command-line arguments and environment variables
+Esta seccion de la memoria se carga con los argumentos de la línea de comandos y las variables de entorno. Por _argumentos de la línea de comandos_ se entiende los argumentos que se pasan al programa al momento de ejecutarlo. Por ejemplo, `./programa -a -b -c`_. Estos argumentos se pueden acceder programáticamente mediante:
 
-### Stack
+```c
+int main(int argc, char* argv[]) {
+  // argc es el número de argumentos
+  // argv es un arreglo de strings con los argumentos
+  // argv[0] es el nombre del programa
+  // argv[1] es el primer argumento
+  // argv[2] es el segundo argumento
 
-- Utiliza un stack (estructura de datos) cuya naturaleza es _LIFO_.
-- Cada entrada se llama STACK FRAME.
-- Hay un stack frame por cada llamada a una función (Call stack).
-- Al terminar la función se elimina el frame.
+  // Ejemplo
+  printf("El primer argumento es %s\n", argv[1]);
+}
+```
+Las _variables de entorno_ son variables que se definen en el sistema operativo y que pueden ser accedidas por los programas. Cuando se ejecuta un programa en la terminal, se pueden definir variables de entorno. Por ejemplo (en bash), `export MYVAR="Ejemplo de variable"`. Estas variables se pueden acceder programáticamente mediante la variable global `environ`.
 
-_Consideraciones importantes:_ - Las variables locales almacenables en el stack deben ser de tamaño conocido al momento de la compilación. Por esta razón, memoria dinámica como listas enlazadas no puede almacenarse en stacks. - El stack es bug-free y amigable.
+```c
+extern char** environ;
 
-#### Componentes de cada stack frame
+int main() {
+  // Iterar sobre las variables de entorno
+  for (int i = 0; environ[i] != NULL; i++) {
+    printf("%s\n", environ[i]);
+  }
+}
+```
 
-- Espacio para las variables locales (automáticas).
-- Número de instrucción donde regresar una vez terminada la función.
-- Espacio para los argumentos y el return value.
+#### Stack
+Es una sección de la memoria que se utiliza para almacenar las variables locales de las funciones y los argumentos de las mismas. Es de tamaño fijo y se expande y contrae dinámicamente. Utilizar el stack es transparente (e inevitable) para el programador, por lo que el manejo de la memoria es menos propenso a errores.
 
-### Heap
+El stack es _LIFO_ (Last In, First Out). Cada vez que se llama a una función, se crea un _stack frame_ que contiene las variables locales de la función, los argumentos y el _return address_ (la dirección a la que se debe regresar una vez que la función termina). Cuando dicha función termina, el _stack frame_ se elimina (se marca la memoria como libre). Es por tal razón que las variables locales se les llama _automáticas_.
+
+> Las variables locales almacenables en el stack deben ser de tamaño conocido al momento de la compilación. Por esta razón, memoria dinámica como listas enlazadas no puede almacenarse en el stack.
+
+![Visualización del stack (1 de 5) ](images/01-administracion-de-memoria/image-05.png)
+
+![Visualización del stack (2 de 5) ](images/01-administracion-de-memoria/image-06.png)
+
+![Visualización del stack (3 de 5) ](images/01-administracion-de-memoria/image-07.png)
+
+![Visualización del stack (4 de 5) ](images/01-administracion-de-memoria/image-08.png)
+
+![Visualización del stack (5 de 5) ](images/01-administracion-de-memoria/image-09.png)
+
+#### Heap
+Es una sección de la memoria que se utiliza para almacenar datos que no tienen un tamaño conocido al momento de la compilación y cuyo tiempo de vida es controlado por el programador. Por ejemplo, listas enlazadas, árboles, etc. El heap es de tamaño variable y se expande y contrae dinámicamente. El programador es responsable de manipular la memoria en el heap, es decir, asignar, des-asignar y re-dimensionarla.
+
+Para interactuar con la memoria, el programador utiliza funciones como `malloc`, `free`, `realloc`, `calloc` y `new`/`delete` (en C++). Estas funciones conforman el API del heap en C/C++.
+
+> **¿Es posible evitar usar el Heap?**
+>
+> Sí, es posible evitar usar el heap. Sin embargo, esto implica que el programador únicamente podrá utiliza variables de tamaño conocido en tiempo de compilación, limitando la flexibilidad y el alcance de lo que el programa puede realizar.
+
+El siguente código muestra un ejemplo de cómo se puede utilizar el heap en C:
+
+![Visualización del heap (1 de 4) ](images/01-administracion-de-memoria/image-10.png)
+
+![Visualización del heap (2 de 4) ](images/01-administracion-de-memoria/image-11.png)
+
+![Visualización del heap (3 de 4) ](images/01-administracion-de-memoria/image-12.png)
+
+![Visualización del heap (4 de 4) ](images/01-administracion-de-memoria/image-13.png)
+
+> **¿Qué pasa si no se libera la memoria en el heap?**
+>
+> Si no se libera la memoria en el heap, se produce una fuga de memoria (_memory leak_). Esto significa que la memoria asignada al programa no se libera y se pierde. Con el tiempo, el programa puede quedarse sin memoria y fallar.
+
+En los ejemplos de código anteriores se utilizan punteros, por ejemplo `int* age = malloc(sizeof(int))`. En la siguiente sección se abordarán los punteros en mayor detalle.
 
 ### Punteros
 
