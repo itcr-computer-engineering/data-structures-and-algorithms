@@ -44,12 +44,15 @@ Algunas de las responsabilidades de la administración de memoria son:
 
 La idea de controlar la memoria asignada a un proceso, tiene como fin hacer que el mismo tenga un límite y aislamiento, para que así no afecte a otros procesos en la memoria que se estén ejecutando.
 
-### Evolución de la Administración de memoria
+### El espacio de direcciones
+//PENDIENTE
+
+## Evolución de la Administración de memoria
 La memoria ha sido un componente fundamental en las computadoras desde sus inicios y por ende ha necesitado del sistema operativo para administrarla. Conforme los recursos computacionales se adaptan a las necesidades de los usuarios y las prestaciones de hardware, la  administración de memoria se adapta para reducir el _overhead_ y mejorar la eficiencia.
 
 A continuación se presenta la evolución de la abstracción de la memoria en los sistemas operativos.
 
-#### Ninguna abstracción de memoria
+### Ninguna abstracción de memoria
 
 La abstracción más simple es no tener ninguna. Las computadoras mainframe de los años 60, minicomputadoras de los 70s y computadoras personales en los 80s, no tenían abstracción de memoria. Los programas accedían directamente a la memoria **física**. Un programa con la instrucción `MOV REGISTER1, 1000` en realidad accedía a la dirección de memoria 1000.
 
@@ -72,7 +75,7 @@ La computadora _IBM 360_, introduce una técnica para poder tener dos programas 
 > [...] En los antiguos sistemas monoprogramados, cuando un proceso en ejecución requería hacer uso de un dispositivo de E/S, el procesador quedaba ocioso mientras el proceso permaneciese en espera y no retomara su ejecución 
 > _de Wikipedia_
 
-#### Espacios de direcciones
+### Espacios de direcciones
 Constituye una abstracción para la memoria física. Cada programa tiene su propio espacio de direcciones, que va desde 0 a un valor máximo. El sistema operativo se encarga de mapear las direcciones virtuales a direcciones físicas. Dos programas puede ver la dirección `28`, pero en realidad se refieren a direcciones físicas diferentes.
 
 Bajo este enfoque, el hardware provee dos registros llamados _base_ y _limite_. Cuando un programa específico se ejecuta, el sistema operativo carga el _base_ y _limite_ con los valores correspondientes al espacio de direcciones del programa. Cada vez que el programa accede a una dirección de memoria, el hardware verifica que la dirección esté dentro del rango permitido por el _base_ y _limite_ y genera la dirección física correspondiente.
@@ -83,7 +86,7 @@ Una limitante de este enfoque es que el programa completo debe caber en la memor
 > 
 > La concurrencia se refiere a la capacidad de un sistema de llevar a cabo múltiples tareas en un mismo periodo de tiempo traslapándose entre sí, pero no implica que se ejecuten a la misma vez. En paralelismo, las tareas se ejecutan al mismo tiempo. Paralelismo implica múltiples núcleos de procesamiento. La concurrencia puede lograrse con un solo núcleo bajo multiprogramación.
 
-#### Memoria virtual
+### Memoria virtual
 La memoría virtual es la solución para poder ejecutar programas que no caben en la memoria física. La idea básica es que cada programa tiene su propio espacio de direcciones dividido en bloques llamados _páginas_. Cada página es es un rango contiguo de direcciones. 
 
 Las páginas se mapean a bloques de memoria física llamados _frames_, pero no notas las páginas necesitan estar cargadas. Cuando un programa referencia una página que está cargada en memoria (_page-hit_), el hardware mapea la dirección virtual a la dirección física correspondiente. Si la página no está cargada, el sistema operativo la carga desde el disco a un frame libre en memoria y re-ejecuta la instrucción que causó el fallo de página (_page-fault_).
@@ -217,51 +220,169 @@ El siguente código muestra un ejemplo de cómo se puede utilizar el heap en C:
 
 En los ejemplos de código anteriores se utilizan punteros, por ejemplo `int* age = malloc(sizeof(int))`. En la siguiente sección se abordarán los punteros en mayor detalle.
 
+#### Heap vs Stack
+| Heap | Stack |
+| ---- | ----- |
+| Memoria dinámica | Memoria estática |
+| Tamaño variable | Tamaño fijo |
+| Programador es responsable de la memoria | Programador no es responsable de la memoria |
+| No es transparente | Transparente |
+| Propenso a errores (bugs introducidos por el programador) | Menos propenso a errores (bugs del sistema operativo) | 
+
 ### Punteros
+Es un tipo de datos especial definido como parte del API del Heap. Al ser un tipo de datos, define un rango posible de valores que puede contener y un conjunto de operaciones que soporta.
 
-- La memoria se puede representar como celdas o filas. 
+- Rango de valores de un puntero: direcciones de memoria
+- Operaciones soportadas: asignación, des-asignación, aritmética de punteros, acceso a memoria
 
-| Direccion | Valor |
-| --------- | ----- |
+Para declarar un puntero se utiliza código similar al siguiente:
 
----
+```c
+int* ptr = malloc(sizeof(int));
+char* cptr = malloc(sizeof(char));
+double* dptr = malloc(sizeof(double));
+MyClass* myptr = new MyClass(); // En C++, dado que C no soporta clases
+void* vptr = malloc(100);
 
-- Una variable es un alias de una dirección
+// Si NULL no estuviera definido, se podría usar 0 o definirlo manualmente
+int* nPtr = NULL;
 
-| Direccion         | Valor | Alias                                             |
-| ----------------- | ----- | ------------------------------------------------- |
-| 0x01<—(int x = 0) | 0     | X—>(Esto solo existe en el contexto del programa) |
+// 0 es el único valor literal que se puede asignar a un puntero en C. 
+// Equivalente a NULL
+int* nPtr2 = 0; 
+int* nPtr3 = nullptr; // En C++ 14
 
----
+```
+Si visualizamos la memoria como una tabla con columnas y filas, para el código anterior tendríamos:
 
-- Para simplificar, podemos representar:
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | ptr    | 0x64  | 4B      | Stack     | Pointer |
+| 0x4       | cptr   | 0x68  | 4B      | Stack     | Pointer |
+| 0x8       | dptr   | 0x69  | 4B      | Stack     | Pointer |
+| 0x12      | myptr  | 0x72  | 4B      | Stack     | Pointer |
+| 0x16      | vptr   | 0x92  | 4B      | Stack     | Pointer |
+| 0x1A      | nPtr   | 0x0   | 4B      | Stack     | Pointer |
+| 0x1E      | nPtr2  | 0x0   | 4B      | Stack     | Pointer |
+| 0x22      | nPtr3  | 0x0   | 4B      | Stack     | Pointer |
+| 0x64      |        | 0     | 4B      | Heap      | int     |
+| 0x68      |        | ''    | 1B      | Heap      | char    |
+| 0x69      |        | 0     | 8B      | Heap      | double  |
+| 0x72      |        | 0     | 20B     | Heap      | MyClass |
+| 0x92      |        | 0     | 100B    | Heap      | ?       |
 
-| Alias | Direccion | Valor | Tipo (Determina el tamaño del bloque de memoria) |
-| ----- | --------- | ----- | ------------------------------------------------ |
+> Las direcciones de la tabla son ficticias y no corresponden a direcciones reales de memoria. Asumimos que el heap empieza en la dirección hexadecimal 64. Asumimos que cada direcciónes de 32 bits, es decir 4 bytes. Asumimos que la clase `MyClass` tiene un tamaño de 20 bytes.
 
----
+Como se puede notar, para acceder a la memoria, se necesita dos componentes: la llamada al API (en este caso malloc) y un puntero para poder acceder a la memoria creada por el API. El puntero siempre estará en el stack, y es una variable automática como cualquier otra. Sin embargo, al liberarse junto con el frame, la memoria en el Heap no se libera.
 
-- Una variable puede ser mas de una dirección de memoria.
-  Int->32 bits->48->4 Dir.
+Una llamada a malloc sin asignar un puntero, por ejemplo 
+```c
+malloc(sizeof(int));
+```
+Resulta en una tabla de memoria como:
 
-- Un puntero es un tipo de datos
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x64      |        | 0     | 4B      | Heap      | int     |
 
-  - Los valores que pueden almacenar son direcciones de memoria.
-  - Soporta ciertos operadores especiales
-  - Tamaño de memoria ocupada por una variable tipo pointer depende de la arquitectura(32bits o 64bits)
+Pero al no haber ningún pointer en el stack que almacene la dirección `0x64`, dicha memoria es inaccesible y se produce una fuga de memoria.
 
-- Declaración
+No hay nada "mágico" con respecto a los punteros. Son simplemente un tipo de dato como cualquier otro. La diferencia es que los punteros contienen direcciones de memoria en lugar de valores.
 
-        Int* ptr = null;
-        char* char ptr = nul;
-        void* ptr = null;
+> ¿Cuál es el proposito de declarar pointers con tipo si todos ocupen el mismo espacio?
+>
+> _Type check_: El compilador pueda hacer type checking. Por ejemplo, si se declara un puntero de tipo `int`, el compilador no permitirá asignarle una dirección de memoria de un `char`. 
+>
+> _Read/Write size_: El compilador sabe cuántos bytes leer o escribir al acceder a la memoria a través de un puntero.
+>
+> _Aritmética de pointers_: El compilador sabe cuántos bytes sumar o restar al hacer aritmética de punteros.
 
-- Cual es el proposito de declarar pointers con tipo si todos ocupen el mismo espacio?
+A continuación se describen las operaciones más comunes con punteros.
 
-* Type check
-* Read/Write size
-* Aritmetica de pointers
+#### Operador Address-Of (&)
+El operador **unario** `Address-Of`, designado por `&` (no confundir con el operador binario `&` para boolean) se utiliza para obtener la dirección de memoria de una variable. Por ejemplo, si se tiene una variable `int x = 10`, se puede obtener la dirección de memoria de `x` mediante `&x`. Se puede aplicar a memoria en el stack o en el heap.
 
+```c
+int x = 10;
+int* ptr = &x;
+
+```
+Para el código anterior, la tabla de memoria sería:
+
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | 10    | 4B      | Stack     | Pointer |
+| 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
+
+Considere sl siguiente código:
+
+```c
+#include <iostream>
+using namespace std;
+ 
+int main()
+{
+ 
+    int x = 20;
+ 
+    // Pointer pointing towards x
+    int* ptr = &x;
+ 
+    cout << "The address of the variable x is :- " << ptr;
+    return 0;
+}
+```
+Dicho programa generará la siguiente salida (espacio de direcciones de 48b):
+
+```
+The address of the variable x is: 0x7fffbf7b3b7c
+```
+
+#### Operador de indirección/de-referencia (*)
+El operador **unario** `de-referencia`, designado por `*` (no confundir con el operador binario `*`), se utiliza para acceder al valor almacenado en la dirección de memoria apuntada por un puntero. Por ejemplo, si se tiene un puntero `int* ptr` que apunta a la dirección de memoria de una variable `x`, se puede acceder al valor de `x` mediante `*ptr`.
+
+Por ejemplo, el siguiente código:
+
+```c
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main()
+{
+ 
+    int x = 3899;
+    int* price;
+ 
+    price = &x;
+ 
+    cout << "The address of x is : " << &x;
+    cout << "The value of price : " << price;
+    cout << "The value stored at the variable pointed by price is: " << (*price);
+    cout << "The value x is: " << x;
+    return 0;
+}
+``` 
+Genera la siguiente salida:
+```
+The address of x is : 0x7fffbf7b3b7c
+The value of price : 0x7fffbf7b3b7c
+The value stored at the variable pointed by price is: 3899
+The value x is: 3899
+```
+
+#### Sharing
+
+- Dos o mas pointers hacia la misma memoria
+
+| Direccion | Alias | Value                 |
+| --------- | ----- | --------------------- |
+| 0x01      | num   | 20                    |
+| 0x05      | Ptr 1 | 0x01 (—> apunta a 20) |
+| 0x06      | Ptr 2 | 0x05 (—> apunta a 20) |
+
+- Dos formas de acceder a la misma memoria.
+
+#### Buenas prácticas al usar punteros
 - Todo puntero debe asignarse con un valor inicial. Un puntero sin inicializar en un bad pointer
 
         Int* ptr; 	:(
@@ -286,29 +407,6 @@ En los ejemplos de código anteriores se utilizan punteros, por ejemplo `int* ag
 
 * Un bad pointer tiene un valor random
 
-### Operador &
-
-- Unario
-- Retorna la dirección de memoria de una variable
-  Int n = 10;
-  Int \* ptr = &n;
-
-| Direccion | Alias | Valor                 |
-| --------- | ----- | --------------------- |
-| 0x01      | n     | 20                    |
-| 0x05      | ptr   | 0x01 (—> apunta a 20) |
-| 0x06      | b     | 20                    |
-
-### Operador\*
-
-- Unario
-- Accede a la dirección de memoria contenida en la variable pointer
-- Lectura—> rvalue
-
-  Escritura—> lvalue
-
-        *ptr = 20; //Lvalue
-        Int b = * ptr; //Rvalue
 
 * Los punteros pueden ser fuerte de bugs. Tener cuidado al usarlos.
 
@@ -340,24 +438,6 @@ En los ejemplos de código anteriores se utilizan punteros, por ejemplo `int* ag
       if(ptr==null) {
        ———>no entra :((
       }
-
-- El operador -> se utiliza en c++
-
-      Person* p = new Person();
-      p->name = “Hola”;
-
-### Sharing
-
-- Dos o mas pointers hacia la misma memoria
-
-| Direccion | Alias | Value                 |
-| --------- | ----- | --------------------- |
-| 0x01      | num   | 20                    |
-| 0x05      | Ptr 1 | 0x01 (—> apunta a 20) |
-| 0x06      | Ptr 2 | 0x05 (—> apunta a 20) |
-
-- Dos formas de acceder a la misma memoria.
-
-# Referencias adicionales
+## Referencias adicionales
 - Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.
 - https://www.geeksforgeeks.org/memory-layout-of-c-program/
