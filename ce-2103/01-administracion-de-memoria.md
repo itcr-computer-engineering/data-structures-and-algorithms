@@ -526,6 +526,47 @@ cout << ref; // Imprime 10
 Son muy útiles para pasar argumentos a funciones por referencia.
 
 #### Paso de parámetros por valor vs por referencia
+En C/C++, los parámetros de una función pueden pasarse por valor o por referencia. Es decir, una función puede recibir una copia del valor de una variable o la dirección de memoria de la variable.
+
+- **Por valor**: Se pasa una copia del valor de la variable. Los cambios a la variable dentro de la función no afectan a la variable original.
+
+```c++
+void foo(int x) {
+  x = 20;
+}
+
+int main() {
+  int x = 10;
+  foo(x);
+  cout << x; // Imprime 10
+}
+```
+- **Por referencia**: Se pasa la dirección de memoria de la variable. Los cambios a la variable dentro de la función afectan a la variable original.
+
+```c++
+void foo(int& x) {
+  x = 20;
+}
+
+int main() {
+  int x = 10;
+  foo(x);
+  cout << x; // Imprime 20
+}
+```
+o bien, en C:
+
+```c
+void foo(int* x) {
+  *x = 20;
+}
+
+int main() {
+  int x = 10;
+  foo(&x);
+  cout << x; // Imprime 20
+}
+```
 
 #### Buenas prácticas al usar punteros
 
@@ -582,6 +623,43 @@ Son muy útiles para pasar argumentos a funciones por referencia.
       cout << *r; // Imprime 60
   }
   ``` 
+
+### Punteros en lenguajes manejados
+
+En lenguajes manejados como Java, C# y Python, los punteros no son accesibles directamente. En su lugar, se utilizan referencias. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. Una referencia no puede ser nula y no puede ser reasignada. Una referencia es simplemente un alias para un objeto.
+
+En Java, por ejemplo, se utilizan referencias para acceder a objetos. Por ejemplo:
+
+```java
+class MyClass {
+  int x;
+}
+
+public class Main {
+  public static void main(String[] args) {
+    MyClass obj = new MyClass();
+    obj.x = 10;
+
+    MyClass obj2 = obj; // Shallow-Copy
+    System.out.println(obj.x); // Imprime 10
+  }
+}
+```
+La mayoría de los lenguajes manejados tienen recolección de basura, lo que significa que no es necesario liberar la memoria manualmente. El recolector de basura se encarga de liberar la memoria automáticamente cuando un objeto ya no es accesible. Utiliza un algoritmo de marcado y barrido para determinar qué objetos son accesibles y cuáles no. Los objetos inaccesibles se marcan para ser liberados. Para determinar si un objeto es accesible, el recolector de basura sigue las referencias a través de los objetos. 
+
+Otros lenguajes modernos como Rust, tienen un sistema de tipos que garantiza la seguridad de la memoria sin necesidad de un recolector de basura. Rust utiliza un sistema de tipos basado en el concepto de _ownership_ y _borrowing_ para garantizar la seguridad de la memoria. Por ejemplo:
+
+```rust
+fn main() {
+    let mut x = 10;
+    let y = &x;
+    let z = &x;
+    println!("{}", x); // Imprime 10
+}
+```
+
+El código anterior no compilará en Rust. Rust garantiza que no haya referencias múltiples a un objeto mutable. En este caso, `x` es mutable, pero `y` y `z` son referencias inmutables. Rust garantiza que no haya referencias múltiples a un objeto mutable para evitar condiciones de carrera y errores de memoria.
+
 ## Referencias adicionales
 - Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.
 - https://www.geeksforgeeks.org/memory-layout-of-c-program/
