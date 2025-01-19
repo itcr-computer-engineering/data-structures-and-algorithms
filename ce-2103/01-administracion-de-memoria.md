@@ -311,7 +311,7 @@ Para el código anterior, la tabla de memoria sería:
 
 | Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
 | --------- | ------ | ----- | ------- | --------- | ------- |
-| 0x0       | x      | 10    | 4B      | Stack     | Pointer |
+| 0x0       | x      | 10    | 4B      | Stack     | int     |
 | 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
 
 Considere sl siguiente código:
@@ -349,7 +349,6 @@ using namespace std;
  
 int main()
 {
- 
     int x = 3899;
     int* price;
  
@@ -370,74 +369,220 @@ The value stored at the variable pointed by price is: 3899
 The value x is: 3899
 ```
 
+El operador de indirección también sirve para modificar el valor de la variable apuntada por el puntero. Por ejemplo, el siguiente código:
+
+```c
+#include <bits/stdc++.h>
+using namespace std;
+
+int main()
+{
+    int x = 3899;
+    int* price;
+
+    price = &x;
+
+    cout << "The value of x is: " << x << endl;
+    cout << "The value of price is: " << *price << endl;
+
+    *price = 1000;
+
+    cout << "The value of x is: " << x << endl;
+    cout << "The value of price is: " << *price << endl;
+
+    return 0;
+}
+```
+Genera la siguiente salida:
+
+```
+The value of x is: 3899
+The value of price is: 3899
+The value of x is: 1000
+The value of price is: 1000
+```
+La tabla de memoria para el código anterior sería inicialmente:
+
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | **3899**  | 4B      | Stack     | int     |
+| 0x4       | price  | 0x0   | 4B      | Stack     | Pointer |
+
+y luego de la instrucción  `*price = 1000;`, 
+
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | **1000**  | 4B      | Stack     | int     |
+| 0x4       | price  | 0x0   | 4B      | Stack     | Pointer |
+
+
 #### Sharing
+Es un concepto que se refiere a la posibilidad de tener dos o más punteros que apunten a la misma dirección de memoria. Por ejemplo, si se tiene un puntero `int* ptr` que apunta a la dirección de memoria de una variable `x`, se puede tener otro puntero `int* ptr2` que apunte a la misma dirección de memoria de `x`.
 
-- Dos o mas pointers hacia la misma memoria
+```c
+int x = 20;
+int* ptr = &x;
+int* ptr2 = ptr;
+```
+La tabla de memoria para el código anterior sería:
 
-| Direccion | Alias | Value                 |
-| --------- | ----- | --------------------- |
-| 0x01      | num   | 20                    |
-| 0x05      | Ptr 1 | 0x01 (—> apunta a 20) |
-| 0x06      | Ptr 2 | 0x05 (—> apunta a 20) |
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | 10    | 4B      | Stack     | int     |
+| 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
+| 0x8       | ptr2   | 0x0   | 4B      | Stack     | Pointer |
 
-- Dos formas de acceder a la misma memoria.
+Mediante cualquiera de los punteros `ptr` o `ptr2`, se puede leer/modificar el valor de `x`. Por ejemplo:
+
+```c
+int x = 20;
+int* ptr = &x;
+int* ptr2 = ptr;
+
+*ptr = 30;
+cout << x; // Imprime 30
+cout << *ptr2; // Imprime 30
+cout << *ptr; // Imprime 30
+```
+
+#### Shallow-copy vs Deep-copy
+_Shallow-copy_ implica copiar el puntero, pero no el valor al que apunta. Por ejemplo, para el siguiente código:
+
+```c
+int x = 20;
+int* ptr = &x;
+int* ptr2 = ptr;
+```
+
+La tabla de memoria para el código anterior sería:
+
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | 10    | 4B      | Stack     | int     |
+| 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
+| 0x8       | ptr2   | 0x0   | 4B      | Stack     | Pointer |
+
+Nótese que solo hay un espacio con el valor 10. Ambos pointers "apuntan" a la misma dirección. Se pueden crear _n_ copias de punteros, pero solo abrá un espacio de memoria al que todos apuntan.
+
+![Shallow copy](images/01-administracion-de-memoria/image-14.png)
+
+Por otro lado, _Deep-copy_ implica copiar el valor al que apunta el puntero. Por ejemplo, el siguiente código:
+
+```c
+int x = 20;
+int* ptr = &x;
+int* ptr2 = malloc(sizeof(int));
+*ptr2 = *ptr;
+```
+En este caso, la tabla de memoria sería:
+
+| Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
+| --------- | ------ | ----- | ------- | --------- | ------- |
+| 0x0       | x      | 20    | 4B      | Stack     | int     |
+| 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
+| 0x8       | ptr2   | 0x64  | 4B      | Stack     | Pointer |
+| 0x64      |        | 20    | 4B      | Heap      | int     |
+
+![Deep copy](images/01-administracion-de-memoria/image-15.png)
+
+Deep-copy puede implicar más trabajo que un simple `malloc`. Por ejemplo, al copiar una estructura de datos a otra, si alguno de los campos de la estructura es un puntero, se debe copiar el valor al que apunta el puntero, no el puntero en sí.
+
+#### Aritmética de punteros
+Permite sumar o restar un número entero a un puntero. La aritmética de punteros es útil para acceder a elementos de un array o para moverse a través de una estructura de datos. Por ejemplo, considere el siguiente código:
+
+```c
+int arr[5] = {10, 20, 30, 40, 50};
+int* ptr = arr;
+
+cout << *ptr; // Imprime 10
+cout << *(ptr + 1); // Imprime 20
+cout << *(ptr + 2); // Imprime 30
+
+```
+En este caso, `ptr` apunta al primer elemento del array `arr`. Al sumar 1 a `ptr`, se mueve al siguiente **elemento** del array. Al sumar 2 a `ptr`, se mueve dos elementos hacia adelante. Nótese que la aritmética de punteros es en términos de elementos, no de bytes. Dado que el pointer tiene un tipo, el compilador sabe cuántos bytes sumar o restar al hacer aritmética de punteros. El array `arr` ocupa 50 bytes contiguos en memoria y cada elemento ocupa 4 bytes. Por lo tanto, `ptr + 1` salta de 4 en 4 bytes.
+
+Para efectos de arrays en C/C++, `arr[i]` es equivalente a `*(arr + i)`. Por ejemplo, el siguiente código:
+
+```c
+int arr[5] = {10, 20, 30, 40, 50};
+
+cout << arr[0]; // Imprime 10
+cout << arr[1]; // Imprime 20
+cout << arr[2]; // Imprime 30
+```
+
+> Dado que acceder cualquier elemento de un array es equivalente a acceder a la dirección de memoria del primer elemento y sumarle un offset, los arrays son muy eficientes en términos de acceso a memoria. Es `O(1)` acceder a cualquier elemento de un array .
+
+#### Tipo referencia (C/C++)
+En C++, se puede utilizar el tipo `&` para definir una referencia a una variable. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. Una referencia no puede ser nula y no puede ser reasignada. Una referencia es simplemente un alias para una variable.
+
+```c++
+int x = 10;
+int& ref = x;
+
+cout << x; // Imprime 10
+cout << ref; // Imprime 10
+```
+Son muy útiles para pasar argumentos a funciones por referencia.
+
+#### Paso de parámetros por valor vs por referencia
 
 #### Buenas prácticas al usar punteros
-- Todo puntero debe asignarse con un valor inicial. Un puntero sin inicializar en un bad pointer
 
-        Int* ptr; 	:(
+- **Inicializar punteros**: Siempre inicializa los punteros. Un puntero no inicializado puede contener cualquier valor (random value) y puede causar errores difíciles de depurar o causar un segmentation fault al de-referenciarlo.
 
-        int* ptr=null; 	:)
+  ```c
+  int* ptr = NULL; // Correcto
+  int* ptr; // Incorrecto
+  ```
 
-        char* ptr=0; 	:)
+- **Verificar punteros antes de usarlos**: Antes de usar un puntero, verifica que no sea NULL.
+  ```c
+  if (ptr != NULL) {
+    // Usar el puntero
+  }
+  ```
 
-        char* ptr=nullptr;—>c++ 14 	:)
+- **Liberar memoria**: Siempre libera la memoria asignada dinámicamente cuando ya no la necesites para evitar fugas de memoria.
 
-        int* ptr;
+- **Evitar punteros colgantes (dangling pointers) **: Después de liberar memoria, establece el puntero a NULL para evitar el uso accidental de punteros colgantes.
+  ```c
+  free(ptr);
+  ptr = NULL;
+  ```
 
-        if(ptr==null) {
+- **Usar `const` cuando sea posible**: Si un puntero no debe modificar los datos a los que apunta, decláralo como `const`.
+  ```c
+  const int* ptr = &x;
+  ```
 
-        //————>nunca entrara
+- **Evitar aritmética de punteros compleja**: La aritmética de punteros puede ser propensa a errores. Evítala si es posible o úsala con cuidado.
+  ```c
+  int arr[10];
+  int* ptr = arr;
+  ptr += 2; // Apunta al tercer elemento del array
+  ```
 
-        } else {
+- **No retornar desde una función, un puntero a una variable del stack**: Si retornas un puntero a una variable del stack, la variable se libera cuando la función termina y el puntero se convierte en un puntero colgante.
 
-        //
+  ```c
+  int* foo() {
+      int temp = 50;
+      return &temp;
+  }
+  void bar() {
+      int temp = 66;
+      return;
+  }
 
-        }
-
-* Un bad pointer tiene un valor random
-
-
-* Los punteros pueden ser fuerte de bugs. Tener cuidado al usarlos.
-
-        int* foo() {
-          int temp = 50;
-          return&temp;
-      }
-      void bar() {
-          int temp = 66;
-          return;
-      }
-      int main() {
-          int* r = foo();
-          cout <<*r; —>50
-          bar();
-          cout <<*r; —>60
-      }				WTF!!!
-
-* Usando el API del heap
-
-        Int ptr= (int*)malloc(size of(int)); ——>Cantidad de Bytes por reservar
-
-* Para liberar memoria se usa free(ptr);
-* La casilla de memoria se marca como libre pero la mem no se libera
-* En c++ se puede usar new/delete
-
-        int* ptr= new int;
-      free(ptr);
-      if(ptr==null) {
-       ———>no entra :((
-      }
+  int main() {
+      int* r = foo();
+      cout << *r; // Imprime 50
+      bar();
+      cout << *r; // Imprime 60
+  }
+  ``` 
 ## Referencias adicionales
 - Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.
 - https://www.geeksforgeeks.org/memory-layout-of-c-program/
+- https://www.geeksforgeeks.org/cpp-pointer-operators/
