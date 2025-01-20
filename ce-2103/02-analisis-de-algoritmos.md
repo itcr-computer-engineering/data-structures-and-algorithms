@@ -34,23 +34,20 @@ Un algoritmo puede ser representado de varias formas:
 ![Representación de un algoritmo](images/02-analisis-algoritmos/image-00.png)
 
 ## Análisis de Algoritmos
-En términos simples, analizar un algoritmo es el proceso para determinar la eficiencia de un algoritmo, medida en términos de tiempo y espacio. 
+En términos simples, analizar un algoritmo es el proceso para determinar la eficiencia de un algoritmo, medida en términos de tiempo y espacio. Esto no es una práctica de tiempos recientes, sino que se remonta a los inicios de la computación. Por ejemplo, Charles Babbage observó que:
 
-### ¿Por qué analizar algoritmos?
-Desde los inicios de la computación, se ha buscado determinar la forma óptima de resolver un problema. Charles Babbage observó que:
-
->  “As soon as an Analytic Engine exists, it will necessarily guide the future course of the science.Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the shortest time?”
+>  “As soon as an Analytic Engine exists, it will necessarily guide the future course of the science. Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the **shortest** time?”
 
 De manera similar y décadas despúes, Turing observó:
 
 > “It is convenient to have a measure of the amount of work involved in a computing process, even though it be a very crude one. We may count up the number of times that various elementary operations are applied in the whole process”
 
-Ambos visionarios se referían a la necesidad de determinar la eficiencia de un algoritmo. La realidad es que hay muchos factores que pueden afectar la eficiencia de un algoritmo. Dado que hay familias de algoritmos, analizarlos es una forma objetiva de escoger el más adecuado para un problema dado.
+Ambos visionarios se referían a la necesidad de determinar la eficiencia de un algoritmo, con el fin de buscar la optimización del mismo o de comparar entre otros algoritmos de la misma "familia".
 
-En resumen, podemos concluir que el análisis de algoritmos es importante porque:
+La realidad es que hay muchos factores que pueden afectar la eficiencia de un algoritmo. Desde aspectos tecnológicos como el hardware, el sistema operativo, el lenguaje de programación, hasta aspectos más abstractos como la complejidad del algoritmo, la cantidad de datos, la pericia del programador, entre otros. Sea cual sea el factor, se desea analizar algoritmos para:
 
-- Permite predecir comportamiento de un algoritmo y el programa que lo implementa.
-- Es útil para comparar distintos algoritmos para el mismo propósito.
+- Predecir comportamiento de un algoritmo y el programa que lo implementa.
+- Comparar distintos algoritmos para el mismo propósito.
 - Conociendo el comportamiento, podemos optimizar
 - Clasificar el algoritmo según complejidad.
 
@@ -63,141 +60,30 @@ El término empírico se refiere a algo que se basa en la experiencia y la obser
 1. Ejecutar un programa con un input dado
 1. Marcar el tiempo final
 1. Calcular el tiempo transcurrido
+1. Ejecutar la prueba varias veces, calcular mediana
 
-La siguiente tabla resumen las ventajas y desventajas de este enfoque:
+Aunque pueda parecer contra-intuitivo, el análisis empírico es muy utilizado en la práctica profesional dado a que hay ambientes controlados donde se puede medir el desempeño de un algoritmo.
 
-| Ventajas | Desventajas |
-| --- | --- |
-| Fácil de entender y calcular | No es independiente de la máquina |
-| No requiere conocimiento matemático avanzado | Requiere ejecutar el programa |
+> _Profiling_ es análisis empírico. Esta una técnica de análisis dinámico para encontrar cuellos de botella o secciones del código de un programa con mal rendimiento. Provee una visión completa: tiempo de ejecución, uso de memoria, uso de CPU, etc.
 
-Aunque pueda parecer poco científico, el análisis empírico es muy utilizado en la práctica profesional dado a que hay ambientes controladores donde se puede medir el desempeño de un algoritmo. Se utiliza mucho en conjunto con pruebas A/B para identificar mejoras o regresiones en una aplicación.
-
-
-
-Se utiliza junto con pruebas A/B para identificar mejoras o regresiones en una aplicación.
-
-- Conocido como bench mark
-
-- Fácil de entender y calcular
-
-- No es independiente del hardware
-
-- Requiere ejecutar el programa
-
-- Muy utilizado en la práctica junto con pruebas A/B para identificar
-  mejoras o regrsiones.
-
-- Se usa un enfoque de percentiles.
-
-<u>Percentil:</u> Indica el % de valores que son inferiores a cierto valor D75,
-P95, P99
-
-Usar promedios puede ser engañoso
-
-Otra forma de análisis empírico es el ´profiling´. Es una técnica de
-análisis dinámico para encontrar cuellos de botella o secciones de la
-app econ mal rendimiento. Provee una visión completa: CPU, rendering,
-caching.
-
-
-
-
-### Complejidad:
-
-Se busca una function que crezca lento respecto al input, o que sea
-constante.
-
-Las estructuras de datos evolucionan con el fin de mejorar el tema de la
-complejidad.
-
-> Big Data:
-> 
-> Surge cuando comienzan a haber fuentes de datos no
-> estructurados.
-> 
-> Datos estructurados:
-> 
-> Tienen una estructura fija (como una tabla de
-> Excel)
-> 
-> Datos no estructurados:
-> 
-> Se encuentran en redes sociales (Mensajes en
-> json, comentarios en publicaciones…)
-> 
-> Es un conjunto de tecnologías que se usan con el fin de tratar
-> cantidades descomunales de datos estructurados y no estructurados.
-
-### Empírico
-
-Algo que no tiene una formación básica. Ejemplo (Un ingeniero
-que aprendió todo por medio de tutoriales de youtube)
-
-En el análisis empírico, se analiza el algoritmo ejecutándolo. Se
-utiliza mucho en la practica.
-
-### <u>A/B testing:</u>
-
-Hay un grupo tratamiento y un grupo de control. Cuando se
-saca un feature, se realiza de manera controlada. A algunos usuarios se
-les muestra y a otros no. Se comparan los datos de la app/pagina en cada
-uno de los grupos y se va liberando a más grupos.
-
-### <u>Percentiles:</u>
-
-Lo que se hace es buscar un umbral y se usa el porcentaje
-para definir para cuantos usuarios es eficiente y a cuantos no.
-
-Análisis de algoritmos es determinar el tiempo y espacio requerido por un algoritmo para ejecutarse. El estudio de algoritmos se remonta al trabajo de _Charles Babbage_ y de _Alan Turing_.
-
-> La máquina analítica de Babbage requería esfuerzo físico para configurarse, es por tanto entendible el interés de Babbage en la eficiencia de los algoritmos, dado que esto reduciría el esfuerzo físico requerido.
-
-
-#### Análisis empírico de algoritmos
-
-Ejecutar un programa paara evaluar el desempeño. Conocido también como _benchmark_.
-
-- Es fácil de entender y calcular
-- No es independiente de la máquina. No es lo mismo utilizar un procesador de hace 10 años que uno actual.
-- Requiere ejecutar el programa.
-
-Se utiliza mucho en la práctica profesional junto con pruebas A/B para evaluar regresiones o mejoras en una determinada pieza de software.
-
-Se utiliza un enfoque de percentil para evaluar el rendimiento de un algoritmo.
-
-> Percentil se refiere a la posición de un valor en un conjunto de datos ordenados. Por ejemplo, el percentil 90 es el valor que es mayor que el 90% de los datos.
-
-Otra forma de análisis empírico es el _profiling_. Es una técnica de análisis dinámico que permite encontrar "cuellos de botella" o secciones de la aplicación que consumen más recursos. Provee una visión muy completa: tiempo de ejecución, uso de memoria, uso de CPU, etc.
+El problema clave de análisis empírico es que depende de la máquina en la que se ejecuta el algoritmo. Por lo tanto, no es posible generalizar los resultados obtenidos. No es lo mismo ejecutar un algoitmo en una máquina de hace 10 años que en una moderna.
 
 ## Análisis teórico de algoritmos
+Si el análisis empírico no provee una solución a prueba del tiempo y plataforma, ¿cómo se puede analizar un algoritmo? La respuesta es el análisis teórico.
 
-Parte de la teoría de complejidad computacional que provee estimación teórica de los recursos (tiempo, espacio) que un algoritmo requiere para ejecutarse.
+El análisis teórico asume un modelo computacional en el que:
 
-- No depende de la máquina
-- No es sencillo de calcular
-- No requiere ejecutar el programa.
-- Se enfoca en algoritmos y no en programas completos.
+- Cada operación simple (+, -, *, /, =, ==, etc) toma tiempo constante. Estas son las operaciones elementales a las que se refería Turing.
 
-El output del análisis teórico es una función que describe el comportamiento del algoritmo. Por ejemplo, si se tiene un algoritmo de ordenamiento, se puede obtener una función que describe el tiempo que el algoritmo requiere para ordenar una lista de tamaño _n_.
+- Los _loops_ y subrutinas/funciones/métodos/procedimientos no son operaciones simples, sino que son la composición de muchas operaciones simples.
 
-- Si la función crece lento para valores grandes de _n_, el algoritmo es eficiente.
+- Cada acceso a memoria toma tiempo constante.
 
-### Enfoques de análisis teórico
+Este modelo es una abstracción de la realidad, pero es perfecto para determinar el comportamiento de un algoritmo. No nos interesan los nano-segundos que toma una operación, sino el comportamiento general del algoritmo, **cual es la tasa de crecimiento de la cantidad de operaciones realizadas conforme el tamaño de la entrada**.
 
-- _Complejidad como función del input_: calcular una función contando las operaciones elementales que el algoritmo realiza.
+![Comparación entre análisis empírico y teórico](images/02-analisis-algoritmos/image-01.png)
 
-> Operaciones fundamentales son aquellas que se realizan en tiempo constante. Por ejemplo, una suma, una multiplicación, una comparación, etc.
-
-- _Comportamiento asintótico_: sin calcular una función exacta, se busca una función que describa el comportamiento del algoritmo para valores grandes de _n_.
-
-#### Complejidad como función del input
-
-Se consideran operaciones fundamentales, es decir, operaciones que se realizan en tiempo constante. Por ejemplo, una suma, una multiplicación, una comparación, etc.
-
-El tiempo que toma cada operación fundamental se designa con una constante T.
-
-Por ejemplo, para el siguiente algoritmo:
+Utilizando este modelo, podemos encontrar una función con base en el tamaño de la entrada. Por ejemplo, para el siguiente algoritmo 
 
 ```java
 int max(int[] array) {
@@ -210,8 +96,7 @@ int max(int[] array) {
     return max;
 }
 ```
-
-La función que describe el tiempo que el algoritmo requiere para encontrar el máximo de un arreglo de tamaño _n_ es:
+la función que describe el tiempo que se requiere para encontrar el máximo de un arreglo de tamaño _n_ es (en el peor caso) sería
 
 ```java
 int max = array[0]; ------------------------> 3T
@@ -220,33 +105,61 @@ for (int i = 1; i < array.length; i++) { ---> T + 2nT
         max = array[i]; --------------------> 2T(n-1)
     }
 }
+return max; --------------------------------> T
+
+f(n) = 6Tn + T
 ```
 
-Por lo tanto, `f(n) = 4T + 6nT`
+Encontrar la función a este nivel de detalle no es práctico. Imagínese el trabajo que implicaría una función como _f(n) = 12754n^2^ + 4353n + 834lg~2~n +13546_. Más adelante veremos un enfoque que nos permite simplicar el trabajo.
 
-#### Análisis asintótico
+### Mejor, peor y caso promedio
+Cuando se analiza un algoritmo, el **mejor caso** es el escenario en el que se realizan la menor cantidad de operaciones. Por ejemplo, en el algoritmo de búsqueda secuencial, el mejor caso es cuando el elemento buscado es el primer elemento del arreglo.
 
+Al enfocarse en el **peor caso**, nos enfocamos en el escenario que causa que la mayor cantidad de operaciones se ejecute. Por ejemplo, en el algoritmo de búsqueda secuencial, el peor caso es cuando el elemento buscado está al final del arreglo.
+
+En el **caso promedio**, tomamos todos los posibles inputs y calculamos el tiempo promedio que tomaría el algoritmo. Se suman todos los valores calculados y se divide entre el total de entradas. Por ejemplo, para el algoritmo de búsqueda secuencial, el caso promedio es cuando el elemento buscado está en cualquier posición del arreglo. 
+
+- Si el elemento está en la posición _i_ se ejecutan _i_ operaciones.
+
+- Promedio de comparaciones es: `(1 + 2 + 3 + ... + n) / n = n(n+1)/2`
+
+- Promedio por elemento: `n(n+1)/2/n = (n+1)/2`
+
+### Análisis asintótico y notaciones comunes
 Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
 
 ![](images/03-analisis-teorico-1.png)
 
 No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente.
 
-Análisis asistóntico busca encontrar la función que represente el crecimiento con respecto a _n_.
+Análisis asistótico busca encontrar la función que represente el crecimiento con respecto a _n_.
 
-**Eliminar las constantes**
+> **¿Y qué hay de los otros términos de la función?**
+>
+> Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocándose en _análisis asintótico_, se descartan los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
+> 
+> `f(n) = O(n)`
+> 
+> Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
+> 
+> `O(nˆ2 + n) => O(nˆ2)`
+> 
+> `O(n + log(n)) => O(n)`
+> 
+> `O(5 * 2ˆn + 100nˆ2) => O(2ˆn)`
 
-Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Análisis asintótico elimina los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
+Por ejemplo, considere el siguiente algoritmo:
 
-`f(n) = O(n)`
+```java
+for (int i = 0; i < vector.length(); i++) {
+    foo(vector[i]); //Suponga que foo es tiempo constante
+}
+```
 
-Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
+La gráfica de este algoritmo sería:
 
-`O(nˆ2 + n) => O(nˆ2)`
 
-`O(n + log(n)) => O(n)`
 
-`O(5 * 2ˆn + 100nˆ2) => O(2ˆn)`
 
 ### Big O, Big Theta, Big Omega
 
@@ -330,4 +243,5 @@ De esto también podemos concluir que hacer dos iteraciones de un mismo array,
 sería: `O(n) + O(n) = O(2n) = O(n)`
 
 ## Referencias
-Skiena S. 2020. The Algorithm Design Manual. Springer.
+- Skiena S. 2020. The Algorithm Design Manual. Springer.
+- https://www.geeksforgeeks.org/what-is-algorithm-and-why-analysis-of-it-is-important/
