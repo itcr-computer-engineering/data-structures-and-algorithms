@@ -309,7 +309,7 @@ La complejidad es `O(log(n))`. En cada iteración, _i_ se divide por 2. ¿Cómo 
 - En la segunda iteración, _i_ es _n/2_
 - En la tercera iteración, _i_ es _n/4_
 
-En general, _i_ es _n/2^k^_ en la _k_-ésima iteración. La complejidad es `O(log(n))` porque _k_ es el número de veces que se puede dividir _n_ por 2 hasta llegar a 1.
+En general, _i_ es _n/2^k^_ en la _k_-ésima iteración. La complejidad es `O(log2(n))` porque _k_ es el número de veces que se puede dividir _n_ por 2 hasta llegar a 1.
 
 ### Recursión
 Para la recursión no hay una regla general, dado que depende de lo que haga el código. Por ejemplo, para el siguiente código:
@@ -342,10 +342,53 @@ Gráficamente, se puede ver que la cantidad de llamadas se duplica en cada nivel
 
 ![Visualización de recursión](images/02-analisis-algoritmos/image-05.png)
 
+Tabulando los datos anteriores:
+
+| Nivel | # de Nodos |         |
+|-------|------------|---------|
+| 0     | 1          | 2^0     |
+| 1     | 2          | 2^1     |
+| 2     | 4          | 2^2     |
+| 3     | 8          | 2^3     |
+| 4     | 16         | 2^4     |
+
+Por lo tanto, hay `2^(n+1)-1` nodos y la complejidad es `O(2^n)`. En muchos casos, la complejidad recursiva se puede generalizar como `O(ramas^profundidad)`, donde _branches_ es el número de llamadas recursivas y _depth_ es la profundidad de la recursión.
+
+### Más ejemplos
+#### Ejemplo #1
+Para el siguiente código:
+
+```c
+void foo(int[] array) { 
+    int sum = 0; 
+    int product = 1; 
+    for (inti= 0; i < array.length; i++) { 
+        sum += array[i); 
+    } 
+    for (int i= 0; i < array.length; i++) { 
+        product*= array[i]; 
+    } 
+    System.out.println(sum + ", " + product)	
+}
+```
+La complejidad sería `O(n)`. Iterar dos veces el arreglo no importa puesto que sería `O(2n) = O(n)`. 
+
+#### Ejemplo #2
+Para el siguiente código:
+
+```c
+void printUnorderedPairs(int[] array) { 
+    for (int i= 0; i < array.length; i++) { 
+        for (int j = i + 1; j < array.length; j++) { 
+            System.out.println(array[i] + "," + array[j]); 
+        } 
+    }
+}
+```
+Se realizan `(N-1) + (N-2) + ... + 1 = N(N-1)/2` operaciones. La complejidad es `O(n^2)`.
 
 ## Revisitando los algorimos y estructuras de datos
 
-## Ejercicios
 
 ## Referencias
 - Skiena S. 2020. The Algorithm Design Manual. Springer.
