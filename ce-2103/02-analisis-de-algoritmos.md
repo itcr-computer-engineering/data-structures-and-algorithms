@@ -171,27 +171,24 @@ Son notaciones para describir la ejecución de un algoritmo en términos de su c
 #### Big O 
 Describe el límite superior. Por ejemplo O(n^2), O(n), O(2ˆn). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
-Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = O(n^2)`, porque para `c = 3, 3n^2 > f(n)`.
-
-> Si se grafican ambas funciones, se podrá notar claramente como `3n^2 > f(n)`
+`f(n)` es la función que representa el algoritmo con precisión, por ejemplo, `f(n) = 3n^2 - 100n + 6`. `g(n)` es el intento de clasificar nuestra función, por ejemplo, `g(n) = n^2`. La constante que multiplica a `g(n)` la podemos escoger arbitrariamente, por ejemplo, `c = 3`. Si graficamos `g(n) = 3n^2` y `f(n)`, veremos que `3n^2` es siempre mayor que `f(n)`, concluyendo que `f(n) = O(n^2)`.
 
 #### Big Omega 
-Describe el límite inferior. Es decir, el algoritmo tendrá un comportamiento al menos tan lento como este límite. Se define formalmente como `f(n) = Ω(g(n))`, donde `c * g(n)` es un límite inferior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) >= c * g(n)` para todo _n_ mayor que un _n_ dado.
+Describe el límite inferior. Es decir, el algoritmo tendrá un comportamiento al menos tan lento como este límite. Se define formalmente como `f(n) = Omega(g(n))`, donde `c * g(n)` es un límite inferior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) >= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
-Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = Ω(n^2)`, porque para `c = 2, 2n^2 < f(n)` cuando `n > 100`.
+Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = Omega(n^2)`, porque para `c = 2, 2n^2 < f(n)` cuando `n > 100`.
 
 #### Big Theta
-Describe el comportamiento exacto del algoritmo. Es decir, el algoritmo se comporta exactamente como esta función. Es el límite ajustado, _Big O_ y _Big Omega_. Se define formalmente como `f(n) = Θ(g(n))`, donde `c1 * g(n)` es un límite inferior y `c2 * g(n)` es un límite superior para `f(n)`. Es decir, existen constantes _c1_ y _c2_ tal que `c1 * g(n) <= f(n) <= c2 * g(n)` para todo _n_ mayor que un _n_ dado.
+Describe el comportamiento exacto del algoritmo. Es decir, el algoritmo se comporta exactamente como esta función. Es el límite ajustado, _Big O_ y _Big Omega_. Se define formalmente como `f(n) = Theta(g(n))`, donde `c1 * g(n)` es un límite inferior y `c2 * g(n)` es un límite superior para `f(n)`. Es decir, existen constantes _c1_ y _c2_ tal que `c1 * g(n) <= f(n) <= c2 * g(n)` para todo _n_ mayor que un _n_ dado.
 
-De estas notaciones, la más usada es _Big O_
+Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = Theta(n^2)`, porque `O(n^2)` y `Omega(n^2)` aplican..
 
 > El mejor, peor y caso promedio, se puede describir con cualquiera de las notaciones de complejidad asintótica. Es incorrecto que _Big O_ solo se refiere al peor caso, _Big Omega_ es el mejor y _Big Theta_ es el promedio.
 
 ![Visualización de Big O, Big Omega y Big Theta](images/02-analisis-algoritmos/image-04.png)
 
-## Sobre la complejidad espacial
-
-La cantidad de memoria que el algoritmo requiere. Se puede describir con Big-O, Big-Omega y Big-Theta también.
+#### Sobre la complejidad espacial
+Aunque lo visto hasta el momento se enfoca en complejidad en tiempo, la cantidad de memoria que el algoritmo requiere se puede describir con Big-O, Big-Omega y Big-Theta también.
 
 ```c
 int sum(int n) {
@@ -202,9 +199,9 @@ int sum(int n) {
 }
 ```
 
-La complejidad espacial de este algoritmo es O(n) dado que se requiere almacenar _n_ llamadas recursivas en la pila de llamadas. La complejidad temporal es O(n).
+La complejidad espacial de este algoritmo es `O(n)` dado que se requiere almacenar _n_ llamadas recursivas en la pila de llamadas.
 
-### Ejercicio de complejidad espacial
+¿Cuál es la complejidad espacial de este algoritmo?
 
 ```c
 int foo(int n) {
@@ -222,29 +219,133 @@ int bar(int a, int b) {
 
 No hay llamadas anidadas => `O(1)`
 
-## Big-O conocidas
+#### Big-O conocidas
+El siguiente gráfico muestra las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos:
 
-![](images/03-analisis-teorico-2.png)
+![Gráfico de Big-O conocidas](images/03-analisis-teorico-2.png)
 
-## Reglas generales para calcular complejidad espacial con Big-O
+## Determinar la complejidad de un algoritmo
+Para determinar la complejidad de un algoritmo, dependerá del tipo de instrucciones que se utilicen en el código. 
 
-## Sumar o multiplicar complejidades
+### Secuencia de instrucciones
+Para código de la forma:
 
-Si el algoritmo es de la forma: haga x y luego y, entonces es una suma:
+```
+statement 1;
+statement 2;
+...
+statement n;
+```
+El total se calcula sumando la complejidad de cada instrucción: 
 
-```java
-for (int a : arrayA) {
-    // Do something
-}
-for (int b : arrayB) {
-    // Do something
+`complejidad(statement 1) + complejidad(statement 2) + ... + complejidad(statement n)`
+
+### If-Then-Else
+Para código de la forma:
+
+```
+if (condition) {
+    statement 1;
+} else {
+    statement 2;
 }
 ```
 
-La complejidad es `O(n) + O(m) = O(n+m)` donde n es el tamaño de arrayA y m es el tamaño de arrayB.
+La complejidad es `max(complejidad(statement 1), complejidad(statement 2))`
 
-De esto también podemos concluir que hacer dos iteraciones de un mismo array, 
-sería: `O(n) + O(n) = O(2n) = O(n)`
+### Loops
+Para código de la forma:
+
+```
+for (int i = 0; i < n; i++) {
+    statement;
+}
+```
+
+La complejidad es `n * complejidad(statement)`. Asumiento que la complejidad de `statement` es `O(1)`, la complejidad del loop es `O(n)`.
+
+Ahora considere el siguiente código con loops secuenciales:
+
+```
+for (int i = 0; i < n; i++) {
+    statement 1;
+}
+for (int j = 0; j < m; j++) {
+    statement 2;
+}
+```
+
+La complejidad es `O(n + m)`.
+
+### Anidamiento
+Para código de la forma:
+
+```
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+        statement;
+    }
+}
+```
+
+La complejidad es `n * m * complejidad(statement)`. Si ambos loops son de tamaño _n_, la complejidad es `O(n^2)`.
+
+Conforme se anidan más loops, la complejidad crece exponencialmente. Por ejemplo, si se anidan 3 loops, la complejidad es `O(n^3)`.
+
+### Complejidad logarítmica
+Para código de la forma:
+
+```
+int i = n;
+while (i > 0) {
+    statement;
+    i = i / 2;
+}
+```
+
+La complejidad es `O(log(n))`. En cada iteración, _i_ se divide por 2. ¿Cómo se llega a esta conclusión?
+
+- En la primera iteración, _i_ es _n_
+- En la segunda iteración, _i_ es _n/2_
+- En la tercera iteración, _i_ es _n/4_
+
+En general, _i_ es _n/2^k^_ en la _k_-ésima iteración. La complejidad es `O(log(n))` porque _k_ es el número de veces que se puede dividir _n_ por 2 hasta llegar a 1.
+
+### Recursión
+Para la recursión no hay una regla general, dado que depende de lo que haga el código. Por ejemplo, para el siguiente código:
+
+```
+int foo(int n) {
+    if (n <= 0) {
+        return 0;
+    }
+    return n + foo(n-1);
+}
+```
+
+La complejidad es `O(n)`. La función se llama _n_ veces, decrementando _n_ en cada llamada.
+
+Para el siguiente código:
+
+```
+int foo(int n) {
+    if (n <= 0) {
+        return 0;
+    }
+    return n + foo(n-1) + foo(n-1);
+}
+```
+
+La complejidad es `O(2^n)`. En cada llamada, se hacen dos llamadas recursivas. ¿Cómo se llega a esta conclusión?
+
+Gráficamente, se puede ver que la cantidad de llamadas se duplica en cada nivel de la recursión, como se muestra en la siguiente figura:
+
+![Visualización de recursión](images/02-analisis-algoritmos/image-05.png)
+
+
+## Revisitando los algorimos y estructuras de datos
+
+## Ejercicios
 
 ## Referencias
 - Skiena S. 2020. The Algorithm Design Manual. Springer.
