@@ -125,28 +125,30 @@ En el **caso promedio**, tomamos todos los posibles inputs y calculamos el tiemp
 
 - Promedio por elemento: `n(n+1)/2/n = (n+1)/2`
 
+![Comparativa de mejor, peor y caso promedio](images/02-analisis-algoritmos/image-02.png)
+
+El **peor caso** es el que resulta más útil para el análisis de algoritmos. Es el que nos da una idea de la eficiencia del algoritmo en el peor escenario posible. Conociendo lo peor que puede llegar, y siendo este aceptable, podemos asumir que el algoritmo es eficiente.
+
 ### Análisis asintótico y notaciones comunes
 Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiento que ir a Guanacaste sin presas, tarda siempre 3 horas, podríamos tener el siguiente grafico:
 
-![](images/03-analisis-teorico-1.png)
+![Ejemplo cotidiano sobre análisis asintótico](images/03-analisis-teorico-1.png)
 
-No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente.
+No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo (`O(n)`) y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente (`O(3)`).
 
-Análisis asistótico busca encontrar la función que represente el crecimiento con respecto a _n_.
+_Análisis asintótico_ busca encontrar la función que represente el crecimiento con respecto a _n_, sin entrar en detalles abrumadores de la función, es decir, podemos descartar los términos de menor relevancia.
 
-> **¿Y qué hay de los otros términos de la función?**
->
-> Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocándose en _análisis asintótico_, se descartan los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
-> 
-> `f(n) = O(n)`
-> 
-> Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
-> 
-> `O(nˆ2 + n) => O(nˆ2)`
-> 
-> `O(n + log(n)) => O(n)`
-> 
-> `O(5 * 2ˆn + 100nˆ2) => O(2ˆn)`
+Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocándose en _análisis asintótico_, se descartan los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
+ 
+ `f(n) = O(n)`
+ 
+Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
+ 
+ `O(nˆ2 + n) => O(nˆ2)`
+ 
+ `O(n + log(n)) => O(n)`
+ 
+ `O(5 * 2ˆn + 100nˆ2) => O(2ˆn)`
 
 Por ejemplo, considere el siguiente algoritmo:
 
@@ -158,32 +160,34 @@ for (int i = 0; i < vector.length(); i++) {
 
 La gráfica de este algoritmo sería:
 
+![Gráfica de complejidad lineal](images/02-analisis-algoritmos/image-03.png)
 
+En caso que la constante cambie, se la función seguirá siendo lineal. Aunque la pendiente cambien, la tendencia del algoritmo seguirá siendo la misma.
 
-
-### Big O, Big Theta, Big Omega
+### Notación Big O, Big Omega y Big Theta
 
 Son notaciones para describir la ejecución de un algoritmo en términos de su comportamiento asintótico.
 
-- _Big O_: describe el límite suuperior. Por ejemplo O(n^2), O(n), O(2ˆn). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O
+#### Big O 
+Describe el límite superior. Por ejemplo O(n^2), O(n), O(2ˆn). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
-- _Big Omega_: describe el límite inferior. Es decir, el algoritmo tendrá un comportamiento al menos tan lento como este límite.
+Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = O(n^2)`, porque para `c = 3, 3n^2 > f(n)`.
 
-- _Big Theta_: describe el comportamiento exacto del algoritmo. Es decir, el algoritmo se comporta exactamente como esta función. Es el límite ajustado, _Big O_ y _Big Omega_.
+> Si se grafican ambas funciones, se podrá notar claramente como `3n^2 > f(n)`
 
-> De estas notaciones, la más usada es _Big O_
+#### Big Omega 
+Describe el límite inferior. Es decir, el algoritmo tendrá un comportamiento al menos tan lento como este límite. Se define formalmente como `f(n) = Ω(g(n))`, donde `c * g(n)` es un límite inferior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) >= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
-### Mejor, peor y caso esperado/promedio
+Por ejemplo, dada la función `f(n) = 3n^2 - 100n + 6 = Ω(n^2)`, porque para `c = 2, 2n^2 < f(n)` cuando `n > 100`.
 
-Formas de describir la ejecución del algoritmo. Por ejemplo, considerando la búsqueda en una lista enlazada sin ordenar:
+#### Big Theta
+Describe el comportamiento exacto del algoritmo. Es decir, el algoritmo se comporta exactamente como esta función. Es el límite ajustado, _Big O_ y _Big Omega_. Se define formalmente como `f(n) = Θ(g(n))`, donde `c1 * g(n)` es un límite inferior y `c2 * g(n)` es un límite superior para `f(n)`. Es decir, existen constantes _c1_ y _c2_ tal que `c1 * g(n) <= f(n) <= c2 * g(n)` para todo _n_ mayor que un _n_ dado.
 
-- _Mejor caso_: O(1) cuando el elemento buscado ese l primero elemento consultado
-
-- Caso Promedio: O(n) dado que el elemento buscado puede estar en cualquier posición de la lista.
-
-- Caso peor: O(n) cuando el elemento buscado es el último elemento de la lista.
+De estas notaciones, la más usada es _Big O_
 
 > El mejor, peor y caso promedio, se puede describir con cualquiera de las notaciones de complejidad asintótica. Es incorrecto que _Big O_ solo se refiere al peor caso, _Big Omega_ es el mejor y _Big Theta_ es el promedio.
+
+![Visualización de Big O, Big Omega y Big Theta](images/02-analisis-algoritmos/image-04.png)
 
 ## Sobre la complejidad espacial
 
@@ -245,3 +249,4 @@ sería: `O(n) + O(n) = O(2n) = O(n)`
 ## Referencias
 - Skiena S. 2020. The Algorithm Design Manual. Springer.
 - https://www.geeksforgeeks.org/what-is-algorithm-and-why-analysis-of-it-is-important/
+- Laakmann Gayle L. 2020. Cracking the Coding Interview. 6th Edition. CareerCup.
