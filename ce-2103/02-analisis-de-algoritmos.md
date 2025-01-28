@@ -387,8 +387,103 @@ void printUnorderedPairs(int[] array) {
 ```
 Se realizan `(N-1) + (N-2) + ... + 1 = N(N-1)/2` operaciones. La complejidad es `O(n^2)`.
 
-## Revisitando los algorimos y estructuras de datos
+#### Ejemplo #3
+El siguiente código:
+```c
+void printUnorderedPairs(int[] arrayA, int[] arrayB) { 
+    for (inti= 0; i < arrayA.length; i++) { 
+        for (int j = 0; j < arrayB.length; j++) { 
+            if (arrayA[i] < arrayB[j]) { 
+                System.out.println(arrayA[i] + "," + arrayB[j]); 
+            } 
+        } 
+    } 
+} 
+```
+Tiene una complejidad de `O(ab)`, donde _a_ es el tamaño de _arrayA_ y _b_ es el tamaño de _arrayB_.
 
+#### Ejemplo #4
+El siguiente código:
+```c
+void printUnorderedPairs(int[] arrayA, int[] arrayB) { 
+    for (int i= 0; i < arrayA.length; i++) { 
+        for (int j = 0; j < arrayB.length; j++) { 
+            for (int k = 0; k < 100000; k++) { 
+                System.out.println(arrayA[i] + "," + arrayB[j]); 
+            } 
+        } 
+    } 
+} 
+```
+Tiene una complejidad de `O(ab)`, donde _a_ es el tamaño de _arrayA_ y _b_ es el tamaño de _arrayB_. El loop interno no afecta la complejidad dado que es `O(100000)`.
+
+#### Ejemplo #4
+```c
+void reverse(int[] array) { 
+    for (int i= 0; i <array.length/ 2; i++) { 
+        int other= array.length - i - 1; 
+        int temp= array[i]; 
+        array[i] = array[other]; 
+        array[other] = temp; 
+    } 
+}
+```
+En este caso, se recorre solo la mitad del arreglo. La complejidad es `O(n/2) = O(n)`.
+
+#### Ejemplo #5
+Para sumar todos los nodos de un BST:
+
+```c	
+int sum(Node node) { 
+    if (node == null) { 
+        return 0; 
+    } 
+    return sum(node.left) + node.value + sum(node.right); 
+}
+```
+Dado que se recorren todos los nodos del árbol, la complejidad es `O(n)`.
+
+#### Ejemplo #6
+```c
+boolean isPrime(int n) { 
+    for (int x = 2; x <= sqrt(n); x++) { 
+        if (n % X == 0) { 
+            return false; 
+        } 
+    } 
+    return true; 
+} 
+```
+La complejidad es `O(sqrt(n))`.
+
+#### Ejemplo #7
+```c
+int fib(int n) { 
+    if (n <= 0) return 0; 
+    else if (n == 1) return 1; 
+    return fib(n - 1) + fib(n - 2); 
+} 
+```
+La complejidad es `O(2^n)`.
+
+#### Ejemplo #8
+```c
+int factorial(int n) { 
+    if (n < 0) { 
+        return -1; 
+    } else if (n == 0) {
+        return 1; 
+    } else { 
+        return n * factorial(n - 1); 
+    }
+} 
+```
+La complejidad es `O(n)`. Se recorren _n_ llamadas recursivas.
+
+## Revisitando los algoritmos y estructuras de datos
+El peor caso de algunas estructuras de datos comunes se resume en la siguiente tabla:
+
+![Resumen de complejidad Big O](images/02-analisis-algoritmos/image-06.png)
 
 ## Referencias
 - Skiena S. 2020. The Algorithm Design Manual. Springer.
