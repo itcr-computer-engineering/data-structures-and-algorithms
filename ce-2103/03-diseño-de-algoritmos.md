@@ -1,4 +1,106 @@
 # Diseño de Algoritmos
+En este capítulo se exploran algunos paradigmas de diseño de algoritmos utilizados en muchos de los algoritmos conocidos y utilizados en la actualidad. Analizar estos paradigmas, permitirá utilizar técnicas similares para nuevos problemas de ingeniería de software.
+
+## Divide y conquista
+Divide y conquista es uno de los paradigmas introducidos en muchos de los cursos de programación introductorios. En términos generales, se divide el problema recursivamente en sub-problemas más pequeños, se resuelven de forma recursiva y se combinan las soluciones para obtener la solución final. Cuando la combinación toma menos tiempo que la resolución de los sub-problemas, se obtiene una mejora en la eficiencia.
+
+La **fase de división** incluye:
+
+- Divide el problema en sub-problemas más pequeños
+- Los sub-problemas deben ser de la misma forma que el problema original, pero más pequeños
+- Se divide hasta llegar al caso base
+
+La **fase de conquista** incluye:
+
+- Resolver cada sub-problema individualmente
+- Si el sub-problema es lo suficientemente pequeño, se resuelve de forma directa
+- El objetivo es resolver los sub-problemas independientemente
+
+La **fase de combinación** incluye:
+
+- Combinar las soluciones de los sub-problemas para obtener la solución del problema original
+- Una vez que los sub-problemas se resuelven, se combinan para obtener la solución final
+- El objetivo es obtener la solución del problema original
+
+### Ejemplos de algoritmos de divide y conquista
+#### Merge Sort
+Merge Sort es un algoritmo de ordenamiento que utiliza el paradigma de divide y conquista. La idea es dividir el arreglo en dos mitades, ordenar cada mitad y luego combinar las dos mitades ordenadas.
+
+Visualmente, el algoritmo se ve de la siguiente manera:
+
+![Visualización de MergeSort](./images/03-diseno-algoritmos/image-01.png)
+
+En este algoritmo, en **la fase de división**, se generan `log2(n)` niveles. En la **fase de merge**, combinar cada nivel toma `O(n)` tiempo. Por lo tanto, la complejidad de tiempo de Merge Sort es `O(n log n)`.
+
+#### Búsqueda binaria
+Búsqueda binario, tal y como lo hemos visto en cursos anteriores, es un algoritmo de búsqueda que utiliza el paradigma de divide y conquista. La idea es dividir el arreglo en dos mitades, comparar el elemento con el valor medio y decidir en qué mitad continuar la búsqueda.
+
+```c
+ int binary_search(item_type s[], item_type key, int low, int high) {
+    int middle;
+    if (low > high) {
+        return (-1);
+     }
+    middle = (low + high) /2;
+    if (s[middle] == key) {
+       return(middle);
+    }
+    if (s[middle] > key) {
+        return(binary_search(s, key, low, middle-1));
+    } else {
+        return(binary_search(s, key, middle +1, high));
+    }
+ }
+ ```
+La complejidad de tiempo de la búsqueda binaria es `O(log n)`. En cada paso, el tamaño del problema se reduce a la mitad y no hay necesidad de mezclar los resultados.
+
+#### Encontrar el máximo de un arreglo
+Para encontrar el máximo de un arreglo, la solución trivial sería recorrer el arreglo y comparar cada elemento con el máximo actual. La complejidad de tiempo de esta solución es `O(n)`:
+
+```c
+int findMax(int[] a, int n)
+{
+    int max = Integer.MIN_VALUE;
+    for (int i = 0; i < n; i++)
+    {
+        if (a[i] > max)
+        {
+            max = a[i];
+        }
+    }
+    return max;
+}
+```
+
+Utilizando divide y conquista, se puede resolver de la siguiente manera:
+
+
+```c
+static int findMax(int[] a, int lo, int hi)
+{
+    if (lo > hi) 
+    {
+        return Integer.MIN_VALUE;
+    }
+    if (lo == hi)
+    {
+        return a[lo];
+    }
+    int mid = (lo + hi) / 2;
+    int leftMax = findMax(a, lo, mid);
+    int rightMax = findMax(a, mid + 1, hi);
+    return Math.max(leftMax, rightMax);
+}
+```
+
+La complejidad de tiempo de este algoritmo es `O(n)`. El análisis refleja que aunque sea O(n), realiza menos comparaciones que la solución trivial.
+
+> Investigar: ¿Por qué la complejidad de tiempo de este algoritmo es `O(n)`? ¿Por qué no es `O(log n)`?
+
+#### Paralelismo en divide y conquista
+Computación paralela es una técnica que permite realizar múltiples tareas simultáneamente aprovechando múltiples núcleos de procesamiento. Cada partición del problema se puede asignar a un núcleo de procesamiento, lo que permite reducir el tiempo de ejecución.
+
+> Investigar: ¿Cómo se puede implementar paralelismo en el algoritmo de búsqueda binaria y en _merge sort_?
 
 ## Programación dinámica (DP)
 Aunque tiene el término _programación_ en su nombre, no se refiere a escritura de código fuente. Acuñado por Richard Bellman en los años 50, _programar_ se referiere a _planificar_, es decir, planificar óptimamente procesos de múltiples etapas.
@@ -394,3 +496,6 @@ H2: | 1 | 1 | 1 | 0 | 0 | 0 |
 ### Mutación
 
 Con base en alguna probabilidad determinada, se hace flig a agunos bits aleatorios de cada bit-vector de los hijos generados.
+
+## Referencias
+- https://www.geeksforgeeks.org/introduction-to-divide-and-conquer-algorithm/
