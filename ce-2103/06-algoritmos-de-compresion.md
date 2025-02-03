@@ -49,28 +49,119 @@ El algoritmo de Huffman construye un árbol binario que se utiliza para asignar 
 El proceso que sigue el algoritmo es:
 
 1. Calcular la frequencia de cada símbolo en el archivo.
-2. Crear un nodo hoja para cada símbolo y ordenarlos por frequencia de menor a mayor (de derecha a izquierda).
+2. Crear un nodo hoja para cada símbolo y ordenarlos por frequencia de menor a mayor.
 3. Unir los dos nodos con menor frequencia en un nuevo nodo padre. Este nuevo nodo debe ordenarse en la lista de nodos.
 4. Repetir el paso 3 hasta que quede un solo nodo.
 5. Recorrer el árbol binario asignando 0 a las ramas izquierdas y 1 a las ramas derechas.
 6. Crear la tabla de conversión y comprimir el archivo.
 
-Por ejemplo, si tenemos el siguiente texto `mississippi river`, la tabla de frequencias sería:
+Por ejemplo, si tenemos el siguiente texto `bcaadddccacacac`, cada caracter en ASCII se representa con 8 bits. por lo que ocuparía 120 bits en total (8 * 15). Si aplicamos Huffman, se calculan las frecuencias:
 
 | Símbolo | Frequencia |
 |---------|------------|
-| i       | 5          |
-| s       | 4          |
-| p       | 2          |
-| r       | 2          |
-| v       | 1          |
-| e       | 1          |
-| m       | 1          |
-| space   | 1          |
+| b       | 1          |
+| c       | 6          |
+| a       | 5          |
+| d       | 3          |
 
-Se crean los siguientes
+Se crea un nodo por cada símbolo y se ordenan por frequencia:
 
+`(b, 1), (d, 3), (a, 5), (c, 6)`
 
+Se forma el árbol agrupando siempre los nodos menores:
+
+![Construcción de árbol Huffman. Imágen 1 de 4](./images/06-compresion/image-03.png)
+
+Nótese que el nodo 4, se inserta en el orden correspondiente según frecuencia y se vuelve a aplicar el agrupamiento:
+
+![Construcción de árbol Huffman. Imágen 2 de 4](./images/06-compresion/image-04.png)
+
+Nótese que nodo 9 queda al final dado que tiene la mayor frecuencia total. Se repite el proceso y se obtiene el árbol completo:
+
+![Construcción de árbol Huffman. Imágen 3 de 4](./images/06-compresion/image-05.png)
+
+Se asignan códigos a cada símbolo recorriendo el árbol (O a la izquierda y 1 a la derecha):
+
+![Construcción de árbol Huffman. Imágen 4 de 4](./images/06-compresion/image-06.png)
+
+La tabla de conversión final sería:
+
+| Símbolo | Frequencia | Código |
+|---------|------------|--------|
+| a       | 5          | 11     |
+| b       | 1          | 100    |
+| c       | 6          | 0      |
+| d       | 3          | 101    |
+
+Aplicando la tabla de conversión al texto original, se obtiene la siguiente secuencia de bits:
+
+`1000111110110110100110110110`
+
+Lo que corresponde a 28 bits. 
+
+> El tamaño de la tabla, debe considerarse como parte del archivo comprimido.
+
+Para realizar el proceso inverso y obtener el mensaje original, se sigue el árbol de Huffman y se va recorriendo según los bits de la secuencia. Por ejemplo, se considera la cadena como un _stream_ de datos y caracter por caracter se va recorriendo el árbol hasta llegar a una hoja. Se repite el proceso hasta llegar al final de la secuencia.
+
+Por ejemplo, para los primeros tres caracteres de la cadena comprimida:
+
+![Reconstrucción de la cadena original](./images/06-compresion/image-07.png)
+
+## LZ77
+Desarrollado por Abraham Lempel y Jacob Ziv en 1977, es un algoritmo de compresión sin pérdida que utiliza la repetición de secuencias de datos para reducir el tamaño de los datos. El algoritmo LZ77 utiliza una ventana deslizante para buscar secuencias repetidas en los datos y reemplazarlas por referencias a secuencias anteriores.
+
+El algoritmo funciona de la siguiente manera:
+
+1. Busca la secuencia más larga que coincida con la secuencia que inicia en la posición actual.
+1. Genera una tripleta `(o, l, c)` donde:
+   1. `o` (offset) reprsenta el número de caracteres hacia atrás que se encuentra la secuencia que coincida.
+   1. `l` (length) representa la longitud de la secuencia que coincida.
+   1. `c` (character) representa el siguiente caracter que no coincide con la secuencia.
+1. Se avanza la ventana deslizante y se repite el proceso.
+
+Por ejemplo, para comprimir la cadena `a b a b c b a b a b a a`, el buffer inicial (o diccionario) estará vacío, por lo que no hay ningún _match_ para la primera letra _a_. Se genera la primera trilpleta `(0, 0, a)` dado que no hay coincidencias y el siguiente caracter que "rompe" la secuencia es _a_.
+
+`a [b] a b c b a b a b a a -> (0, 0, a)`
+
+Dado que no hay ningún _match_ con la letra b, 
+
+`a b [a] b c b a b a b a a -> (0, 0, b)`
+
+En la posición actual, se encuentra la secuencia `a b` que coincide con la secuencia que inicia en la posición 0. Por lo que se genera la tripleta `(2, 2, c)`.
+
+`a b a b c [b] a b a b a a -> (2, 2, c)`
+
+Se repite el proceso hasta llegar al final de la cadena.
+
+`a b a b c [b] a b a b a a -> (4, 3, a)`
+
+`a b a b c b a b a [b] a a -> (2, 2, a)`
+
+El resultado de la compresión no requiere una tabla de compresión, sino que sería:
+
+`(0, 0, a) (0, 0, b) (2, 2, c) (4, 3, a) (2, 2, a)`
+
+El proceso de descompresión es muy sencillo:
+
+1. Se toma la tripleta `(o, l, c)` y se copian los `l` caracteres desde la posición `o` en el buffer.   
+1. Se añade el caracter `c` al final del buffer.
+1. Se repote hasta que se acaben las tripletas.
+
+Entonces: 
+
+`(0, 0, a) -> a`
+
+`(0, 0, b) -> ab`
+
+`(2, 2, c) -> ababc`
+
+`(4, 3, a) -> ababcbaba`
+
+`(2, 2, a) -> ababcbababaa`
+
+> Una clara ventaja de LZ77 es que no requiere una pasada inicial por los datos para generar información estadística, sino que se va generando a medida que se avanza en la cadena. Por ejemplo, si se quiere comprimir un archivo grande, se puede considerar como un stream de datos y conforme se va leyendo, se va comprimiendo.
 
 ## Referencias
-https://www.geeksforgeeks.org/what-are-data-compression-techniques/
+- https://www.geeksforgeeks.org/what-are-data-compression-techniques/
+- https://www.programiz.com/dsa/huffman-coding
+- https://hackernoon.com/how-lz77-data-compression-works-yk113te0
