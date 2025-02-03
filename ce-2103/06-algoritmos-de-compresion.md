@@ -165,11 +165,59 @@ Otro ejemplo de la compresión LZ77 sería:
 
 ![Ejemplo de compresión LZ77](./images/06-compresion/image-08.png)
 
+> La tripleta (3, 4, b) tiende a generar confusión. ¿Puede explicar porqué hay 4 coincidencias?
+
 Utilizando un diccionario inicial se tiene el siguiente ejemplo:
 
-![Ejemplo de compresión LZ77 con diccionario](./images/06-compresion/image-08.png)
+![Ejemplo de compresión LZ77 con diccionario](./images/06-compresion/image-09.png)
+
+## LZ78
+LZ78 es una mejora a LZ77 desarrollada por Abraham Lempel y Jacob Ziv en 1978. La principal diferencia entre LZ77 y LZ78 es que LZ78 utiliza un diccionario para almacenar las secuencias repetidas en lugar de una ventana deslizante. La motivación de los autores fue evitar la parametrización requerida en LZ77 para optimizar el desempeño.
+
+LZ78 utiliza una estructura de datos _trie_ para almacenar los prefijos conocidos, tal y como se vió en el [capítulo de estructuras de datos jerárquicas](../ce-1103/03-estructuras-de-datos-jerarquicas.md#el-tda-trie).
+
+Supongamos que se desea comprimir la cadena `a b a b c b a b a b a a` con LZ78. Inicialmente, el trie solo tendrá la raíz que representa el string vacío. Cada vez que se procese un caracter, se buscará en el trie si existe una secuencia que coincida con la secuencia actual. Si no existe, se añade al trie y se genera una nueva secuencia. Si existe, se avanza al siguiente caracter. Cada vez que se agrega un nodo al trie, se genera la tupla `(o, c)i` donde `o` es el índice del nodo padre, `c` es el caracter que no coincide con la secuencia e `i` es el índice del nodo actual.
+
+`a [b] a b c b a b a b a a -> (0, a)1`
+
+Nótese que en este caso, al procesar el caracter `a` no se encuentra en el trie. Se agrega un nodo a partir de la raíz (nodo 0) y se incrementa el índice para el nuevo nodo. Al procesar el nodo `b`, se vuelve a crear un nuevo nodo `b` a partir de la raíz y se genera la tupla `(0, b)2`. 
+
+`a b [a] b c b a b a b a a -> (0, b)2`
+
+Al procesar el caracter `a` a partir de la raíz, se encuentra dicho caracter. Se sigue con el siguiente caracter `b` y no se encuentra dicho caracter a partir de `a`. Se añade un nuevo nodo a partir de `a` y se genera la tupla `(1, b)3`.
+
+`a b a b [c] b a b a b a a -> (1, b)3`
+
+El procesamiento sigue de la siguiente forma:
+
+`a b a b c [b] a b a b a a -> (0,c)4`
+
+`a b a b c b a [b] a b a a -> (2,a)5`
+
+`a b a b c b a b a b [a] a -> (5,b)6`
+
+`a b a b c b a b a b a a -> (1,a)7`
+
+Visualmente, el árbol completo es:
+
+![Árbol de LZ78](./images/06-compresion/image-10.png)
+
+Para descomprimir, simplemente se accede cada tupla y se recorre el nodo hasta encontrar la raíz. Por ejemplo, para el resultado anterior `(0,a)1, (0,b)2, (1,b)3, (0,c)4, (2,a)5, (5,b)6, (1,a)7`:
+
+| Tupla    | Resultado         |
+|----------|-------------------|
+| `(0,a)1` | a                 |
+| `(0,b)2` | b                 |
+| `(1,b)3` | `(0,a)1` + b = ab |
+| `(0,c)4` | c                 |
+| `(2,a)5` | `(0,b)2` + a = ba |
+| `(5,b)6` | `(2,a)5`+ b = bab |
+| `(1,a)7` | `(0,a)1` + a = aa |
+
+El resultado final sería `ababcbababaa`.
 
 ## Referencias
 - https://www.geeksforgeeks.org/what-are-data-compression-techniques/
 - https://www.programiz.com/dsa/huffman-coding
 - https://hackernoon.com/how-lz77-data-compression-works-yk113te0
+- https://hackernoon.com/how-lz78-compression-algorithm-works-x7103tlm
