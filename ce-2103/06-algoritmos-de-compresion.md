@@ -161,6 +161,14 @@ Entonces:
 
 > Una clara ventaja de LZ77 es que no requiere una pasada inicial por los datos para generar información estadística, sino que se va generando a medida que se avanza en la cadena. Por ejemplo, si se quiere comprimir un archivo grande, se puede considerar como un stream de datos y conforme se va leyendo, se va comprimiendo.
 
+Otro ejemplo de la compresión LZ77 sería:
+
+![Ejemplo de compresión LZ77](./images/06-compresion/image-08.png)
+
+Utilizando un diccionario inicial se tiene el siguiente ejemplo:
+
+![Ejemplo de compresión LZ77 con diccionario](./images/06-compresion/image-08.png)
+
 ## Referencias
 - https://www.geeksforgeeks.org/what-are-data-compression-techniques/
 - https://www.programiz.com/dsa/huffman-coding
