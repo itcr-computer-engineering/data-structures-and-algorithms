@@ -24,9 +24,53 @@ Aunque se puede definir modelos matemáticos para medir la distorsión, la perce
 
 Los algoritmos de compresión con pérdida, buscan optimizar la percepción de calidad según los atributos fisio-psicológicos del ser humano. Por ejemplo, en el caso de la compresión de imágenes, la compresión JPEG se basa en la percepción visual humana y elimina los detalles menos perceptibles para el ojo humano. En el caso de la compresión de audio, la compresión MP3 se basa en la percepción auditiva humana y elimina los sonidos menos perceptibles para el oído humano (frequencia del sonido medida en Hz).
 
-> Para aprender más sobre JPEG, vea el video en este [enlace]'(https://www.youtube.com/watch?v=0me3guauqOU&t=1976s).
+> Para aprender más sobre JPEG, vea el video en este [enlace](https://www.youtube.com/watch?v=0me3guauqOU&t=1976s).
 
 ### Compresión sin pérdida (lossless)
+Son algoritmos de compresión que reducen el tamaño de los datos sin perder información. La compresión sin pérdida es reversible, lo que significa que los datos originales se pueden recuperar después de la compresión. Este tipo de compresión se utiliza comúnmente en archivos de texto, documentos y bases de datos.
+
+Generalmente utilizan información estadística para identificar patrones repetitivos en los datos y reemplazarlos por códigos más cortos. Por ejemplo, frequencia de caracteres en un texto o frequencia de colores en una imágen.
+
+Algunos de los algoritmos de compresión sin pérdida más comunes son:
+
+- Huffman
+- LZW (Lempel-Ziv-Welch)
+- LZ77
+- LZ78
+- Run-Length Encoding (RLE)
+- Deflate (utilizado en ZIP)
+- Burrows-Wheeler Transform (BWT)
+
+#### Huffman
+Desarrollado por David A. Huffman en 1952, es un algoritmo de compresión sin pérdida que utiliza códigos de longitud variable para representar datos. Los códigos de longitud variable asignan códigos más cortos a los símbolos más frecuentes y códigos más largos a los símbolos menos frecuentes.
+
+El algoritmo de Huffman construye un árbol binario que se utiliza para asignar códigos a cada símbolo. La tabla de conversión se almacena en el archivo comprimido, puesto que será esencial para poder descomprimir el archivo.
+
+El proceso que sigue el algoritmo es:
+
+1. Calcular la frequencia de cada símbolo en el archivo.
+2. Crear un nodo hoja para cada símbolo y ordenarlos por frequencia de menor a mayor (de derecha a izquierda).
+3. Unir los dos nodos con menor frequencia en un nuevo nodo padre. Este nuevo nodo debe ordenarse en la lista de nodos.
+4. Repetir el paso 3 hasta que quede un solo nodo.
+5. Recorrer el árbol binario asignando 0 a las ramas izquierdas y 1 a las ramas derechas.
+6. Crear la tabla de conversión y comprimir el archivo.
+
+Por ejemplo, si tenemos el siguiente texto `mississippi river`, la tabla de frequencias sería:
+
+| Símbolo | Frequencia |
+|---------|------------|
+| i       | 5          |
+| s       | 4          |
+| p       | 2          |
+| r       | 2          |
+| v       | 1          |
+| e       | 1          |
+| m       | 1          |
+| space   | 1          |
+
+Se crean los siguientes
+
+
 
 ## Referencias
 https://www.geeksforgeeks.org/what-are-data-compression-techniques/
