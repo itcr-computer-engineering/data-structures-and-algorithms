@@ -107,7 +107,7 @@ Por ejemplo, para los primeros tres caracteres de la cadena comprimida:
 
 ![Reconstrucción de la cadena original](./images/06-compresion/image-07.png)
 
-## LZ77
+#### LZ77
 Desarrollado por Abraham Lempel y Jacob Ziv en 1977, es un algoritmo de compresión sin pérdida que utiliza la repetición de secuencias de datos para reducir el tamaño de los datos. El algoritmo LZ77 utiliza una ventana deslizante para buscar secuencias repetidas en los datos y reemplazarlas por referencias a secuencias anteriores.
 
 El algoritmo funciona de la siguiente manera:
@@ -171,7 +171,7 @@ Utilizando un diccionario inicial se tiene el siguiente ejemplo:
 
 ![Ejemplo de compresión LZ77 con diccionario](./images/06-compresion/image-09.png)
 
-## LZ78
+#### LZ78
 LZ78 es una mejora a LZ77 desarrollada por Abraham Lempel y Jacob Ziv en 1978. La principal diferencia entre LZ77 y LZ78 es que LZ78 utiliza un diccionario para almacenar las secuencias repetidas en lugar de una ventana deslizante. La motivación de los autores fue evitar la parametrización requerida en LZ77 para optimizar el desempeño.
 
 LZ78 utiliza una estructura de datos _trie_ para almacenar los prefijos conocidos, tal y como se vió en el [capítulo de estructuras de datos jerárquicas](../ce-1103/03-estructuras-de-datos-jerarquicas.md#el-tda-trie).
@@ -216,8 +216,69 @@ Para descomprimir, simplemente se accede cada tupla y se recorre el nodo hasta e
 
 El resultado final sería `ababcbababaa`.
 
+#### LZW
+El algoritmo LZW (Lempel-Ziv-Welch) es una mejora a LZ78 desarrollada por Terry Welch en 1984. LZW utiliza un diccionario para almacenar las secuencias repetidas y asignarles un código. Es uno de los algoritmos de compresión sin pérdida más utilizados y se utiliza en formatos de archivo como GIF y TIFF.
+
+Utiliza una tabla de códigos, con los primeros 0 a 255 para representar los caracters ASCII. LZW identifica secuencias repetidas y crea nuevos códigos para estas.
+
+El pseudo-código del algoritmo es:
+
+```pseudo
+Initialize table with single character strings
+P = first input character
+WHILE not end of input stream
+    C = next input character    
+    IF P + C is in the string table
+        P = P + C
+    ELSE
+        output the code for P    
+        add P + C to the string table
+        P = C
+END WHILE
+output code for P 
+```
+
+En el siguiente ejemplo, comprimiremos la cadena `a b a c a b a c a` inicializando la tabla solo con los caracteres `a b c` dado que son los únicos presentes en la cadena, esto para efectos de simplicidad didáctica. El resultado de la compresión sería `97 98 97 99 256 258 97` y la tabla generada:
+
+| Índice | Diccionario | Código |
+|--------|-------------|--------|
+| 0      | a           | 97     |
+| 1      | b           | 98     |
+| 2      | c           | 99     |
+| 3      | ab          | 256    |
+| 4      | ba          | 257    |
+| 5      | ac          | 258    |
+| 6      | ca          | 259    |
+| 7      | aba         | 260    |
+| 8      | aca         | 261    |
+
+Paso a paso se realizaría de la siguiente forma:
+
+| Índice                | Explicación      | P  | C  |  P + C | Output                  |
+|--------               |-------------     |--- |--- |--------|--------                 |
+| `[a] b a c a b a c a` | `P+C` está       | '' | a  |   a    |                         |
+| `a [b] a c a b a c a` | `P+C` no está    | a  | b  |   ab   | 97                      |
+| `a b [a] c a b a c a` | `P+C` no está    | b  | a  |   ba   | 97 98                   |
+| `a b a [c] a b a c a` | `P+C` no está    | a  | c  |   ac   | 97 98 97                |
+| `a b a c [a] b a c a` | `P+C` no está    | c  | a  |   ca   | 97 98 97 99             |
+| `a b a c a [b] a c a` | `P+C` está       | a  | b  |   ab   | 97 98 97 99             |
+| `a b a c a b [a] c a` | `P+C` no está    | ab | a  |   aba  | 97 98 97 99 256         |
+| `a b a c a b a [c] a` | `P+C` está       | a  | ac |   ac   | 97 98 97 99 256         |
+| `a b a c a b a c [a]` | `P+C` no está    | ac | a  |   aca  | 97 98 97 99 256 258    |
+| `a b a c a b a c [a]` | Final            | a  |    |        | 97 98 97 99 256 258 97 |
+
+La descompresión se reduce a buscar cada uno de los códigos generados en la tabla y hacer el output del valor en el diccionario:
+
+```
+97 98 97 99 256 258 97` 
+^  ^  ^  ^  ^   ^   ^
+a  b  a  c  ab  ac  a 
+
+```
+
 ## Referencias
 - https://www.geeksforgeeks.org/what-are-data-compression-techniques/
 - https://www.programiz.com/dsa/huffman-coding
 - https://hackernoon.com/how-lz77-data-compression-works-yk113te0
 - https://hackernoon.com/how-lz78-compression-algorithm-works-x7103tlm
+- https://www.geeksforgeeks.org/lzw-lempel-ziv-welch-compression-technique/
