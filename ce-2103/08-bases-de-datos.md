@@ -1,5 +1,10 @@
 # Bases de Datos
-Una **base de datos** es una colección organizada de información estructurada, o datos, almacenada típicamente de manera electrónica en un sistema informático. Está diseñada para permitir el acceso, gestión y actualización de datos de manera eficiente.
+En este capítulo, se introducen conceptos fundamentales de bases de datos relacionales y NoSQL. Dicho conocimiento proveerá una conclusión al tema de almacenamiento externo y funcionará como base para los cursos posteriores centrados en bases de datos.
+
+## Definición de dato y base de datos
+Un **dato** es una representación simbólica (numérica, alfabética, algorítmica, etc.) de un atributo o variable cuantitativa o cualitativa. Los datos describen hechos, entidades o relaciones entre ellos.
+
+Una **base de datos** es una colección de datos, almacenada típicamente de manera electrónica en un sistema informático. Está diseñada para permitir el acceso, gestión y actualización de datos de manera eficiente.
 
 ## Conceptos Clave
 
@@ -10,8 +15,8 @@ Una **base de datos** es una colección organizada de información estructurada,
 ## Tipos de Bases de Datos
 
 1. **Bases de Datos Relacionales**: Organizan los datos en tablas con relaciones predefinidas entre ellas.
-2. **Bases de Datos NoSQL**: Diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados.
-3. **Bases de Datos Orientadas a Objetos**: Almacenan datos como objetos en lugar de en tablas.
+1. **Bases de Datos Orientadas a Objetos**: Almacenan datos como objetos en lugar de en tablas.
+1. **Bases de Datos NoSQL**: Diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados.
 
 ## Terminología Clave de las Bases de Datos
 
@@ -38,7 +43,7 @@ Una **base de datos** es una colección organizada de información estructurada,
 - **Escalabilidad**: Capacidad para manejar grandes cantidades de datos.
 - **Seguridad**: Protege los datos contra accesos no autorizados.
 
-## Introducción a SQL
+## El lenguaje SQL
 SQL (Structured Query Language) es un lenguaje estándar utilizado para interactuar con bases de datos relacionales. Permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa.
 
 ### Operaciones Básicas en SQL
@@ -113,7 +118,7 @@ Ejemplo:
 SELECT COUNT(*)
 FROM tabla;
 ```
-## Introducción a NoSQL
+## NoSQL
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
 
@@ -159,3 +164,6 @@ NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que 
 - Sintaxis más flexible: A diferencia de SQL, que tiene una sintaxis rígida, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
 - Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
 - Rendimiento: Operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura.
+
+## Referencias
+Gillenson. M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons.
