@@ -37,29 +37,8 @@ Un *tipo de dato abstracto (TDA)* es un modelo conceptual que define un conjunto
 
 Un TDA especifica una interfaz que define las operaciones que se pueden realizar con los datos, **pero no especifica cómo se implementan esas operaciones**. Esto permite a los programadores utilizar los TDAs sin tener que preocuparse por los detalles de implementación subyacentes. Por tanto, se puede decir que un TDA tiene una vista lógica y una vista física o de implementación. 
 
-```mermaid
-classDiagram
-class List {
-    AddFirst(element: int)
-    AddLast()
-    DeleteFirst()
-    DeleteLast()
-    Find()
-    Clear()
-}
-<<Interface>> List
+![Diagrama de implementaciones del TDA Lista](./images/01-programación-orientada-a-objectos/image-03.png)
 
-class ArrayList {
-    internalArray: int[];
-}
-
-class LinkedList {
-    First: Node;
-}
-
-ArrayList ..|> List
-LinkedList ..|> List
-```
 En el diagrama anterior, se ilustra como un TDA Lista, puede ser implementado mediante Nodos con memoria dinámica o mediante un arreglo con memoria estática. El API expuesto por el tipo Lista, no debe dar detalles de cómo se implementa internamente.
 
 Una estructura de datos se puede entender como la implementación de TDA. En Programación Orientada a Objetos, **un TDA + implementación forman una clase**. Algunos lenguajes permiten definir *interfaces* que son un TDA puro.
