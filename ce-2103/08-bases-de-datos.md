@@ -112,7 +112,7 @@ La integridad referencial es una restricción que garantiza que las relaciones e
 
 Estos permite que las relaciones se "normalicen", es decir, que se evite la redundancia de datos y se garantice la consistencia de los datos.
 
-#### ACID
+#### Transaccionalidad ACID
 ACID es un acrónimo que describe las propiedades de las transacciones en una base de datos relacional. Las transacciones son operaciones que modifican los datos en una base de datos y deben cumplir con las siguientes propiedades:
 
 - _Atomic_: Una transacción es atómica si se ejecuta completamente o no se ejecuta en absoluto. Si una parte de la transacción falla, se deshace la transacción completa.
@@ -123,92 +123,147 @@ ACID es un acrónimo que describe las propiedades de las transacciones en una ba
 #### El lenguaje SQL (Structured Query Language)
 Es un lenguaje estandarizado para interactuar con bases de datos relacionales. SQL permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa. Las operaciones SQL se puede clasificar en dos tipos:
 
-- **DDL (Data Definition Language)**: Utilizado para definir y modificar estructuras de bases de datos (CREATE, ALTER, DROP).
-- **DML (Data Manipulation Language)**: Utilizado para manipular datos dentro de objetos de la base de datos (SELECT, INSERT, UPDATE, DELETE).
+- **DDL (Data Definition Language)**: Utilizado para definir y modificar estructuras de bases de datos (`CREATE`, `ALTER`, `DROP`).
+- **DML (Data Manipulation Language)**: Utilizado para manipular datos dentro de objetos de la base de datos (`SELECT`, `INSERT`, `UPDATE`, `DELETE`).
 
-Aunque el lenguaje SQL es un estandar del American National Standards Institute (ANSI), cada DBMS puede tener extensiones propias o dialectos específicos.
+A continuación, se presentan algunas operaciones SQL de ejemplo sobre las tablas `ESTUDIANTE` y `CURSO`.
 
-| Operación                               | Descripción  |
-|-----------------------------------------|--------------|
-| ```sql
-SELECT columna1, columna2
-FROM tabla
-WHERE condición;
-``` | Consulta SELECT para recuperar datos de una tabla. |
-1. Consultas SELECT
-La operación más común en SQL es la consulta SELECT, que se utiliza para recuperar datos de una o más tablas.
-
-Ejemplo:
+1. **Creación de tablas**:
+Para crear tablas, la instrucción SQL `CREATE TABLE` se utiliza y tiene la siguiente estructura:
 
 ```sql
-SELECT columna1, columna2
-FROM tabla
-WHERE condición;
+CREATE TABLE nombre_tabla (
+    columna1 tipo_dato1,
+    columna2 tipo_dato2,
+    ...
+);
+```
+Nótese que los tipos de datos pueden variar dependiendo del DBMS utilizado y son diferentes a los tipos tradicionales en la programación. Un resumen de la jerarquía de tipos de datos en SQL se puede visualizar en [este enlace](https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql?view=sql-server-ver16).
+
+Para crear la tabla `ESTUDIANTE`, se puede utilizar una instrucción SQL similar a la siguiente:
+
+```sql
+CREATE TABLE ESTUDIANTE (
+    ID INT PRIMARY KEY,
+    NOMBRE VARCHAR(50),
+    EDAD INT,
+    CARRERA VARCHAR(50)
+);
+```
+De igual forma, para crear la tabla `CURSO`:
+
+```sql
+CREATE TABLE CURSO (
+    ID INT PRIMARY KEY,
+    NOMBRE VARCHAR(50),
+    ESTUDIANTE_ID INT,
+    FOREIGN KEY (ESTUDIANTE_ID) REFERENCES ESTUDIANTE(ID)
+);
+```
+En este ejemplo, durante la creación de la tabla `CURSO`, se establece una clave foránea (`FOREIGN KEY`) que hace referencia a la clave primaria de la tabla `ESTUDIANTE`. No es necesario definir la integridad durante la creación de la tabla, puesto que se puede usar la instrucción `ALTER TABLE` para agregar restricciones de integridad después de la creación de la tabla.
+
+2. **Inserción de datos**:
+Para insertar datos en una tabla, se utiliza la instrucción SQL `INSERT INTO` con la siguiente estructura:
+
+```sql
+INSERT INTO nombre_tabla (columna1, columna2, ...)
+VALUES (valor1, valor2, ...);
+```
+Por ejemplo, para insertar un nuevo estudiante en la tabla `ESTUDIANTE`:
+
+```sql
+INSERT INTO ESTUDIANTE (ID, NOMBRE, EDAD, CARRERA)
+VALUES (1, 'Juan', 20, 'Ingeniería en Sistemas');
+```
+De igual forma, para insertar un nuevo curso en la tabla `CURSO`:
+
+```sql
+INSERT INTO CURSO (ID, NOMBRE, ESTUDIANTE_ID)
+VALUES (1, 'Matemáticas', 1);
 ```
 
-2. Inserción de Datos
-Para insertar nuevos registros en una tabla, se utiliza la instrucción INSERT.
-
-Ejemplo:
+3. **Actualización de datos**:
+Para actualizar registros existentes en una tabla, se utiliza la instrucción SQL `UPDATE` con la siguiente estructura:
 
 ```sql
-INSERT INTO tabla (columna1, columna2)
-VALUES (valor1, valor2);
-```
-3. Actualización de Datos
-Para actualizar registros existentes en una tabla, se utiliza la instrucción UPDATE.
-
-Ejemplo:
-
-```sql
-UPDATE tabla
+UPDATE nombre_tabla
 SET columna1 = nuevo_valor
 WHERE condición;
 ```
-4. Eliminación de Datos
-Para eliminar registros de una tabla, se utiliza la instrucción DELETE.
+> Ignorar la cláusula `WHERE` en una instrucción `UPDATE` puede resultar en la actualización de todos los registros en la tabla. Es importante recalcar que los nuevos valores serán revisados contra las restricciones de integridad de la tabla.
 
-Ejemplo:
+Por ejemplo, para actualizar la edad de un estudiante en la tabla `ESTUDIANTE`:
+
 ```sql
-DELETE FROM tabla
+UPDATE ESTUDIANTE
+SET EDAD = 21
+WHERE ID = 1;
+```
+
+4. **Eliminación de datos**:
+Para eliminar registros de una tabla, se utiliza la instrucción SQL `DELETE FROM` con la siguiente estructura:
+
+```sql
+DELETE FROM nombre_tabla
+WHERE condición;
+```
+> Al igual que con la instrucción `UPDATE`, ignorar la cláusula `WHERE` en una instrucción `DELETE` puede resultar en la eliminación de todos los registros en la tabla.
+
+Por ejemplo, para eliminar un curso de la tabla `CURSO`:
+
+```sql
+DELETE FROM CURSO
+WHERE ID = 1;
+```
+Cuando se eliminan datos de una tabla "padre", los registros relacionados en las tablas "hijas" deben ser eliminados o actualizados para mantener la integridad referencial. Esto se puede lograr mediante la definición de restricciones de integridad en la base de datos. Esto se conoce como "acción en cascada" y es una característica común en los DBMS.
+
+5. **Consultar los datos**:
+La operación más común en SQL es la consulta SELECT, que se utiliza para recuperar datos de una o más tablas. Dicha operación tiene la siguiente estructura:
+
+```sql
+SELECT columna1, columna2
+FROM tabla
 WHERE condición;
 ```
 
-Cláusulas y Expresiones SQL
-1. Cláusula WHERE
-La cláusula WHERE se utiliza para filtrar registros basados en una condición específica.
-
-Ejemplo:
+Por ejemplo, para consultar los estudiantes de la tabla `ESTUDIANTE`:
 
 ```sql
-SELECT columna1, columna2
-FROM tabla
-WHERE columna1 = 'valor';
+SELECT *
+FROM ESTUDIANTE;
 ```
-
-2. Cláusula ORDER BY
-La cláusula ORDER BY se utiliza para ordenar los resultados de una consulta en orden ascendente o descendente.
-
-Ejemplo:
+Para consultar los cursos de la tabla `CURSO`:
 
 ```sql
-SELECT columna1, columna2
-FROM tabla
-ORDER BY columna1 DESC;
+SELECT *
+FROM CURSO;
 ```
-
-3. Funciones Agregadas
-SQL proporciona funciones agregadas como COUNT, SUM, AVG, MIN y MAX para realizar cálculos en conjuntos de datos.
-
-Ejemplo:
+Para consultar los cursos de un estudiante específico:
 
 ```sql
-SELECT COUNT(*)
-FROM tabla;
+SELECT *
+FROM CURSO
+WHERE ESTUDIANTE_ID = 1;
 ```
-## NoSQL
+
+Para unir la información de las tablas `ESTUDIANTE` y `CURSO`:
+
+```sql
+SELECT E.NOMBRE, C.NOMBRE
+FROM ESTUDIANTE E
+JOIN CURSO C ON E.ID = C.ESTUDIANTE_ID;
+```
+La sentencia `JOIN` y sus variantes, puede entenderse visualmente mediante el siguiente diagrama:
+
+![Tipos de JOIN](./images/08-databases/image-04.png)
+
+### Bases de Datos NoSQL
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
+
+El término _NoSQL_ fue acuñado por Carl Strozzi en 1998 cuando lanzó su base de datos "NoSQL", que era un sistema de bases de datos que no usaba SQL. Su base de datos estaba más centrada en ser ligera y simple para aplicaciones específicas, en lugar de seguir los principios y características de las bases de datos relacionales.
+
+Sin embargo, este nombre fue interpretado de manera errónea. El No en NoSQL inicialmente hacía referencia a "No solo SQL", lo que indicaba que no era una base de datos exclusivamente relacional, sino que existía una alternativa. En otras palabras, NoSQL significa "No solo SQL", lo que sugiere que las bases de datos NoSQL pueden usar otros lenguajes de consulta o no requieren de SQL en absoluto.
 
 ### Características de NoSQL
 
@@ -221,20 +276,16 @@ NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que 
 ### Tipos de Bases de Datos NoSQL
 
 1. **Bases de Datos de Documentos**
-   - **Ejemplo**: MongoDB
-   - **Características**: Almacena datos en documentos JSON o BSON. Es flexible y escalable.
+Son bases de datos que almacenan datos en documentos JSON o BSON (una representación binaria de JSON). Cada documento es una entidad independiente que contiene datos y metadatos. Los documentos se pueden agrupar en colecciones, que son similares a las tablas en una base de datos relacional. Ejemplos de bases de datos de documentos incluyen MongoDB, Couchbase y CouchDB. 
 
 2. **Bases de Datos de Grafos**
-   - **Ejemplo**: Neo4j
-   - **Características**: Modela datos como nodos y relaciones entre ellos. Útil para representar relaciones complejas.
+Son bases de datos que modelan datos como nodos y relaciones entre ellos. Son útiles para representar relaciones complejas entre entidades. Ejemplos de bases de datos de grafos incluyen Neo4j, Amazon Neptune y ArangoDB.
 
 3. **Bases de Datos de Columnas**
-   - **Ejemplo**: Apache Cassandra
-   - **Características**: Almacena datos en columnas en lugar de filas. Escalable y optimizado para escrituras rápidas.
+Son bases de datos que almacenan datos en columnas en lugar de filas. Son eficientes para consultas analíticas y agregaciones. Ejemplos de bases de datos de columnas incluyen Apache Cassandra, HBase y Google Bigtable.
 
 4. **Bases de Datos Clave-Valor**
-   - **Ejemplo**: Redis
-   - **Características**: Almacena datos en pares clave-valor. Muy rápido y eficiente para almacenamiento en caché y sesiones.
+Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada clave es única y se asocia con un valor. Son eficientes para operaciones de lectura y escritura rápidas. Ejemplos de bases de datos clave-valor incluyen Redis, Amazon DynamoDB y Riak.
 
 ### Casos de Uso de NoSQL
 
