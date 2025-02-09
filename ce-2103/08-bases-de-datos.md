@@ -71,37 +71,70 @@ De forma análoga a los lenguajes de programación en los que se adopta un parad
 
 1. **NoSQL**: Las bases de datos NoSQL (Not Only SQL) son una alternativa a las bases de datos relacionales, diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable. NoSQL se refiere a una amplia gama de tecnologías de bases de datos que no utilizan el modelo relacional tradicional basado en tablas.
 
-> Algunos DBMS pueden soportar más de un enfoque, por ejemplo, Oracle Database soporta bases de datos relacionales y objetos. Por eso, decimos que la base de datos sigue un enfoque específico en vez de referirse al DBMS como tal.
+Algunos DBMS pueden soportar más de un enfoque, por ejemplo, Oracle Database soporta bases de datos relacionales y objetos. Por eso, decimos que la base de datos sigue un enfoque específico en vez de referirse al DBMS como tal.
 
-## Terminología Clave de las Bases de Datos
+> Los tipos de bases de datos listadas en esta sección excluyen tipos utilizados en el pasado. Podrá aprender más sobre esto en el curso de bases de datos.
 
-- **Esquema**: Describe la estructura de la base de datos (tablas, campos, relaciones).
-- **Clave Primaria**: Identificador único para cada registro en una tabla.
-- **Clave Externa**: Campo en una tabla que hace referencia a la clave primaria en otra tabla.
-- **Índice**: Mejora la velocidad de las operaciones de recuperación de datos en una tabla de la base de datos.
+### Bases de datos relacionales
+Se fundamentan en el modelo relacional propuesto por Edgar Codd en 1970. En este modelo, los datos se almacenan en tablas, donde cada fila representa un registro y cada columna un campo. Cada fila tiene un identificador único llamado clave primaria, que permite identificar de manera única cada registro en la tabla. Considere la siguiente tabla llamada `ESTUDIANTE`:
 
-## SQL (Structured Query Language)
+| ID | NOMBRE | EDAD | CARRERA |
+|----|--------|------|---------|
+| 1  | Juan   | 20   | Ingeniería en Sistemas |
+| 2  | María  | 22   | Ingeniería Civil |
+| 3  | Pedro  | 21   | Ingeniería Industrial |
 
-- **SQL**: Lenguaje estándar para interactuar con bases de datos relacionales.
+La columna ID es la clave primaria de la tabla ESTUDIANTE. No pueden haber dos o más registros con el mismo ID. 
+
+Las relaciones entre las tablas se establecen mediante claves foráneas, que son campos en una tabla que hacen referencia a la clave primaria de otra tabla. Por ejemplo, considere la tabla `CURSO`:
+
+| ID | NOMBRE | ESTUDIANTE_ID |
+|----|--------|---------------|
+| 1  | Matemáticas | 1 |
+| 2  | Física | 2 |
+| 3  | Química | 3 |
+
+La columna `ESTUDIANTE_ID` es una clave foránea que hace referencia a la clave primaria de la tabla `ESTUDIANTE`. Esta relación permite asociar un curso con un estudiante. No hace falta duplicar la información del estudiante en la tabla `CURSO` (tener todos los campos de `ESTUDIANTE` de nuevo en la tabla `CURSO`).
+
+#### Terminología clave
+Algunos de los conceptos clave en las bases de datos relacionales son:
+
+- _Relación_: Una tabla que almacena datos relacionados.
+- _Atributo_: Una columna en una tabla que representa un campo de datos.
+- _Esquema de la relación_: La estructura de una tabla, que incluye los atributos y las restricciones. Puede verse como una clase en Orientación a Objetos que define la estructura pero no es un objeto en sí.
+- _Tuplas_: Una fila o registro en una tabla que representa una instancia en particular de dicha relación. 
+- _Clave primaria_: Un atributo o conjunto de atributos que identifica de manera única cada tupla en una tabla.
+- _Clave foránea_: Un atributo en una tabla que hace referencia a la clave primaria de otra tabla.
+- _Clave candidata_: Un atributo o conjunto de atributos que pueden ser claves primarias.
+
+#### Integridad referencial
+La integridad referencial es una restricción que garantiza que las relaciones entre las tablas sean válidas. En una relación entre dos tablas, la clave foránea en la tabla secundaria debe hacer referencia a una clave primaria existente en la tabla principal. Por ejemplo, en la tabla `CURSO`, el campo `ESTUDIANTE_ID` debe hacer referencia a un `ID` existente en la tabla `ESTUDIANTE`.
+
+Estos permite que las relaciones se "normalicen", es decir, que se evite la redundancia de datos y se garantice la consistencia de los datos.
+
+#### ACID
+ACID es un acrónimo que describe las propiedades de las transacciones en una base de datos relacional. Las transacciones son operaciones que modifican los datos en una base de datos y deben cumplir con las siguientes propiedades:
+
+- _Atomic_: Una transacción es atómica si se ejecuta completamente o no se ejecuta en absoluto. Si una parte de la transacción falla, se deshace la transacción completa.
+- _Consistent_: Una transacción es consistente si lleva la base de datos de un estado consistente a otro estado consistente. La base de datos debe cumplir con todas las restricciones de integridad antes y después de la transacción.
+- _Isolated_: Una transacción es aislada si su ejecución es independiente de otras transacciones. Las transacciones concurrentes no deben interferir entre sí
+- _Durable_: Una transacción es duradera si los cambios realizados por la transacción persisten en la base de datos incluso después de un fallo del sistema.
+
+#### El lenguaje SQL (Structured Query Language)
+Es un lenguaje estandarizado para interactuar con bases de datos relacionales. SQL permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa. Las operaciones SQL se puede clasificar en dos tipos:
+
 - **DDL (Data Definition Language)**: Utilizado para definir y modificar estructuras de bases de datos (CREATE, ALTER, DROP).
 - **DML (Data Manipulation Language)**: Utilizado para manipular datos dentro de objetos de la base de datos (SELECT, INSERT, UPDATE, DELETE).
 
-## Diseño de Bases de Datos
+Aunque el lenguaje SQL es un estandar del American National Standards Institute (ANSI), cada DBMS puede tener extensiones propias o dialectos específicos.
 
-- **Normalización**: Proceso de organización de datos en una base de datos para reducir la redundancia y la dependencia.
-- **Diagramas ER (Entity-Relationship)**: Representación visual de entidades de la base de datos y sus relaciones.
-
-## Beneficios de las Bases de Datos
-
-- **Integridad de los Datos**: Asegura que los datos sean precisos y consistentes.
-- **Control de Concurrencia**: Gestiona el acceso simultáneo a la base de datos.
-- **Escalabilidad**: Capacidad para manejar grandes cantidades de datos.
-- **Seguridad**: Protege los datos contra accesos no autorizados.
-
-## El lenguaje SQL
-SQL (Structured Query Language) es un lenguaje estándar utilizado para interactuar con bases de datos relacionales. Permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa.
-
-### Operaciones Básicas en SQL
+| Operación                               | Descripción  |
+|-----------------------------------------|--------------|
+| ```sql
+SELECT columna1, columna2
+FROM tabla
+WHERE condición;
+``` | Consulta SELECT para recuperar datos de una tabla. |
 1. Consultas SELECT
 La operación más común en SQL es la consulta SELECT, que se utiliza para recuperar datos de una o más tablas.
 
