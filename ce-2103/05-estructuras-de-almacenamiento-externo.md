@@ -2,7 +2,7 @@
 
 La jerarquía de memoria, se puede representar con la siguiente pirámide:
 
-<img src="images/estructuras-almacenamiento-externo-01.png" width="500px">
+![Jerarquía de memoria](./images/estructuras-almacenamiento-externo-01.png)
 
 Conforme se "sube" en la jerarquía, la cantidad de memoria disminuye pero el costo y velocidad de la misma aumentan. Conforme se desciende, el costo y velocidad disminuyen pero la cantidad de memoria aumenta. Es por eso, que el cache, es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es una memoria lenta pero de gran capacidad.
 
@@ -20,9 +20,9 @@ Conforme se "sube" en la jerarquía, la cantidad de memoria disminuye pero el co
 
 Son dispositivos de almacenameinto persistente que mantiene la información almacenada incluso cuando no están siendo alimentados con electricidad.
 
-- Los datos se almacenan mediante magnetización de particulas dentro del material mangnético de los discos.
+- Los datos se almacenan mediante magnetización de partículas dentro del material magnético de los discos.
 
-- El disco es capaz leer los datos al detectar los patrones de magnetización creados al escribir los datos.
+- El disco es capaz de leer los datos al detectar los patrones de magnetización creados al escribir los datos.
 
 ### Componentes
 
@@ -34,7 +34,7 @@ Son dispositivos de almacenameinto persistente que mantiene la información alma
 
 ### Funcionamiento
 
-La velocidad del giro inflencia directamente a la velocidad de I/O. A mayor velocidad, mayor consumo energético y mayor costo.
+La velocidad del giro influencia directamente a la velocidad de I/O. A mayor velocidad, mayor consumo energético y mayor costo.
 
 - Velocidaddes para uso general (consumidor):
 
@@ -47,15 +47,15 @@ La velocidad del giro inflencia directamente a la velocidad de I/O. A mayor velo
 
 Los datos se escriben en círculos concentricos llamados _pistas_ y se dividen en _sectores_. Un sector es la unidad mínima de almacenamiento en un disco duro y generalmente tiene un tamaño de 512 bytes.
 
-<img src="images/estructuras-almacenamiento-externo-02.png" width="500px">
+![](./images/estructuras-almacenamiento-externo-02.png)
 
-<img src="images/estructuras-almacenamiento-externo-03.jpeg" width="500px">
+![](./images/estructuras-almacenamiento-externo-03.jpeg")
 
-<img src="images/estructuras-almacenamiento-externo-04.jpg" width="500px">
+![](./images/estructuras-almacenamiento-externo-04.jpg")
 
 ### Tiempos de acceso
 
-El tiempo de búsqueda (seek time) es el tiempo que tarda el brazo actuador en moverse a la pista deseada (8 - 10ms en discos de 7200 RPM). El tiempo de latencia es el tiempo que tarda el sector deseado en pasar por debajo de la cabeza de lectura/escritura (4 - 5ms en discos de 7200 RPM).
+El tiempo de búsqueda (_seek time_) es el tiempo que tarda el brazo actuador en moverse a la pista deseada (8 - 10ms en discos de 7200 RPM). El tiempo de latencia es el tiempo que tarda el sector deseado en pasar por debajo de la cabeza de lectura/escritura (4 - 5ms en discos de 7200 RPM).
 
 El tiempo de acceso total es la suma del tiempo de búsqueda y el tiempo de latencia.
 
@@ -63,7 +63,7 @@ El tiempo de acceso total es la suma del tiempo de búsqueda y el tiempo de late
 
 Los discos duros tienen un tiempo de transferencia que es el tiempo que tarda en leer o escribir un bloque de datos. Este tiempo depende de la velocidad de rotación del disco y de la densidad de los datos. Por ejemplo, un disco de 7200 RPM tiene un tiempo de transferencia de 0.5ms.
 
-El external data rate es la cantidad de datos que se pueden transferir por segundo. Por ejemplo, un disco de 7200 RPM con un external data rate de 300MB/s puede transferir 300MB de datos por segundo.
+El _external data rate_ es la cantidad de datos que se pueden transferir por segundo. Por ejemplo, un disco de 7200 RPM con un external data rate de 300MB/s puede transferir 300MB de datos por segundo.
 
 ### Interfaces
 
@@ -142,15 +142,14 @@ Una partición puede existir sin inicializarse.
 Es una partición inicializada con un _sistema de archivos_. Es la interfaz lógica que utiliza el sistema operativo para acceder a los datos almacenados en el disco.
 
 ## Sistemas de archivos
+El sistema de archivos puede entender como la abstracción que provee el Sistema Operativo para acceder a los datos almacenados en el disco (interfaz lógica entre usuario y la capa física de almacenamiento). Determina la forma en que los archivos son nombrados, organizados y almacenados en el disco. Almacena metadata/atributos de los archivos. Por ejemplo el nombre, tamaño, fecha de creación, etc.
 
-- Forma en que los archivos son nombrados, organizados y almacenados en el disco.
-- Es la interfaz lógica entre usuario y la capa física de almacenamiento.
-- Almacena metadata/atributos de los archivos. Por ejemplo el nombre, tamaño, fecha de creación, etc.
-- Fuertemente relacionado con el sistema operativo seleccionado. Por ejemplo, Windows utiliza NTFS, Linux utiliza ext4, etc.
+Hay distintos sistemas de archivos conocidos y usualmente se asocian con uno u otro Sistema Operativo.  Por ejemplo, Windows utiliza _NTFS_, Linux utiliza _ext3_ o _ext4_, MacOS utiliza _HFS+_, y así por el estilo.
 
 El sistema de archivos requiere espacio en disco para almacenar la metadata. Por ejemplo, si se tiene un archivo de 1 KB, el sistema de archivos necesita espacio adicional para almacenar la metadata del archivo (nombre, tamaño, fecha de creación, etc.). Por tal motivo, posterior a formatear un disco, el espacio disponible es menor al espacio total del disco.
 
 ### Propósito
+Algunas de las funcionalidades principales del sistema de archivo incluyen:
 
 - Nombrar y organizar archivos.
 - Proveer un API para el acceso a los archivos: Creación, lectura, escritura, eliminación, etc.
@@ -276,6 +275,77 @@ Es una especialización del cache en memorira. Se almacena en la memoria RAM del
 
 Se almacena en varios servidores. Se utiliza para almacenar datos que se acceden con frecuencia a nivel global. Por ejemplo, los datos de un sitio web que se accede con frecuencia en todo el mundo.
 
-#### CDN (Content-delivery network)
+## Algoritmos de ordenamiento externo
 
-### Problemas que afectan a todos los caches
+Los algoritmos de ordenamiento externo son algoritmos que se utilizan para ordenar grandes conjuntos de datos que no caben en la memoria principal. Usualmente utilizan un enfoque híbrido que combina la memoria principal y la memoria secundaria para ordenar los datos.
+
+Algunos de estos algoritmos incluyen:
+- External merge
+- External merge-sort
+
+### External merge
+Suponga que se necesitan unir dos archivos **ordenados** que no caben en memoria. El algoritmo de _external merge_ divide los archivos en bloques que caben en memoria, los ordena y los guarda en un archivo temporal. Luego, combina los bloques ordenados en un solo archivo ordenado. Si cada bloque es de tamaño _n_, en memoria se mantendrán tres frames de tamaño _n_. 
+
+![](./images/05-estructuras-almacenamiento-externo/image-05.png)
+
+Se leen los primeros bloques de ambos archivos en memoria
+
+![](./images/05-estructuras-almacenamiento-externo/image-06.png)
+
+Usando el frame temporal, se van comparando los elementos de ambos bloques y se ordena en dicho frame. Cuando el frame temporal se llena, se escribe en el archivo de salida.
+
+![](./images/05-estructuras-almacenamiento-externo/image-07.png)
+
+![](./images/05-estructuras-almacenamiento-externo/image-08.png)
+
+![](./images/05-estructuras-almacenamiento-externo/image-09.png)
+
+![](./images/05-estructuras-almacenamiento-externo/image-10.png)
+
+![](./images/05-estructuras-almacenamiento-externo/image-11.png)
+
+### External merge-sort
+Para ordenar un archivo cuyos elementos están desordenados, podemos aplicar una forma del algoritmo tradicional de merge-sort. En merge-sort en memoria, el array se divide en sub-array en memoria. En el caso de _external merge-sort_, en vez de crear sub-array en memoria se crean *archivos temporales en disco* de tamaño incremental que actúen como dichos sub-arrays. Cada archivo temporal se llama _run_.
+
+El algoritmo irá creando runs de tamaño 1, tamaño 2 y así sucesivamente hasta que se logre ordenar el archivo completo. Un _run de tamaño 1_ es el bloque mínimo de datos (_pages_) que se puede tener en memoria. La cantidad de elementos de dicho bloque dependerá de la naturaleza de los datos en el archivo.
+
+En memoria únicamente se mantiene tres frames. En cada frame cabe un run de tamaño 1. Estos frames se ordenan aplicando el algoritmo de _external merge_ como veremos más adelante.
+
+El proceso es el siguiente para la _etapa de división_:
+
+1. Se realiza una pasada inicial para leer página por página del archivo.
+2. Se ordena cada página y se escribe en un archivo temporal (_run_ de tamaño 1). Se generan n archivos temporales, donde _n_ es la cantidad de páginas del archivo original
+
+Para la _etapa de mezcla_, se sigue el siguiente proceso:
+
+1. Por cada página de cada run i, se carga una página de cada uno en memoria y se aplica ordenan en un nuevo frame. Dicho frame se escribe en un nuevo run de tamaño i+1.
+2. Se repite el proceso por cada set de _runs_
+
+La visualización del algoritmo en [este enlace](https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html) es súmamente útil. A continuación se adjunto algunas capturas de la misma.
+
+Por ejemplo, el estado inicial es el siguiente:
+
+![](./images/05-estructuras-almacenamiento-externo/image-12.png)
+
+Posterior a la etapa de división, tenemos 4 runs de tamaño 1:
+
+![](./images/05-estructuras-almacenamiento-externo/image-13.png)
+
+En la etapa de mezcla, observe como se las primeras páginas (y únicas en este caso) de los primeros dos runs de tamaño 1:
+
+![](./images/05-estructuras-almacenamiento-externo/image-14.png)
+
+Cada vez que el buffer se llena, se escribe en un nuevo run de tamaño 2:
+
+![](./images/05-estructuras-almacenamiento-externo/image-15.png)
+
+Se repite el proceso con los runs de tamaño dos. Y así sucesivamente hasta que se logre ordenar el archivo completo.
+
+![](./images/05-estructuras-almacenamiento-externo/image-16.png)
+
+> Se pueden hacer mejoras sobre el algoritmo de _external merge-sort_ como el uso de _multiway merge_ para reducir el número de pasadas sobre el archivo.
+
+## Referencias
+- https://www.geeksforgeeks.org/external-sorting/
+- Koutris. P. CS 564 [Spring 2018]. https://pages.cs.wisc.edu/~paris/cs564-s18/lectures/lecture-16.pdf
+- https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html

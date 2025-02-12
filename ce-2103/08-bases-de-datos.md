@@ -306,3 +306,4 @@ Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada 
 
 ## Referencias
 Gillenson. M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons.
+Sullivan M. (2019). NoSQL for Mere Mortals. Addison-Wesley.
