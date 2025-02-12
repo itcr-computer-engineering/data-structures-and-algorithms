@@ -144,11 +144,11 @@ Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocánd
  
 Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
  
- `O(nˆ2 + n) => O(nˆ2)`
+ `O(n~2~ + n) => O(n~2~)`
  
  `O(n + log(n)) => O(n)`
  
- `O(5 * 2ˆn + 100nˆ2) => O(2ˆn)`
+ `O(5 * 2~n~ + 100n~2~) => O(2~n~)`
 
 Por ejemplo, considere el siguiente algoritmo:
 
@@ -169,7 +169,7 @@ En caso que la constante cambie, se la función seguirá siendo lineal. Aunque l
 Son notaciones para describir la ejecución de un algoritmo en términos de su comportamiento asintótico.
 
 #### Big O 
-Describe el límite superior. Por ejemplo O(n^2), O(n), O(2ˆn). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
+Describe el límite superior. Por ejemplo O(n^2^), O(n), O(2^n^). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
 `f(n)` es la función que representa el algoritmo con precisión, por ejemplo, `f(n) = 3n^2 - 100n + 6`. `g(n)` es el intento de clasificar nuestra función, por ejemplo, `g(n) = n^2`. La constante que multiplica a `g(n)` la podemos escoger arbitrariamente, por ejemplo, `c = 3`. Si graficamos `g(n) = 3n^2` y `f(n)`, veremos que `3n^2` es siempre mayor que `f(n)`, concluyendo que `f(n) = O(n^2)`.
 

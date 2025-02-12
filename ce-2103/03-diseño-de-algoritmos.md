@@ -404,7 +404,7 @@ Estos índices ya están en 1, por lo que el filtro de Bloom dirá que el elemen
 
 Depende del tipo de aplicación, puede ser que esto sea aceptable. Por ejemplo, en el caso de la verificación de _username_, si el filtro de Bloom dice que el _username_ ya existe, se puede hacer una verificación adicional para confirmar. Pero si el filtro dice que no existe, entonces no se necesita hacer nada más y se ahorra tiempo considerable.
 
-> Probabilidad de un falso positivo: `P(1 - [1 - 1/m]ˆkn)^k`
+> Probabilidad de un falso positivo: `P(1 - [1 - 1/m]^kn)^k`
 
 ##### Complejidad:
 
@@ -481,7 +481,7 @@ Se mezclan los genes de los padres para generar nuevos individuos. Suponiendo qu
     | 0 | 1 | 2 | 3 | 4 | 5 |
 P1: | 0 | 0 | 0 | 0 | 0 | 0 |
 P2: | 1 | 1 | 1 | 1 | 1 | 1 |
-                ˆ
+                ^
                 Cross-over point
 ```
 
