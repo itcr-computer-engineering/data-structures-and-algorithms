@@ -300,8 +300,12 @@ Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada 
 - **Herramientas y Ecosistema**: Aunque cada vez más robusto, el ecosistema y las herramientas de NoSQL pueden ser menos maduras en comparación con las bases de datos relacionales establecidas.
 
 ### Ventajas de las bases de datos NoSQL
+
 - Sintaxis más flexible: A diferencia de SQL, que tiene una sintaxis rígida, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
+
 - Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
+![Scale up vs out](./images/08-databases/image-05.png)
+
 - Rendimiento: Operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura.
 
 ## Referencias
