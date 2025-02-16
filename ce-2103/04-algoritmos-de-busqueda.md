@@ -227,10 +227,9 @@ while not frontier.empty():
 ```         
 
 #### Dijkstra
-BFS considera el movimiento hacia cualquier nodo como igual. Sin embargo, en muchos escenarios, distintas posiciones en el mapa tienen distintos costos o pesos.
+BFS considera el movimiento hacia cualquier nodo como igual. Sin embargo, en muchos escenarios, distintas posiciones en el mapa tienen distintos costos o pesos. Por ejemplo, en algunos juegos de estrategia, distintos tipos de terreno (bosque, agua, desierto, entre otros) tienen diferentes efectos en la velocidad de los personajes. En estos casos, el algoritmo de _Dijkstra_ es más adecuado.
 
-
-Cuando hay costos de movimiento según la dirección. Se lleva el costo acumulado de llegar a cada nodo y se elige el camino con menor costo.
+Dijkstra lleva el rastro del costo acumulado y utiliza una cola de prioridad para escoger el siguiente paso. El código es similar al siguiente pseudocódigo:
 
 ```java
 frontier = PriorityQueue()
@@ -255,8 +254,9 @@ while not frontier.empty() {
     }
 }
 ```
+Visualmente, se puede entender la diferencia entre BFS y Dijkstra en esta [animación](https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search). A continuación se incluyen una captura de pantalla de la animación:
 
-> Visualmente, se puede entender la diferencia entre BFS y Dijkstra en el siguiente gráfico: https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search
+![Dijkstra](./images/04-algoritmos-de-busqueda/image-11.png)
 
 #### A\*
 
