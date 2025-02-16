@@ -227,6 +227,8 @@ while not frontier.empty():
 ```         
 
 #### Dijkstra
+BFS considera el movimiento hacia cualquier nodo como igual. Sin embargo, en muchos escenarios, distintas posiciones en el mapa tienen distintos costos o pesos.
+
 
 Cuando hay costos de movimiento según la dirección. Se lleva el costo acumulado de llegar a cada nodo y se elige el camino con menor costo.
 
