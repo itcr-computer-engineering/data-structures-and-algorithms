@@ -113,13 +113,13 @@ Aunque tiene el término _programación_ en su nombre, no se refiere a escritura
 
 Por ejemplo, para calcular _fibonacci(4)_ utilizando un enfoque tradicional:
 
-![](images/programacion-dinamica-1.png)
+![Árbol de recursión de Fibonacci](images/programacion-dinamica-1.png)
 
 Se puede notar un claro traslape de sub-problemas, lo que implica un desperdicio de recursos computacionales. Utilizando un enfoque de DP, el problema se puede resolver de la siguiente manera:
 
 ```java
 int fib(n) {
-    mem[n + 2]; // ------------------> En caso que N sea 0 o 1
+    mem[n + 2]; // ---> En caso que N sea 0 o 1
     mem[0] = 0;
     mem[1] = 1;
 
@@ -140,11 +140,11 @@ mem[3] = 2
 mem[4] = 3
 ```
 
-En el enfoque divide y conquista, el algoritmo de Fibonacci tiene una complejidad de tiempo de `O(2^n)`. En cambio, con DP, la complejidad de tiempo se reduce a `O(n)`.
+En el enfoque divide y conquista, el algoritmo de Fibonacci tiene una complejidad de tiempo de _O(2^n^)_. En cambio, con DP, la complejidad de tiempo se reduce a _O(n)_.
 
 El siguiente diagrama ilustra el enfoque DP vs Divide y Vencerás de forma general:
 
-![](images/programacion-dinamica-2.png)
+![Divide y conquista vs programación dinámica](images/programacion-dinamica-2.png)
 
 ### Ejemplo de programación dinámica: Longest Common Subsequence (LCS)
 Cadena más larga común entre dos strings, no necesariamente contigua. Por ejemplo,
@@ -167,8 +167,7 @@ int lcs(String X, String Y, int m, int n)
     if (X.charAt(m - 1) == Y.charAt(n - 1)) 
         return 1 + lcs(X, Y, m - 1, n - 1); 
     else
-        return max(lcs(X, Y, m, n - 1), 
-                    lcs(X, Y, m - 1, n)); 
+        return max(lcs(X, Y, m, n - 1), lcs(X, Y, m - 1, n)); 
 } 
 ```
 
@@ -260,7 +259,30 @@ bool solve(board[][] col) {
     return false;
 }
 ```
-}
+
+## Algoritmos ávidos
+Es un paradigma de diseño de algoritmos que construye la solución parte por parte, siempre escogiendo la siguiente pieza que ofrezca el beneficio obvio e inmediato.
+
+Algunas de sus características son:
+
+- Son simples y sencillos de implementar
+
+- Eficientes en términos de tiempo de ejecución, retornando el resultado en poco tiempo
+
+- No reconsideran opciones previas
+
+### Ejemplo: Número mínimo de monedas
+Suponga que tiene un conjunto infinito de monedas de 1, 2, 5, y 10 colones.  ¿Cuál es el número mínimo de monedas que se necesitan para dar un cambio de 39 colones?
+
+Utilizando un enfoque ávido, el proceso sería el siguiente:
+
+- Seleccionar la denominación más grande que sea menor o igual al cambio restante. En este caso, sería 10 colones.
+
+- Restar el valor seleccionado del cambio restante. Agregar la moneda seleccionada al resultado.
+
+- Repetir los pasos anteriores hasta que el cambio restante sea 0.
+
+No necesariamente la solución será la óptima en todos los casos, pero en muchos casos, la solución ávida es suficiente. Por ejemplo, si el cambio es 20 y las monedas disponibles son 1, 10 y 18, la solución ávida daría 18, 1 y 1, cuando la solución óptima sería dos monedas de 10.
 
 ## Algoritmos Probabilísticos
 
@@ -499,3 +521,5 @@ Con base en alguna probabilidad determinada, se hace flig a agunos bits aleatori
 
 ## Referencias
 - https://www.geeksforgeeks.org/introduction-to-divide-and-conquer-algorithm/
+
+-https://www.geeksforgeeks.org/introduction-to-greedy-algorithm-data-structures-and-algorithm-tutorials/
