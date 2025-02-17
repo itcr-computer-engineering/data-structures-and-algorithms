@@ -193,7 +193,7 @@ evaluatedNeighbors(evaluationNode){
 ## Camino más corto: Floyd
 
 ¿Cómo calcular el camino más corto de cada nodo a cada nodo?
-Existe una solucón más directa que usar dijsktra de nodo en nodo.
+Existe una solución más directa que usar dijsktra de nodo en nodo.
 
 El algoritmo de Floyd calcula mediante programación dinámica el camino más corto de cada nodo a cada nodo.
 

@@ -29,9 +29,9 @@ A excepción de algunos árboles que puede implementarse con arreglos, la mayor�
 
 Los árboles tienen las siguientes operaciones básicas:
 
-- **Insertar (insert)**: añade un nodo al árbol,
-- **Eliminar (delete)**: elimina un nodo del árbol,
-- **Buscar (search)**: busca un nodo en el árbol,
+- **Insertar (insert)**: añade un nodo al árbol.
+- **Eliminar (delete)**: elimina un nodo del árbol.
+- **Buscar (search)**: busca un nodo en el árbol.
 - **Recorrer (traverse)**: recorre todos los nodos del árbol. Se puede realizar en distintos órdenes:
   - **Preorden**: primero se visita la raíz, luego el subárbol izquierdo y finalmente el subárbol derecho.
   - **Inorden**: primero se visita el subárbol izquierdo, luego la raíz y finalmente el subárbol derecho.
@@ -180,9 +180,9 @@ La eliminación en un BST considera varios casos:
 ### Recorridos
 Recorrer un árbol no solo es útil para imprimirlo, sino que también es útil para realizar operaciones en todos los nodos. Los recorridos más comunes son:
 
-- Inorden (izquierda, raíz, derecha)
-- Preorden (raíz, izquierda, derecha)
-- Postorden (izquierda, derecha, raíz)
+- Inorden (izquierda, raíz, derecha).
+- Preorden (raíz, izquierda, derecha).
+- Postorden (izquierda, derecha, raíz).
 
 ```java
     public void inOrder() {
@@ -814,7 +814,7 @@ No hay cambios con respecto a BST
 
 Aunque no son técnicamente un TDA distinto, es relevante mencionarlos dado que su uso es muy común en la resolución de problemas de programación.
 
-Son árboles binarios en los que las hojas son operandos y los nodos internos son operadores. Se utilizan para representar (y resolver) expresiones aritméticas o expresiones sintacticas de un lenguaje de programación en la etapa de compilación.
+Son árboles binarios en los que las hojas son operandos y los nodos internos son operadores. Se utilizan para representar (y resolver) expresiones aritméticas o expresiones sintácticas de un lenguaje de programación en la etapa de compilación.
 
 Por ejemplo, la expresión matemática `3 + (4 * 5)` se puede representar con el siguiente árbol de expresión:
 
@@ -1035,8 +1035,8 @@ Cada rama de un nodo corresponde a un caracter de la llave insertada. El último
 
 El TDA Trie tiene las siguientes operaciones básicas:
 
-- **Insertar (insert)**: añade una cadena de caracteres al trie,
-- **Buscar (search)**: busca una cadena de caracteres en el trie,
+- **Insertar (insert)**: añade una cadena de caracteres al trie.
+- **Buscar (search)**: busca una cadena de caracteres en el trie.
 - **Eliminar (delete)**: elimina una cadena de caracteres del trie.
 
 ### Estructura básica

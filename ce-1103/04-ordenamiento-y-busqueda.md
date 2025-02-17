@@ -103,9 +103,9 @@ Para buscar en grandes colecciones de datos, no necesariamente ordenados, _hashi
 #### Hash tables
 Es una estructura de datos que almacena datos en pares _llave-valor_:
 
-- _Llave_: llave única para identificar un valor
+- _Llave_: llave única para identificar un valor.
 
-- _Valor_: dato asociado con la llave
+- _Valor_: dato asociado con la llave.
 
 La llave _k_ se utiliza como entrada para una función de hashing _h(k)_ que genera un índice _i_ donde el valor se almancenará dentro de la tabla. Visualmente se puede representar de esta forma:
 
@@ -356,7 +356,7 @@ Usando un enfoque sencillo, podemos definir los gaps (o incrementos) de la sigui
 size / 2, size / 4, size / 8, ..., 1
 ```
 
-Rendondeando hacia el entero más cercano hacia arriba. Entonces, dado un array de 9 elementos, los gaps serían:
+Redondeando hacia el entero más cercano hacia arriba. Entonces, dado un array de 9 elementos, los gaps serían:
 
 ```
 5, 3, 1
@@ -424,7 +424,7 @@ Dado el siguiente arreglo:
 =================================================
 ```
 ### Ordenamiento por mezcla (Merge sort)
-Es un algorithmo de ordenamiento que sigue el paradigma de dividir y conquistar. Divide el arreglo en dos mitades, ordena las dos mitades de forma recursiva y luego combina las dos mitades ordenadas.
+Es un algoritmo de ordenamiento que sigue el paradigma de dividir y conquistar. Divide el arreglo en dos mitades, ordena las dos mitades de forma recursiva y luego combina las dos mitades ordenadas.
 
 ![Merge sort, fase de división](images/04-ordenamiento-y-busqueda/image-06.png)
 

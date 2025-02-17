@@ -4,7 +4,7 @@
 >
 > Una estructura de datos es una forma particular de organizar datos en una computadora para que puedan ser utilizados de manera eficiente. Se utilizan para procesar, recuperar y almacenador datos. Existe una colección minima de estructuras de datos comunes que son utilizadas en la mayoría de los lenguajes de programación.
 
-Las estructuras de datos lineales son estructuras de datos cuyos elementos se organizan secuencialmente, uno tras de otro. Hay un solo nivel de lementos y se recorren en una sola pasada. Cada elemento de la estructura tiene un predecesor y un sucesor, excepto el primer y el último elemento.
+Las estructuras de datos lineales son estructuras de datos cuyos elementos se organizan secuencialmente, uno tras de otro. Hay un solo nivel de elementos y se recorren en una sola pasada. Cada elemento de la estructura tiene un predecesor y un sucesor, excepto el primer y el último elemento.
 
 ## Arreglos y Matrices
 
@@ -106,7 +106,7 @@ Dado que son arreglos de arreglos, se puede acceder a los elementos de la matriz
 
 > **¿Memoria contigua en las matrices?**
 > 
-> Las matrices no necesariamente se almacenan en memoria contigua. Por ejemplo, en C# las matrices se almacenan en memoria contigua, pero en Java no. En Java, las matrices se almacenan como un arreglo de arreglos, es decir, un arreglo de referencias a otros arreglos. Por lo tanto, no se puede acceder a un elemento de la matriz utilizando una sola operación de suma y una operación de acceso a memoria. Se necesita realizar dos operaciones de acceso a memoria y una operación de suma. Esto se debe a que primero se necesita acceder a la referencia del arreglo que contiene el elemento y luego acceder al elemento dentro de ese arreglo.
+> Las matrices no necesariamente se almacenan en memoria contigua. Por ejemplo, en C# las matrices se almacenan en memoria contigua, pero en Java no. En Java, las matrices se almacenan como un arreglo de arreglos, es decir, un arreglo de referencias a otros arreglos. Por lo tanto, no se puede acceder a un elemento de la matríz utilizando una sola operación de suma y una operación de acceso a memoria. Se necesita realizar dos operaciones de acceso a memoria y una operación de suma. Esto se debe a que primero se necesita acceder a la referencia del arreglo que contiene el elemento y luego acceder al elemento dentro de ese arreglo.
 
 Aunque el término matríz se utiliza comúnmente para referirse a arreglos de dos dimensiones, también se puede utilizar para referirse a arreglos de más de dos dimensiones. Por ejemplo, un arreglo de tres dimensiones se puede inicializar en Java de la siguiente manera:
 
@@ -148,12 +148,12 @@ Las operaciones básicas que se pueden realizar en una lista son:
 - **Contiene (contains)**: verifica si un elemento está en la lista.
 - **Tamaño (size)**: devuelve el número de elementos en la lista.
 
-Pueden implementarse se muchas formas. Las más comunes son:
+Pueden implementarse de muchas formas. Las más comunes son:
 
-- **ArrayList**: Implementación mediante arreglos
-- **SinglyLinkedList**: Implementación mediante listas simples enlazadas
-- **DoubleLinkedList**: Implementación mediante listas doblemente enlazadas
-- **CircularLinkedList**: Implementación mediante listas enlazadas circulares
+- **ArrayList**: Implementación mediante arreglos.
+- **SinglyLinkedList**: Implementación mediante listas simples enlazadas.
+- **DoubleLinkedList**: Implementación mediante listas doblemente enlazadas.
+- **CircularLinkedList**: Implementación mediante listas enlazadas circulares.
 
 ### Implementación mediante arreglos
 
@@ -231,7 +231,7 @@ public class ArrayList implements List {
   - Una **referencia** al nodo siguiente que actua como el elemento que encadena la lista.
 - Visualmente, una lista enlazada se puede representar como:
   
-  ![](images/linked-list-1.png)
+  ![Visualización de una lista enlazada](images/linked-list-1.png)
 
   - Como se puede notar, el último elemento apunta a _null_ indicando el fin de la lista
   - Es esencial llevar y mantener una referencia a la cabeza de la lista. Si la cabeza de la lista se pierde, se pierde toda la lista.
@@ -329,7 +329,7 @@ public class SinglyLinkedList implements List {
 - La lista doblemente enlazada es similar a la lista simple enlazada, pero cada nodo tiene una referencia al nodo anterior y al siguiente
 - Visualmente, una lista doblemente enlazada se puede representar como:
 
-![](images/double-linked-list-1.png)
+![Visualización de lista doblemente enlazada](images/double-linked-list-1.png)
 
 - La ventaja sobre la lista simple enlazada es que se puede recorrer la lista en ambas direcciones. La desventaja es que cada nodo tiene que mantener una referencia adicional al nodo anterior, lo que consume más memoria e implica mayor complejidad en la implementación.
 
@@ -436,12 +436,12 @@ public class DoubleLinkedList implements List {
 - La lista enlazada circular es similar a la lista simple enlazada, pero el último nodo apunta al primer nodo
 - Visualmente, una lista enlazada circular se puede representar como:
 
-![](images/circular-linked-list-1.png)
+![Visualización de lista circular](images/circular-linked-list-1.png)
 
-- Usualmente se implementan como cirular doblemente enlazada.
+- Usualmente se implementan como circular doblemente enlazada.
 - Para mejorar las inserciones, en vez de mantener la referencia a _head_ se utiliza una referencia a _tail_ únicamente:
 
-![](images/circular-linked-list-2.png)
+![Optimización de listas circulares](images/circular-linked-list-2.png)
 
 #### Estructura general en Java
 
@@ -1041,7 +1041,7 @@ public class LinkedList<T extends Comparable<T>> {
 
 ```
 
-Para cualquier tipo de datos _personalizado_, se debe implmentar la interfaz `Comparable` y definir las reglas de comparación que tengan sentido dentro del contexto de la aplicación.
+Para cualquier tipo de datos _personalizado_, se debe implementar la interfaz `Comparable` y definir las reglas de comparación que tengan sentido dentro del contexto de la aplicación.
 
 - Clase `Persona`: comparar por cédula
 - Clase `Estudiante`: comparar por número de carné
