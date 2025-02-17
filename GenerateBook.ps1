@@ -1,6 +1,7 @@
 docker run --rm --volume "${PWD}:/data" pandoc/extra `
--o ./DSA-1.pdf `
---resource-path=ce-1103 `
+-o "./Algoritmos y estructuras de datos - v1.0.pdf" `
+-f markdown+superscript  `
+--resource-path=ce-1103:ce-2103 `
 --metadata-file=./metadata-ce1103.yaml `
 --defaults=./defaults.yaml `
 --top-level-division=section `
@@ -9,16 +10,7 @@ docker run --rm --volume "${PWD}:/data" pandoc/extra `
 ./ce-1103/02-estructuras-de-datos-lineales.md `
 ./ce-1103/03-estructuras-de-datos-jerarquicas.md `
 ./ce-1103/04-ordenamiento-y-busqueda.md `
-./ce-1103/05-grafos.md
-
-docker run --rm --volume "${PWD}:/data" pandoc/extra `
--o ./DSA-2.pdf `
---resource-path=ce-2103 `
---metadata-file=./metadata-ce2103.yaml `
---defaults=./defaults.yaml `
---top-level-division=section `
---include-in-header=./custom.tex `
--f markdown+superscript  `
+./ce-1103/05-grafos.md `
 ./ce-2103/01-administracion-de-memoria.md `
 ./ce-2103/02-analisis-de-algoritmos.md `
 ./ce-2103/03-diseño-de-algoritmos.md `
