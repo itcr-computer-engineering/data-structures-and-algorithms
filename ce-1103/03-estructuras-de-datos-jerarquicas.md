@@ -461,14 +461,17 @@ Factores de balance de cada nodo:
 
 ### Inserción
 Para insertar un nodo _w_: 
+
 - Se realiza una inserción normal de un árbol binario de búsqueda para el nodo _w_.
+
 - Iniciando en _w_, se recorre el camino de búsqueda hacia la raíz. Sea _z_ el primero nodo no balanceado, _y_ el hijo de _z_ que está en el camino de _w_ a _z_ y _x_ el nieto de _z_ que está en el camino de _w_ a _z_.
+
 - Se rebalancea el árbol mediante rotaciones simples o dobles en el subárbol con raíz en _z_. Hay 4 posibles casos de rotaciones.
  
-    - **Rotación derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo izquierdo de _y_. 
-    - **Rotación Izquierda-derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo derecho de _y_.
-    - **Rotación Izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo derecho de _y_.
-    - **Rotación Derecha-izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo izquierdo de _y_.
+  - **Rotación derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo izquierdo de _y_. 
+  - **Rotación Izquierda-derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo derecho de _y_.
+  - **Rotación Izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo derecho de _y_.
+  - **Rotación Derecha-izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo izquierdo de _y_.
 
 
 #### Ejemplo de rotación derecha
@@ -724,16 +727,13 @@ Para eliminar en un árbol AVL:
 
 - Se realiza una eliminación normal de un árbol binario de búsqueda.
 
-- Comenzando desde w, avanza hacia arriba y encuentra el primer nodo desequilibrado. Sea z el primer nodo desequilibrado, y el hijo de mayor altura de z, y x el hijo de mayor altura de y. Ten en cuenta que las definiciones de x e y son diferentes a las de la inserción aquí.
+- Comenzando desde w, avanza hacia arriba y encuentra el primer nodo desequilibrado. Sea z el primer nodo desequilibrado, y el hijo de mayor altura de z, y x el hijo de mayor altura de y. 
 
 - Rebalancea el árbol realizando rotaciones apropiadas en el subárbol con raíz en z. Puede haber 4 casos posibles que deben ser manejados, ya que x, y y z pueden estar dispuestos de 4 formas diferentes. A continuación se presentan las 4 disposiciones posibles:
 
     - **Rotación derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo izquierdo de _y_. 
-
     - **Rotación Izquierda-derecha**: _y_ es el hijo izquierdo de _z_ y _x_ es el hijo derecho de _y_.
-
     - **Rotación Izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo derecho de _y_.
-
     - **Rotación Derecha-izquierda**: _y_ es el hijo derecho de _z_ y _x_ es el hijo izquierdo de _y_.
 
 
@@ -839,13 +839,25 @@ private void inOrderRecursive(TreeNode root) {
 }
 ```
 
-| Árbol                                                   | Expresión                 |
-| ------------------------------------------------------- | ------------------------- |
-| <img src="images/expression-tree-1.png" width="200"/> | `(x + y) * (a - b)`       |
-| <img src="images/expression-tree-2.png" width="200"> | `(x * (y - z)) * (a - f)` |
-| <img src="images/expression-tree-3.png" width="200"> | `(x * (y / -Z))`          |
-| <img src="images/expression-tree-4.png" width="200"> | `(A + (B * - (C + D)))`   |
-| <img src="images/expression-tree-5.png" width="200"> | `((A * (X + Y)) * C)`     |
+Para la expresión: `(x + y) * (a - b)`, el árbol sería:
+
+![Ejemplo de árbol de expresión #1](images/expression-tree-1.png)
+
+Para la expresión: `(x * (y - z)) * (a - f)`, el árbol sería:
+
+![Ejemplo de árbol de expresión #2](images/expression-tree-2.png)
+
+Para la expresión: `(x * (y / -Z))`, el árbol sería:
+
+![Ejemplo de árbol de expresión #3](images/expression-tree-3.png)
+
+Para la expresión: `(A + (B * - (C + D)))`, el árbol sería:
+
+![Ejemplo de árbol de expresión #4](images/expression-tree-4.png)
+
+Para la expresión: `((A * (X + Y)) * C)`, el árbol sería:
+
+![Ejemplo de árbol de expresión #5](images/expression-tree-5.png)
 
 ### Conversión de expresión a árbol de expresión
 
@@ -862,23 +874,23 @@ El algoritmo utiliza dos estructuras de datos: una pila para almacenar los opera
 
 Por ejemplo,
 
-<img src="images/expression-tree-6.png" width="200">
+![Paso 1](images/expression-tree-6.png)
 
-<img src="images/expression-tree-7.png" width="200">
+![Paso 2](images/expression-tree-7.png)
 
-<img src="images/expression-tree-8.png" width="200">
+![Paso 3](images/expression-tree-8.png)
 
-<img src="images/expression-tree-9.png" width="200">
+![Paso 4](images/expression-tree-9.png)
 
 La cola (que contiene la expresión en postfijo) se utiliza como input para generar el árbol de expresión.
 
-<img src="images/expression-tree-10.png" width="200">
+![Paso 1](images/expression-tree-10.png)
 
-<img src="images/expression-tree-11.png" width="200">
+![Paso 2](images/expression-tree-11.png)
 
-<img src="images/expression-tree-12.png" width="200">
+![Paso 3](images/expression-tree-12.png)
 
-<img src="images/expression-tree-13.png" width="200">
+![Paso 4](images/expression-tree-13.png)
 
 ## Árboles B
 
