@@ -27,7 +27,7 @@ En C# una arreglo se declara de la siguiente manera:
 // Arreglo de enteros. Cada posición es de 4 bytes
 int[] arr;
 
-// Arreglo de enteros. Cada posición es de 1 byte
+// Arreglo de chars. Cada posición es de 1 byte
 char[] arr2;
 
 // Arreglo de flotantes. Cada posición es de 4 bytes
@@ -182,7 +182,7 @@ public class ArrayList implements List {
     }
 
     public boolean contains(int element) {
-        for (int i = 0; i < this.maxSize; i++) {
+        for (int i = 0; i < this.currentSize; i++) {
             if (this.storage[i] == element) {
                 return true;
             }

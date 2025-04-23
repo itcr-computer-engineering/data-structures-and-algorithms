@@ -322,7 +322,7 @@ Para el código anterior, la tabla de memoria sería:
 | 0x0       | x      | 10    | 4B      | Stack     | int     |
 | 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
 
-Considere sl siguiente código:
+Considere el siguiente código:
 
 ```c
 #include <iostream>

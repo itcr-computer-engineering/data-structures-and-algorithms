@@ -346,9 +346,8 @@ public class HeapTree {
         if (size == heap.length) {
             throw new IllegalStateException("Heap is full");
         }
-        heap[size] = element;
+        heap[size++] = element;
         heapifyUp(size);
-        size++;
     }
 
     public int delete() {

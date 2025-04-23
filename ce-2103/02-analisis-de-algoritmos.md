@@ -13,7 +13,7 @@ Opera sobre un problema bien definido, toma un input y lo transforma en un outpu
 
 - Input: Ingredientes
 - Output: Comida
-- Instrucciones: Algoritm
+- Instrucciones: Algoritmo
 
 Las características de un algoritmo son:
 
@@ -144,11 +144,11 @@ Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocánd
  
 Lo que nos interesa en análisis asintótico, es la escalabilidad del algoritmo.
  
- `O(n~2~ + n) => O(n~2~)`
+ O(n^2^ + n) => O(n^2^)
  
- `O(n + log(n)) => O(n)`
+ O(n + log(n)) => O(n)
  
- `O(5 * 2~n~ + 100n~2~) => O(2~n~)`
+ O(5 * 2^n^ + 100n^2^) => O(2^n^)
 
 Por ejemplo, considere el siguiente algoritmo:
 
