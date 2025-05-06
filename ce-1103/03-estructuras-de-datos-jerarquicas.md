@@ -847,17 +847,9 @@ Para la expresión: `(x * (y - z)) * (a - f)`, el árbol sería:
 
 ![Ejemplo de árbol de expresión #2](images/expression-tree-2.png)
 
-Para la expresión: `(x * (y / -Z))`, el árbol sería:
-
-![Ejemplo de árbol de expresión #3](images/expression-tree-3.png)
-
-Para la expresión: `(A + (B * - (C + D)))`, el árbol sería:
-
-![Ejemplo de árbol de expresión #4](images/expression-tree-4.png)
-
 Para la expresión: `((A * (X + Y)) * C)`, el árbol sería:
 
-![Ejemplo de árbol de expresión #5](images/expression-tree-5.png)
+![Ejemplo de árbol de expresión #3](images/expression-tree-5.png)
 
 ### Conversión de expresión a árbol de expresión
 
