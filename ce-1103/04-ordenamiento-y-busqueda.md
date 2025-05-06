@@ -136,13 +136,11 @@ Para buscar un ciudadano en particular, se puede utilizar la cédula como llave 
 
 La función de hash seleccionada, determina la cantidad de _buckets_ (espacios de almacenamiento) que se utilizarán para almacenar los datos. En este caso, se utilizó el módulo 10 para determinar el índice de almacenamiento.
 
-El reto de las funciones hash es generar un índice único para cada llave. Si dos llaves generan el mismo índice, se produce una colisión. Las colisiones se pueden resolver de diferentes formas:
+El reto de las funciones hash es generar un índice único para cada llave. Si dos llaves generan el mismo índice, se produce una colisión. Las colisiones se pueden resolver de diferentes formas. Una de estas es:
 
 - **Separate chaining**: Cada índice de la tabla _hash_ almacena una lista enlazada de elementos que colisionan. Visualmente se puede ver de la sigueinte forma:
 
 ![](images/hashing-2.png)
-
-- **Open addressing**: Se busca un índice alternativo para almacenar el elemento que colisiona.
 
 ## Algoritmos de ordenamiento
 Son algoritmos que reciben una colección de elementos en desorden y la ordenan ascendente o descendentemente. Hay muchos algoritmos, y la razón de su existencia es que cada uno tiene diferentes características de rendimiento.
@@ -484,18 +482,19 @@ Los algoritmos vistos previamente, consideran cada elemento como un todo. Radix 
 
 Radix significa "raíz" en latín, y se refiere a la base de un sistema numérico. Por ejemplo, en el sistema decimal, la base es 10. En el sistema binario, la base es 2.
 
+
 #### Ejecución de ejemplo
 
-![](images/04-ordenamiento-y-busqueda/image-08.png)
+![Radix-sort paso #1](images/04-ordenamiento-y-busqueda/image-08.png)
 
 Nóte que el arreglo intermedio tiene 10 posiciones, una por cada dígito posible de la base 10. Este arreglo contiene el conteo de la aparición de cada dígito en el arreglo original. A este arreglo se le hace un ajuste (se le suma la posición anterior) para obtener la posición final de cada dígito en el arreglo ordenado.
 
-![](images/04-ordenamiento-y-busqueda/image-09.png)
+![Radix-sort paso #2](images/04-ordenamiento-y-busqueda/image-09.png)
 
 El arreglo ajustado, mapea la posición de cada dígito en el arreglo ordenado. Al mapear, el valor correspondiente del arreglo intermedio se reduce en 1.
 
-![](images/04-ordenamiento-y-busqueda/image-10.png)
+![Radix-sort paso #3](images/04-ordenamiento-y-busqueda/image-10.png)
 
 En resumen,
 
-![](images/04-ordenamiento-y-busqueda/image-11.png)
+![Radix-sort paso #4](images/04-ordenamiento-y-busqueda/image-11.png)

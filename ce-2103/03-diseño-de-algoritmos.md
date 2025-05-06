@@ -104,8 +104,11 @@ Computación paralela es una técnica que permite realizar múltiples tareas sim
 
 ## Programación dinámica (DP)
 Aunque tiene el término _programación_ en su nombre, no se refiere a escritura de código fuente. Acuñado por Richard Bellman en los años 50, _programar_ se referiere a _planificar_, es decir, planificar óptimamente procesos de múltiples etapas.
+
 - Comparte similutudes con la técnica de _divide y vencerás_.
+
 - DP divide problemas en sub-problemas y _memoiza_ las soluciones de los sub-problemas para resolverlos una *sola vez*.
+
 - En DP, los sub-problemas se translapan, es decir, el resultado de uno puede ayudar a resolver otro.
 
 > **Memoización vs Memorización <br/>**
@@ -216,9 +219,13 @@ Esto resulta en complejidad temporal `O(nm)`
 
 ## Backtracking
 - Popularizado por Henry Lehmer, matemático estadounidense.
+
 - Es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione
+
 - Se puede conceptualizar como un árbol de decisiones
+    
     - Cada nodo del árbol solo puede ver sus hijos directos
+    
     - Si un nodo conduce a error, se regresa al anterior y se prueba con otro hijo
 
 La estructura general en código se puede resumir como:
@@ -243,7 +250,7 @@ backtrack(x) {
 Dado un tablero de ajedrez de NxN, colocar N reinas de tal forma que no se ataquen entre sí. Una reina puede atacar a otra si están en la misma fila, columna o diagonal.
 
 ```java
-bool solve(board[][] col) {
+bool solve(board[][] board, int col) {
     if (col == N) {
         return true;
     }
