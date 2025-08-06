@@ -1,7 +1,7 @@
 # Algoritmos de Compresión
 Comprimir se refiere a reducir la cantidad de bits requeridos para representar un conjunto de datos. Los algoritmos de compresión se utilizan para reducir el tamaño de los archivos y, por lo tanto, ahorrar espacio en disco y acelerar la transferencia de datos a través de la red.
 
-En este capítulo veremos conceptos fundamentales de compresión junto con algorimos comunes.
+En este capítulo veremos conceptos fundamentales de compresión junto con algoritmos comunes.
 
 ## Tipos de compresión
 Comúnmente, los algoritmos de compresión se dividen en dos categorías principales: compresión sin pérdida y compresión con pérdida.
@@ -11,25 +11,25 @@ Reducen el tamaño de los datos identificando información innecesaria y elimin�
 
 Utiliza métodos de codificación que generan representaciones inexactas de los datos originales. La calidad de los datos comprimidos se mide en términos de la cantidad de información que se pierde durante la compresión. Los algoritmos _lossy_ normalmente exponen parámetros de calidad, lo que permite ajustar el balance entre tasa de compresión y degradación de calidad evidente para el usuario final.
 
-![Ejemplo compresión de imágen PNG](./images/06-compresion/image-01.png)
+![Ejemplo compresión de imagen PNG](./images/06-compresion/image-01.png)
 
 La compresión con pérdida se utiliza comúnmente en aplicaciones donde la calidad de los datos no es crítica, como la transmisión de video en línea y la transmisión de audio. Los formatos de alta fidelidad o _raw_ tiende a ser de tamaño muy grande y sin compresión _lossy_ streaming de audio y video no sería posible para la gran mayoría de los usuarios.
 
-![Ejemplo compresión de imágen PNG](./images/06-compresion/image-02.png)
+![Ejemplo compresión de imagen PNG](./images/06-compresion/image-02.png)
 
 #### Percepción de la calidad
 La distorsión es la diferencia entre los datos originales y los datos comprimidos. La distorsión se mide en términos de la calidad de los datos comprimidos en comparación con los datos originales. 
 
 Aunque se puede definir modelos matemáticos para medir la distorsión, la percepción de la calidad es subjetiva y depende de la sensibilidad del observador. La percepción de la calidad se mide en términos de la cantidad de distorsión que un observador puede tolerar antes de que la calidad de los datos comprimidos se considere inaceptable. Por ejemplo, para un archivo de audio, un audiofilo puede ser más sensible a la distorsión que una persona promedio.
 
-Los algoritmos de compresión con pérdida, buscan optimizar la percepción de calidad según los atributos fisio-psicológicos del ser humano. Por ejemplo, en el caso de la compresión de imágenes, la compresión JPEG se basa en la percepción visual humana y elimina los detalles menos perceptibles para el ojo humano. En el caso de la compresión de audio, la compresión MP3 se basa en la percepción auditiva humana y elimina los sonidos menos perceptibles para el oído humano (frequencia del sonido medida en Hz).
+Los algoritmos de compresión con pérdida, buscan optimizar la percepción de calidad según los atributos fisio-psicológicos del ser humano. Por ejemplo, en el caso de la compresión de imágenes, la compresión JPEG se basa en la percepción visual humana y elimina los detalles menos perceptibles para el ojo humano. En el caso de la compresión de audio, la compresión MP3 se basa en la percepción auditiva humana y elimina los sonidos menos perceptibles para el oído humano (frecuencia del sonido medida en Hz).
 
 > Para aprender más sobre JPEG, vea el video en este [enlace](https://www.youtube.com/watch?v=0me3guauqOU&t=1976s).
 
 ### Compresión sin pérdida (lossless)
 Son algoritmos de compresión que reducen el tamaño de los datos sin perder información. La compresión sin pérdida es reversible, lo que significa que los datos originales se pueden recuperar después de la compresión. Este tipo de compresión se utiliza comúnmente en archivos de texto, documentos y bases de datos.
 
-Generalmente utilizan información estadística para identificar patrones repetitivos en los datos y reemplazarlos por códigos más cortos. Por ejemplo, frequencia de caracteres en un texto o frequencia de colores en una imágen.
+Generalmente utilizan información estadística para identificar patrones repetitivos en los datos y reemplazarlos por códigos más cortos. Por ejemplo, frecuencia de caracteres en un texto o frecuencia de colores en una imagen.
 
 Algunos de los algoritmos de compresión sin pérdida más comunes son:
 
@@ -48,45 +48,45 @@ El algoritmo de Huffman construye un árbol binario que se utiliza para asignar 
 
 El proceso que sigue el algoritmo es:
 
-1. Calcular la frequencia de cada símbolo en el archivo.
-2. Crear un nodo hoja para cada símbolo y ordenarlos por frequencia de menor a mayor.
-3. Unir los dos nodos con menor frequencia en un nuevo nodo padre. Este nuevo nodo debe ordenarse en la lista de nodos.
+1. Calcular la frecuencia de cada símbolo en el archivo.
+2. Crear un nodo hoja para cada símbolo y ordenarlos por frecuencia de menor a mayor.
+3. Unir los dos nodos con menor frecuencia en un nuevo nodo padre. Este nuevo nodo debe ordenarse en la lista de nodos.
 4. Repetir el paso 3 hasta que quede un solo nodo.
 5. Recorrer el árbol binario asignando 0 a las ramas izquierdas y 1 a las ramas derechas.
 6. Crear la tabla de conversión y comprimir el archivo.
 
 Por ejemplo, si tenemos el siguiente texto `bcaadddccacacac`, cada caracter en ASCII se representa con 8 bits. por lo que ocuparía 120 bits en total (8 * 15). Si aplicamos Huffman, se calculan las frecuencias:
 
-| Símbolo | Frequencia |
+| Símbolo | Frecuencia |
 |---------|------------|
 | b       | 1          |
 | c       | 6          |
 | a       | 5          |
 | d       | 3          |
 
-Se crea un nodo por cada símbolo y se ordenan por frequencia:
+Se crea un nodo por cada símbolo y se ordenan por frecuencia:
 
 `(b, 1), (d, 3), (a, 5), (c, 6)`
 
 Se forma el árbol agrupando siempre los nodos menores:
 
-![Construcción de árbol Huffman. Imágen 1 de 4](./images/06-compresion/image-03.png)
+![Construcción de árbol Huffman. Imagen 1 de 4](./images/06-compresion/image-03.png)
 
 Nótese que el nodo 4, se inserta en el orden correspondiente según frecuencia y se vuelve a aplicar el agrupamiento:
 
-![Construcción de árbol Huffman. Imágen 2 de 4](./images/06-compresion/image-04.png)
+![Construcción de árbol Huffman. Imagen 2 de 4](./images/06-compresion/image-04.png)
 
 Nótese que nodo 9 queda al final dado que tiene la mayor frecuencia total. Se repite el proceso y se obtiene el árbol completo:
 
-![Construcción de árbol Huffman. Imágen 3 de 4](./images/06-compresion/image-05.png)
+![Construcción de árbol Huffman. Imagen 3 de 4](./images/06-compresion/image-05.png)
 
 Se asignan códigos a cada símbolo recorriendo el árbol (O a la izquierda y 1 a la derecha):
 
-![Construcción de árbol Huffman. Imágen 4 de 4](./images/06-compresion/image-06.png)
+![Construcción de árbol Huffman. Imagen 4 de 4](./images/06-compresion/image-06.png)
 
 La tabla de conversión final sería:
 
-| Símbolo | Frequencia | Código |
+| Símbolo | Frecuencia | Código |
 |---------|------------|--------|
 | a       | 5          | 11     |
 | b       | 1          | 100    |
@@ -145,7 +145,7 @@ El proceso de descompresión es muy sencillo:
 
 1. Se toma la tripleta `(o, l, c)` y se copian los `l` caracteres desde la posición `o` en el buffer.   
 1. Se añade el caracter `c` al final del buffer.
-1. Se repote hasta que se acaben las tripletas.
+1. Se repite hasta que se acaben las tripletas.
 
 Entonces: 
 

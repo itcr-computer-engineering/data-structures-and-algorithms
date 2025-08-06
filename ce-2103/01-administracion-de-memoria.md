@@ -1,5 +1,5 @@
 # Administración de Memoria
-La administración de memoria conlleva diferentes ideas según el contexto. En el caso de los sistemas operativos, la administración de memoria se refiere a la gestión de la memoria principal de un sistema informático. En el caso del desarrollo de software, la administración de memoria se refiere a la gestión de la memoria de un programa en ejecución. Para lograr existosamente la segunda, se requiere comprender la primera.
+La administración de memoria conlleva diferentes ideas según el contexto. En el caso de los sistemas operativos, la administración de memoria se refiere a la gestión de la memoria principal de un sistema informático. En el caso del desarrollo de software, la administración de memoria se refiere a la gestión de la memoria de un programa en ejecución. Para lograr exitosamente la segunda, se requiere comprender la primera.
 
 En este capítulo, se abordarán los conceptos básicos de la administración de memoria en sistemas operativos y se entra en detalle a la administración de memoria en programas en ejecución.
 
@@ -45,9 +45,9 @@ Algunas de las responsabilidades de la administración de memoria son:
 La idea de controlar la memoria asignada a un proceso, tiene como fin hacer que el mismo tenga un límite y aislamiento, para que así no afecte a otros procesos en la memoria que se estén ejecutando.
 
 ### Las direcciones de memoria
-Antes de continuar con el resto de este capítulo, es clave entender el concepto de direcciones de memoria. Para esto utilizaremos un  cotidiano. 
+Antes de continuar con el resto de este capítulo, es clave entender el concepto de direcciones de memoria. Para esto utilizaremos un ejemplo cotidiano. 
 
-Imagine un edificio de apartamentos, en el que todos los apartamentos son exactamente del mismo tamaño y están numerados de manera consecutiva. Cada apartamento únicamente puede alojar a una sola persona. Una familia por lo tanto, ocupará varios apartamentos contiguos. El edificio puede continuar creciendo con el tiempo conforme se construyan nuevos pisos, pero la constructora tendrá un máximo de apartamentos que puede construir. La recepción del edificio puede llevar correspondencia a cualquier apartamento, incluso cuando se construyan nuevos apartamentos, pero siempre limitado por el número de apartamentos que se pueden construir y por el número de apartamentos que ya están construídos.
+Imagine un edificio de apartamentos, en el que todos los apartamentos son exactamente del mismo tamaño y están numerados de manera consecutiva. Cada apartamento únicamente puede alojar a una sola persona. Una familia por lo tanto, ocupará varios apartamentos contiguos. El edificio puede continuar creciendo con el tiempo conforme se construyan nuevos pisos, pero la constructora tendrá un máximo de apartamentos que puede construir. La recepción del edificio puede llevar correspondencia a cualquier apartamento, incluso cuando se construyan nuevos apartamentos, pero siempre limitado por el número de apartamentos que se pueden construir y por el número de apartamentos que ya están construidos.
 
 Aplicando el ejemplo a la computadora, un sistema operativo (_la recepción_) tiene la capacidad de generar direcciones de memoria de _n_ bits (usualmente 32 o 64 bits). Por ejemplo, si es son direcciones de 32 bits, el sistema operativo puede generar 2^32^ direcciones de memoria, desde la dirección 0 hasta la dirección 2^32^ - 1. Cada dirección de memoria corresponde a una casilla (_un apartamento_) que puede alojar 1 byte (_una persona_). Las variables (_familias_) puede ser de 1 o más bytes, siempre contiguos.
 

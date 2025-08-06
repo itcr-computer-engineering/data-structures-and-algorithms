@@ -21,7 +21,7 @@ Los IDEs suelen proporcionar herramientas para trabajar con tipos de datos, como
 ![Ejemplo de autocompletado en el IDE según el tipo de dato](images/01-programación-orientada-a-objectos/image-00.png)
 
 ### Tipo de dato simple y compuesto
-Un *tipo de dato simple* es un tipo de dato que representa un único valor. Los tipos de datos simples son los tipos de datos básicos que se utilizan para representar valores individuales. No tiene sentido práctico separalos en partes más pequeñas.
+Un *tipo de dato simple* es un tipo de dato que representa un único valor. Los tipos de datos simples son los tipos de datos básicos que se utilizan para representar valores individuales. No tiene sentido práctico separarlos en partes más pequeñas.
 
 Un *tipo de dato compuesto* es un tipo de dato que representa una colección de valores. Los tipos de datos compuestos se utilizan para representar estructuras de datos más complejas que contienen múltiples valores de otros tipos de datos. Por ejemplo, un tipo de dato Cliente, puede contener los datos de nombre, edad, dirección, etc. **Los objetos se consideran tipos de datos compuestos**.
 

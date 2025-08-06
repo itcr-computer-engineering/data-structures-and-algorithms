@@ -225,7 +225,7 @@ Define una secuencia de matrices nxn P~0~, P~1~, P~2~, P~3~,… P~n~
 
 ![warshall algorithm2](images/image-15.png)
 
-## Minimal Spanning tree
+## Minimum Spanning Tree
 
 Se utiliza un grafo no dirigido para modelar relaciones simétricas entre vértices del gráfico. Cualquier arco (v,w) de un grafo no dirigido es igual que el arco de (w,v).
 
@@ -243,7 +243,7 @@ Si todos los vértices están en el árbol, entonces es un grafo conexo.
 
 Dado un grafo no dirigido, encuentre el árbol de expansión mínimo
 
-![minimal spanning tree](images/image-16.png)
+![minimum spanning tree](images/image-16.png)
 
 - El mismo grafo puede tener varios arboles de expansión, pero no todos son el mínimo.
 
