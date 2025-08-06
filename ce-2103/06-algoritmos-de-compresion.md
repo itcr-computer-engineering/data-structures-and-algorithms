@@ -263,9 +263,9 @@ Paso a paso se realizaría de la siguiente forma:
 | `a b a c [a] b a c a` | `P+C` no está    | c  | a  |   ca   | 97 98 97 99             |
 | `a b a c a [b] a c a` | `P+C` está       | a  | b  |   ab   | 97 98 97 99             |
 | `a b a c a b [a] c a` | `P+C` no está    | ab | a  |   aba  | 97 98 97 99 256         |
-| `a b a c a b a [c] a` | `P+C` está       | a  | ac |   ac   | 97 98 97 99 256         |
-| `a b a c a b a c [a]` | `P+C` no está    | ac | a  |   aca  | 97 98 97 99 256 258    |
-| `a b a c a b a c [a]` | Final            | a  |    |        | 97 98 97 99 256 258 97 |
+| `a b a c a b a [c] a` | `P+C` está       | a  | c  |   ac   | 97 98 97 99 256         |
+| `a b a c a b a c [a]` | `P+C` no está    | ac | a  |   aca  | 97 98 97 99 256 258     |
+| `a b a c a b a c [a]` | Final            | a  |    |        | 97 98 97 99 256 258 97  |
 
 La descompresión se reduce a buscar cada uno de los códigos generados en la tabla y hacer el output del valor en el diccionario:
 

@@ -1,5 +1,5 @@
 docker run --rm --volume "${PWD}:/data" pandoc/extra `
--o "./Algoritmos y estructuras de datos - v0.5.pdf" `
+-o "./Algoritmos y estructuras de datos - v1.0.pdf" `
 -f markdown+superscript  `
 --resource-path=ce-1103:ce-2103 `
 --metadata-file=./metadata.yaml `
@@ -16,4 +16,5 @@ docker run --rm --volume "${PWD}:/data" pandoc/extra `
 ./ce-2103/03-diseño-de-algoritmos.md `
 ./ce-2103/04-algoritmos-de-busqueda.md `
 ./ce-2103/05-estructuras-de-almacenamiento-externo.md `
+./ce-2103/06-algoritmos-de-compresion.md `
 ./ce-2103/08-bases-de-datos.md
