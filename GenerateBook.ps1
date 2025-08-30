@@ -1,5 +1,5 @@
 docker run --rm --volume "${PWD}:/data" pandoc/extra `
--o "./Algoritmos y estructuras de datos - v1.0.pdf" `
+-o "./Algoritmos y estructuras de datos - v1.1.pdf" `
 -f markdown+superscript  `
 --resource-path=ce-1103:ce-2103 `
 --metadata-file=./metadata.yaml `

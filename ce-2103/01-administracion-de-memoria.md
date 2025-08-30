@@ -105,7 +105,7 @@ Entonces, cuando un programa tiene una instrucción `MOV REGISTER1, 1000`, la di
 
 Como se nota en la imagen anterior, hay hardware especializado, el _Memory Management Unit (MMU)_ que se encarga de mapear las direcciones virtuales a direcciones físicas. El MMU tiene una tabla de páginas que mapea las direcciones virtuales a direcciones físicas. La tabla de páginas se mantiene en memoria y el MMU la consulta cada vez que necesita mapear una dirección virtual a una dirección física.
 
-![Relación entre direcciones virtuales y físicas](images/01-administracion-de-memoria/image-02.png)
+![Relación entre direcciones virtuales y físicas](images/01-administracion-de-memoria/image-03.png)
 
 El MMU tiene una tabla que lleva el inventario de páginas cargadas y su correspondiente frame. Dicha tabla aloja información estadística sobre las páginas, como la frecuencia de uso, para poder tomar decisiones sobre qué páginas mantener en memoria y cuáles sacar. Dado que los frames son limitados, se utilizan algoritmos de reemplazo de páginas para decidir cuál página sacar de memoria cuando se necesita cargar una nueva y no hay espacio.
 
