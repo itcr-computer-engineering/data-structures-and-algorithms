@@ -362,8 +362,8 @@ Para el siguiente código:
 void foo(int[] array) { 
     int sum = 0; 
     int product = 1; 
-    for (inti= 0; i < array.length; i++) { 
-        sum += array[i); 
+    for (int i = 0; i < array.length; i++) { 
+        sum += array[i]; 
     } 
     for (int i= 0; i < array.length; i++) { 
         product*= array[i]; 
@@ -417,7 +417,7 @@ void printUnorderedPairs(int[] arrayA, int[] arrayB) {
 ```
 Tiene una complejidad de `O(ab)`, donde _a_ es el tamaño de _arrayA_ y _b_ es el tamaño de _arrayB_. El loop interno no afecta la complejidad dado que es `O(100000)`.
 
-#### Ejemplo #4
+#### Ejemplo #5
 ```c
 void reverse(int[] array) { 
     for (int i= 0; i <array.length/ 2; i++) { 
@@ -430,7 +430,7 @@ void reverse(int[] array) {
 ```
 En este caso, se recorre solo la mitad del arreglo. La complejidad es `O(n/2) = O(n)`.
 
-#### Ejemplo #5
+#### Ejemplo #6
 Para sumar todos los nodos de un BST:
 
 ```c	
@@ -443,7 +443,7 @@ int sum(Node node) {
 ```
 Dado que se recorren todos los nodos del árbol, la complejidad es `O(n)`.
 
-#### Ejemplo #6
+#### Ejemplo #7
 ```c
 boolean isPrime(int n) { 
     for (int x = 2; x <= sqrt(n); x++) { 
@@ -456,7 +456,7 @@ boolean isPrime(int n) {
 ```
 La complejidad es `O(sqrt(n))`.
 
-#### Ejemplo #7
+#### Ejemplo #8
 ```c
 int fib(int n) { 
     if (n <= 0) return 0; 
@@ -466,7 +466,7 @@ int fib(int n) {
 ```
 La complejidad es `O(2^n)`.
 
-#### Ejemplo #8
+#### Ejemplo #9
 ```c
 int factorial(int n) { 
     if (n < 0) { 

@@ -628,7 +628,7 @@ int main() {
       int* r = foo();
       cout << *r; // Imprime 50
       bar();
-      cout << *r; // Imprime 60
+      cout << *r; // Imprime 66
   }
   ``` 
 
