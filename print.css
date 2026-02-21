@@ -1,0 +1,76 @@
+/* Print stylesheet for wkhtmltopdf book generation */
+
+/* Hide all navigation chrome */
+nav#autocollapse,
+.subnav,
+#search-results,
+.sidenav,
+.sidetoc,
+.fixed_header,
+.sideaffix,
+footer,
+.mobile-hide,
+.breadcrumb,
+#search,
+.contribution,
+.affix {
+  display: none !important;
+}
+
+/* Make content fill the full page width */
+body {
+  font-size: 11pt;
+  line-height: 1.6;
+}
+
+.col-md-10 {
+  width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.container,
+.container-fluid,
+.body-content {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+article {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+
+/* Code blocks */
+pre {
+  font-size: 9pt;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  page-break-inside: avoid;
+}
+
+/* Images */
+img {
+  max-width: 100% !important;
+  page-break-inside: avoid;
+}
+
+/* Page breaks: each chapter starts on a new page */
+h1 {
+  page-break-before: always;
+  page-break-after: avoid;
+}
+
+h2, h3 {
+  page-break-after: avoid;
+}
+
+/* Don't break the first h1 before itself */
+body > div > article > h1:first-child,
+#_content > h1:first-child {
+  page-break-before: avoid;
+}

@@ -1,0 +1,44 @@
+{
+  "build": {
+    "content": [
+      {
+        "files": ["*.md", "toc.yml"]
+      },
+      {
+        "files": ["*.md", "toc.yml"],
+        "src": "ce-1103",
+        "dest": "ce-1103"
+      },
+      {
+        "files": ["*.md", "toc.yml"],
+        "src": "ce-2103",
+        "dest": "ce-2103"
+      }
+    ],
+    "resource": [
+      {
+        "files": ["images/**"],
+        "src": "ce-1103",
+        "dest": "ce-1103"
+      },
+      {
+        "files": ["images/**"],
+        "src": "ce-2103",
+        "dest": "ce-2103"
+      }
+    ],
+    "output": "_site",
+    "template": ["default", "statictoc"],
+    "globalMetadata": {
+      "_appTitle": "Algoritmos y Estructuras de Datos",
+      "_appName": "AlgED",
+      "_enableSearch": true,
+      "_noContribution": true,
+      "_appLanguage": "es-ES"
+    },
+    "fileMetadata": {},
+    "markdownEngineProperties": {
+      "markdigExtensions": ["autoidentifiers"]
+    }
+  }
+}

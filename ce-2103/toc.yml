@@ -1,0 +1,16 @@
+- name: Administración de Memoria
+  href: 01-administracion-de-memoria.md
+- name: Análisis de Algoritmos
+  href: 02-analisis-de-algoritmos.md
+- name: Diseño de Algoritmos
+  href: 03-diseño-de-algoritmos.md
+- name: Algoritmos de Búsqueda
+  href: 04-algoritmos-de-busqueda.md
+- name: Estructuras de Almacenamiento Externo
+  href: 05-estructuras-de-almacenamiento-externo.md
+- name: Algoritmos de Compresión
+  href: 06-algoritmos-de-compresion.md
+- name: Bases de Datos
+  href: 08-bases-de-datos.md
+- name: Coding Challenges
+  href: 00-Coding-Challenges.md

@@ -49,9 +49,9 @@ Los datos se escriben en círculos concentricos llamados _pistas_ y se dividen e
 
 ![](./images/estructuras-almacenamiento-externo-02.png)
 
-![](./images/estructuras-almacenamiento-externo-03.jpeg")
+![](./images/estructuras-almacenamiento-externo-03.jpeg)
 
-![](./images/estructuras-almacenamiento-externo-04.jpg")
+![](./images/estructuras-almacenamiento-externo-04.jpg)
 
 ### Tiempos de acceso
 
