@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Base URL so relative image paths resolve to the _site directory -->
+  <base href="{BASE}">
+  <style>
+    /* =====================================================================
+       Elegant book print template for "Algoritmos y Estructuras de Datos"
+       ===================================================================== */
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* --- Body typography ------------------------------------------------ */
+    body {
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      font-size: 10.5pt;
+      line-height: 1.78;
+      color: #1a1a2e;
+      margin: 0;
+      padding: 0;
+    }
+
+    article { display: block; }
+
+    /* --- Headings ------------------------------------------------------- */
+
+    /* H1 – chapter title: new page, large, navy, blue rule below */
+    h1 {
+      font-family: "Segoe UI", Calibri, "Helvetica Neue", Arial, sans-serif;
+      font-size: 24pt;
+      font-weight: 700;
+      color: #1b2c4f;
+      line-height: 1.2;
+      margin: 0 0 14pt;
+      padding: 24pt 0 10pt;
+      border-bottom: 3px solid #4a9eff;
+      page-break-before: always;
+      page-break-after: avoid;
+    }
+    /* First h1 in the document: no forced page break */
+    article > h1:first-child {
+      page-break-before: avoid;
+      padding-top: 0;
+    }
+
+    /* H2 – major section */
+    h2 {
+      font-family: "Segoe UI", Calibri, "Helvetica Neue", Arial, sans-serif;
+      font-size: 14pt;
+      font-weight: 600;
+      color: #1b2c4f;
+      margin: 22pt 0 8pt;
+      padding-bottom: 4pt;
+      border-bottom: 1px solid #c8d8e8;
+      page-break-after: avoid;
+    }
+
+    /* H3 – sub-section */
+    h3 {
+      font-family: "Segoe UI", Calibri, "Helvetica Neue", Arial, sans-serif;
+      font-size: 11.5pt;
+      font-weight: 600;
+      color: #243d6e;
+      margin: 16pt 0 5pt;
+      page-break-after: avoid;
+    }
+
+    /* H4-H6 */
+    h4, h5, h6 {
+      font-family: "Segoe UI", Calibri, "Helvetica Neue", Arial, sans-serif;
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #444;
+      margin: 12pt 0 4pt;
+      page-break-after: avoid;
+    }
+
+    /* --- Paragraphs ------------------------------------------------------ */
+    p {
+      margin: 0 0 8pt;
+      text-align: justify;
+      hyphens: auto;
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* --- Links ----------------------------------------------------------- */
+    a { color: #1a50a0; text-decoration: none; }
+
+    /* --- Inline code ----------------------------------------------------- */
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.5pt;
+      background: #f0f3f8;
+      border: 1px solid #d5dce8;
+      border-radius: 3px;
+      padding: 1px 4px;
+      color: #b03030;
+    }
+
+    /* --- Code blocks ----------------------------------------------------- */
+    pre {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.5pt;
+      line-height: 1.5;
+      background: #f7f9fd;
+      border: 1px solid #ccd6e8;
+      border-left: 4px solid #4a9eff;
+      border-radius: 0 4px 4px 0;
+      padding: 10pt 14pt;
+      margin: 6pt 0 14pt;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    pre > code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    /* --- Lists ----------------------------------------------------------- */
+    ul, ol {
+      margin: 4pt 0 9pt;
+      padding-left: 18pt;
+    }
+    li {
+      margin-bottom: 3pt;
+      text-align: left;
+    }
+    li > p { margin: 0; }
+    ul ul, ol ol, ul ol, ol ul { margin: 2pt 0; }
+
+    /* --- Blockquotes ----------------------------------------------------- */
+    blockquote {
+      border-left: 4px solid #4a9eff;
+      background: #f0f5ff;
+      margin: 10pt 0;
+      padding: 7pt 14pt;
+      border-radius: 0 4px 4px 0;
+      color: #333;
+    }
+    blockquote p {
+      margin: 0;
+      text-align: left;
+      font-style: italic;
+    }
+    blockquote strong { font-style: normal; }
+
+    /* --- Tables ---------------------------------------------------------- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10pt 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    thead th {
+      background: #1b2c4f;
+      color: #fff;
+      padding: 6pt 10pt;
+      text-align: left;
+      font-family: "Segoe UI", Calibri, sans-serif;
+      font-weight: 600;
+      font-size: 9pt;
+    }
+    td {
+      padding: 5pt 10pt;
+      border-bottom: 1px solid #dde6f0;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f4f8fd; }
+
+    /* --- Images ---------------------------------------------------------- */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 10pt auto;
+      page-break-inside: avoid;
+    }
+
+    /* --- Horizontal rule ------------------------------------------------- */
+    hr {
+      border: none;
+      border-top: 1px solid #ccd6e8;
+      margin: 14pt 0;
+    }
+
+    /* --- Text styles ----------------------------------------------------- */
+    strong { font-weight: 700; }
+    em     { font-style: italic; }
+    sup    { font-size: 7pt; vertical-align: super; line-height: 0; }
+    sub    { font-size: 7pt; vertical-align: sub;   line-height: 0; }
+
+    /* --- Minimal syntax highlighting (muted, grayscale-safe) ------------- */
+    .hljs-keyword,
+    .hljs-built_in   { color: #2255aa; font-weight: 600; }
+    .hljs-string,
+    .hljs-literal    { color: #1a7a1a; }
+    .hljs-comment    { color: #888; font-style: italic; }
+    .hljs-number,
+    .hljs-type       { color: #883300; }
+    .hljs-title      { color: #1b2c4f; font-weight: 600; }
+    .hljs-attr       { color: #2255aa; }
+  </style>
+</head>
+<body>
+  <article>
+{CONTENT}
+  </article>
+</body>
+</html>

@@ -1,40 +1,140 @@
-name: PDF book generation
+name: Generate PDF Book
+
 on:
-  push:    
-    tags:
-      - 'v*'
+  push:
+    branches:
+      - main
+
 jobs:
-  convert_via_pandoc:
+  build-pdf:
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v4
-      - name: create file list
-        id: files_list
+
+      - name: Set up .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install DocFX
         run: |
-          mkdir output  # create output dir
-          echo "Listing all Markdown files..."
-          echo "files=$(find . -type f -name "*.md" | sort | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          dotnet tool install -g docfx
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - uses: docker://pandoc/latex:3.5
-        with:
-          args: --output=output/result.pdf ${{ steps.files_list.outputs.files }} --resource-path=./ce-1103/images:./ce-2103/images              
+      - name: Install wkhtmltopdf (patched Qt for Jammy)
+        run: |
+          curl -fsSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.deb \
+            -o wkhtmltox.deb
+          sudo apt-get install -y ./wkhtmltox.deb
 
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+      - name: Build DocFX site
+        run: docfx build docfx.json
 
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Extract article content
+        shell: pwsh
+        run: |
+          $root     = $env:GITHUB_WORKSPACE
+          $site     = "$root/_site"
+          $printDir = "$root/_print"
+          $tmpl     = [IO.File]::ReadAllText("$root/template.html", [Text.Encoding]::UTF8)
+
+          $pageSpecs = @(
+            @{ Course = 'ce-1103'; Prefix = '01-' },
+            @{ Course = 'ce-1103'; Prefix = '02-' },
+            @{ Course = 'ce-1103'; Prefix = '03-' },
+            @{ Course = 'ce-1103'; Prefix = '04-' },
+            @{ Course = 'ce-1103'; Prefix = '05-' },
+            @{ Course = 'ce-2103'; Prefix = '01-' },
+            @{ Course = 'ce-2103'; Prefix = '02-' },
+            @{ Course = 'ce-2103'; Prefix = '03-' },
+            @{ Course = 'ce-2103'; Prefix = '04-' },
+            @{ Course = 'ce-2103'; Prefix = '05-' },
+            @{ Course = 'ce-2103'; Prefix = '06-' },
+            @{ Course = 'ce-2103'; Prefix = '08-' }
+          )
+
+          foreach ($spec in $pageSpecs) {
+            $srcFile = Get-ChildItem "$site/$($spec.Course)" -Filter "$($spec.Prefix)*.html" |
+                       Where-Object { $_.Name -notmatch 'toc' } |
+                       Select-Object -First 1
+            if (-not $srcFile) { Write-Warning "File not found: $($spec.Course) $($spec.Prefix)*.html"; continue }
+
+            $html = [IO.File]::ReadAllText($srcFile.FullName, [Text.Encoding]::UTF8)
+            $m    = [regex]::Match($html, '(?s)<article[^>]*>(.*?)</article>')
+            if (-not $m.Success) { Write-Warning "No <article> in $($srcFile.Name)"; continue }
+
+            $baseUrl = 'file://' + $srcFile.DirectoryName + '/'
+            $out     = $tmpl.Replace('{BASE}', $baseUrl).Replace('{CONTENT}', $m.Groups[1].Value)
+
+            $outDir = "$printDir/$($spec.Course)"
+            if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }
+            [IO.File]::WriteAllText("$outDir/$($srcFile.Name)", $out, [Text.Encoding]::UTF8)
+            Write-Host "OK: $($spec.Course)/$($srcFile.Name)"
+          }
+
+      - name: Generate PDF
+        shell: pwsh
+        run: |
+          $root     = $env:GITHUB_WORKSPACE
+          $printDir = "$root/_print"
+          $output   = "$root/Algoritmos y Estructuras de Datos.pdf"
+          $coverUrl = "file://$root/cover.html"
+          $tocXsl   = "$root/toc.xsl"
+
+          $pageSpecs = @(
+            @{ Course = 'ce-1103'; Prefix = '01-' },
+            @{ Course = 'ce-1103'; Prefix = '02-' },
+            @{ Course = 'ce-1103'; Prefix = '03-' },
+            @{ Course = 'ce-1103'; Prefix = '04-' },
+            @{ Course = 'ce-1103'; Prefix = '05-' },
+            @{ Course = 'ce-2103'; Prefix = '01-' },
+            @{ Course = 'ce-2103'; Prefix = '02-' },
+            @{ Course = 'ce-2103'; Prefix = '03-' },
+            @{ Course = 'ce-2103'; Prefix = '04-' },
+            @{ Course = 'ce-2103'; Prefix = '05-' },
+            @{ Course = 'ce-2103'; Prefix = '06-' },
+            @{ Course = 'ce-2103'; Prefix = '08-' }
+          )
+
+          $wkArgs = @(
+            '--enable-local-file-access',
+            '--print-media-type',
+            '--outline',
+            '--outline-depth', '3',
+            '--margin-top',    '22mm',
+            '--margin-bottom', '20mm',
+            '--margin-left',   '25mm',
+            '--margin-right',  '22mm',
+            '--footer-left',   'Algoritmos y Estructuras de Datos',
+            '--footer-right',  '[page]/[topage]',
+            '--footer-font-size', '8',
+            '--footer-font-name', 'DejaVu Sans',
+            '--footer-spacing', '5',
+            '--encoding', 'utf-8',
+            'cover', $coverUrl,
+            'toc', '--xsl-style-sheet', $tocXsl
+          )
+
+          foreach ($spec in $pageSpecs) {
+            $f = Get-ChildItem "$printDir/$($spec.Course)" -Filter "$($spec.Prefix)*.html" |
+                 Where-Object { $_.Name -notmatch 'toc' } |
+                 Select-Object -First 1
+            if (-not $f) { Write-Warning "Missing: $($spec.Course) $($spec.Prefix)"; continue }
+            $wkArgs += 'page', "file://$($f.FullName)"
+            Write-Host "  + $($f.Name)"
+          }
+
+          $wkArgs += $output
+          wkhtmltopdf @wkArgs
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "wkhtmltopdf failed with exit code $LASTEXITCODE"
+          }
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: output/result.pdf
-          asset_name: DSA${{ github.ref }}.pdf
-          asset_content_type: application/pdf
+          name: Algoritmos-y-Estructuras-de-Datos
+          path: 'Algoritmos y Estructuras de Datos.pdf'
+          retention-days: 90

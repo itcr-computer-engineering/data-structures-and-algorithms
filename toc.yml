@@ -1,0 +1,6 @@
+- name: Inicio
+  href: index.md
+- name: CE-1103 · Algoritmos y Estructuras de Datos
+  href: ce-1103/
+- name: CE-2103 · Diseño y Análisis de Algoritmos
+  href: ce-2103/
