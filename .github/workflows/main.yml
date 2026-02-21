@@ -8,6 +8,8 @@ on:
 jobs:
   build-pdf:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write   # needed to create releases and push tags
 
     steps:
       - uses: actions/checkout@v4
@@ -132,9 +134,18 @@ jobs:
             throw "wkhtmltopdf failed with exit code $LASTEXITCODE"
           }
 
-      - name: Upload PDF artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Algoritmos-y-Estructuras-de-Datos
-          path: 'Algoritmos y Estructuras de Datos.pdf'
-          retention-days: 90
+      - name: Publish to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Move the 'latest' tag to the current commit
+          git tag -f latest
+          git push -f origin latest
+          # Delete the old 'latest' release (ignore error if it doesn't exist yet)
+          gh release delete latest --yes 2>/dev/null || true
+          # Create a fresh release with the PDF attached
+          gh release create latest \
+            --title "Latest Build" \
+            --notes "PDF generated from commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" \
+            --prerelease \
+            'Algoritmos y Estructuras de Datos.pdf'
