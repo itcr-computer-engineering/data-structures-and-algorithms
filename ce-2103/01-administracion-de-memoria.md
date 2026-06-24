@@ -12,7 +12,7 @@ API corresponde a las siglas de la palabra _Application Programming Interface_, 
 
 > Un estándar para las API de los S.O es el **posix**. El posix son las siglas de la palabra en inglés _Portable Operating System Interface_. Es un **estándar del IEEE para los APIS del S.O**.
 
-Un ejemplo de API por ejemplo para abrir un archivo, se utiliza la función `fopen` que retorna un  _pointer_ o _handler_ al archivo.
+Un ejemplo de API por ejemplo para abrir un archivo, se utiliza la función `fopen` que retorna un _pointer_ o _handler_ al archivo.
 
 `fptr = fopen("archivo.txt")`
 
@@ -28,9 +28,9 @@ Los recursos administrados son:
 
 > **Thread vs Process**
 > 
-> Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco. Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**. Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse: registros de procesador, contadores de programas. punteros de pila, páginas de memoria, etc.
+> Un programa es un archivo ejecutable que contiene el código o el conjunto de instrucciones del procesador, que se almacena como un archivo en el disco. Cuando un programa se ejecuta, se carga en memoria y se convierte en un **proceso**. Un proceso activo incluye los recursos administrados por el sistema operativo que el programa necesita para ejecutarse: registros de procesador, contadores de programas, punteros de pila, páginas de memoria, etc.
 > 
-> Un **thread (hilo)** es un flujo de control dentro de un proceso, y cada hilo tiene su propia pila de llamadas, registros de procesador y estado de ejecución. Multiples hilos comparten el mismo espacio de direcciones de memoria, archivos abiertos, etc. 
+> Un **thread (hilo)** es un flujo de control dentro de un proceso, y cada hilo tiene su propia pila de llamadas, registros de procesador y estado de ejecución. Múltiples hilos comparten el mismo espacio de direcciones de memoria, archivos abiertos, etc. 
 
 ## Definición de Administración de Memoria
 Es el conjunto de tareas que realiza el sistema operativo para gestionar la memoria principal de una computadora. La administración de memoria es una parte fundamental de los sistemas operativos modernos, ya que permite a los programas ejecutarse sin tener que preocuparse por la gestión de la memoria.
@@ -49,14 +49,14 @@ Antes de continuar con el resto de este capítulo, es clave entender el concepto
 
 Imagine un edificio de apartamentos, en el que todos los apartamentos son exactamente del mismo tamaño y están numerados de manera consecutiva. Cada apartamento únicamente puede alojar a una sola persona. Una familia por lo tanto, ocupará varios apartamentos contiguos. El edificio puede continuar creciendo con el tiempo conforme se construyan nuevos pisos, pero la constructora tendrá un máximo de apartamentos que puede construir. La recepción del edificio puede llevar correspondencia a cualquier apartamento, incluso cuando se construyan nuevos apartamentos, pero siempre limitado por el número de apartamentos que se pueden construir y por el número de apartamentos que ya están construidos.
 
-Aplicando el ejemplo a la computadora, un sistema operativo (_la recepción_) tiene la capacidad de generar direcciones de memoria de _n_ bits (usualmente 32 o 64 bits). Por ejemplo, si es son direcciones de 32 bits, el sistema operativo puede generar 2^32^ direcciones de memoria, desde la dirección 0 hasta la dirección 2^32^ - 1. Cada dirección de memoria corresponde a una casilla (_un apartamento_) que puede alojar 1 byte (_una persona_). Las variables (_familias_) puede ser de 1 o más bytes, siempre contiguos.
+Aplicando el ejemplo a la computadora, un sistema operativo (_la recepción_) tiene la capacidad de generar direcciones de memoria de _n_ bits (usualmente 32 o 64 bits). Por ejemplo, si son direcciones de 32 bits, el sistema operativo puede generar 2^32^ direcciones de memoria, desde la dirección 0 hasta la dirección 2^32^ - 1. Cada dirección de memoria corresponde a una casilla (_un apartamento_) que puede alojar 1 byte (_una persona_). Las variables (_familias_) pueden ser de 1 o más bytes, siempre contiguos.
 
 Si el usuario (_la constructora_) instala más RAM, el sistema operativo podrá accederlo hasta el máximo que sus direcciones lo permitan. Por ejemplo, si el sistema operativo tiene direcciones de 32 bits, podrá acceder a 2^32^ bytes de memoria, es decir 4GB. Si el usuario instala 8GB de RAM, el sistema operativo solo podrá acceder a 4GB, ya que no tiene direcciones para más.
 
 Suponiendo un sistema operativo con direcciones de 16 bits, el sistema operativo podrá acceder a 2^16^ bytes de memoria, es decir 64KB. El rango de direcciones sería de 0 a 65535.
 
 ## Evolución de la Administración de memoria
-La memoria ha sido un componente fundamental en las computadoras desde sus inicios y por ende ha necesitado del sistema operativo para administrarla. Conforme los recursos computacionales se adaptan a las necesidades de los usuarios y las prestaciones de hardware, la  administración de memoria se adapta para reducir el _overhead_ y mejorar la eficiencia.
+La memoria ha sido un componente fundamental en las computadoras desde sus inicios y por ende ha necesitado del sistema operativo para administrarla. Conforme los recursos computacionales se adaptan a las necesidades de los usuarios y las prestaciones de hardware, la administración de memoria se adapta para reducir el _overhead_ y mejorar la eficiencia.
 
 A continuación se presenta la evolución de la abstracción de la memoria en los sistemas operativos.
 
@@ -66,13 +66,13 @@ La abstracción más simple es no tener ninguna. Las computadoras mainframe de l
 
 Había cierta organización de la memoria:
 
-![Organización de la memoria sin abstracción](images/01-administracion-de-memoria/image.png)
+![Organización de la memoria sin abstracción](./images/01-administracion-de-memoria/image.png)
 
 Bajo estas condiciones, era imposible ejecutar más de un programa a la vez (_multiprogramación_), ya que cada programa accedía directamente a la memoria física. Dos o más programas cargados en memoria, podían afectarse entre sí causando errores en la ejecución. El uso de threads era posible dado que compartían la misma memoria, pero de poco valor.
 
-![El problema de la re-ubicación](images/01-administracion-de-memoria/image-01.png)
+![El problema de la re-ubicación](./images/01-administracion-de-memoria/image-01.png)
 
-El _swapping_ se introduce como técnica para "pausar" la ejecución de un, guardar su estado en disco y cargar otro programa en memoria. Esta técnica permitió la multiprogramación _a cierto grado_, dado que solo un programa podía estar cargado en memoria en un momento dado. La idea era que mientras un programa estaba esperando por una operación de I/O, otro programa podía ejecutarse.
+El _swapping_ se introduce como técnica para "pausar" la ejecución de un programa, guardar su estado en disco y cargar otro programa en memoria. Esta técnica permitió la multiprogramación _a cierto grado_, dado que solo un programa podía estar cargado en memoria en un momento dado. La idea era que mientras un programa estaba esperando por una operación de I/O, otro programa podía ejecutarse.
 
 La computadora _IBM 360_, introduce una técnica para poder tener dos programas en memoria: _static relocation_. Cuando un programa se cargaba en memoria, se le asignaba una dirección base (la dirección inicial en la que se carga) y se modificaban todas las referencias a memoria para sumarles la dirección base. Esto funcionaba pero claramente no era eficiente puesto que entre más grande fuera el programa, más tarda en cargarse.
 
@@ -84,9 +84,9 @@ La computadora _IBM 360_, introduce una técnica para poder tener dos programas 
 > _de Wikipedia_
 
 ### Espacios de direcciones
-Constituye una abstracción para la memoria física. Cada programa tiene su propio espacio de direcciones, que va desde 0 a un valor máximo. El sistema operativo se encarga de mapear las direcciones virtuales a direcciones físicas. Dos programas puede ver la dirección `28`, pero en realidad se refieren a direcciones físicas diferentes.
+Constituye una abstracción para la memoria física. Cada programa tiene su propio espacio de direcciones, que va desde 0 a un valor máximo. El sistema operativo se encarga de mapear las direcciones virtuales a direcciones físicas. Dos programas pueden ver la dirección `28`, pero en realidad se refieren a direcciones físicas diferentes.
 
-Bajo este enfoque, el hardware provee dos registros llamados _base_ y _limite_. Cuando un programa específico se ejecuta, el sistema operativo carga el _base_ y _limite_ con los valores correspondientes al espacio de direcciones del programa. Cada vez que el programa accede a una dirección de memoria, el hardware verifica que la dirección esté dentro del rango permitido por el _base_ y _limite_ y genera la dirección física correspondiente.
+Bajo este enfoque, el hardware provee dos registros llamados _base_ y _límite_. Cuando un programa específico se ejecuta, el sistema operativo carga el _base_ y _límite_ con los valores correspondientes al espacio de direcciones del programa. Cada vez que el programa accede a una dirección de memoria, el hardware verifica que la dirección esté dentro del rango permitido por el _base_ y _límite_ y genera la dirección física correspondiente.
 
 Una limitante de este enfoque es que el programa completo debe caber en la memoria, lo cual es claramente poco práctico para los programas modernos con requerimientos de memoria cada vez más agresivos y que compiten con muchos otros programas ejecutándose concurrentemente.
 
@@ -95,26 +95,26 @@ Una limitante de este enfoque es que el programa completo debe caber en la memor
 > La concurrencia se refiere a la capacidad de un sistema de llevar a cabo múltiples tareas en un mismo periodo de tiempo traslapándose entre sí, pero no implica que se ejecuten a la misma vez. En paralelismo, las tareas se ejecutan al mismo tiempo. Paralelismo implica múltiples núcleos de procesamiento. La concurrencia puede lograrse con un solo núcleo bajo multiprogramación.
 
 ### Memoria virtual
-La memoría virtual es la solución para poder ejecutar programas que no caben en la memoria física. La idea básica es que cada programa tiene su propio espacio de direcciones dividido en bloques llamados _páginas_. Cada página es es un rango contiguo de direcciones. 
+La memoria virtual es la solución para poder ejecutar programas que no caben en la memoria física. La idea básica es que cada programa tiene su propio espacio de direcciones dividido en bloques llamados _páginas_. Cada página es un rango contiguo de direcciones.
 
-Las páginas se mapean a bloques de memoria física llamados _frames_, pero no notas las páginas necesitan estar cargadas. Cuando un programa referencia una página que está cargada en memoria (_page-hit_), el hardware mapea la dirección virtual a la dirección física correspondiente. Si la página no está cargada, el sistema operativo la carga desde el disco a un frame libre en memoria y re-ejecuta la instrucción que causó el fallo de página (_page-fault_).
+Las páginas se mapean a bloques de memoria física llamados _frames_, pero no todas las páginas necesitan estar cargadas. Cuando un programa referencia una página que está cargada en memoria (_page-hit_), el hardware mapea la dirección virtual a la dirección física correspondiente. Si la página no está cargada, el sistema operativo la carga desde el disco a un frame libre en memoria y re-ejecuta la instrucción que causó el fallo de página (_page-fault_).
 
 Entonces, cuando un programa tiene una instrucción `MOV REGISTER1, 1000`, la dirección 1000 es una dirección virtual parte de su espacio de direcciones virtuales.
 
-![Funcionamiento del MMU](images/01-administracion-de-memoria/image-02.png)
+![Funcionamiento del MMU](./images/01-administracion-de-memoria/image-02.png)
 
 Como se nota en la imagen anterior, hay hardware especializado, el _Memory Management Unit (MMU)_ que se encarga de mapear las direcciones virtuales a direcciones físicas. El MMU tiene una tabla de páginas que mapea las direcciones virtuales a direcciones físicas. La tabla de páginas se mantiene en memoria y el MMU la consulta cada vez que necesita mapear una dirección virtual a una dirección física.
 
-![Relación entre direcciones virtuales y físicas](images/01-administracion-de-memoria/image-03.png)
+![Relación entre direcciones virtuales y físicas](./images/01-administracion-de-memoria/image-03.png)
 
 El MMU tiene una tabla que lleva el inventario de páginas cargadas y su correspondiente frame. Dicha tabla aloja información estadística sobre las páginas, como la frecuencia de uso, para poder tomar decisiones sobre qué páginas mantener en memoria y cuáles sacar. Dado que los frames son limitados, se utilizan algoritmos de reemplazo de páginas para decidir cuál página sacar de memoria cuando se necesita cargar una nueva y no hay espacio.
 
 ## Administración de memoria a nivel de proceso
-Para un proceso (programa en ejecución con recursos asignados), la administración de memoria se refiere a la gestión de la memoria asignada. La abstracción utilizada por el sistema operativo, es transparente para el proceso, el cuál únicamente utiliza los mecanismos disponibles para manupular la memoria.
+Para un proceso (programa en ejecución con recursos asignados), la administración de memoria se refiere a la gestión de la memoria asignada. La abstracción utilizada por el sistema operativo, es transparente para el proceso, el cuál únicamente utiliza los mecanismos disponibles para manipular la memoria.
 
 Dependiendo del lenguaje y compilador, el layout de memoria puede variar. Un programa en C, usualmente tiene el siguiente layout de memoria:
 
-![Layout de memoria de un programa en C](images/01-administracion-de-memoria/image-04.png)
+![Layout de memoria de un programa en C](./images/01-administracion-de-memoria/image-04.png)
 
 A continuación se describen a mayor detalle cada una de estas partes.
 
@@ -139,7 +139,7 @@ int main() {
 }
 ```
 > **¿static en C?**
-> Al usarlo sobre variables que están dentro de una función, permite que el valor de las mismas persista entre llamadas Al usarlo sobre funciones o variables de ámbito global, garantiza que dicho elemento sólo exista en la unidad de compilación en la que se encuentre declarado.
+> Al usarlo sobre variables que están dentro de una función, permite que el valor de las mismas persista entre llamadas. Al usarlo sobre funciones o variables de ámbito global, garantiza que dicho elemento sólo exista en la unidad de compilación en la que se encuentre declarado.
 > _fuente: [stackoverflow](https://es.stackoverflow.com/questions/297656/para-que-sirve-static-en-c)_
 
 
@@ -159,7 +159,7 @@ int main() {
 }
 ```
 #### Command-line arguments and environment variables
-Esta seccion de la memoria se carga con los argumentos de la línea de comandos y las variables de entorno. Por _argumentos de la línea de comandos_ se entiende los argumentos que se pasan al programa al momento de ejecutarlo. Por ejemplo, `./programa -a -b -c`_. Estos argumentos se pueden acceder programáticamente mediante:
+Esta sección de la memoria se carga con los argumentos de la línea de comandos y las variables de entorno. Por _argumentos de la línea de comandos_ se entiende los argumentos que se pasan al programa al momento de ejecutarlo. Por ejemplo, `./programa -a -b -c`. Estos argumentos se pueden acceder programáticamente mediante:
 
 ```c
 int main(int argc, char* argv[]) {
@@ -193,15 +193,15 @@ El stack es _LIFO_ (Last In, First Out). Cada vez que se llama a una función, s
 
 > Las variables locales almacenables en el stack deben ser de tamaño conocido al momento de la compilación. Por esta razón, memoria dinámica como listas enlazadas no puede almacenarse en el stack.
 
-![Visualización del stack (1 de 5) ](images/01-administracion-de-memoria/image-05.png)
+![Visualización del stack (1 de 5) ](./images/01-administracion-de-memoria/image-05.png)
 
-![Visualización del stack (2 de 5) ](images/01-administracion-de-memoria/image-06.png)
+![Visualización del stack (2 de 5) ](./images/01-administracion-de-memoria/image-06.png)
 
-![Visualización del stack (3 de 5) ](images/01-administracion-de-memoria/image-07.png)
+![Visualización del stack (3 de 5) ](./images/01-administracion-de-memoria/image-07.png)
 
-![Visualización del stack (4 de 5) ](images/01-administracion-de-memoria/image-08.png)
+![Visualización del stack (4 de 5) ](./images/01-administracion-de-memoria/image-08.png)
 
-![Visualización del stack (5 de 5) ](images/01-administracion-de-memoria/image-09.png)
+![Visualización del stack (5 de 5) ](./images/01-administracion-de-memoria/image-09.png)
 
 #### Heap
 Es una sección de la memoria que se utiliza para almacenar datos que no tienen un tamaño conocido al momento de la compilación y cuyo tiempo de vida es controlado por el programador. Por ejemplo, listas enlazadas, árboles, etc. El heap es de tamaño variable y se expande y contrae dinámicamente. El programador es responsable de manipular la memoria en el heap, es decir, asignar, des-asignar y re-dimensionarla.
@@ -210,17 +210,17 @@ Para interactuar con la memoria, el programador utiliza en C las funciones `mall
 
 > **¿Es posible evitar usar el Heap?**
 >
-> Sí, es posible evitar usar el heap. Sin embargo, esto implica que el programador únicamente podrá utiliza variables de tamaño conocido en tiempo de compilación, limitando la flexibilidad y el alcance de lo que el programa puede realizar.
+> Sí, es posible evitar usar el heap. Sin embargo, esto implica que el programador únicamente podrá utilizar variables de tamaño conocido en tiempo de compilación, limitando la flexibilidad y el alcance de lo que el programa puede realizar.
 
-El siguente código muestra un ejemplo de cómo se puede utilizar el heap en C:
+El siguiente código muestra un ejemplo de cómo se puede utilizar el heap en C:
 
-![Visualización del heap (1 de 4) ](images/01-administracion-de-memoria/image-10.png)
+![Visualización del heap (1 de 4) ](./images/01-administracion-de-memoria/image-10.png)
 
-![Visualización del heap (2 de 4) ](images/01-administracion-de-memoria/image-11.png)
+![Visualización del heap (2 de 4) ](./images/01-administracion-de-memoria/image-11.png)
 
-![Visualización del heap (3 de 4) ](images/01-administracion-de-memoria/image-12.png)
+![Visualización del heap (3 de 4) ](./images/01-administracion-de-memoria/image-12.png)
 
-![Visualización del heap (4 de 4) ](images/01-administracion-de-memoria/image-13.png)
+![Visualización del heap (4 de 4) ](./images/01-administracion-de-memoria/image-13.png)
 
 > **¿Qué pasa si no se libera la memoria en el heap?**
 >
@@ -245,7 +245,7 @@ Es un tipo de datos especial definido como parte del API del Heap. Al ser un tip
 
 Para declarar un puntero se utiliza código similar al siguiente:
 
-```c
+```cpp
 int* ptr = malloc(sizeof(int));
 char* cptr = malloc(sizeof(char));
 double* dptr = malloc(sizeof(double));
@@ -279,9 +279,9 @@ Si visualizamos la memoria como una tabla con columnas y filas, para el código 
 | 0x72      |        | 0     | 20B     | Heap      | MyClass |
 | 0x92      |        | 0     | 100B    | Heap      | ?       |
 
-> Las direcciones de la tabla son ficticias y no corresponden a direcciones reales de memoria. Asumimos que el heap empieza en la dirección hexadecimal 64. Asumimos que cada direcciónes de 32 bits, es decir 4 bytes. Asumimos que la clase `MyClass` tiene un tamaño de 20 bytes.
+> Las direcciones de la tabla son ficticias y no corresponden a direcciones reales de memoria. Asumimos que el heap empieza en la dirección hexadecimal 64. Asumimos que cada dirección es de 32 bits, es decir 4 bytes. Asumimos que la clase `MyClass` tiene un tamaño de 20 bytes.
 
-Como se puede notar, para acceder a la memoria, se necesita dos componentes: la llamada al API (en este caso malloc) y un puntero para poder acceder a la memoria creada por el API. El puntero siempre estará en el stack, y es una variable automática como cualquier otra. Sin embargo, al liberarse junto con el frame, la memoria en el Heap no se libera.
+Como se puede notar, para acceder a la memoria, se necesitan dos componentes: la llamada al API (en este caso malloc) y un puntero para poder acceder a la memoria creada por el API. El puntero siempre estará en el stack, y es una variable automática como cualquier otra. Sin embargo, al liberarse junto con el frame, la memoria en el Heap no se libera.
 
 Una llamada a malloc sin asignar un puntero, por ejemplo 
 ```c
@@ -297,9 +297,9 @@ Pero al no haber ningún pointer en el stack que almacene la dirección `0x64`, 
 
 No hay nada "mágico" con respecto a los punteros. Son simplemente un tipo de dato como cualquier otro. La diferencia es que los punteros contienen direcciones de memoria en lugar de valores.
 
-> ¿Cuál es el proposito de declarar pointers con tipo si todos ocupen el mismo espacio?
+> ¿Cuál es el propósito de declarar pointers con tipo si todos ocupan el mismo espacio?
 >
-> _Type check_: El compilador pueda hacer type checking. Por ejemplo, si se declara un puntero de tipo `int`, el compilador no permitirá asignarle una dirección de memoria de un `char`. 
+> _Type check_: El compilador puede hacer type checking. Por ejemplo, si se declara un puntero de tipo `int`, el compilador no permitirá asignarle una dirección de memoria de un `char`. 
 >
 > _Read/Write size_: El compilador sabe cuántos bytes leer o escribir al acceder a la memoria a través de un puntero.
 >
@@ -324,7 +324,7 @@ Para el código anterior, la tabla de memoria sería:
 
 Considere el siguiente código:
 
-```c
+```cpp
 #include <iostream>
 using namespace std;
  
@@ -351,7 +351,7 @@ El operador **unario** `de-referencia`, designado por `*` (no confundir con el o
 
 Por ejemplo, el siguiente código:
 
-```c
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
  
@@ -379,7 +379,7 @@ The value x is: 3899
 
 El operador de indirección también sirve para modificar el valor de la variable apuntada por el puntero. Por ejemplo, el siguiente código:
 
-```c
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -416,7 +416,7 @@ La tabla de memoria para el código anterior sería inicialmente:
 | 0x0       | x      | **3899**  | 4B      | Stack     | int     |
 | 0x4       | price  | 0x0   | 4B      | Stack     | Pointer |
 
-y luego de la instrucción  `*price = 1000;`, 
+y luego de la instrucción `*price = 1000;`,
 
 | Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
 | --------- | ------ | ----- | ------- | --------- | ------- |
@@ -442,7 +442,7 @@ La tabla de memoria para el código anterior sería:
 
 Mediante cualquiera de los punteros `ptr` o `ptr2`, se puede leer/modificar el valor de `x`. Por ejemplo:
 
-```c
+```cpp
 int x = 20;
 int* ptr = &x;
 int* ptr2 = ptr;
@@ -470,9 +470,9 @@ La tabla de memoria para el código anterior sería:
 | 0x4       | ptr    | 0x0   | 4B      | Stack     | Pointer |
 | 0x8       | ptr2   | 0x0   | 4B      | Stack     | Pointer |
 
-Nótese que solo hay un espacio con el valor 10. Ambos pointers "apuntan" a la misma dirección. Se pueden crear _n_ copias de punteros, pero solo abrá un espacio de memoria al que todos apuntan.
+Nótese que solo hay un espacio con el valor 10. Ambos pointers "apuntan" a la misma dirección. Se pueden crear _n_ copias de punteros, pero solo habrá un espacio de memoria al que todos apuntan.
 
-![Shallow copy](images/01-administracion-de-memoria/image-14.png)
+![Shallow copy](./images/01-administracion-de-memoria/image-14.png)
 
 Por otro lado, _Deep-copy_ implica copiar el valor al que apunta el puntero. Por ejemplo, el siguiente código:
 
@@ -491,14 +491,14 @@ En este caso, la tabla de memoria sería:
 | 0x8       | ptr2   | 0x64  | 4B      | Stack     | Pointer |
 | 0x64      |        | 20    | 4B      | Heap      | int     |
 
-![Deep copy](images/01-administracion-de-memoria/image-15.png)
+![Deep copy](./images/01-administracion-de-memoria/image-15.png)
 
 Deep-copy puede implicar más trabajo que un simple `malloc`. Por ejemplo, al copiar una estructura de datos a otra, si alguno de los campos de la estructura es un puntero, se debe copiar el valor al que apunta el puntero, no el puntero en sí.
 
 #### Aritmética de punteros
 Permite sumar o restar un número entero a un puntero. La aritmética de punteros es útil para acceder a elementos de un array o para moverse a través de una estructura de datos. Por ejemplo, considere el siguiente código:
 
-```c
+```cpp
 int arr[5] = {10, 20, 30, 40, 50};
 int* ptr = arr;
 
@@ -511,7 +511,7 @@ En este caso, `ptr` apunta al primer elemento del array `arr`. Al sumar 1 a `ptr
 
 Para efectos de arrays en C/C++, `arr[i]` es equivalente a `*(arr + i)`. Por ejemplo, el siguiente código:
 
-```c
+```cpp
 int arr[5] = {10, 20, 30, 40, 50};
 
 cout << arr[0]; // Imprime 10
@@ -519,12 +519,12 @@ cout << arr[1]; // Imprime 20
 cout << arr[2]; // Imprime 30
 ```
 
-> Dado que acceder cualquier elemento de un array es equivalente a acceder a la dirección de memoria del primer elemento y sumarle un offset, los arrays son muy eficientes en términos de acceso a memoria. Es `O(1)` acceder a cualquier elemento de un array .
+> Dado que acceder a cualquier elemento de un array es equivalente a acceder a la dirección de memoria del primer elemento y sumarle un offset, los arrays son muy eficientes en términos de acceso a memoria. Es `O(1)` acceder a cualquier elemento de un array.
 
 #### Tipo referencia (C/C++)
 En C++, se puede utilizar el tipo `&` para definir una referencia a una variable. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. En C++, específicamente, una referencia no puede ser nula y no puede ser reasignada (debe inicializarse al declararse y siempre referirá a la misma variable). Una referencia es simplemente un alias para una variable.
 
-```c++
+```cpp
 int x = 10;
 int& ref = x;
 
@@ -538,7 +538,7 @@ En C/C++, los parámetros de una función pueden pasarse por valor o por referen
 
 - **Por valor**: Se pasa una copia del valor de la variable. Los cambios a la variable dentro de la función no afectan a la variable original.
 
-```c++
+```cpp
 void foo(int x) {
   x = 20;
 }
@@ -551,7 +551,7 @@ int main() {
 ```
 - **Por referencia**: Se pasa la dirección de memoria de la variable. Los cambios a la variable dentro de la función afectan a la variable original.
 
-```c++
+```cpp
 void foo(int& x) {
   x = 20;
 }
@@ -594,7 +594,7 @@ int main() {
 
 - **Liberar memoria**: Siempre libera la memoria asignada dinámicamente cuando ya no la necesites para evitar fugas de memoria.
 
-- **Evitar punteros colgantes (dangling pointers) **: Después de liberar memoria, establece el puntero a NULL para evitar el uso accidental de punteros colgantes.
+- **Evitar punteros colgantes (dangling pointers)**: Después de liberar memoria, establece el puntero a NULL para evitar el uso accidental de punteros colgantes.
   ```c
   free(ptr);
   ptr = NULL;

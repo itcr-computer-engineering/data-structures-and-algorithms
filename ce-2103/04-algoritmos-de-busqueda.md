@@ -3,7 +3,7 @@ Este tema abarca los algoritmos de búsqueda en estructuras de datos como _array
 
 ## Búsqueda en arrays
 ### Búsqueda secuencial
-Búsqueda secuencial es la solución trivial para buscar en una colección de elementos. Cuando la colección está desordenada, es la única opción. Revisa/procesa cada elemento hasta encontrar el elemento deseado.
+Búsqueda secuencial (también llamada búsqueda lineal) es la solución trivial para buscar en una colección de elementos. Cuando la colección está desordenada, es la única opción. Revisa/procesa cada elemento hasta encontrar el elemento deseado.
 
 - En el peor caso, cada elemento de la colección es comparado contra la llave de búsqueda
 - Si hay un _match_, la búsqueda termina y se retorna el índice del elemento
@@ -11,7 +11,7 @@ Búsqueda secuencial es la solución trivial para buscar en una colección de el
 
 Por ejemplo, dado el siguiente array, para buscar el elemento `20`, se seguiría el siguiente proceso:
 
-![](images/search-algo-1.png)
+![](./images/search-algo-1.png)
 
 #### Implementación
 
@@ -28,12 +28,12 @@ public class SequentialSearch {
 }
 ```
 #### Consideraciones importantes
-- Tiene una complejidad temporal de O(n) para el peor caso y O(1) para el mejor caso.
+- Tiene una complejidad temporal de `O(n)` para el peor caso y `O(1)` para el mejor caso.
 - Es ineficiente para colecciones grandes
 - Si el array no está ordenado o se quiere evitar ordenar, es la única opción
 
 ### Búsqueda binaria
-Búsqueda binaria es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo **ordenado**. A diferencia de la búsqueda lineal, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
+Búsqueda binaria es un algoritmo de búsqueda que encuentra la posición de un valor en un arreglo **ordenado**. A diferencia de la búsqueda secuencial, que recorre el arreglo desde el primer elemento hasta el último, la búsqueda binaria divide el arreglo en dos mitades y compara el valor buscado con el elemento en el medio. 
 
 - Si el valor buscado _es menor que el elemento en el medio_, la búsqueda continúa en la mitad izquierda del arreglo. 
 
@@ -102,9 +102,9 @@ public static int binarySearch(int[] arr, int target) {
 
 ### Búsqueda por interpolación
 
-- Es una mejora sobre `búsqueda binaria`, especificamente si los valores en el array están distribuídos uniformemente. La búsqueda por interpolación calcula la posición de la mitad del array basado en el valor del elemento buscado y los valores en los extremos del array.
+- Es una mejora sobre `búsqueda binaria`, específicamente si los valores en el array están distribuidos uniformemente. La búsqueda por interpolación calcula la posición de la mitad del array basado en el valor del elemento buscado y los valores en los extremos del array.
 
-- Búsqueda binaria siempre compara contra el elemento central del array, mientras que búsqueda por interpolación considera la llave de búsqueda antes de decidir contra cual elemento del array comparar.
+- Búsqueda binaria siempre compara contra el elemento central del array, mientras que búsqueda por interpolación considera la llave de búsqueda antes de decidir contra cuál elemento del array comparar.
 
 - El código es igual al de búsqueda binaria, con la diferencia de que la posición del elemento medio se calcula de manera diferente:
 
@@ -117,20 +117,20 @@ mid = low + ((x - arr[low]) * (high - low)) / (arr[high] - arr[low])
 La mejora en rendimiento con respecto a búsqueda binaria se da en el caso promedio (que depende de la distribución uniforme de los elementos en el array), con una complejidad de tiempo de `O(log log n)`. En el peor caso (datos no uniformemente distribuidos), la complejidad degrada a `O(n)`.
 
 ### Búsqueda por salto (Jump Search)
-Aplicable para arrays ordenados, comparandos menos elementos que búsqueda lineal avanzando en bloques de tamaño _√n_ (un número fijo de elementos por salto). Determinar el tamaño del bloque de saltos es crucial para el rendimiento del algoritmo.
+Aplicable para arrays ordenados, comparando menos elementos que búsqueda secuencial avanzando en bloques de tamaño _√n_ (un número fijo de elementos por salto). Determinar el tamaño del bloque de saltos es crucial para el rendimiento del algoritmo.
 
 Normalmente se utiliza sqrt(n) como tamaño de bloque, donde n es el tamaño del array
 
-![](images/search-algo-2.png)
+![](./images/search-algo-2.png)
 
-> Complejidad temporal: O(sqrt(n))
+> Complejidad temporal: `O(sqrt(n))`
 
 ## Pathfinding
-_Pathfinding_ se refiere a búsqueda de caminos entre dos puntos en un plano, especialmente útil para video juegos y simulaciones. Incluye una amplia variedad de algoritmos y no hay una solución única para todos los casos. Por ejemplo, la elección del algoritmo depende de:
+_Pathfinding_ se refiere a búsqueda de caminos entre dos puntos en un plano, especialmente útil para videojuegos y simulaciones. Incluye una amplia variedad de algoritmos y no hay una solución única para todos los casos. Por ejemplo, la elección del algoritmo depende de:
 
-- ¿És el destino estacionario o móvil?
+- ¿Es el destino estacionario o móvil?
 - ¿Hay obstáculos en el mapa?
-- ¿Hay diferente tipos de terreno en el mapa?
+- ¿Hay diferentes tipos de terreno en el mapa?
 
 ### Pathfinding básico
 Se refiere a encontrar el camino más corto entre dos puntos en un plano sin obstáculos. Por ejemplo, cómo se mueve a un personaje de un punto A a un punto B en un mapa de videojuego.
@@ -149,7 +149,7 @@ Esta es una solución simple, pero no es óptima. No considera obstáculos, terr
 
 ![Movimiento poco natural en pathfinding](./images/04-algoritmos-de-busqueda/image-01.png)
 
-Utilizandio algoritmos de línea de visión, se puede mejorar el movimiento del personaje:
+Utilizando algoritmos de línea de visión, se puede mejorar el movimiento del personaje:
 
 ![Movimiento esperado en pathfinding](./images/04-algoritmos-de-busqueda/image-02.png)
 
@@ -162,7 +162,7 @@ Aunque parezca poco eficiente, el movimiento aleatorio es una solución simple y
 
 ![Movimiento aleatorio](./images/04-algoritmos-de-busqueda/image-04.png)
 
-Como se aprecia en la figura anterior, un movimiento aleatorio para evitar al enemigo puede ser sufiente y evita caer en un gasto computacional innecesario.
+Como se aprecia en la figura anterior, un movimiento aleatorio para evitar al enemigo puede ser suficiente y evita caer en un gasto computacional innecesario.
 
 ```pseudo
 if Player In Line of Sight
@@ -182,13 +182,13 @@ En lugar de moverse en línea recta hacia el destino, se puede rodear los obstá
 2. Si encuentra un obstáculo, se cambia a modo de rodeo.
 3. Sigue el borde del obstáculo hasta que pueda volver a intentar el _pathfinding básico_ con éxito.
 
-El problema del rodeo es que puede ser difícil de determinar cuando salir de dicho modo. Una forma puede ser determinar antes de entrar al modo de rodeo, cual es la ruta donde se puede salir de este.
+El problema del rodeo es que puede ser difícil de determinar cuándo salir de dicho modo. Una forma puede ser determinar antes de entrar al modo de rodeo, cuál es la ruta donde se puede salir de este.
 
 ![Rodeo de obstáculos](./images/04-algoritmos-de-busqueda/image-05.png)
 
 Para hacer el movimiento más natural, se puede intentar línea de visión en cada paso. Si el personaje puede ver el objetivo, se mueve en línea recta hacia él. Si no, se sigue rodeando el obstáculo.
 
-![Rodeo de obstáculo y línea visión en cada paso](./images/04-algoritmos-de-busqueda/image-06.png)
+![Rodeo de obstáculo y línea de visión en cada paso](./images/04-algoritmos-de-busqueda/image-06.png)
 
 ### Pathfinding basado en grafos
 En este enfoque, el mapa se representa como un grafo, donde los nodos son las posiciones en el mapa y las aristas son las conexiones entre las posiciones. Cada arista tiene un costo asociado, que puede ser la distancia entre los nodos o el tiempo que toma recorrerla.
@@ -254,7 +254,7 @@ while not frontier.empty() {
     }
 }
 ```
-Visualmente, se puede entender la diferencia entre BFS y Dijkstra en esta [animación](https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search). A continuación se incluyen una captura de pantalla de la animación:
+Visualmente, se puede entender la diferencia entre BFS y Dijkstra en esta [animación](https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search). A continuación se incluye una captura de pantalla de la animación:
 
 ![Dijkstra](./images/04-algoritmos-de-busqueda/image-11.png)
 

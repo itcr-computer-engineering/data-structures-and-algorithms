@@ -4,17 +4,17 @@ En este capítulo, se introducen conceptos fundamentales de bases de datos relac
 ## Definiciones fundamentales
 Un **dato** es una representación simbólica (numérica, alfabética, algorítmica, etc.) de un atributo o variable cuantitativa o cualitativa. Los datos describen hechos, entidades o relaciones entre ellos. Por ejemplo, un dato puede ser la edad de una persona, el nombre de un producto o la fecha de un evento.
 
-Una **base de datos** es una colección de datos organizada para un propósito específico. Las bases de datos puede ser almancenadas en medios no electrónicos, como la base de datos de una biblioteca, donde cada tarjeta de papel, tiene datos de un libro específicos. Para efectos de este capítulos, consideramos las bases de datos dentro del contexto de Tecnologías de la Información, donde los datos son almacenados y gestionados electrónicamente.
+Una **base de datos** es una colección de datos organizada para un propósito específico. Las bases de datos pueden ser almacenadas en medios no electrónicos, como la base de datos de una biblioteca, donde cada tarjeta de papel tiene datos específicos de un libro. Para efectos de este capítulo, consideramos las bases de datos dentro del contexto de Tecnologías de la Información, donde los datos son almacenados y gestionados electrónicamente.
 
-Las bases de datos tiene un _dominio_ o universo de discurso específico, que describe el tipo de datos que almacenan. **No hay bases de datos genéricas**.
+Las bases de datos tienen un _dominio_ o universo de discurso específico, que describe el tipo de datos que almacenan. **No hay bases de datos genéricas**.
 
-Un sistema administrador de bases de datos (DBMS) es un software que permite a los usuarios crear, leer, actualizar y eliminar datos en una base de datos. Ejemplos de DMBS comunes son MySQL, PostgreSQL, Oracle, SQL Server, SQLite, DB2, MongoDB, entre otras.
+Un sistema administrador de bases de datos (DBMS) es un software que permite a los usuarios crear, leer, actualizar y eliminar datos en una base de datos. Ejemplos de DBMS comunes son MySQL, PostgreSQL, Oracle, SQL Server, SQLite, DB2, MongoDB, entre otros.
 
-![DBMS populares](./images/08-databases/image-01.png)
+![DBMS populares](./images/08-bases-de-datos/image-01.png)
 
 ## Enfoques en el manejo de la información
 ### Enfoque orientado a archivos
-Antes de la era de los DBMS, los datos generados por los sistemas de información se almacenaban en archivos simples. El programa o el sistema que los accediera, era responsable de interpretar el formato de cada registro y asegurar la consistencia del archivo completo. Usualmente, un programa accedía a un único archivo con información diseñada para este. Sin embargo, conforme la complejidad de los sistemas crece, surgen problemas como:
+Antes de la era de los DBMS, los datos generados por los sistemas de información se almacenaban en archivos simples. El programa o el sistema que accediera a ellos era responsable de interpretar el formato de cada registro y asegurar la consistencia del archivo completo. Usualmente, un programa accedía a un único archivo con información diseñada para este. Sin embargo, conforme la complejidad de los sistemas crece, surgen problemas como:
 
 - Formatos inconsistentes
 - Redundancia (duplicación) de datos en archivos separados
@@ -25,9 +25,9 @@ Antes de la era de los DBMS, los datos generados por los sistemas de informació
 
 Bajo el enfoque de archivos, los datos se almacenaban secuencialmente en los archivos, en registros compuestos de campos por ejemplo:
 
-![Estructura de un archivo](./images/08-databases/image-02.png)
+![Estructura de un archivo](./images/08-bases-de-datos/image-02.png)
 
-En los DBMS modernos, los datos estructurados, se almacenan _lógicamente_ con una estructura igual, es decir, registros y campos.
+En los DBMS modernos, los datos estructurados se almacenan _lógicamente_ con una estructura igual, es decir, registros y campos.
 
 ### Enfoque orientado a bases de datos
 Tal y como se mencionó en secciones anteriores, el DBMS es un software que permite a los usuarios crear, leer, actualizar y eliminar datos en una base de datos. Bajo este enfoque, se crea una capa de indirección entre los programas y los datos, delegando la responsabilidad de la gestión de los datos al DBMS. Los programas acceden a los datos a través de consultas y comandos, sin necesidad de conocer la estructura interna de la base de datos.
@@ -36,7 +36,7 @@ Las ventajas de este enfoque son:
 
 - **Independencia de los datos**: Los programas no necesitan conocer la estructura interna de la base de datos. Los DBMS son auto-descriptivos, es decir, pueden describir su estructura interna.
 
-![Metadata en los DBMS](./images/08-databases/image-03.png)
+![Metadata en los DBMS](./images/08-bases-de-datos/image-03.png)
 
 - **Integridad de los datos**: Los DBMS pueden aplicar reglas de integridad para garantizar la precisión y consistencia de los datos.
 
@@ -46,9 +46,9 @@ Las ventajas de este enfoque son:
 
 - **Escalabilidad**: Los DBMS pueden manejar grandes volúmenes de datos y crecer con las necesidades de la organización.
 
-- **Facilidad para compartir datos**: Los DBMS permiten compartir datos entre  múltiples usuarios y aplicaciones, sin necesidad de duplicarlos.
+- **Facilidad para compartir datos**: Los DBMS permiten compartir datos entre múltiples usuarios y aplicaciones, sin necesidad de duplicarlos.
 
-Algunos de los componentes de un DBMS incluyen: 
+Algunos de los componentes de un DBMS incluyen:
 
 - **Datos**: La información almacenada en la base de datos.
 
@@ -84,7 +84,7 @@ Se fundamentan en el modelo relacional propuesto por Edgar Codd en 1970. En este
 | 2  | María  | 22   | Ingeniería Civil |
 | 3  | Pedro  | 21   | Ingeniería Industrial |
 
-La columna ID es la clave primaria de la tabla ESTUDIANTE. No pueden haber dos o más registros con el mismo ID. 
+La columna ID es la clave primaria de la tabla ESTUDIANTE. No puede haber dos o más registros con el mismo ID.
 
 Las relaciones entre las tablas se establecen mediante claves foráneas, que son campos en una tabla que hacen referencia a la clave primaria de otra tabla. Por ejemplo, considere la tabla `CURSO`:
 
@@ -110,7 +110,7 @@ Algunos de los conceptos clave en las bases de datos relacionales son:
 - _Relación_: Una tabla que almacena datos relacionados.
 - _Atributo_: Una columna en una tabla que representa un campo de datos.
 - _Esquema de la relación_: La estructura de una tabla, que incluye los atributos y las restricciones. Puede verse como una clase en Orientación a Objetos que define la estructura pero no es un objeto en sí.
-- _Tuplas_: Una fila o registro en una tabla que representa una instancia en particular de dicha relación. 
+- _Tupla_: Una fila o registro en una tabla que representa una instancia en particular de dicha relación.
 - _Clave primaria_: Un atributo o conjunto de atributos que identifica de manera única cada tupla en una tabla.
 - _Clave foránea_: Un atributo en una tabla que hace referencia a la clave primaria de otra tabla.
 - _Clave candidata_: Un atributo o conjunto de atributos que pueden ser claves primarias.
@@ -119,6 +119,69 @@ Algunos de los conceptos clave en las bases de datos relacionales son:
 La integridad referencial es una restricción que garantiza que las referencias entre las tablas sean válidas. En una relación entre dos tablas, la clave foránea en la tabla secundaria debe hacer referencia a una clave primaria existente en la tabla principal. Por ejemplo, en la tabla `MATRICULA`, el campo `ESTUDIANTE_ID` debe hacer referencia a un `ID` existente en la tabla `ESTUDIANTE`.
 
 La integridad referencial garantiza la consistencia de las referencias, pero no debe confundirse con la normalización. La **normalización** es un proceso de diseño del esquema, basado en las formas normales, que organiza las tablas para reducir la redundancia de datos. La **integridad referencial**, en cambio, es una restricción que valida que cada clave foránea apunte a una clave primaria existente. La normalización no es una consecuencia de la integridad referencial; son conceptos distintos que se complementan.
+
+#### Índices
+Un **índice** (_index_) es una estructura auxiliar que acelera la búsqueda de filas dentro de una tabla. Para comprender su utilidad, conviene analizar primero el costo de una consulta sin índice.
+
+##### El problema: full table scan
+Considere la siguiente consulta sobre la tabla `ESTUDIANTE`:
+
+```sql
+SELECT *
+FROM ESTUDIANTE
+WHERE NOMBRE = 'María';
+```
+
+Si la columna `NOMBRE` no está indexada, el DBMS no tiene forma de saber dónde se encuentran las filas que cumplen la condición, por lo que debe revisar **todas** las filas de la tabla, una por una, comparando el valor de cada una contra `'María'`. Esta operación se conoce como **full table scan** (recorrido completo de la tabla) y tiene un costo de `O(n)`, donde `n` es la cantidad de filas. En una tabla con millones de registros, esto resulta prohibitivamente lento.
+
+Un índice resuelve este problema reduciendo la búsqueda a un costo de `O(log n)`.
+
+##### Qué es un índice
+Un índice es una estructura de datos auxiliar que mapea los valores de una columna (la **clave** del índice) a la ubicación física de las filas correspondientes en la tabla. En lugar de recorrer toda la tabla, el DBMS busca el valor en el índice y obtiene directamente la ubicación de las filas.
+
+La mayoría de los DBMS implementan sus índices con un **árbol B+** (_B+ tree_), la misma familia de estructuras estudiada en el contexto de almacenamiento externo en la lección 05. Los árboles B+ son ideales para este propósito porque están diseñados para minimizar los accesos a disco: cada nodo agrupa muchas claves, manteniendo el árbol muy poco profundo (altura `O(log n)`), y todas las hojas están enlazadas, lo que permite recorridos por rango de manera eficiente. Así, una búsqueda por igualdad o por rango se resuelve en `O(log n)` accesos en vez de `O(n)`.
+
+Existe una alternativa: los **índices hash**, que utilizan una tabla hash en lugar de un árbol. Ofrecen búsquedas por igualdad exacta en `O(1)` promedio, pero **no** soportan consultas por rango (por ejemplo, `WHERE EDAD > 20`) ni recorridos ordenados, porque la función hash dispersa las claves sin preservar el orden. Por eso, el índice de tipo árbol B+ suele ser el predeterminado y el más versátil.
+
+##### Tipos de índices
+| Tipo | Descripción | Cantidad por tabla |
+|------|-------------|--------------------|
+| **Clustered** (agrupado) | La tabla se almacena físicamente ordenada según la clave del índice. Las filas _son_ las hojas del árbol, por lo que no hay un salto adicional para llegar al dato. | Uno (solo se puede ordenar físicamente de una manera) |
+| **Non-clustered** o secundario | Estructura separada de la tabla que contiene las claves ordenadas y, junto a cada una, un puntero (o la clave primaria) que apunta a la fila real. | Varios |
+
+Conceptualmente, un índice secundario sobre `NOMBRE` puede visualizarse así:
+
+```text
+        Índice secundario (NOMBRE)        Tabla ESTUDIANTE
+        ┌───────────┬──────────┐          ┌────┬────────┬──────┐
+        │ NOMBRE    │ → fila   │          │ ID │ NOMBRE │ ...  │
+        ├───────────┼──────────┤          ├────┼────────┼──────┤
+        │ Juan      │ → fila 1 │ ───────▶ │ 1  │ Juan   │ ...  │
+        │ María     │ → fila 2 │ ───────▶ │ 2  │ María  │ ...  │
+        │ Pedro     │ → fila 3 │ ───────▶ │ 3  │ Pedro  │ ...  │
+        └───────────┴──────────┘          └────┴────────┴──────┘
+         (ordenado por NOMBRE)             (orden físico aparte)
+```
+
+Cuando se declara una **clave primaria**, la mayoría de los DBMS crean automáticamente un índice sobre ella (frecuentemente de tipo clustered). Esto explica por qué las búsquedas por clave primaria, como `WHERE ID = 2`, son tan rápidas sin necesidad de configuración adicional.
+
+##### Trade-offs: no conviene indexar todo
+Los índices aceleran las **lecturas**, pero no son gratuitos. Sus costos asociados son:
+
+- **Escrituras más costosas**: cada `INSERT`, `UPDATE` o `DELETE` debe actualizar no solo la tabla, sino también todos los índices que dependan de las columnas afectadas, para mantenerlos ordenados y consistentes. Mientras más índices tenga una tabla, más lentas son sus escrituras.
+- **Espacio adicional**: cada índice es una estructura aparte que ocupa almacenamiento en disco.
+
+Por estas razones, **no conviene indexar todas las columnas**. Se recomienda crear índices sobre las columnas que se utilizan con frecuencia en cláusulas `WHERE`, `JOIN` u `ORDER BY`, y evitarlos en tablas con muchas escrituras o columnas que rara vez se consultan.
+
+##### Creación de un índice en SQL
+Para crear un índice se utiliza la instrucción `CREATE INDEX`. Por ejemplo, para indexar la columna `NOMBRE` de la tabla `ESTUDIANTE`:
+
+```sql
+CREATE INDEX idx_estudiante_nombre
+ON ESTUDIANTE (NOMBRE);
+```
+
+Con este índice creado, el plan de ejecución de la consulta del inicio cambia: en lugar de un **full table scan** de costo `O(n)`, el DBMS realiza una búsqueda sobre el árbol B+ del índice con costo `O(log n)`, localizando directamente las filas que cumplen `NOMBRE = 'María'`. La diferencia es despreciable en tablas pequeñas, pero determinante cuando `n` es grande.
 
 #### Transaccionalidad ACID
 ACID es un acrónimo que describe las propiedades de las transacciones en una base de datos relacional. Las transacciones son operaciones que modifican los datos en una base de datos y deben cumplir con las siguientes propiedades:
@@ -129,7 +192,7 @@ ACID es un acrónimo que describe las propiedades de las transacciones en una ba
 - _Durable_: Una transacción es duradera si los cambios realizados por la transacción persisten en la base de datos incluso después de un fallo del sistema.
 
 #### El lenguaje SQL (Structured Query Language)
-Es un lenguaje estandarizado para interactuar con bases de datos relacionales. SQL permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa. Las operaciones SQL se puede clasificar en dos tipos:
+Es un lenguaje estandarizado para interactuar con bases de datos relacionales. SQL permite realizar diversas operaciones para gestionar datos de manera eficiente y precisa. Las operaciones SQL se pueden clasificar en dos tipos:
 
 - **DDL (Data Definition Language)**: Utilizado para definir y modificar estructuras de bases de datos (`CREATE`, `ALTER`, `DROP`).
 - **DML (Data Manipulation Language)**: Utilizado para manipular datos dentro de objetos de la base de datos (`SELECT`, `INSERT`, `UPDATE`, `DELETE`).
@@ -278,11 +341,11 @@ FROM ESTUDIANTE E
 JOIN MATRICULA M ON E.ID = M.ESTUDIANTE_ID
 JOIN CURSO C ON C.ID = M.CURSO_ID;
 ```
-La sentencia `JOIN` y sus variantes, puede entenderse visualmente mediante el siguiente diagrama:
+La sentencia `JOIN` y sus variantes puede entenderse visualmente mediante el siguiente diagrama:
 
-![Tipos de JOIN](./images/08-databases/image-04.png)
+![Tipos de JOIN](./images/08-bases-de-datos/image-04.png)
 
-### Bases de Datos NoSQL
+### Bases de datos NoSQL
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
 
@@ -298,27 +361,27 @@ Más adelante, hacia 2009, el término fue reutilizado y reinterpretado para nom
 
 - **Modelos de Datos Diversos**: Soporta varios modelos de datos como documentos, grafos, columnas y clave-valor, optimizados para diferentes tipos de aplicaciones y cargas de trabajo.
 
-### Tipos de Bases de Datos NoSQL
+### Tipos de bases de datos NoSQL
 
-1. **Bases de Datos de Documentos**
-Son bases de datos que almacenan datos en documentos JSON o BSON (una representación binaria de JSON). Cada documento es una entidad independiente que contiene datos y metadatos. Los documentos se pueden agrupar en colecciones, que son similares a las tablas en una base de datos relacional. Ejemplos de bases de datos de documentos incluyen MongoDB, Couchbase y CouchDB. 
+1. **Bases de datos de documentos**
+Son bases de datos que almacenan datos en documentos JSON o BSON (una representación binaria de JSON). Cada documento es una entidad independiente que contiene datos y metadatos. Los documentos se pueden agrupar en colecciones, que son similares a las tablas en una base de datos relacional. Ejemplos de bases de datos de documentos incluyen MongoDB, Couchbase y CouchDB.
 
-2. **Bases de Datos de Grafos**
+2. **Bases de datos de grafos**
 Son bases de datos que modelan datos como nodos y relaciones entre ellos. Son útiles para representar relaciones complejas entre entidades. Ejemplos de bases de datos de grafos incluyen Neo4j, Amazon Neptune y ArangoDB.
 
-3. **Bases de Datos de Columnas**
+3. **Bases de datos de columnas**
 Son bases de datos que almacenan datos en columnas en lugar de filas. Son eficientes para consultas analíticas y agregaciones. Ejemplos de bases de datos de columnas incluyen Apache Cassandra, HBase y Google Bigtable.
 
-4. **Bases de Datos Clave-Valor**
+4. **Bases de datos clave-valor**
 Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada clave es única y se asocia con un valor. Son eficientes para operaciones de lectura y escritura rápidas. Ejemplos de bases de datos clave-valor incluyen Redis, Amazon DynamoDB y Riak.
 
-### Casos de Uso de NoSQL
+### Casos de uso de NoSQL
 
 - **Aplicaciones Web Escalables**: Ideal para aplicaciones web que requieren escalabilidad horizontal y manejo eficiente de grandes volúmenes de datos.
 
 - **Análisis de Datos en Tiempo Real**: Utilizado en bases de datos como Elasticsearch para análisis de datos en tiempo real y búsqueda de texto completo. Plataformas de streaming como Apache Kafka suelen integrarse en estos escenarios para la ingesta de datos, aunque Kafka es una plataforma de streaming y cola de mensajes, no una base de datos NoSQL.
 
-### Consideraciones y Limitaciones
+### Consideraciones y limitaciones
 
 - **Consistencia**: Algunas bases de datos NoSQL pueden sacrificar consistencia eventualmente consistente.
   
@@ -329,7 +392,7 @@ Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada 
 - Esquema más flexible: A diferencia del modelo relacional, que exige un esquema rígido, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
 
 - Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
-![Scale up vs out](./images/08-databases/image-05.png)
+![Scale up vs out](./images/08-bases-de-datos/image-05.png)
 
 - Rendimiento: Algunas bases de datos NoSQL (por ejemplo, Redis) operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura. Otras, como MongoDB, Cassandra o HBase, persisten los datos en disco.
 
