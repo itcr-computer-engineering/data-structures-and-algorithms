@@ -10,7 +10,7 @@ Capa de software que interactúa directamente con el hardware, intermediario ent
 
 API corresponde a las siglas de la palabra _Application Programming Interface_, concepto aplicable a varios contextos: API web, API del sistema operativo, API class libraries, etc; en nuestro caso, nos interesa el API del sistema operativo. Sea cual sea el contexto, la idea es la misma: _proveer una capa de abstracción para que los desarrolladores puedan interactuar con un sistema sin necesidad de conocer los detalles de su implementación_.
 
-> Un estándar para las API de los S.O es el **posix**. El posix son las siglas de la palabra en inglés _portable operative interface for unix_. Es un **estándar del IEEE para los APIS del S.O**.
+> Un estándar para las API de los S.O es el **posix**. El posix son las siglas de la palabra en inglés _Portable Operating System Interface_. Es un **estándar del IEEE para los APIS del S.O**.
 
 Un ejemplo de API por ejemplo para abrir un archivo, se utiliza la función `fopen` que retorna un  _pointer_ o _handler_ al archivo.
 
@@ -187,7 +187,7 @@ int main() {
 ```
 
 #### Stack
-Es una sección de la memoria que se utiliza para almacenar las variables locales de las funciones y los argumentos de las mismas. Es de tamaño fijo y se expande y contrae dinámicamente. Utilizar el stack es transparente (e inevitable) para el programador, por lo que el manejo de la memoria es menos propenso a errores.
+Es una sección de la memoria que se utiliza para almacenar las variables locales de las funciones y los argumentos de las mismas. Tiene un tamaño máximo fijo (reservado), dentro del cual crece y decrece dinámicamente con las llamadas a funciones. Utilizar el stack es transparente (e inevitable) para el programador, por lo que el manejo de la memoria es menos propenso a errores.
 
 El stack es _LIFO_ (Last In, First Out). Cada vez que se llama a una función, se crea un _stack frame_ que contiene las variables locales de la función, los argumentos y el _return address_ (la dirección a la que se debe regresar una vez que la función termina). Cuando dicha función termina, el _stack frame_ se elimina (se marca la memoria como libre). Es por tal razón que las variables locales se les llama _automáticas_.
 
@@ -206,7 +206,7 @@ El stack es _LIFO_ (Last In, First Out). Cada vez que se llama a una función, s
 #### Heap
 Es una sección de la memoria que se utiliza para almacenar datos que no tienen un tamaño conocido al momento de la compilación y cuyo tiempo de vida es controlado por el programador. Por ejemplo, listas enlazadas, árboles, etc. El heap es de tamaño variable y se expande y contrae dinámicamente. El programador es responsable de manipular la memoria en el heap, es decir, asignar, des-asignar y re-dimensionarla.
 
-Para interactuar con la memoria, el programador utiliza funciones como `malloc`, `free`, `realloc`, `calloc` y `new`/`delete` (en C++). Estas funciones conforman el API del heap en C/C++.
+Para interactuar con la memoria, el programador utiliza en C las funciones `malloc`, `free`, `realloc` y `calloc`, y en C++ los operadores `new`/`delete` (`new` y `delete` son operadores del lenguaje, no funciones). Estos mecanismos conforman el API del heap en C/C++.
 
 > **¿Es posible evitar usar el Heap?**
 >
@@ -231,11 +231,11 @@ En los ejemplos de código anteriores se utilizan punteros, por ejemplo `int* ag
 #### Heap vs Stack
 | Heap | Stack |
 | ---- | ----- |
-| Memoria dinámica | Memoria estática |
+| Memoria dinámica | Memoria automática |
 | Tamaño variable | Tamaño fijo |
 | Programador es responsable de la memoria | Programador no es responsable de la memoria |
 | No es transparente | Transparente |
-| Propenso a errores (bugs introducidos por el programador) | Menos propenso a errores (bugs del sistema operativo) | 
+| Propenso a errores (bugs introducidos por el programador) | Menos propenso a errores (gestionado automáticamente) | 
 
 ### Punteros
 Es un tipo de datos especial definido como parte del API del Heap. Al ser un tipo de datos, define un rango posible de valores que puede contener y un conjunto de operaciones que soporta.
@@ -258,7 +258,7 @@ int* nPtr = NULL;
 // 0 es el único valor literal que se puede asignar a un puntero en C. 
 // Equivalente a NULL
 int* nPtr2 = 0; 
-int* nPtr3 = nullptr; // En C++ 14
+int* nPtr3 = nullptr; // En C++ 11
 
 ```
 Si visualizamos la memoria como una tabla con columnas y filas, para el código anterior tendríamos:
@@ -308,7 +308,7 @@ No hay nada "mágico" con respecto a los punteros. Son simplemente un tipo de da
 A continuación se describen las operaciones más comunes con punteros.
 
 #### Operador Address-Of (&)
-El operador **unario** `Address-Of`, designado por `&` (no confundir con el operador binario `&` para boolean) se utiliza para obtener la dirección de memoria de una variable. Por ejemplo, si se tiene una variable `int x = 10`, se puede obtener la dirección de memoria de `x` mediante `&x`. Se puede aplicar a memoria en el stack o en el heap.
+El operador **unario** `Address-Of`, designado por `&` (no confundir con el operador binario `&`, que es el AND a nivel de bits (bitwise)) se utiliza para obtener la dirección de memoria de una variable. Por ejemplo, si se tiene una variable `int x = 10`, se puede obtener la dirección de memoria de `x` mediante `&x`. Se puede aplicar a memoria en el stack o en el heap.
 
 ```c
 int x = 10;
@@ -522,7 +522,7 @@ cout << arr[2]; // Imprime 30
 > Dado que acceder cualquier elemento de un array es equivalente a acceder a la dirección de memoria del primer elemento y sumarle un offset, los arrays son muy eficientes en términos de acceso a memoria. Es `O(1)` acceder a cualquier elemento de un array .
 
 #### Tipo referencia (C/C++)
-En C++, se puede utilizar el tipo `&` para definir una referencia a una variable. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. Una referencia no puede ser nula y no puede ser reasignada. Una referencia es simplemente un alias para una variable.
+En C++, se puede utilizar el tipo `&` para definir una referencia a una variable. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. En C++, específicamente, una referencia no puede ser nula y no puede ser reasignada (debe inicializarse al declararse y siempre referirá a la misma variable). Una referencia es simplemente un alias para una variable.
 
 ```c++
 int x = 10;
@@ -626,15 +626,17 @@ int main() {
 
   int main() {
       int* r = foo();
-      cout << *r; // Imprime 50
+      cout << *r; // Comportamiento indefinido: NO confiar en esta salida
       bar();
-      cout << *r; // Imprime 66
+      cout << *r; // Comportamiento indefinido: NO confiar en esta salida
   }
-  ``` 
+  ```
+
+  > **Advertencia:** Este ejemplo incurre en _comportamiento indefinido (undefined behavior)_, ya que `r` apunta a `temp`, una variable local cuyo _stack frame_ ya fue liberado al retornar `foo`. La memoria puede haber sido reutilizada (por ejemplo, por la llamada a `bar`), pero esto NO está garantizado por el estándar. La salida no es confiable: podría imprimir cualquier valor, variar entre ejecuciones o compiladores, o incluso provocar una falla del programa.
 
 ### Punteros en lenguajes manejados
 
-En lenguajes manejados como Java, C# y Python, los punteros no son accesibles directamente. En su lugar, se utilizan referencias. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. Una referencia no puede ser nula y no puede ser reasignada. Una referencia es simplemente un alias para un objeto.
+En lenguajes manejados como Java, C# y Python, los punteros no son accesibles directamente. En su lugar, se utilizan referencias. Una referencia es similar a un puntero, pero más seguro y más fácil de usar. A diferencia de las referencias de C++, en estos lenguajes manejados las referencias sí pueden ser nulas (`null`/`None`) y sí pueden ser reasignadas para apuntar a otro objeto. Una referencia es simplemente un identificador que apunta a un objeto.
 
 En Java, por ejemplo, se utilizan referencias para acceder a objetos. Por ejemplo:
 
@@ -666,7 +668,18 @@ fn main() {
 }
 ```
 
-El código anterior no compilará en Rust. Rust garantiza que no haya referencias múltiples a un objeto mutable. En este caso, `x` es mutable, pero `y` y `z` son referencias inmutables. Rust garantiza que no haya referencias múltiples a un objeto mutable para evitar condiciones de carrera y errores de memoria.
+El código anterior sí compila en Rust. Rust permite múltiples referencias **inmutables** simultáneas a un mismo valor; en este caso, `x` es mutable, pero `y` y `z` son referencias inmutables, lo cual es válido. Lo que Rust prohíbe es que una referencia **mutable** (`&mut`) coexista con cualquier otra referencia (mutable o inmutable) al mismo valor. Por ejemplo, el siguiente código **no compila** porque mezcla `&mut x` con `&x`:
+
+```rust
+fn main() {
+    let mut x = 10;
+    let y = &mut x; // referencia mutable
+    let z = &x;     // error: no puede coexistir con la referencia mutable
+    println!("{} {}", y, z);
+}
+```
+
+Esta regla (a lo sumo una referencia mutable, o cualquier número de referencias inmutables, pero no ambas a la vez) evita condiciones de carrera y errores de memoria.
 
 ## Referencias adicionales
 - Modern Operating Systems, Andrew S. Tanenbaum, Herbert Bos, Pearson, 2014.

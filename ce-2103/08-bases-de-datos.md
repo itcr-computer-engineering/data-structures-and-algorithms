@@ -88,13 +88,21 @@ La columna ID es la clave primaria de la tabla ESTUDIANTE. No pueden haber dos o
 
 Las relaciones entre las tablas se establecen mediante claves foráneas, que son campos en una tabla que hacen referencia a la clave primaria de otra tabla. Por ejemplo, considere la tabla `CURSO`:
 
-| ID | NOMBRE | ESTUDIANTE_ID |
-|----|--------|---------------|
-| 1  | Matemáticas | 1 |
-| 2  | Física | 2 |
-| 3  | Química | 3 |
+| ID | NOMBRE |
+|----|--------|
+| 1  | Matemáticas |
+| 2  | Física |
+| 3  | Química |
 
-La columna `ESTUDIANTE_ID` es una clave foránea que hace referencia a la clave primaria de la tabla `ESTUDIANTE`. Esta relación permite asociar un curso con un estudiante. No hace falta duplicar la información del estudiante en la tabla `CURSO` (tener todos los campos de `ESTUDIANTE` de nuevo en la tabla `CURSO`).
+Un estudiante puede matricular muchos cursos y un curso puede tener muchos estudiantes, por lo que se trata de una relación de muchos-a-muchos. Este tipo de relación no se puede representar con una sola clave foránea; se modela mediante una **tabla intermedia** (también llamada tabla de unión) que combina las claves primarias de ambas tablas. Por ejemplo, la tabla `MATRICULA`:
+
+| ESTUDIANTE_ID | CURSO_ID |
+|---------------|----------|
+| 1 | 1 |
+| 1 | 2 |
+| 2 | 1 |
+
+Las columnas `ESTUDIANTE_ID` y `CURSO_ID` son claves foráneas que hacen referencia a las claves primarias de las tablas `ESTUDIANTE` y `CURSO`, respectivamente. Esta relación permite asociar cualquier número de cursos con cualquier número de estudiantes. No hace falta duplicar la información del estudiante ni del curso en la tabla `MATRICULA` (tener todos los campos de `ESTUDIANTE` o `CURSO` de nuevo en ella).
 
 #### Terminología clave
 Algunos de los conceptos clave en las bases de datos relacionales son:
@@ -108,9 +116,9 @@ Algunos de los conceptos clave en las bases de datos relacionales son:
 - _Clave candidata_: Un atributo o conjunto de atributos que pueden ser claves primarias.
 
 #### Integridad referencial
-La integridad referencial es una restricción que garantiza que las relaciones entre las tablas sean válidas. En una relación entre dos tablas, la clave foránea en la tabla secundaria debe hacer referencia a una clave primaria existente en la tabla principal. Por ejemplo, en la tabla `CURSO`, el campo `ESTUDIANTE_ID` debe hacer referencia a un `ID` existente en la tabla `ESTUDIANTE`.
+La integridad referencial es una restricción que garantiza que las referencias entre las tablas sean válidas. En una relación entre dos tablas, la clave foránea en la tabla secundaria debe hacer referencia a una clave primaria existente en la tabla principal. Por ejemplo, en la tabla `MATRICULA`, el campo `ESTUDIANTE_ID` debe hacer referencia a un `ID` existente en la tabla `ESTUDIANTE`.
 
-Estos permite que las relaciones se "normalicen", es decir, que se evite la redundancia de datos y se garantice la consistencia de los datos.
+La integridad referencial garantiza la consistencia de las referencias, pero no debe confundirse con la normalización. La **normalización** es un proceso de diseño del esquema, basado en las formas normales, que organiza las tablas para reducir la redundancia de datos. La **integridad referencial**, en cambio, es una restricción que valida que cada clave foránea apunte a una clave primaria existente. La normalización no es una consecuencia de la integridad referencial; son conceptos distintos que se complementan.
 
 #### Transaccionalidad ACID
 ACID es un acrónimo que describe las propiedades de las transacciones en una base de datos relacional. Las transacciones son operaciones que modifican los datos en una base de datos y deben cumplir con las siguientes propiedades:
@@ -155,12 +163,21 @@ De igual forma, para crear la tabla `CURSO`:
 ```sql
 CREATE TABLE CURSO (
     ID INT PRIMARY KEY,
-    NOMBRE VARCHAR(50),
-    ESTUDIANTE_ID INT,
-    FOREIGN KEY (ESTUDIANTE_ID) REFERENCES ESTUDIANTE(ID)
+    NOMBRE VARCHAR(50)
 );
 ```
-En este ejemplo, durante la creación de la tabla `CURSO`, se establece una clave foránea (`FOREIGN KEY`) que hace referencia a la clave primaria de la tabla `ESTUDIANTE`. No es necesario definir la integridad durante la creación de la tabla, puesto que se puede usar la instrucción `ALTER TABLE` para agregar restricciones de integridad después de la creación de la tabla.
+Para modelar la relación muchos-a-muchos entre estudiantes y cursos, se crea la tabla intermedia `MATRICULA`:
+
+```sql
+CREATE TABLE MATRICULA (
+    ESTUDIANTE_ID INT,
+    CURSO_ID INT,
+    PRIMARY KEY (ESTUDIANTE_ID, CURSO_ID),
+    FOREIGN KEY (ESTUDIANTE_ID) REFERENCES ESTUDIANTE(ID),
+    FOREIGN KEY (CURSO_ID) REFERENCES CURSO(ID)
+);
+```
+En este ejemplo, durante la creación de la tabla `MATRICULA`, se establecen dos claves foráneas (`FOREIGN KEY`) que hacen referencia a las claves primarias de las tablas `ESTUDIANTE` y `CURSO`. No es necesario definir la integridad durante la creación de la tabla, puesto que se puede usar la instrucción `ALTER TABLE` para agregar restricciones de integridad después de la creación de la tabla.
 
 2. **Inserción de datos**:
 Para insertar datos en una tabla, se utiliza la instrucción SQL `INSERT INTO` con la siguiente estructura:
@@ -178,8 +195,14 @@ VALUES (1, 'Juan', 20, 'Ingeniería en Sistemas');
 De igual forma, para insertar un nuevo curso en la tabla `CURSO`:
 
 ```sql
-INSERT INTO CURSO (ID, NOMBRE, ESTUDIANTE_ID)
-VALUES (1, 'Matemáticas', 1);
+INSERT INTO CURSO (ID, NOMBRE)
+VALUES (1, 'Matemáticas');
+```
+Y para matricular al estudiante 1 en el curso 1, se inserta un registro en la tabla `MATRICULA`:
+
+```sql
+INSERT INTO MATRICULA (ESTUDIANTE_ID, CURSO_ID)
+VALUES (1, 1);
 ```
 
 3. **Actualización de datos**:
@@ -241,17 +264,19 @@ FROM CURSO;
 Para consultar los cursos de un estudiante específico:
 
 ```sql
-SELECT *
-FROM CURSO
-WHERE ESTUDIANTE_ID = 1;
+SELECT C.*
+FROM CURSO C
+JOIN MATRICULA M ON C.ID = M.CURSO_ID
+WHERE M.ESTUDIANTE_ID = 1;
 ```
 
-Para unir la información de las tablas `ESTUDIANTE` y `CURSO`:
+Para unir la información de las tablas `ESTUDIANTE` y `CURSO` a través de la tabla intermedia `MATRICULA`:
 
 ```sql
 SELECT E.NOMBRE, C.NOMBRE
 FROM ESTUDIANTE E
-JOIN CURSO C ON E.ID = C.ESTUDIANTE_ID;
+JOIN MATRICULA M ON E.ID = M.ESTUDIANTE_ID
+JOIN CURSO C ON C.ID = M.CURSO_ID;
 ```
 La sentencia `JOIN` y sus variantes, puede entenderse visualmente mediante el siguiente diagrama:
 
@@ -261,9 +286,9 @@ La sentencia `JOIN` y sus variantes, puede entenderse visualmente mediante el si
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
 
-El término _NoSQL_ fue acuñado por Carl Strozzi en 1998 cuando lanzó su base de datos "NoSQL", que era un sistema de bases de datos que no usaba SQL. Su base de datos estaba más centrada en ser ligera y simple para aplicaciones específicas, en lugar de seguir los principios y características de las bases de datos relacionales.
+El término _NoSQL_ fue usado por Carl Strozzi en 1998 cuando lanzó su base de datos "NoSQL", que era un sistema de bases de datos que no usaba SQL. En ese contexto original, "NoSQL" significaba literalmente que la base de datos no utilizaba el lenguaje SQL; su base de datos estaba más centrada en ser ligera y simple para aplicaciones específicas, en lugar de seguir los principios y características de las bases de datos relacionales.
 
-Sin embargo, este nombre fue interpretado de manera errónea. El No en NoSQL inicialmente hacía referencia a "No solo SQL", lo que indicaba que no era una base de datos exclusivamente relacional, sino que existía una alternativa. En otras palabras, NoSQL significa "No solo SQL", lo que sugiere que las bases de datos NoSQL pueden usar otros lenguajes de consulta o no requieren de SQL en absoluto.
+Más adelante, hacia 2009, el término fue reutilizado y reinterpretado para nombrar a una nueva generación de bases de datos no relacionales. Bajo este sentido moderno, NoSQL se entiende como "Not Only SQL" (No solo SQL), lo que indica que no se trata de bases de datos exclusivamente relacionales, sino que existen alternativas. En otras palabras, en su acepción actual NoSQL sugiere que las bases de datos pueden usar otros modelos de datos y lenguajes de consulta, o no requerir de SQL en absoluto.
 
 ### Características de NoSQL
 
@@ -291,7 +316,7 @@ Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada 
 
 - **Aplicaciones Web Escalables**: Ideal para aplicaciones web que requieren escalabilidad horizontal y manejo eficiente de grandes volúmenes de datos.
 
-- **Análisis de Datos en Tiempo Real**: Utilizado en bases de datos como Apache Kafka o Elasticsearch para análisis de datos en tiempo real y búsqueda de texto completo.
+- **Análisis de Datos en Tiempo Real**: Utilizado en bases de datos como Elasticsearch para análisis de datos en tiempo real y búsqueda de texto completo. Plataformas de streaming como Apache Kafka suelen integrarse en estos escenarios para la ingesta de datos, aunque Kafka es una plataforma de streaming y cola de mensajes, no una base de datos NoSQL.
 
 ### Consideraciones y Limitaciones
 
@@ -301,12 +326,12 @@ Las bases de datos clave-valor almacenan datos en pares clave-valor, donde cada 
 
 ### Ventajas de las bases de datos NoSQL
 
-- Sintaxis más flexible: A diferencia de SQL, que tiene una sintaxis rígida, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
+- Esquema más flexible: A diferencia del modelo relacional, que exige un esquema rígido, las bases de datos NoSQL permiten una mayor libertad en la estructura de los datos.
 
 - Escalabilidad horizontal: Pueden crecer fácilmente agregando más servidores.
 ![Scale up vs out](./images/08-databases/image-05.png)
 
-- Rendimiento: Operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura.
+- Rendimiento: Algunas bases de datos NoSQL (por ejemplo, Redis) operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura. Otras, como MongoDB, Cassandra o HBase, persisten los datos en disco.
 
 ## Referencias
 Gillenson. M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons.

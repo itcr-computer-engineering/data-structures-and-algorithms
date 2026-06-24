@@ -107,7 +107,7 @@ for (int i = 1; i < array.length; i++) { ---> T + 2nT
 }
 return max; --------------------------------> T
 
-f(n) = 6Tn + T
+f(n) = 6nT + T
 ```
 
 Encontrar la función a este nivel de detalle no es práctico. Imagínese el trabajo que implicaría una función como _f(n) = 12754n^2^ + 4353n + 834lg~2~n +13546_. Más adelante veremos un enfoque que nos permite simplicar el trabajo.
@@ -121,7 +121,7 @@ En el **caso promedio**, tomamos todos los posibles inputs y calculamos el tiemp
 
 - Si el elemento está en la posición _i_ se ejecutan _i_ operaciones.
 
-- Promedio de comparaciones es: `(1 + 2 + 3 + ... + n) / n = n(n+1)/2`
+- Suma de comparaciones es: `1 + 2 + 3 + ... + n = n(n+1)/2`
 
 - Promedio por elemento: `n(n+1)/2/n = (n+1)/2`
 
@@ -134,11 +134,11 @@ Suponga que usted necesita enviar un archivo a un amigo en Guanacaste. ¿Qué es
 
 ![Ejemplo cotidiano sobre análisis asintótico](images/03-analisis-teorico-1.png)
 
-No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo (`O(n)`) y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente (`O(3)`).
+No importa que tan grande sea el archivo, llevarlo físicamente siempre tarda lo mismo. Por medio electrónico, el tiempo de transferencia depende del tamaño del archivo (`O(n)`) y en algún momento será mayor que las 3 horas que tarda llevarlo físicamente (`O(1)`).
 
 _Análisis asintótico_ busca encontrar la función que represente el crecimiento con respecto a _n_, sin entrar en detalles abrumadores de la función, es decir, podemos descartar los términos de menor relevancia.
 
-Considere la función que calculamos tiempo atrás: `f(n) = 4T + 6nT`. Enfocándose en _análisis asintótico_, se descartan los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
+Considere la función que calculamos tiempo atrás: `f(n) = 6nT + T`. Enfocándose en _análisis asintótico_, se descartan los términos de menor relevancia, es decir, los que no son significativos para el crecimiento de la función. De igual forma las constantes se eliminan. Por lo tanto, dicha función se puede expresar como
  
  `f(n) = O(n)`
  
@@ -169,7 +169,7 @@ En caso que la constante cambie, se la función seguirá siendo lineal. Aunque l
 Son notaciones para describir la ejecución de un algoritmo en términos de su comportamiento asintótico.
 
 #### Big O 
-Describe el límite superior. Por ejemplo O(n^2^), O(n), O(2^n^). El algoritmo es al menos tan rápido como este límite. No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
+Describe el límite superior. Por ejemplo O(n^2^), O(n), O(2^n^). El algoritmo no es más lento que esta cota (es una cota superior). No sobrepasa el límite dictado por Big O. Se define formalmente como `f(n) = O(g(n))`, donde `c * g(n)` es un límite superior para `f(n)`. Es decir, existe una constante _c_ tal que `f(n) <= c * g(n)` para todo _n_ mayor que un _n_ dado.
 
 `f(n)` es la función que representa el algoritmo con precisión, por ejemplo, `f(n) = 3n^2 - 100n + 6`. `g(n)` es el intento de clasificar nuestra función, por ejemplo, `g(n) = n^2`. La constante que multiplica a `g(n)` la podemos escoger arbitrariamente, por ejemplo, `c = 3`. Si graficamos `g(n) = 3n^2` y `f(n)`, veremos que `3n^2` es siempre mayor que `f(n)`, concluyendo que `f(n) = O(n^2)`.
 
@@ -290,7 +290,7 @@ for (int i = 0; i < n; i++) {
 
 La complejidad es `n * m * complejidad(statement)`. Si ambos loops son de tamaño _n_, la complejidad es `O(n^2)`.
 
-Conforme se anidan más loops, la complejidad crece exponencialmente. Por ejemplo, si se anidan 3 loops, la complejidad es `O(n^3)`.
+Conforme se anidan más loops, el exponente crece, pero la complejidad sigue siendo polinómica `O(n^k)` (para _k_ fijo); el crecimiento exponencial correspondería a `O(k^n)`. Por ejemplo, si se anidan 3 loops, la complejidad es `O(n^3)`.
 
 ### Complejidad logarítmica
 Para código de la forma:

@@ -184,7 +184,7 @@ Para las cadenas `BCDA` y `ACDB`, se generaría un árbol de recursión de la si
 MAX[(BC, ACDB) (BCD, ACD)  (BCD, ACD)  (BCDA, AC)]
 
 ```
-Claramente vemos como se resolvería varias veces el mismo sub-problema, siendo O (2^nm). Utilizando DP, se puede resolver de la siguiente manera:
+Claramente vemos como se resolvería varias veces el mismo sub-problema, siendo O(2^(n+m)). Utilizando DP, se puede resolver de la siguiente manera:
 
 Se crea una matriz de tamaño `(m+1) x (n+1)` y se llena de la siguiente manera:
 
@@ -218,7 +218,7 @@ static int lcs(String X, String Y, int m, int n)
 Esto resulta en complejidad temporal `O(nm)`
 
 ## Backtracking
-- Popularizado por Henry Lehmer, matemático estadounidense.
+- Popularizado por Derrick Henry Lehmer, matemático estadounidense.
 
 - Es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione
 
@@ -289,7 +289,7 @@ Utilizando un enfoque ávido, el proceso sería el siguiente:
 
 - Repetir los pasos anteriores hasta que el cambio restante sea 0.
 
-No necesariamente la solución será la óptima en todos los casos, pero en muchos casos, la solución ávida es suficiente. Por ejemplo, si el cambio es 20 y las monedas disponibles son 1, 10 y 18, la solución ávida daría 18, 1 y 1, cuando la solución óptima sería dos monedas de 10.
+No necesariamente la solución será la óptima en todos los casos, pero en muchos casos, la solución ávida es suficiente. Por ejemplo, si el cambio es 14 y las monedas disponibles son 1, 7 y 10, la solución ávida daría 10, 1, 1, 1 y 1 (cinco monedas), cuando la solución óptima sería dos monedas de 7.
 
 ## Algoritmos Probabilísticos
 
@@ -308,7 +308,7 @@ Ejecuciones distintas pueden producir respuestas distintas.
 
 ### Aleatoriedad
 
-- Provisto por un generador de números random. Estos generadores son pseudo-aleatorios, ya que generan una secuencia de números que parecen ser aleatorios, pero son deterministas. El único valor random que existe en nuestra realidad es la decadencia radioactiva.
+- Provisto por un generador de números random. Estos generadores son pseudo-aleatorios, ya que generan una secuencia de números que parecen ser aleatorios, pero son deterministas. Una de las fuentes de aleatoriedad física que existe en nuestra realidad es la desintegración radiactiva (existen otras, como el ruido térmico).
 - Los generadores de pseudo-random generan números en una secuencia dentro de un rango y requieren un elemento inicial llamado semilla (seed). Cada número en la secuencia se genera a partir del anterior.
 - Hay posibilidad de ciclos dado que un número puede repetirse en la secuencia.
 
@@ -316,14 +316,14 @@ Ejecuciones distintas pueden producir respuestas distintas.
 
 #### Ejemplo de pseudo-random: Método de cuadrado medio
 
-Eleve el número inicial (seed) al cuadrado y tome los dígitos del medio como el nuevo número. Por ejemplo, si el seed es 1234, el cuadrado es 1522756 y el número medio es 2275.
+Eleve el número inicial (seed) al cuadrado, rellénelo con ceros a la izquierda hasta tener 2d dígitos (donde d es la cantidad de dígitos del número) y tome los d dígitos del medio como el nuevo número. Por ejemplo, si el seed es 1234, el cuadrado es 01522756 y los dígitos del medio son 5227.
 
 Una secuencia sería:
 
 - 1234 (semilla)
-- 2275 (1234^2)
-- 5180 (2275^2)
-- 6884 (5180^2)
+- 5227 (1234^2 = 01522756)
+- 3215 (5227^2 = 27321529)
+- 3362 (3215^2 = 10336225)
 
 y así sucesivamente. Dependiento de la semilla, la secuencia puede ser cíclica muy rápido.
 
@@ -354,7 +354,7 @@ boolean tieneElementoMayoritario(array, lenght) {
 }
 ```
 
-Como se puede notar, podría devolver `false` aún cuando no haya un elemento mayoritario. La probabilidad de error es de 1/2.
+Como se puede notar, podría devolver `false` aún cuando sí exista un elemento mayoritario (si la posición elegida al azar no contiene dicho elemento). La probabilidad de error es menor a 1/2, ya que el elemento mayoritario ocupa más de N/2 de las posiciones y por lo tanto la probabilidad de elegirlo es mayor a 1/2.
 
 Ejecutar varias veces el algoritmo reduce la probabilidad de error (si el psuedo-random es bueno). Después de k ejecuciones, la probabilidad de error es de 1/2^k.
 
@@ -433,7 +433,7 @@ Estos índices ya están en 1, por lo que el filtro de Bloom dirá que el elemen
 
 Depende del tipo de aplicación, puede ser que esto sea aceptable. Por ejemplo, en el caso de la verificación de _username_, si el filtro de Bloom dice que el _username_ ya existe, se puede hacer una verificación adicional para confirmar. Pero si el filtro dice que no existe, entonces no se necesita hacer nada más y se ahorra tiempo considerable.
 
-> Probabilidad de un falso positivo: `P(1 - [1 - 1/m]^kn)^k`
+> Probabilidad de un falso positivo: `(1 - (1 - 1/m)^(k·n))^k`
 
 ##### Complejidad:
 

@@ -11,18 +11,18 @@ Reducen el tamaño de los datos identificando información innecesaria y elimin�
 
 Utiliza métodos de codificación que generan representaciones inexactas de los datos originales. La calidad de los datos comprimidos se mide en términos de la cantidad de información que se pierde durante la compresión. Los algoritmos _lossy_ normalmente exponen parámetros de calidad, lo que permite ajustar el balance entre tasa de compresión y degradación de calidad evidente para el usuario final.
 
-![Ejemplo compresión de imagen PNG](./images/06-compresion/image-01.png)
+![Ejemplo compresión de imagen JPEG](./images/06-compresion/image-01.png)
 
 La compresión con pérdida se utiliza comúnmente en aplicaciones donde la calidad de los datos no es crítica, como la transmisión de video en línea y la transmisión de audio. Los formatos de alta fidelidad o _raw_ tiende a ser de tamaño muy grande y sin compresión _lossy_ streaming de audio y video no sería posible para la gran mayoría de los usuarios.
 
-![Ejemplo compresión de imagen PNG](./images/06-compresion/image-02.png)
+![Ejemplo compresión de imagen JPEG](./images/06-compresion/image-02.png)
 
 #### Percepción de la calidad
 La distorsión es la diferencia entre los datos originales y los datos comprimidos. La distorsión se mide en términos de la calidad de los datos comprimidos en comparación con los datos originales. 
 
 Aunque se puede definir modelos matemáticos para medir la distorsión, la percepción de la calidad es subjetiva y depende de la sensibilidad del observador. La percepción de la calidad se mide en términos de la cantidad de distorsión que un observador puede tolerar antes de que la calidad de los datos comprimidos se considere inaceptable. Por ejemplo, para un archivo de audio, un audiofilo puede ser más sensible a la distorsión que una persona promedio.
 
-Los algoritmos de compresión con pérdida, buscan optimizar la percepción de calidad según los atributos fisio-psicológicos del ser humano. Por ejemplo, en el caso de la compresión de imágenes, la compresión JPEG se basa en la percepción visual humana y elimina los detalles menos perceptibles para el ojo humano. En el caso de la compresión de audio, la compresión MP3 se basa en la percepción auditiva humana y elimina los sonidos menos perceptibles para el oído humano (frecuencia del sonido medida en Hz).
+Los algoritmos de compresión con pérdida, buscan optimizar la percepción de calidad según los atributos fisio-psicológicos del ser humano. Por ejemplo, en el caso de la compresión de imágenes, la compresión JPEG se basa en la percepción visual humana y elimina los detalles menos perceptibles para el ojo humano. En el caso de la compresión de audio, la compresión MP3 se basa en la percepción auditiva humana y elimina los sonidos menos perceptibles para el oído humano (mediante un modelo psicoacústico de enmascaramiento frecuencial y temporal).
 
 > Para aprender más sobre JPEG, vea el video en este [enlace](https://www.youtube.com/watch?v=0me3guauqOU&t=1976s).
 
@@ -80,7 +80,7 @@ Nótese que nodo 9 queda al final dado que tiene la mayor frecuencia total. Se r
 
 ![Construcción de árbol Huffman. Imagen 3 de 4](./images/06-compresion/image-05.png)
 
-Se asignan códigos a cada símbolo recorriendo el árbol (O a la izquierda y 1 a la derecha):
+Se asignan códigos a cada símbolo recorriendo el árbol (0 a la izquierda y 1 a la derecha):
 
 ![Construcción de árbol Huffman. Imagen 4 de 4](./images/06-compresion/image-06.png)
 
@@ -172,7 +172,7 @@ Utilizando un diccionario inicial se tiene el siguiente ejemplo:
 ![Ejemplo de compresión LZ77 con diccionario](./images/06-compresion/image-09.png)
 
 #### LZ78
-LZ78 es una mejora a LZ77 desarrollada por Abraham Lempel y Jacob Ziv en 1978. La principal diferencia entre LZ77 y LZ78 es que LZ78 utiliza un diccionario para almacenar las secuencias repetidas en lugar de una ventana deslizante. La motivación de los autores fue evitar la parametrización requerida en LZ77 para optimizar el desempeño.
+LZ78 es un enfoque alternativo a LZ77 propuesto por Abraham Lempel y Jacob Ziv en 1978. La principal diferencia entre LZ77 y LZ78 es que LZ78 construye incrementalmente un diccionario explícito para almacenar las secuencias repetidas, en lugar de utilizar una ventana deslizante. La motivación de los autores fue evitar la parametrización requerida en LZ77 para optimizar el desempeño.
 
 LZ78 utiliza una estructura de datos _trie_ para almacenar los prefijos conocidos, tal y como se vió en el [capítulo de estructuras de datos jerárquicas](../ce-1103/03-estructuras-de-datos-jerarquicas.md#el-tda-trie).
 
@@ -240,17 +240,17 @@ output code for P
 
 En el siguiente ejemplo, comprimiremos la cadena `a b a c a b a c a` inicializando la tabla solo con los caracteres `a b c` dado que son los únicos presentes en la cadena, esto para efectos de simplicidad didáctica. El resultado de la compresión sería `97 98 97 99 256 258 97` y la tabla generada:
 
-| Índice | Diccionario | Código |
-|--------|-------------|--------|
-| 0      | a           | 97     |
-| 1      | b           | 98     |
-| 2      | c           | 99     |
-| 3      | ab          | 256    |
-| 4      | ba          | 257    |
-| 5      | ac          | 258    |
-| 6      | ca          | 259    |
-| 7      | aba         | 260    |
-| 8      | aca         | 261    |
+| Diccionario | Código |
+|-------------|--------|
+| a           | 97     |
+| b           | 98     |
+| c           | 99     |
+| ab          | 256    |
+| ba          | 257    |
+| ac          | 258    |
+| ca          | 259    |
+| aba         | 260    |
+| aca         | 261    |
 
 Paso a paso se realizaría de la siguiente forma:
 
@@ -270,7 +270,7 @@ Paso a paso se realizaría de la siguiente forma:
 La descompresión se reduce a buscar cada uno de los códigos generados en la tabla y hacer el output del valor en el diccionario:
 
 ```
-97 98 97 99 256 258 97` 
+97 98 97 99 256 258 97 
 ^  ^  ^  ^  ^   ^   ^
 a  b  a  c  ab  ac  a 
 

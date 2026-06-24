@@ -61,7 +61,7 @@ El tiempo de acceso total es la suma del tiempo de búsqueda y el tiempo de late
 
 ### Tiempo de transferencia
 
-Los discos duros tienen un tiempo de transferencia que es el tiempo que tarda en leer o escribir un bloque de datos. Este tiempo depende de la velocidad de rotación del disco y de la densidad de los datos. Por ejemplo, un disco de 7200 RPM tiene un tiempo de transferencia de 0.5ms.
+Los discos duros tienen un tiempo de transferencia que es el tiempo que tarda en leer o escribir un bloque de datos. Este tiempo no es fijo por RPM: depende del tamaño del bloque y de la tasa de transferencia (tiempo de transferencia = tamaño del bloque / tasa de transferencia); la velocidad de rotación y la densidad de los datos influyen sobre esa tasa. Por ejemplo, para un bloque concreto en un disco de 7200 RPM el tiempo de transferencia podría rondar los 0.5ms.
 
 El _external data rate_ es la cantidad de datos que se pueden transferir por segundo. Por ejemplo, un disco de 7200 RPM con un external data rate de 300MB/s puede transferir 300MB de datos por segundo.
 
@@ -93,7 +93,7 @@ El HDD se conecta a otros components de la computadora a través de una interfaz
 
 - SAS (Serial Attached SCSI)
   - Evolución de SCSI.
-  - Velocidad de transferencia de 12GB/s.
+  - Velocidad de transferencia de 12Gb/s (≈ 1.5 GB/s).
   - Hot-swappable.
   - Se usa en servidores y estaciones de trabajo.
 
@@ -103,7 +103,7 @@ No son discos duros, sino dispositivos de almacenamiento de estado sólido que u
 
 - Utiliza memoria flash para almacenar datos.
 
-- Menor acceso aleatorio que los discos duros.
+- Menor latencia de acceso aleatorio (acceso aleatorio mucho más rápido) que los discos duros.
 
 - No tiene latencia de búsqueda.
 
@@ -133,7 +133,7 @@ La transferencia de datos de un SSD es mucho más rápida que la de un disco dur
 
 Un solo disco físico puede ser dividido en varias particiones, cada una de las cuales se comporta como un disco independiente (lógico). Las particiones se pueden formatear con diferentes sistemas de archivos y se pueden montar en diferentes puntos de montaje.
 
-En enlace entre lo físico y lo lógico se hace a través de la _metadada_ almacenada en la tabla de particiones. La tabla de particiones es un registro que contiene información sobre las particiones del disco, como su tamaño, ubicación y tipo de sistema de archivos. Esta tabla se encuentra en el primer sector del disco (MBR) y es leída por el sistema operativo al arrancar.
+En enlace entre lo físico y lo lógico se hace a través de la _metadada_ almacenada en la tabla de particiones. La tabla de particiones es un registro que contiene información sobre las particiones del disco, como su tamaño, ubicación y tipo de sistema de archivos. En el esquema MBR esta tabla se encuentra en el primer sector del disco (MBR) y es leída por el sistema operativo al arrancar. Los discos modernos suelen usar en su lugar el esquema GPT (GUID Partition Table), que distribuye la información de particiones de forma distinta (incluyendo copias redundantes) y supera las limitaciones de MBR.
 
 Una partición puede existir sin inicializarse.
 
@@ -318,7 +318,7 @@ El proceso es el siguiente para la _etapa de división_:
 
 Para la _etapa de mezcla_, se sigue el siguiente proceso:
 
-1. Por cada página de cada run i, se carga una página de cada uno en memoria y se aplica ordenan en un nuevo frame. Dicho frame se escribe en un nuevo run de tamaño i+1.
+1. Por cada página de cada run i, se carga una página de cada uno en memoria y se aplica ordenan en un nuevo frame. Dicho frame se escribe en un nuevo run de tamaño 2·i (al mezclar dos runs de tamaño i, el resultado tiene tamaño i+i).
 2. Se repite el proceso por cada set de _runs_
 
 La visualización del algoritmo en [este enlace](https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html) es súmamente útil. A continuación se adjunto algunas capturas de la misma.

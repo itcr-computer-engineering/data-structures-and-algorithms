@@ -109,15 +109,15 @@ public static int binarySearch(int[] arr, int target) {
 - El código es igual al de búsqueda binaria, con la diferencia de que la posición del elemento medio se calcula de manera diferente:
 
 ```
-mid = low + ((high - low) / (arr[high] - arr[low])) * (x - arr[low])
+mid = low + ((x - arr[low]) * (high - low)) / (arr[high] - arr[low])
 ```
 
 > Low y high se refieren a los índices del array, y arr[low] y arr[high] a los valores en esos índices.
 
-La mejora en rendimiento con respecto a búsqueda binaria se da en el caso promedio (que depende de la distribución uniforme de los elementos en el array), con una complejidad de tiempo de `O(log log n)`.
+La mejora en rendimiento con respecto a búsqueda binaria se da en el caso promedio (que depende de la distribución uniforme de los elementos en el array), con una complejidad de tiempo de `O(log log n)`. En el peor caso (datos no uniformemente distribuidos), la complejidad degrada a `O(n)`.
 
 ### Búsqueda por salto (Jump Search)
-Aplicable para arrays ordenados, comparandos menos elementos que búsqueda lineal saltándose _n_ elementos a la vez. Determinar el tamaño del bloque de saltos es crucial para el rendimiento del algoritmo.
+Aplicable para arrays ordenados, comparandos menos elementos que búsqueda lineal avanzando en bloques de tamaño _√n_ (un número fijo de elementos por salto). Determinar el tamaño del bloque de saltos es crucial para el rendimiento del algoritmo.
 
 Normalmente se utiliza sqrt(n) como tamaño de bloque, donde n es el tamaño del array
 
@@ -153,7 +153,7 @@ Utilizandio algoritmos de línea de visión, se puede mejorar el movimiento del 
 
 ![Movimiento esperado en pathfinding](./images/04-algoritmos-de-busqueda/image-02.png)
 
-Cualquiera de estos métodos produce resultados precisos. Por eso, se deben utilizar cuando sea posible. _Pathfinding_ no es un problema que se resuelve con un solo algoritmo, sino con una combinación de algoritmos. Al encontrarse obstáculos, estos enfoques no son suficientes.
+Los métodos de línea de visión (y enfoques más sofisticados) producen resultados más precisos. Por eso, se deben preferir cuando sea posible, mientras que el método simple es solo una aproximación. _Pathfinding_ no es un problema que se resuelve con un solo algoritmo, sino con una combinación de algoritmos. Al encontrarse obstáculos, estos enfoques no son suficientes.
 
 ![Pathfinding y obstáculos](./images/04-algoritmos-de-busqueda/image-03.png)
 
@@ -201,7 +201,7 @@ Si el mapa se modela como una rejilla, se puede ver como un tipo de grafo especi
 
 ![El grid es un grafo](./images/04-algoritmos-de-busqueda/image-09.png)
 
-#### Breath-first search (BFS)
+#### Breadth-first search (BFS)
 El algoritmo BFS (búsqueda en amplitud) es un algoritmo de búsqueda de grafos que comienza en un nodo raíz y explora todos los nodos vecinos a la raíz antes de avanzar a los nodos vecinos de estos. Visualmente, se puede ver como una expansión en todas las direcciones:
 
 ![BFS](./images/04-algoritmos-de-busqueda/image-10.png)
