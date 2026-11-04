@@ -10,8 +10,8 @@ Para cada hoja de contacto y cada diapositiva sospechosa a tamaño completo (`re
 - [ ] **Texto legible:** ≥ 14 pt en contenido (solo pie, referencias y etiquetas menores pueden ser menores); contraste alto.
 - [ ] **No abrumador:** una idea por diapositiva, ≲ 5 viñetas, ≲ 25 palabras por tarjeta, ≤ 6 filas de tabla. Si no cabe, divida o pase el detalle a `notes`.
 - [ ] **Equilibrio:** sin grandes vacíos (> ~1.5 in) ni contenido pegado a un borde; flechas y rótulos alineados con lo que señalan.
-- [ ] **Consistencia:** mismos nombres, datos y capitalización que en las diapositivas anteriores y el capítulo; el tono (`teal`, `amber`, `red`, `green`) coincide con su significado.
-- [ ] **Contenido fiel y correcto:** coincide con el capítulo; lo añadido está verificado.
+- [ ] **Consistencia:** mismos nombres, datos y capitalización que en las diapositivas anteriores; el tono (`teal`, `amber`, `red`, `green`) coincide con su significado.
+- [ ] **Contenido fiel y correcto:** coincide con el material fuente indicado por el usuario; lo añadido está verificado (código ejecutado, cálculos comprobados).
 - [ ] **Notas del orador** presentes en las diapositivas con contenido denso o ejercicios.
 
 ## Ajustes frecuentes

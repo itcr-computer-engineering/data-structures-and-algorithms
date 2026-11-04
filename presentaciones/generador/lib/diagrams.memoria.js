@@ -57,7 +57,7 @@ function codeWithMarker(ctx, { x, y, w, code, lang, fontSize = 14, hl }) {
 const label = (ctx, str, o) =>
   text(ctx, str, { h: 0.35, fontSize: 16, bold: true, color: ctx.theme.colors.slate, valign: 'middle', ...o });
 
-// ------------------------------------------------------------------ imagen del capítulo con texto al lado
+// ------------------------------------------------------------------ imagen con texto al lado
 // left{label,code,codeLang,codeSize,cards[{title,text,tone,h}]}, image, alt, caption, imageW, callout
 function memImagen(ctx, s) {
   const { colors } = ctx.theme;

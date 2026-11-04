@@ -1,16 +1,18 @@
 # Generador de presentaciones
 
-Genera los archivos `.pptx` del curso a partir de una especificación JSON usando [pptxgenjs](https://gitbrent.github.io/PptxGenJS/). Así cada presentación se puede regenerar o ajustar editando solo el spec.
+Genera los archivos `.pptx` del curso a partir de una especificación JSON usando [pptxgenjs](https://gitbrent.github.io/PptxGenJS/). **El spec es la única fuente de verdad** de cada lección: el `.pptx` y el `.pdf` son resultados de compilación, así que para cambiar una lección se edita solo su spec y se regenera.
 
 ## Uso
 
 ```powershell
 cd presentaciones\generador
 npm install
-node build.js specs\ce-2103\08-bases-de-datos.json
+node build.js specs\ce-2103\08-bases-de-datos.json     # una presentación
+powershell -NoProfile -File build-all.ps1               # todas (.pptx)
+powershell -NoProfile -File build-all.ps1 -Pdf          # todas, con PDF (requiere PowerPoint)
 ```
 
-El archivo de salida se define en `meta.output` del spec (relativo al spec). Puede indicarse otro destino como segundo argumento.
+El archivo de salida se define en `meta.output` del spec (relativo al spec). Puede indicarse otro destino como segundo argumento de `build.js`. Nunca edite los `.pptx`/`.pdf` a mano: se sobrescriben al regenerar. Las imágenes que usan los specs están en `ce-1103\images` y `ce-2103\images`.
 
 ## Revisión visual (Windows + PowerPoint)
 
@@ -24,7 +26,7 @@ powershell -File contact-sheet.ps1 -Dir "render\Lección 08 - Bases de Datos"
 
 ## Uso con Copilot (skill)
 
-La skill `.github\skills\generar-presentacion\` guía a Copilot para crear una presentación nueva de otro tema: leer el capítulo, planificar, escribir el spec, construir y hacer la revisión visual. Pídale, por ejemplo: «Genera una presentación de `ce-2103\04-algoritmos-de-busqueda.md`». Incluye una plantilla (`templates\spec-template.json`), la referencia completa del spec y la lista de revisión visual.
+La skill `.github\skills\generar-presentacion\` guía a Copilot para crear una presentación nueva de otro tema: leer el material que usted indique, planificar, escribir el spec, construir y hacer la revisión visual. Pídale, por ejemplo: «Genera una presentación de estas notas: …». Incluye una plantilla (`templates\spec-template.json`), la referencia completa del spec y la lista de revisión visual.
 
 ## Estructura del spec
 

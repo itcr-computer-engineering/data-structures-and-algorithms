@@ -16,7 +16,7 @@ const lineH = (fs) => (fs * 1.25) / 72;
 // ------------------------------------------------------------------ grafos predefinidos (coordenadas 0-1 dentro del panel)
 // nodos: [id, x, y, etiqueta?]; aristas: [a, b, peso?, { t, off, bi }?]
 const PRESETS = {
-  // Grafo no dirigido básico del capítulo: V = {1, 4, 5, 7, 9}
+  // Grafo no dirigido básico: V = {1, 4, 5, 7, 9}
   basico: {
     directed: false,
     nodes: [['1', 0.03, 0.08], ['4', 0.97, 0.08], ['5', 0.5, 0.5], ['7', 0.03, 0.92], ['9', 0.97, 0.92]],
@@ -75,7 +75,7 @@ const PRESETS = {
       ['v3', 'v6', 5], ['v4', 'v5', 7], ['v4', 'v6', 8], ['v4', 'v7', 4], ['v5', 'v7', 6], ['v6', 'v7', 1],
     ],
   },
-  // Floyd y Warshall: grafo dirigido y ponderado de cinco vértices (matriz D0 del capítulo). Entre v4 y v5 hay dos arcos opuestos
+  // Floyd y Warshall: grafo dirigido y ponderado de cinco vértices (matriz D0). Entre v4 y v5 hay dos arcos opuestos
   // con pesos distintos (v4→v5 = 2, v5→v4 = 3): se dibujan paralelos con `shift`.
   floyd5: {
     directed: true,

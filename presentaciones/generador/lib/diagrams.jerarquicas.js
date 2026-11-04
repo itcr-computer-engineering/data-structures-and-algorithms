@@ -1,6 +1,6 @@
 // Diagramas de la lección «Estructuras de datos jerárquicas» (CE-1103, lección 05).
 // kinds: `jerarquicas-trees` (árboles binarios, de expresión, B y tries descritos con una cadena compacta)
-//        `jerarquicas-imagegrid` (varias imágenes del capítulo en fila, con leyenda)
+//        `jerarquicas-imagegrid` (varias imágenes en fila, con leyenda)
 //
 // Cadena de un árbol: `valor(hijo1,hijo2,...)`; un hijo vacío es «sin hijo» (`10(,14(13,))` = 10 sin hijo izquierdo).
 //   - binary / expr: máximo dos hijos (izquierdo, derecho).
@@ -392,7 +392,7 @@ function jTrees(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: w - 2 * mx, h: s.calloutH || 0.75, size: 16, ...s.callout });
 }
 
-// ------------------------------------------------------------------ imágenes del capítulo en fila
+// ------------------------------------------------------------------ imágenes en fila
 function imageGrid(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;

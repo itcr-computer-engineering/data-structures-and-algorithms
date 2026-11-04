@@ -4,6 +4,8 @@
   "description": "Genera las presentaciones .pptx del curso a partir de especificaciones JSON usando pptxgenjs.",
   "private": true,
   "scripts": {
+    "build:all": "powershell -NoProfile -File build-all.ps1",
+    "build:all:pdf": "powershell -NoProfile -File build-all.ps1 -Pdf",
     "build:ce-2103-08": "node build.js specs/ce-2103/08-bases-de-datos.json"
   },
   "type": "commonjs",

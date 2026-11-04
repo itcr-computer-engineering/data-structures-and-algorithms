@@ -22,7 +22,7 @@
         "code": "1. divide y vencerás\n2. programación dinámica\n3. backtracking\n4. algoritmos ávidos\n5. probabilísticos y genéticos"
       },
       "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
-      "notes": "Este capítulo explora paradigmas de diseño que aparecen en muchos de los algoritmos conocidos y usados hoy. Analizarlos permite aplicar técnicas similares a problemas nuevos de ingeniería de software. Orden de la lección: divide y vencerás, programación dinámica, backtracking, algoritmos ávidos, algoritmos probabilísticos (incluido el filtro de Bloom) y algoritmos genéticos."
+      "notes": "Esta lección explora paradigmas de diseño que aparecen en muchos de los algoritmos conocidos y usados hoy. Analizarlos permite aplicar técnicas similares a problemas nuevos de ingeniería de software. Orden de la lección: divide y vencerás, programación dinámica, backtracking, algoritmos ávidos, algoritmos probabilísticos (incluido el filtro de Bloom) y algoritmos genéticos."
     },
     {
       "type": "list",
@@ -83,7 +83,7 @@
           ]
         }
       ],
-      "notes": "Se compara el elemento buscado con el valor medio y se decide en qué mitad continuar. Es divide y vencerás sin fase de combinación: la respuesta sale de una sola mitad. El código es una versión compacta del que aparece en el capítulo (misma lógica, menos llaves). Complejidad de tiempo: O(log n)."
+      "notes": "Se compara el elemento buscado con el valor medio y se decide en qué mitad continuar. Es divide y vencerás sin fase de combinación: la respuesta sale de una sola mitad. Complejidad de tiempo: O(log n)."
     },
     {
       "type": "code",
@@ -115,7 +115,7 @@
         { "tone": "amber", "label": "Investigar:", "text": "¿por qué la versión recursiva es `O(n)` y no `O(log n)`?" },
         { "tone": "teal", "label": "En la práctica:", "text": "ambas son `O(n)`; la recursiva no es más rápida (llamadas y pila)." }
       ],
-      "notes": "Ambas soluciones son O(n). El capítulo dice que la versión recursiva «realiza menos comparaciones»: es cierto, pero solo por una (n − 1 comparaciones entre máximos parciales frente a n comparaciones a[i] > max en el ciclo; con n = 8 son 7 frente a 8). Esa diferencia es despreciable y se paga con unas 2n − 1 llamadas recursivas (15 con n = 8) y una pila de llamadas de profundidad O(log n), así que en la práctica la versión recursiva NO es más rápida; aquí se usa para practicar el paradigma, no porque sea mejor. Divide y vencerás rinde cuando dividir reduce el trabajo (búsqueda binaria) o permite paralelizar (Merge Sort). RESPUESTA a la pregunta «Investigar» (para la clase): la recurrencia es T(n) = 2T(n/2) + O(1). A diferencia de la búsqueda binaria, que sigue una sola mitad, aquí se procesan las dos mitades, así que el árbol de recursión tiene n hojas y n-1 nodos internos (unas 2n llamadas, cada una con trabajo constante): T(n) = O(n). Por ejemplo, con n = 4 hay 4 hojas y 7 llamadas en total."
+      "notes": "Ambas soluciones son O(n). Se suele decir que la versión recursiva «realiza menos comparaciones»: es cierto, pero solo por una (n − 1 comparaciones entre máximos parciales frente a n comparaciones a[i] > max en el ciclo; con n = 8 son 7 frente a 8). Esa diferencia es despreciable y se paga con unas 2n − 1 llamadas recursivas (15 con n = 8) y una pila de llamadas de profundidad O(log n), así que en la práctica la versión recursiva NO es más rápida; aquí se usa para practicar el paradigma, no porque sea mejor. Divide y vencerás rinde cuando dividir reduce el trabajo (búsqueda binaria) o permite paralelizar (Merge Sort). RESPUESTA a la pregunta «Investigar» (para la clase): la recurrencia es T(n) = 2T(n/2) + O(1). A diferencia de la búsqueda binaria, que sigue una sola mitad, aquí se procesan las dos mitades, así que el árbol de recursión tiene n hojas y n-1 nodos internos (unas 2n llamadas, cada una con trabajo constante): T(n) = O(n). Por ejemplo, con n = 4 hay 4 hojas y 7 llamadas en total."
     },
     {
       "type": "cards",
@@ -129,7 +129,7 @@
         { "badge": "1", "title": "Computación paralela", "text": "Realiza varias tareas a la vez, aprovechando múltiples núcleos de procesamiento.", "tone": "teal" },
         { "badge": "2", "title": "En divide y vencerás", "text": "Cada partición del problema se asigna a un núcleo, lo que reduce el tiempo de ejecución.", "tone": "teal" }
       ],
-      "notes": "Pistas para la discusión (no están en el capítulo): en Merge Sort las dos mitades son independientes, así que se pueden ordenar en hilos distintos (fork/join) y luego mezclar. En la búsqueda binaria cada paso depende del anterior, por lo que el paralelismo es limitado; una opción es dividir el arreglo en p segmentos y buscar en cada uno en paralelo."
+      "notes": "Pistas para la discusión: en Merge Sort las dos mitades son independientes, así que se pueden ordenar en hilos distintos (fork/join) y luego mezclar. En la búsqueda binaria cada paso depende del anterior, por lo que el paralelismo es limitado; una opción es dividir el arreglo en p segmentos y buscar en cada uno en paralelo."
     },
     {
       "type": "cards",
@@ -382,7 +382,7 @@
       "callouts": [
         { "tone": "teal", "text": "Si ningún hijo lleva a la solución, `return false` hace que el nodo anterior pruebe con otro hijo." }
       ],
-      "notes": "Backtracking es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione; fue popularizado por Derrick Henry Lehmer, matemático estadounidense. NOTA SOBRE EL CÓDIGO: el capítulo escribe «return backtrack(nodo)» dentro del ciclo, lo que solo exploraría el primer hijo; aquí se muestra la forma completa, donde se retorna true únicamente si la llamada recursiva tuvo éxito y, si ninguna alternativa funciona, se retorna false para que el nodo anterior pruebe otro hijo. Dato histórico: SNOBOL pudo haber sido el primer lenguaje en ofrecer retroceso (backtracking) como facilidad, y Prolog lo utiliza de forma extensiva."
+      "notes": "Backtracking es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione; fue popularizado por Derrick Henry Lehmer, matemático estadounidense. NOTA SOBRE EL CÓDIGO: dentro del ciclo no basta con escribir «return backtrack(nodo)», pues solo exploraría el primer hijo; se retorna true únicamente si la llamada recursiva tuvo éxito y, si ninguna alternativa funciona, se retorna false para que el nodo anterior pruebe otro hijo. Dato histórico: SNOBOL pudo haber sido el primer lenguaje en ofrecer retroceso (backtracking) como facilidad, y Prolog lo utiliza de forma extensiva."
     },
     {
       "type": "diagram",
@@ -429,7 +429,7 @@
           ]
         }
       ],
-      "notes": "Caso base: col == N significa que las N reinas ya están colocadas, así que se retorna true. N es el tamaño del tablero y board es una matriz de 0 y 1 (1 = hay una reina). isSafe revisa que no haya otra reina en la misma fila ni en las diagonales de las columnas ya llenas; se muestra en la siguiente diapositiva. Si ninguna fila de la columna actual funciona, el método retorna false y quien lo llamó (la columna anterior) quita su reina y prueba la fila siguiente: eso es retroceder. (El capítulo escribe bool y board[][] como pseudocódigo; aquí se usa la sintaxis de Java.)"
+      "notes": "Caso base: col == N significa que las N reinas ya están colocadas, así que se retorna true. N es el tamaño del tablero y board es una matriz de 0 y 1 (1 = hay una reina). isSafe revisa que no haya otra reina en la misma fila ni en las diagonales de las columnas ya llenas; se muestra en la siguiente diapositiva. Si ninguna fila de la columna actual funciona, el método retorna false y quien lo llamó (la columna anterior) quita su reina y prueba la fila siguiente: eso es retroceder."
     },
     {
       "type": "code",
@@ -702,7 +702,7 @@
       "callouts": [
         { "tone": "amber", "text": "Puede devolver `false` aunque exista un mayoritario, si el índice al azar no lo contiene." }
       ],
-      "notes": "Requerimiento: dado un array de N elementos, determinar si hay un elemento mayoritario (que aparezca más de N/2 veces). Solución trivial: contar cuántas veces aparece cada elemento, O(N^2). Con Monte Carlo se escoge un índice al azar y se cuenta cuántas veces aparece ese valor: O(N). El elemento mayoritario ocupa más de la mitad de las posiciones, así que la probabilidad de escogerlo es mayor a 1/2 y la de error es menor a 1/2. Ejecutar varias veces reduce el error (si el pseudo-random es bueno): después de k ejecuciones, es 1/2^k. Por ejemplo, con k = 10 es menos de 0,1 %. Pregunta para la clase: aunque un algoritmo sea determinista, ¿garantiza ser exacto? No necesariamente: un fallo de hardware (por ejemplo, un bit que se corrompe en memoria) también puede producir un resultado incorrecto, así que aceptar un error diminuto es razonable; con k = 30 ejecuciones el error es menor que una en mil millones (2^30 = 1 073 741 824). (En el código del capítulo el parámetro se llama «lenght»; aquí se usa n.)"
+      "notes": "Requerimiento: dado un array de N elementos, determinar si hay un elemento mayoritario (que aparezca más de N/2 veces). Solución trivial: contar cuántas veces aparece cada elemento, O(N^2). Con Monte Carlo se escoge un índice al azar y se cuenta cuántas veces aparece ese valor: O(N). El elemento mayoritario ocupa más de la mitad de las posiciones, así que la probabilidad de escogerlo es mayor a 1/2 y la de error es menor a 1/2. Ejecutar varias veces reduce el error (si el pseudo-random es bueno): después de k ejecuciones, es 1/2^k. Por ejemplo, con k = 10 es menos de 0,1 %. Pregunta para la clase: aunque un algoritmo sea determinista, ¿garantiza ser exacto? No necesariamente: un fallo de hardware (por ejemplo, un bit que se corrompe en memoria) también puede producir un resultado incorrecto, así que aceptar un error diminuto es razonable; con k = 30 ejecuciones el error es menor que una en mil millones (2^30 = 1 073 741 824)."
     },
     {
       "type": "diagram",
@@ -974,7 +974,7 @@
         { "row": 4, "label": "mutación (flip)", "tone": "red" }
       ],
       "callout": { "tone": "teal", "text": "Recombinar mezcla los genes de los padres; mutar invierte bits al azar, según una probabilidad." },
-      "notes": "Recombinación: se mezclan los genes de los padres para generar nuevos individuos. Con P1 = 000000 y P2 = 111111 y el punto de cruce entre las posiciones 2 y 3, los hijos son H1 = 000111 y H2 = 111000. Mutación: con base en alguna probabilidad determinada, se hace flip a algunos bits aleatorios de cada bit-vector de los hijos generados. La fila «H1 mutado» es un ejemplo ilustrativo añadido (se invirtió el bit 1). Estas dos operaciones introducen variabilidad en la población."
+      "notes": "Recombinación: se mezclan los genes de los padres para generar nuevos individuos. Con P1 = 000000 y P2 = 111111 y el punto de cruce entre las posiciones 2 y 3, los hijos son H1 = 000111 y H2 = 111000. Mutación: con base en alguna probabilidad determinada, se hace flip a algunos bits aleatorios de cada bit-vector de los hijos generados. La fila «H1 mutado» es un ejemplo ilustrativo (se invirtió el bit 1). Estas dos operaciones introducen variabilidad en la población."
     },
     {
       "type": "summary",
@@ -1007,7 +1007,7 @@
         { "title": "¿Qué paradigmas sirven para la mochila, las N-reinas y las monedas?", "text": "Pista: un mismo problema admite varios paradigmas; compare su corrección, tiempo y simplicidad." }
       ],
       "footnote": "Referencias: GeeksforGeeks. «Introduction to Divide and Conquer Algorithm» (geeksforgeeks.org/introduction-to-divide-and-conquer-algorithm). GeeksforGeeks. «Introduction to Greedy Algorithm: Data Structures and Algorithm Tutorials» (geeksforgeeks.org/introduction-to-greedy-algorithm-data-structures-and-algorithm-tutorials).",
-      "notes": "Las dos primeras preguntas «Investigar» son las del capítulo; respuestas sugeridas en las notas de las diapositivas «Encontrar el máximo de un arreglo» y «Paralelismo en divide y vencerás». Las otras dos son práctica adicional. Mochila con backtracking: se prueba, producto por producto, llevarlo o no llevarlo; se retrocede cuando las kcal pasan de 800 (y se guarda la mejor saciedad encontrada). Un mismo problema, varios paradigmas: mochila → programación dinámica (óptimo), backtracking (prueba todas las combinaciones factibles) y algoritmo genético (aproximado); N-reinas → backtracking (determinista) y Las Vegas (aleatorio); monedas → ávido (rápido, no siempre óptimo) y programación dinámica (óptimo). Más problemas para practicar, por paradigma: divide y vencerás: Quicksort, multiplicación de Karatsuba, multiplicación de matrices de Strassen; backtracking: el recorrido del caballo, laberintos, coloreado de grafos, subconjuntos de números primos que suman S; programación dinámica: costo mínimo de un camino en una matriz, números feos (ugly numbers), LCS de tres cadenas; ávidos: Kruskal y Prim (árboles de expansión mínima), Dijkstra (vea la lección de Algoritmos de Búsqueda), Huffman (vea la lección de Algoritmos de Compresión), el viajante con una heurística ávida; genéticos: el viajante y el cambio de monedas. Próximos pasos: practicar con los ejemplos de código y tratar de reconocer qué paradigma usa cada algoritmo que ya conocen."
+      "notes": "Las dos primeras preguntas «Investigar» tienen respuestas sugeridas en las notas de las diapositivas «Encontrar el máximo de un arreglo» y «Paralelismo en divide y vencerás». Las otras dos son práctica adicional. Mochila con backtracking: se prueba, producto por producto, llevarlo o no llevarlo; se retrocede cuando las kcal pasan de 800 (y se guarda la mejor saciedad encontrada). Un mismo problema, varios paradigmas: mochila → programación dinámica (óptimo), backtracking (prueba todas las combinaciones factibles) y algoritmo genético (aproximado); N-reinas → backtracking (determinista) y Las Vegas (aleatorio); monedas → ávido (rápido, no siempre óptimo) y programación dinámica (óptimo). Más problemas para practicar, por paradigma: divide y vencerás: Quicksort, multiplicación de Karatsuba, multiplicación de matrices de Strassen; backtracking: el recorrido del caballo, laberintos, coloreado de grafos, subconjuntos de números primos que suman S; programación dinámica: costo mínimo de un camino en una matriz, números feos (ugly numbers), LCS de tres cadenas; ávidos: Kruskal y Prim (árboles de expansión mínima), Dijkstra (vea la lección de Algoritmos de Búsqueda), Huffman (vea la lección de Algoritmos de Compresión), el viajante con una heurística ávida; genéticos: el viajante y el cambio de monedas. Próximos pasos: practicar con los ejemplos de código y tratar de reconocer qué paradigma usa cada algoritmo que ya conocen."
     }
   ]
 }

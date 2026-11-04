@@ -1,13 +1,13 @@
 ---
 name: generar-presentacion
-description: Crea o actualiza una presentación PowerPoint (.pptx) en español para un tema de los cursos CE-1103 / CE-2103 (o similares) a partir de un capítulo en Markdown. Usa el generador pptxgenjs del repositorio con un spec JSON, tema oscuro para desarrolladores, notas del orador y revisión visual con PowerPoint. Úsala cuando pidan hacer slides, una presentación, una lección, un deck o un PPT de un tema, o regenerar/ajustar una existente. Also use for "create slides/a deck/a presentation for this lesson".
+description: Crea o actualiza una presentación PowerPoint (.pptx) en español para un tema de los cursos CE-1103 / CE-2103 (o similares) a partir del material que indique el usuario (apuntes, texto, un esquema o una presentación previa). Usa el generador pptxgenjs del repositorio con un spec JSON, que es la única fuente de verdad; tema oscuro para desarrolladores, notas del orador y revisión visual con PowerPoint. Úsala cuando pidan hacer slides, una presentación, una lección, un deck o un PPT de un tema, o regenerar/ajustar una existente. Also use for "create slides/a deck/a presentation for this lesson".
 ---
 
 # Generar presentaciones de lección
 
-Convierte un capítulo del repositorio (p. ej. `ce-2103\08-bases-de-datos.md`) en una presentación clara, concisa y visualmente revisada, **regenerable desde un spec JSON**. El generador vive en `presentaciones\generador\` (pptxgenjs); no se edita el `.pptx` a mano.
+Convierte el material de una lección en una presentación clara, concisa y visualmente revisada, **regenerable desde un spec JSON**. El spec es la **única fuente de verdad** del contenido: el `.pptx` y el `.pdf` son resultados de compilación y no se editan a mano. Para cambiar una lección, edite su spec y regenere (`presentaciones\generador\build-all.ps1`). El generador vive en `presentaciones\generador\` (pptxgenjs).
 
-Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bases-de-datos.json` (41 diapositivas) → `presentaciones\ce-2103\Lección 08 - Bases de Datos.pptx`.
+Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bases-de-datos.json` (42 diapositivas) → `presentaciones\ce-2103\Lección 08 - Bases de Datos.pptx`.
 
 ## Requisitos
 
@@ -16,8 +16,8 @@ Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bas
 
 ## Flujo de trabajo
 
-1. **Leer el material.** Lea el capítulo completo y las imágenes en `<curso>\images\<NN-tema>\`. Identifique 4–6 objetivos de aprendizaje, los conceptos, los ejemplos y el vocabulario del curso. Mire también un spec existente para copiar el estilo.
-2. **Planificar el esquema** (no lo escriba en el repo): secciones, 3–5 diapositivas por concepto grande, y qué visual comunica mejor cada una (ver "Elegir el tipo de diapositiva"). Para un capítulo muy largo o ambiguo, muestre el esquema y el número de diapositivas al usuario antes de construir. Si necesita un caso de uso/ejemplo conductor, elija uno simple y cercano a estudiantes, úselo de principio a fin y menciónelo en la respuesta final.
+1. **Leer el material.** Lea el material que indique el usuario (apuntes, texto, un esquema, una presentación previa) y, si existen, las imágenes en `<curso>\images\<NN-tema>\`. Si falta material, pídalo antes de construir. Identifique 4–6 objetivos de aprendizaje, los conceptos, los ejemplos y el vocabulario del curso. Mire también un spec existente para copiar el estilo.
+2. **Planificar el esquema** (no lo escriba en el repo): secciones, 3–5 diapositivas por concepto grande, y qué visual comunica mejor cada una (ver "Elegir el tipo de diapositiva"). Para un tema muy largo o ambiguo, muestre el esquema y el número de diapositivas al usuario antes de construir. Si necesita un caso de uso/ejemplo conductor, elija uno simple y cercano a estudiantes, úselo de principio a fin y menciónelo en la respuesta final.
 3. **Crear el spec.** Copie la plantilla y edítela:
    ```powershell
    New-Item -ItemType Directory -Force presentaciones\generador\specs\<curso> | Out-Null
@@ -37,16 +37,21 @@ Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bas
    ```
    `render.ps1` guarda los PNG en `render\<nombre del pptx>\` y es seguro ejecutarlo en paralelo desde varios procesos (un mutex serializa PowerPoint y no cierra una sesión ajena). Abra `sheet-NN.png` (6 diapositivas por hoja) con la herramienta `view` para una pasada general y luego `slide-NN.png` a tamaño completo para cada diapositiva sospechosa. Siga `references\qa-checklist.md`. Corrija el spec (o el generador) y repita hasta que no haya texto desbordado, solapado ni mal ubicado. `render.ps1` también avisa de formas fuera de la diapositiva.
 6. **Entregables.** Con `-Pdf` en `render.ps1` genere el PDF junto al `.pptx` (las lecciones existentes incluyen ambos). Elimine `presentaciones\generador\render\<nombre>\` (`render` está en `.gitignore`).
-7. **Guardar.** Haga commit del spec, el `.pptx`, el `.pdf` y cualquier cambio al generador. Nunca incluya `node_modules` ni `render`. Si cambió `lib\`, regenere también las demás presentaciones afectadas para comprobar que no se rompieron.
+7. **Guardar.** Haga commit del spec, el `.pptx`, el `.pdf` y cualquier cambio al generador. Nunca incluya `node_modules` ni `render`. Si cambió `lib\`, ejecute `presentaciones\generador\build-all.ps1` (con `-Pdf` para regenerar también los PDF) y compruebe que ninguna presentación se rompió.
+
+## Mantener el contenido (una sola fuente)
+
+- Para **actualizar** una lección, edite solo su spec JSON y regenere: `powershell -NoProfile -File build-all.ps1 [-Pdf]` (o `node build.js <spec>` para una sola). No edite el `.pptx`/`.pdf`: se sobrescriben.
+- Lo que haría falta en un documento aparte (respuestas, derivaciones, advertencias) va en `notes`, no en archivos Markdown paralelos.
 
 ## Reglas de contenido (rol: profesor de primer año de Ingeniería en Computadores)
 
-- **Idioma:** español neutro de Costa Rica, trato de «usted» en instrucciones («Escriba», «Identifique»), comillas angulares «…», términos técnicos en inglés cuando así se usan en el curso (*full table scan*, *scale out*) con su explicación. Mantenga la terminología y los ejemplos del capítulo.
-- **Fidelidad:** no invente hechos. Todo lo que añada más allá del capítulo (ejemplos, analogías, comparaciones) debe ser correcto y estar señalado en su respuesta final para que el usuario lo revise.
+- **Idioma:** español neutro de Costa Rica, trato de «usted» en instrucciones («Escriba», «Identifique»), comillas angulares «…», términos técnicos en inglés cuando así se usan en el curso (*full table scan*, *scale out*) con su explicación. Mantenga la terminología y los ejemplos del material fuente.
+- **Fidelidad:** no invente hechos. Todo lo que añada más allá del material fuente (ejemplos, analogías, comparaciones) debe ser correcto, verificado (ejecute el código y los cálculos) y estar señalado en su respuesta final para que el usuario lo revise.
 - **Conciso y no abrumador:** una idea por diapositiva; como máximo ~5 viñetas o ~25 palabras por tarjeta; texto ≥ 14 pt. Todo lo demás (detalles, respuestas de ejercicios, errores comunes, preguntas para la clase) va en `notes` (notas del orador).
 - **Visual primero:** prefiera diagramas, tablas, código resaltado y antes/después frente a listas. Reutilice el mismo ejemplo en varias diapositivas (mismos nombres de tablas, variables, datos).
 - **Estructura típica:** portada → objetivos (`list`) → secciones con `section` → ejercicio «Ahora usted» cuando aplique → resumen (`summary`) con referencias en `footnote`. Para procesos de varios pasos use `step`/`stepTotal` (indicador «paso n/6»).
-- **Código:** `meta.codeLang` fija el lenguaje por defecto (`sql`, `c`, `cpp`, `java`, `csharp`, `rust`, `python`, `pseudo`, `json`, `plain`); cada bloque puede sobrescribirlo con `lang`. Verifique el lenguaje real de los ejemplos del capítulo (p. ej. CE-1103 «POO» usa C#, no Java). Use mayúsculas de forma coherente con el capítulo (p. ej. identificadores SQL en mayúscula).
+- **Código:** `meta.codeLang` fija el lenguaje por defecto (`sql`, `c`, `cpp`, `java`, `csharp`, `rust`, `python`, `pseudo`, `json`, `plain`); cada bloque puede sobrescribirlo con `lang`. Verifique el lenguaje real de los ejemplos (p. ej. CE-1103 «POO» usa C#, no Java). Use mayúsculas de forma coherente con el material (p. ej. identificadores SQL en mayúscula).
 - **Accesibilidad:** `alt` en cada imagen; contraste alto (el tema oscuro ya lo cumple); evite emoji y símbolos como ✓/✗ (cambian de fuente); no codifique significado solo con color.
 
 ## Elegir el tipo de diapositiva
@@ -60,7 +65,7 @@ Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bas
 | Comparar dos cosas o antes/después | `compare` (con `vs`) |
 | Comparar atributos de varias cosas | `table` |
 | Código, comandos, consultas, bloques lado a lado | `code` |
-| Una imagen del capítulo | `image` (solo PNG; se enmarca sobre fondo blanco) |
+| Una imagen de `<curso>\images` | `image` (solo PNG; se enmarca sobre fondo blanco) |
 | Esquemas específicos | `diagram` con `kind` (ver `references\spec-reference.md`): árboles/tries → `tree`; transformar una lista paso a paso → `merge-steps`; secuencia de códigos/bits → `bitstream`; ventana deslizante o coincidencias sobre una cadena → `strips`; entrada → salida → `join-result` |
 
 Detalles de campos, valores por defecto y límites de cada tipo: `references\spec-reference.md`.

@@ -83,7 +83,7 @@
           ]
         }
       ],
-      "notes": "API aplica a muchos contextos (web, del sistema operativo, librerías de clases); aquí interesa la API del sistema operativo. Sea cual sea el contexto, la idea es la misma: una capa de abstracción para que los desarrolladores interactúen con un sistema sin conocer los detalles de su implementación. Nota: el capítulo escribe `fopen(\"archivo.txt\")`; en C real la función recibe además el modo de apertura (\"r\" para lectura), por eso se muestra completa."
+      "notes": "API aplica a muchos contextos (web, del sistema operativo, librerías de clases); aquí interesa la API del sistema operativo. Sea cual sea el contexto, la idea es la misma: una capa de abstracción para que los desarrolladores interactúen con un sistema sin conocer los detalles de su implementación. Nota: en C, `fopen` recibe el nombre del archivo y además el modo de apertura (\"r\" para lectura)."
     },
     {
       "type": "cards",
@@ -99,7 +99,7 @@
         { "title": "I/O", "text": "Entrada y salida: dispositivos y periféricos." }
       ],
       "callout": { "tone": "teal", "text": "El sistema operativo **hace transparentes** los recursos de la máquina: los desarrolladores no lidian con el hardware directamente." },
-      "notes": "Si no hubiera un ente especializado en administrar los recursos, los desarrolladores tendrían que lidiar con la complejidad del hardware. Esta lección se centra en la memoria principal. Las descripciones breves de cada recurso son un apoyo del profesor; el capítulo solo lista los cuatro recursos."
+      "notes": "Si no hubiera un ente especializado en administrar los recursos, los desarrolladores tendrían que lidiar con la complejidad del hardware. Esta lección se centra en la memoria principal. Las descripciones breves de cada recurso son un apoyo para la explicación."
     },
     {
       "type": "cards",
@@ -412,7 +412,7 @@
         { "title": "Errores a evitar", "text": "Fugas de memoria, punteros colgantes y acceso a memoria ya liberada.", "tone": "red" }
       ],
       "callout": { "tone": "teal", "text": "Para construir buenas estructuras de datos hay que entender **cómo se organiza y se usa la memoria** de un programa." },
-      "notes": "Diapositiva de transición añadida (no está en el capítulo). Hasta aquí: la memoria vista desde el sistema operativo (direcciones, espacios de direcciones, memoria virtual). A partir de aquí: la memoria vista desde el programa en ejecución. Pregunta para la clase: ¿por qué estudiamos memoria en un curso de estructuras de datos? Porque las estructuras dinámicas (listas enlazadas, árboles, grafos) viven en el heap y se enlazan con punteros: aun la estructura más elegante y eficiente se echa a perder si la memoria se maneja mal. Los tres errores de la tarjeta de la derecha (fugas, punteros colgantes y acceso a memoria liberada) se estudian en las diapositivas siguientes."
+      "notes": "Diapositiva de transición. Hasta aquí: la memoria vista desde el sistema operativo (direcciones, espacios de direcciones, memoria virtual). A partir de aquí: la memoria vista desde el programa en ejecución. Pregunta para la clase: ¿por qué estudiamos memoria en un curso de estructuras de datos? Porque las estructuras dinámicas (listas enlazadas, árboles, grafos) viven en el heap y se enlazan con punteros: aun la estructura más elegante y eficiente se echa a perder si la memoria se maneja mal. Los tres errores de la tarjeta de la derecha (fugas, punteros colgantes y acceso a memoria liberada) se estudian en las diapositivas siguientes."
     },
     {
       "type": "diagram",
@@ -476,7 +476,7 @@
       "callouts": [{ "tone": "slate", "text": "`x`, `y` y `s` son variables **globales**: viven en el segmento de datos, no en el stack." }],
       "calloutsY": 5.75,
       "calloutsH": 0.85,
-      "notes": "Se llama también segmento de datos. Contiene las variables globales y/o estáticas inicializadas; es de lectura y escritura. Sobre static (fuente citada en el capítulo: es.stackoverflow.com/questions/297656): al usarlo sobre variables dentro de una función permite que el valor persista entre llamadas; al usarlo sobre funciones o variables de ámbito global, garantiza que el elemento solo exista en la unidad de compilación donde se declara."
+      "notes": "Se llama también segmento de datos. Contiene las variables globales y/o estáticas inicializadas; es de lectura y escritura. Sobre static (fuente: es.stackoverflow.com/questions/297656): al usarlo sobre variables dentro de una función permite que el valor persista entre llamadas; al usarlo sobre funciones o variables de ámbito global, garantiza que el elemento solo exista en la unidad de compilación donde se declara."
     },
     {
       "type": "code",
@@ -571,7 +571,7 @@
           ]
         }
       ],
-      "notes": "Código del capítulo (versión resumida: sin líneas en blanco ni directivas). La flecha marca la llamada a second_function; en ese momento el stack tiene tres frames. Cada frame guarda el return address (a dónde volver), los parámetros y las variables locales. Las cinco figuras del capítulo (image-05 a image-09) muestran esta misma traza paso a paso; en la siguiente diapositiva se resumen."
+      "notes": "Código resumido (sin líneas en blanco ni directivas). La flecha marca la llamada a second_function; en ese momento el stack tiene tres frames. Cada frame guarda el return address (a dónde volver), los parámetros y las variables locales. En la siguiente diapositiva se muestra esta misma traza paso a paso."
     },
     {
       "type": "diagram",
@@ -593,7 +593,7 @@
         { "tone": "teal", "text": "Cada llamada **apila** un frame; cada retorno lo **elimina**. El último en entrar es el primero en salir (LIFO)." },
         { "tone": "amber", "label": "¿Y la recursión?", "text": "Cada llamada recursiva apila su propio frame; sin caso base el stack se agota (**stack overflow**)." }
       ],
-      "notes": "Resumen visual de las cinco figuras del capítulo sobre el stack (image-05 a image-09): main, llamada a first_function, llamada a second_function, retorno de second_function y retorno de first_function. Al eliminarse el frame, la memoria se marca como libre. Recursión (adición del profesor; verificado ejecutándolo): `int sumar(int n) { return n == 0 ? 0 : n + sumar(n - 1); }`. Con sumar(4) llegan a coexistir 5 frames apilados (n = 4, 3, 2, 1 y 0) y la función retorna 10; después los frames se eliminan uno a uno. N llamadas recursivas activas ocupan N frames: por eso la recursión cuesta O(n) de espacio en el stack (se retoma en análisis de algoritmos). Si la recursión no termina (falta el caso base) o es demasiado profunda, se agota el stack, que tiene un tamaño máximo fijo: stack overflow. Conexión con el ámbito: la vida de una variable local coincide con la de su frame."
+      "notes": "Resumen visual de la traza del stack en cinco pasos: main, llamada a first_function, llamada a second_function, retorno de second_function y retorno de first_function. Al eliminarse el frame, la memoria se marca como libre. Recursión (adición del profesor; verificado ejecutándolo): `int sumar(int n) { return n == 0 ? 0 : n + sumar(n - 1); }`. Con sumar(4) llegan a coexistir 5 frames apilados (n = 4, 3, 2, 1 y 0) y la función retorna 10; después los frames se eliminan uno a uno. N llamadas recursivas activas ocupan N frames: por eso la recursión cuesta O(n) de espacio en el stack (se retoma en análisis de algoritmos). Si la recursión no termina (falta el caso base) o es demasiado profunda, se agota el stack, que tiene un tamaño máximo fijo: stack overflow. Conexión con el ámbito: la vida de una variable local coincide con la de su frame."
     },
     {
       "type": "cards",
@@ -632,7 +632,7 @@
         { "title": "Tras los free", "blocks": [], "empty": "Todos los bloques fueron liberados" }
       ],
       "callout": { "tone": "teal", "text": "Cada `malloc` necesita su `free`: al liberar todos los bloques, el heap queda vacío. Las direcciones son ilustrativas." },
-      "notes": "Versión resumida del código de las cuatro figuras del capítulo (image-10 a image-13). `multiplyByTwo` reserva en el heap un nuevo double con el doble del salario. Las direcciones son ficticias e ilustrativas: no pretenden reflejar un asignador real. Por ejemplo, `myList` ocupa 24 bytes (3 × 8) pero el siguiente bloque empieza 72 bytes después (de 0x0040 a 0x0088), por lo que quedan 48 bytes sin usar entre ambos. Lo importante es el orden y el tamaño relativo de los bloques, no los valores. El capítulo muestra myList como tres elementos separados; aquí se agrupan en un solo bloque de 24 bytes (3 × 8) para evitar inconsistencias en las direcciones. Detalle omitido por espacio: `malloc` NO inicializa el bloque (su contenido es basura hasta que se escribe en él; `calloc` sí lo pone en cero) y retorna `NULL` si no hay memoria, así que en código real cada `malloc` se verifica con `if (p == NULL)`. Tras `free(p)` el puntero conserva la dirección (puntero colgante): asigne `NULL`."
+      "notes": "Versión resumida del código, ilustrada en cuatro pasos (tras cada malloc y tras los free). `multiplyByTwo` reserva en el heap un nuevo double con el doble del salario. Las direcciones son ficticias e ilustrativas: no pretenden reflejar un asignador real. Por ejemplo, `myList` ocupa 24 bytes (3 × 8) pero el siguiente bloque empieza 72 bytes después (de 0x0040 a 0x0088), por lo que quedan 48 bytes sin usar entre ambos. Lo importante es el orden y el tamaño relativo de los bloques, no los valores. `myList` se representa como un solo bloque de 24 bytes (3 × 8). Detalle omitido por espacio: `malloc` NO inicializa el bloque (su contenido es basura hasta que se escribe en él; `calloc` sí lo pone en cero) y retorna `NULL` si no hay memoria, así que en código real cada `malloc` se verifica con `if (p == NULL)`. Tras `free(p)` el puntero conserva la dirección (puntero colgante): asigne `NULL`."
     },
     {
       "type": "compare",
@@ -690,7 +690,7 @@
         { "tone": "red", "label": "Fragmentación:", "text": "hay memoria libre suficiente en total, pero **dispersa**, y no sirve para un bloque grande contiguo." },
         { "tone": "amber", "label": "Matiz:", "text": "en C el heap no se compacta (los punteros dejarían de ser válidos); lo hacen el SO o el recolector de basura." }
       ],
-      "notes": "Fragmentación (explicación y diagrama del profesor; no están en el capítulo). Cada celda representa una unidad de memoria del heap (A a E son bloques ocupados). Después de varios malloc y free, los bloques libres y ocupados quedan intercalados. Verificado en el diagrama: 12 celdas, 5 ocupadas y 7 libres, con rachas libres de 1, 2, 1, 2 y 1; la racha más larga es de 2, así que un pedido de 3 celdas contiguas falla aunque haya 7 libres. Compactación: al mover los bloques ocupados hacia un extremo, las 7 celdas libres quedan juntas; entonces el pedido de 3 se atiende (celdas 6 a 8, X) y sobran 4. Es una operación costosa: hay que copiar los bloques y, además, actualizar todas las direcciones que apuntan a ellos. Por eso en C, donde los punteros guardan direcciones directas, el heap del proceso no se compacta; la compactación se hace en esquemas de memoria contigua del sistema operativo o en el recolector de basura de los lenguajes manejados (ver «Recolección de basura: marcado y barrido»). Reducir la fragmentación es una de las responsabilidades del SO vistas al inicio. Pregunta para la clase: ¿qué pasaría si se pide un bloque de 8 celdas contiguas aun después de compactar? (No cabe: solo hay 7 libres en total.)"
+      "notes": "Fragmentación (explicación y diagrama del profesor). Cada celda representa una unidad de memoria del heap (A a E son bloques ocupados). Después de varios malloc y free, los bloques libres y ocupados quedan intercalados. Verificado en el diagrama: 12 celdas, 5 ocupadas y 7 libres, con rachas libres de 1, 2, 1, 2 y 1; la racha más larga es de 2, así que un pedido de 3 celdas contiguas falla aunque haya 7 libres. Compactación: al mover los bloques ocupados hacia un extremo, las 7 celdas libres quedan juntas; entonces el pedido de 3 se atiende (celdas 6 a 8, X) y sobran 4. Es una operación costosa: hay que copiar los bloques y, además, actualizar todas las direcciones que apuntan a ellos. Por eso en C, donde los punteros guardan direcciones directas, el heap del proceso no se compacta; la compactación se hace en esquemas de memoria contigua del sistema operativo o en el recolector de basura de los lenguajes manejados (ver «Recolección de basura: marcado y barrido»). Reducir la fragmentación es una de las responsabilidades del SO vistas al inicio. Pregunta para la clase: ¿qué pasaría si se pide un bloque de 8 celdas contiguas aun después de compactar? (No cabe: solo hay 7 libres en total.)"
     },
     {
       "type": "table",
@@ -716,7 +716,7 @@
         { "tone": "amber", "label": "Use el heap si", "text": "necesita bloques grandes, datos que vivan más allá de la función o estructuras que crezcan." },
         { "tone": "teal", "label": "Use el stack si", "text": "son variables pequeñas, de tamaño conocido, que solo se usan en su ámbito." }
       ],
-      "notes": "Pregunta para la clase: ¿qué tipo de datos pondría en cada uno? Estructuras de tamaño variable (listas, árboles) van al heap; variables locales simples, al stack. La fila «Tiempo de vida» y los criterios son una adición del profesor (no están en el capítulo). Ventajas y desventajas del heap: el programador controla el tiempo de vida y el tamaño de la memoria (se pueden construir estructuras y devolverlas al llamador); a cambio, hay más trabajo (es responsabilidad del programador) y más bugs (fugas, punteros colgantes). Ventajas y desventajas del stack: es cómodo, eficiente en tiempo y espacio, y da copias locales independientes que evitan efectos colaterales; a cambio, la vida es corta (la variable solo existe en su ámbito). Precisión: el llamado no puede entregar al llamador datos que viven en SU frame, porque el frame se destruye al retornar (ver «No retornar punteros a variables del stack»); sí puede modificar variables del llamador si este le pasa punteros o referencias (ver «Paso de parámetros»). La decisión se vuelve más fácil con la práctica."
+      "notes": "Pregunta para la clase: ¿qué tipo de datos pondría en cada uno? Estructuras de tamaño variable (listas, árboles) van al heap; variables locales simples, al stack. La fila «Tiempo de vida» y los criterios son una adición del profesor. Ventajas y desventajas del heap: el programador controla el tiempo de vida y el tamaño de la memoria (se pueden construir estructuras y devolverlas al llamador); a cambio, hay más trabajo (es responsabilidad del programador) y más bugs (fugas, punteros colgantes). Ventajas y desventajas del stack: es cómodo, eficiente en tiempo y espacio, y da copias locales independientes que evitan efectos colaterales; a cambio, la vida es corta (la variable solo existe en su ámbito). Precisión: el llamado no puede entregar al llamador datos que viven en SU frame, porque el frame se destruye al retornar (ver «No retornar punteros a variables del stack»); sí puede modificar variables del llamador si este le pasa punteros o referencias (ver «Paso de parámetros»). La decisión se vuelve más fácil con la práctica."
     },
     {
       "type": "cards",
@@ -760,7 +760,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "El puntero vive en el **stack**; la memoria de `malloc`, en el **heap** y **sin inicializar** (`?` = basura; `calloc` la pone en cero). Direcciones ficticias." },
-      "notes": "Las direcciones de la tabla son ficticias: se asume que el heap empieza en la dirección hexadecimal 64 y que cada dirección es de 32 bits (4 bytes); en un sistema de 64 bits cada puntero ocuparía 8 bytes (`sizeof(int*)`). Valor «?»: `malloc` NO inicializa la memoria que reserva, así que el bloque contiene basura (contenido indeterminado), no 0; `calloc(cantidad, tamaño)` sí la inicializa en cero. Además, `malloc` retorna `NULL` si no puede reservar la memoria: verifique con `if (ptr == NULL)` antes de usarla. El capítulo declara además `MyClass* myptr = new MyClass();` (en C++, 20 bytes), `void* vptr = malloc(100);` y punteros nulos: `int* nPtr = NULL;`, `int* nPtr2 = 0;` (0 es el único literal que se puede asignar a un puntero en C) e `int* nPtr3 = nullptr;` (C++11)."
+      "notes": "Las direcciones de la tabla son ficticias: se asume que el heap empieza en la dirección hexadecimal 64 y que cada dirección es de 32 bits (4 bytes); en un sistema de 64 bits cada puntero ocuparía 8 bytes (`sizeof(int*)`). Valor «?»: `malloc` NO inicializa la memoria que reserva, así que el bloque contiene basura (contenido indeterminado), no 0; `calloc(cantidad, tamaño)` sí la inicializa en cero. Además, `malloc` retorna `NULL` si no puede reservar la memoria: verifique con `if (ptr == NULL)` antes de usarla. Otros ejemplos de declaración: `MyClass* myptr = new MyClass();` (en C++, 20 bytes), `void* vptr = malloc(100);` y punteros nulos: `int* nPtr = NULL;`, `int* nPtr2 = 0;` (0 es el único literal que se puede asignar a un puntero en C) e `int* nPtr3 = nullptr;` (C++11)."
     },
     {
       "type": "diagram",
@@ -789,7 +789,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "`&x` obtiene la **dirección** de `x` (no confundir con el AND de bits `&`). Sirve para memoria del stack o del heap." },
-      "notes": "El operador unario address-of se designa con &. En el ejemplo del capítulo, la salida (con un espacio de direcciones de 48 bits) fue: The address of the variable x is: 0x7fffbf7b3b7c. Observe que el valor de ptr es la dirección de x."
+      "notes": "El operador unario address-of se designa con &. En el ejemplo, la salida (con un espacio de direcciones de 48 bits) fue: The address of the variable x is: 0x7fffbf7b3b7c. Observe que el valor de ptr es la dirección de x."
     },
     {
       "type": "diagram",
@@ -826,7 +826,7 @@
       ],
       "calloutY": 5.95,
       "callout": { "tone": "teal", "text": "`*price` accede al valor apuntado, y también permite **modificarlo**." },
-      "notes": "El operador unario de-referencia (*) accede al valor almacenado en la dirección apuntada por el puntero (no confundir con el operador binario de multiplicación). El ejemplo completo del capítulo imprime «The value of x is: 3899», «The value of price is: 3899», y después de `*price = 1000`, ambos valores son 1000."
+      "notes": "El operador unario de-referencia (*) accede al valor almacenado en la dirección apuntada por el puntero (no confundir con el operador binario de multiplicación). El ejemplo completo imprime «The value of x is: 3899», «The value of price is: 3899», y después de `*price = 1000`, ambos valores son 1000."
     },
     {
       "type": "diagram",
@@ -856,7 +856,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "Con **cualquiera** de los punteros se lee o modifica `x`: ambos apuntan a la misma dirección." },
-      "notes": "Sharing es tener dos o más punteros que apunten a la misma dirección de memoria. En el capítulo la tabla muestra x = 10, pero el código asigna 20; aquí se usa 20 para que coincidan. Tras `*ptr = 30`, `cout << x`, `cout << *ptr2` y `cout << *ptr` imprimen 30."
+      "notes": "Sharing es tener dos o más punteros que apunten a la misma dirección de memoria. Tras `*ptr = 30`, `cout << x`, `cout << *ptr2` y `cout << *ptr` imprimen 30."
     },
     {
       "type": "diagram",
@@ -883,7 +883,7 @@
         }
       ],
       "callout": { "tone": "amber", "text": "Si una estructura tiene campos puntero, la deep-copy debe copiar el valor al que apunta cada puntero, no el puntero." },
-      "notes": "Shallow-copy: se copia el puntero, no el valor al que apunta; se pueden crear n copias de punteros pero solo hay un espacio de memoria al que todos apuntan. Deep-copy: se copia el valor al que apunta el puntero; puede implicar más trabajo que un simple malloc. Los nombres counterPtr y counterPtr_2 se tomaron de las figuras del capítulo (image-14 e image-15); el capítulo usa ptr y ptr2 en el código.       Tabla de memoria de la deep-copy: x = 20 en 0x0, ptr = 0x0 en 0x4, ptr2 = 0x64 en 0x8 y, en el heap, 20 en 0x64. Ejemplo con cadenas (adición del profesor; verificado compilándolo y ejecutándolo): una deep copy de un string necesita reservar strlen + 1 bytes (el +1 es para el terminador '\\0'), copiar y retornar la copia; strcpy copia los caracteres y, para otros arreglos de bytes, se usa memcpy. Código: `char* stringCopy(const char* s) { size_t len = strlen(s) + 1; char* copy = malloc(len); if (copy == NULL) return NULL; strcpy(copy, s); return copy; }`. Modificar la copia no altera el original, y quien llama a la función es dueño de la copia: debe liberarla con `free`. Se verifica el retorno de `malloc` con un `if` (no con `assert`, que desaparece al compilar con NDEBUG)."
+      "notes": "Shallow-copy: se copia el puntero, no el valor al que apunta; se pueden crear n copias de punteros pero solo hay un espacio de memoria al que todos apuntan. Deep-copy: se copia el valor al que apunta el puntero; puede implicar más trabajo que un simple malloc. Tabla de memoria de la deep-copy: x = 20 en 0x0, ptr = 0x0 en 0x4, ptr2 = 0x64 en 0x8 y, en el heap, 20 en 0x64. Ejemplo con cadenas (adición del profesor; verificado compilándolo y ejecutándolo): una deep copy de un string necesita reservar strlen + 1 bytes (el +1 es para el terminador '\\0'), copiar y retornar la copia; strcpy copia los caracteres y, para otros arreglos de bytes, se usa memcpy. Código: `char* stringCopy(const char* s) { size_t len = strlen(s) + 1; char* copy = malloc(len); if (copy == NULL) return NULL; strcpy(copy, s); return copy; }`. Modificar la copia no altera el original, y quien llama a la función es dueño de la copia: debe liberarla con `free`. Se verifica el retorno de `malloc` con un `if` (no con `assert`, que desaparece al compilar con NDEBUG)."
     },
     {
       "type": "diagram",
@@ -943,7 +943,7 @@
       ],
       "groups": [{ "from": 0, "to": 4, "label": "arr: 5 × 4 bytes = 20 bytes contiguos" }],
       "callout": { "tone": "teal", "text": "`ptr + 1` avanza **un elemento** (4 bytes para `int`), no un byte. Además `arr[i]` equivale a `*(arr + i)`: acceso **O(1)**." },
-      "notes": "La aritmética de punteros permite sumar o restar un entero a un puntero; es útil para recorrer arreglos. Es en términos de elementos, no de bytes: como el puntero tiene tipo, el compilador sabe cuántos bytes sumar. Nota: el arreglo `arr` ocupa 5 elementos × 4 bytes = 20 bytes contiguos (el capítulo indicaba 50 bytes por error; ya está corregido). Las direcciones son relativas e ilustrativas. Precisión: el nombre del arreglo no es un puntero; al usarse en una expresión «decae» a un puntero al primer elemento, y por eso `int* ptr = arr;` es válido. Se nota en `sizeof`: `sizeof(arr)` es 20 y `sizeof(ptr)` es el tamaño de un puntero (4 u 8 bytes según la arquitectura)."
+      "notes": "La aritmética de punteros permite sumar o restar un entero a un puntero; es útil para recorrer arreglos. Es en términos de elementos, no de bytes: como el puntero tiene tipo, el compilador sabe cuántos bytes sumar. Nota: el arreglo `arr` ocupa 5 elementos × 4 bytes = 20 bytes contiguos. Las direcciones son relativas e ilustrativas. Precisión: el nombre del arreglo no es un puntero; al usarse en una expresión «decae» a un puntero al primer elemento, y por eso `int* ptr = arr;` es válido. Se nota en `sizeof`: `sizeof(arr)` es 20 y `sizeof(ptr)` es el tamaño de un puntero (4 u 8 bytes según la arquitectura)."
     },
     {
       "type": "compare",
@@ -972,7 +972,7 @@
         }
       ],
       "callout": { "tone": "teal", "label": "En C:", "text": "`void foo(int* x) { *x = 20; }` y se llama con `foo(&x)`. En C++, `int&` es un alias: no puede ser nulo ni reasignarse." },
-      "notes": "En C++ una referencia (&) es similar a un puntero, pero más segura y fácil de usar: debe inicializarse al declararse y siempre refiere a la misma variable; es simplemente un alias. Ejemplo: `int x = 10; int& ref = x;` imprime 10 tanto con x como con ref. En el capítulo, el ejemplo en C usa `cout`, que es de C++; en C se usaría printf. Ejemplo clásico (adición del profesor; verificado compilándolo y ejecutándolo): `void swap(int* px, int* py) { int temp = *px; *px = *py; *py = temp; }` se llama con `swap(&a, &b)` y, con a = 30 y b = 45, deja a = 45 y b = 30. En cambio, `void swap(int x, int y)` solo intercambia sus copias locales y no cambia a ni b. En C++ también sirve `void swap(int& first, int& second)`, que se llama simplemente con `swap(a, b)`."
+      "notes": "En C++ una referencia (&) es similar a un puntero, pero más segura y fácil de usar: debe inicializarse al declararse y siempre refiere a la misma variable; es simplemente un alias. Ejemplo: `int x = 10; int& ref = x;` imprime 10 tanto con x como con ref. Los ejemplos con `cout` son de C++; en C se usaría printf. Ejemplo clásico (adición del profesor; verificado compilándolo y ejecutándolo): `void swap(int* px, int* py) { int temp = *px; *px = *py; *py = temp; }` se llama con `swap(&a, &b)` y, con a = 30 y b = 45, deja a = 45 y b = 30. En cambio, `void swap(int x, int y)` solo intercambia sus copias locales y no cambia a ni b. En C++ también sirve `void swap(int& first, int& second)`, que se llama simplemente con `swap(a, b)`."
     },
     {
       "type": "list",
@@ -988,7 +988,7 @@
         { "title": "Evite la **aritmética compleja**", "text": "Es propensa a errores: úsela con cuidado." },
         { "title": "**No retorne** punteros al stack", "text": "La variable se libera al terminar la función." }
       ],
-      "notes": "Siete recomendaciones del capítulo, agrupadas en seis. Las siguientes dos diapositivas muestran el código."
+      "notes": "Seis recomendaciones esenciales para trabajar con punteros. Las siguientes dos diapositivas muestran el código."
     },
     {
       "type": "code",
@@ -1040,7 +1040,7 @@
           ]
         }
       ],
-      "notes": "Advertencia del capítulo: este ejemplo incurre en comportamiento indefinido (undefined behavior), ya que r apunta a temp, una variable local cuyo stack frame ya fue liberado al retornar foo. La memoria puede haber sido reutilizada (por ejemplo, por la llamada a bar), pero esto NO está garantizado por el estándar. La salida no es confiable: podría imprimir cualquier valor, variar entre ejecuciones o compiladores, o incluso provocar una falla del programa. Alternativa correcta (conecta con «Heap vs. stack: ¿cuál usar?»): si el dato debe vivir más allá de la función, se reserva en el heap y se retorna el puntero: `int* foo() { int* p = malloc(sizeof(int)); if (p == NULL) return NULL; *p = 50; return p; }`; quien llama es responsable de liberarlo con `free`."
+      "notes": "Advertencia: este ejemplo incurre en comportamiento indefinido (undefined behavior), ya que r apunta a temp, una variable local cuyo stack frame ya fue liberado al retornar foo. La memoria puede haber sido reutilizada (por ejemplo, por la llamada a bar), pero esto NO está garantizado por el estándar. La salida no es confiable: podría imprimir cualquier valor, variar entre ejecuciones o compiladores, o incluso provocar una falla del programa. Alternativa correcta (conecta con «Heap vs. stack: ¿cuál usar?»): si el dato debe vivir más allá de la función, se reserva en el heap y se retorna el puntero: `int* foo() { int* p = malloc(sizeof(int)); if (p == NULL) return NULL; *p = 50; return p; }`; quien llama es responsable de liberarlo con `free`."
     },
     {
       "type": "code",
@@ -1069,7 +1069,7 @@
       "callouts": [{ "tone": "teal", "text": "`obj2 = obj` copia la **referencia**, no el objeto: ambas variables apuntan al mismo objeto (shallow-copy)." }],
       "calloutsY": 5.4,
       "calloutsH": 0.95,
-      "notes": "En los lenguajes manejados los punteros no son accesibles directamente; se usan referencias. A diferencia de las referencias de C++, estas sí pueden ser nulas y sí pueden reasignarse. En el ejemplo, obj2 = obj copia la referencia (shallow-copy): ambas variables apuntan al mismo objeto. El capítulo muestra el código dentro de una clase Main con el método main; aquí se resume."
+      "notes": "En los lenguajes manejados los punteros no son accesibles directamente; se usan referencias. A diferencia de las referencias de C++, estas sí pueden ser nulas y sí pueden reasignarse. En el ejemplo, obj2 = obj copia la referencia (shallow-copy): ambas variables apuntan al mismo objeto."
     },
     {
             "type": "compare",
@@ -1134,7 +1134,7 @@
         ]
       },
       "callout": { "tone": "teal", "text": "El recolector **sigue las referencias** entre objetos; la memoria de lo que no alcanza se libera automáticamente." },
-      "notes": "La mayoría de los lenguajes manejados tienen recolección de basura, por lo que no es necesario liberar la memoria manualmente. El recolector usa un algoritmo de marcado y barrido para determinar qué objetos son accesibles; los inaccesibles se marcan para ser liberados, y para saberlo sigue las referencias a través de los objetos. El grafo (ref, A–E) es un ejemplo del profesor, no del capítulo. El recolector suele trabajar en dos fases: marcado (identifica las celdas del heap que siguen en uso, es decir, accesibles) y reclamación (las celdas sin marcar se devuelven al pool de memoria). Para evitar la fragmentación, la reclamación puede incluir una compactación del heap; esto es posible porque el recolector conoce todas las referencias y puede actualizarlas al mover los objetos (ver «Fragmentación: memoria libre que no sirve»). En C esto no ocurre: la memoria se libera con free y los bloques no se mueven."
+      "notes": "La mayoría de los lenguajes manejados tienen recolección de basura, por lo que no es necesario liberar la memoria manualmente. El recolector usa un algoritmo de marcado y barrido para determinar qué objetos son accesibles; los inaccesibles se marcan para ser liberados, y para saberlo sigue las referencias a través de los objetos. El grafo (ref, A–E) es un ejemplo del profesor. El recolector suele trabajar en dos fases: marcado (identifica las celdas del heap que siguen en uso, es decir, accesibles) y reclamación (las celdas sin marcar se devuelven al pool de memoria). Para evitar la fragmentación, la reclamación puede incluir una compactación del heap; esto es posible porque el recolector conoce todas las referencias y puede actualizarlas al mover los objetos (ver «Fragmentación: memoria libre que no sirve»). En C esto no ocurre: la memoria se libera con free y los bloques no se mueven."
     },
     {
       "type": "compare",
@@ -1179,7 +1179,7 @@
         { "title": "E · Swap", "text": "Escriba `swap(int*, int*)` para intercambiar dos enteros. ¿Por qué no basta pasarlos por valor?", "tone": "teal" },
         { "title": "F · Struct y ->", "text": "Si `f` apunta a un `struct fraction` del heap, escriba dos formas de asignar `22` a `numerator`.", "tone": "teal" }
       ],
-      "notes": "Ejercicios propuestos por el profesor (no están en el capítulo). Respuestas: A) 6, porque `*p = *p + 1` modifica a mediante el puntero. B) Local: stack; bloque de malloc: heap; global inicializada: initialized data; global sin inicializar: bss. C) Retorna un puntero a una variable local del stack, que se libera al terminar f: puntero colgante y comportamiento indefinido. D) 4 GB (2^32 bytes): no tiene direcciones para más. E) `void swap(int* px, int* py) { int temp = *px; *px = *py; *py = temp; }`, que se llama con `swap(&a, &b)`. Por valor, la función recibe copias de los enteros y solo intercambia las copias; las variables originales no cambian. En C++ también sirve `void swap(int& first, int& second)`. Verificado: con a = 30 y b = 45, tras `swap(&a, &b)` queda a = 45 y b = 30. F) `f->numerator = 22;` y `(*f).numerator = 22;` son equivalentes: el operador `->` de-referencia el puntero y accede al campo. Pregunta adicional: ¿por qué `f.numerator` no compila si `f` es un puntero? (Porque `f` es una dirección; el punto se usa sobre la estructura misma.) Un ejemplo completo, verificado: `struct fraction* f = malloc(sizeof(struct fraction)); if (f != NULL) { f->numerator = 22; (*f).denominator = 7; free(f); }`. Con un arreglo en el heap, `struct fraction* v = malloc(100 * sizeof(struct fraction));`, el recorrido correcto es `for (int i = 0; i < 100; i++)` y al final se libera con `free(v)`."
+      "notes": "Ejercicios propuestos por el profesor. Respuestas: A) 6, porque `*p = *p + 1` modifica a mediante el puntero. B) Local: stack; bloque de malloc: heap; global inicializada: initialized data; global sin inicializar: bss. C) Retorna un puntero a una variable local del stack, que se libera al terminar f: puntero colgante y comportamiento indefinido. D) 4 GB (2^32 bytes): no tiene direcciones para más. E) `void swap(int* px, int* py) { int temp = *px; *px = *py; *py = temp; }`, que se llama con `swap(&a, &b)`. Por valor, la función recibe copias de los enteros y solo intercambia las copias; las variables originales no cambian. En C++ también sirve `void swap(int& first, int& second)`. Verificado: con a = 30 y b = 45, tras `swap(&a, &b)` queda a = 45 y b = 30. F) `f->numerator = 22;` y `(*f).numerator = 22;` son equivalentes: el operador `->` de-referencia el puntero y accede al campo. Pregunta adicional: ¿por qué `f.numerator` no compila si `f` es un puntero? (Porque `f` es una dirección; el punto se usa sobre la estructura misma.) Un ejemplo completo, verificado: `struct fraction* f = malloc(sizeof(struct fraction)); if (f != NULL) { f->numerator = 22; (*f).denominator = 7; free(f); }`. Con un arreglo en el heap, `struct fraction* v = malloc(100 * sizeof(struct fraction));`, el recorrido correcto es `for (int i = 0; i < 100; i++)` y al final se libera con `free(v)`."
     },
     {
       "type": "summary",
@@ -1197,7 +1197,7 @@
         "**Lenguajes manejados:** referencias y recolección de basura; Rust: ownership y borrowing."
       ],
       "footnote": "Referencias: Tanenbaum, A. S. y Bos, H. (2014). Modern Operating Systems. Pearson · geeksforgeeks.org (memory-layout-of-c-program, cpp-pointer-operators) · Lectura complementaria: Parlante, N. Pointers and Memory. Stanford CS Education Library, doc. n.º 102",
-      "notes": "Cierre de la lección. Referencias del capítulo: Modern Operating Systems (Tanenbaum y Bos, Pearson, 2014); https://www.geeksforgeeks.org/memory-layout-of-c-program/ y https://www.geeksforgeeks.org/cpp-pointer-operators/. Lectura complementaria añadida (no está en el capítulo): Nick Parlante, «Pointers and Memory», Stanford CS Education Library, documento n.º 102 (cubre punteros, deep vs. shallow copy, heap, NULL y fugas de memoria, con ejemplos en C y notas sobre Java). Varios ejemplos de la presentación anterior de la lección (heapFoo, struct fraction, stringCopy) son afines a ese documento; verifique la atribución antes de citarlos como propios."
+      "notes": "Cierre de la lección. Referencias: Modern Operating Systems (Tanenbaum y Bos, Pearson, 2014); https://www.geeksforgeeks.org/memory-layout-of-c-program/ y https://www.geeksforgeeks.org/cpp-pointer-operators/. Lectura complementaria: Nick Parlante, «Pointers and Memory», Stanford CS Education Library, documento n.º 102 (cubre punteros, deep vs. shallow copy, heap, NULL y fugas de memoria, con ejemplos en C y notas sobre Java). Varios ejemplos de esta lección (heapFoo, struct fraction, stringCopy) son afines a ese documento; verifique la atribución antes de citarlos como propios."
     }
   ]
 }

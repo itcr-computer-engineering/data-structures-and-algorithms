@@ -22,7 +22,7 @@
         "code": "// ¿Cuánto crece el tiempo?\nfor (int i = 0; i < n; i++)\n    foo(v[i]);\n// f(n) = 6nT + T = O(n)"
       },
       "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
-      "notes": "Capítulo sobre análisis de algoritmos: es esencial para diseñar algoritmos eficientes y tomar decisiones en el desarrollo de software. La industria ha hecho estándar las entrevistas enfocadas en algoritmos y estructuras de datos junto con análisis de complejidad. Recorrido: definición de algoritmo, análisis empírico y teórico, casos, notaciones asintóticas, cómo determinar la complejidad, recurrencias, teorema maestro y análisis amortizado."
+      "notes": "Esta lección trata del análisis de algoritmos: es esencial para diseñar algoritmos eficientes y tomar decisiones en el desarrollo de software. La industria ha hecho estándar las entrevistas enfocadas en algoritmos y estructuras de datos junto con análisis de complejidad. Recorrido: definición de algoritmo, análisis empírico y teórico, casos, notaciones asintóticas, cómo determinar la complejidad, recurrencias, teorema maestro y análisis amortizado."
     },
     {
       "type": "list",
@@ -49,7 +49,7 @@
         { "title": "Output", "text": "El resultado deseado. En la receta: la comida." }
       ],
       "callout": { "tone": "teal", "label": "¿Programa vs. algoritmo?", "text": "un programa es la implementación de un algoritmo en un lenguaje de programación." },
-      "notes": "Un algoritmo es un procedimiento para cumplir una tarea; es la idea detrás de un programa. Opera sobre un problema bien definido: toma un input y lo transforma en un output deseado. Ejemplo cotidiano del capítulo: una receta de cocina (ingredientes = input, comida = output, instrucciones = algoritmo)."
+      "notes": "Un algoritmo es un procedimiento para cumplir una tarea; es la idea detrás de un programa. Opera sobre un problema bien definido: toma un input y lo transforma en un output deseado. Ejemplo cotidiano: una receta de cocina (ingredientes = input, comida = output, instrucciones = algoritmo)."
     },
     {
       "type": "list",
@@ -441,7 +441,7 @@
         "rows": [["1", "n"], ["2", "n/2"], ["3", "n/4"], ["k + 1", "n/2^k"]]
       },
       "callout": { "tone": "teal", "text": "El loop termina cuando `n/2^k = 1`, o sea `k = log2(n)`: **cuántas veces se puede dividir n entre 2** hasta llegar a 1." },
-      "notes": "En cada iteración i se divide por 2: en la primera iteración i es n, en la segunda n/2, en la tercera n/4, y en general en la iteración k+1 vale n/2^k (el capítulo lo escribe como n/2^k en la «k-ésima» iteración contando desde k = 0). La complejidad es O(log2 n) porque k es el número de veces que se puede dividir n por 2 hasta llegar a 1. La siguiente diapositiva lo comprueba con una traza numérica (n = 1000)."
+      "notes": "En cada iteración i se divide por 2: en la primera iteración i es n, en la segunda n/2, en la tercera n/4, y en general en la iteración k+1 vale n/2^k. La complejidad es O(log2 n) porque k es el número de veces que se puede dividir n por 2 hasta llegar a 1. La siguiente diapositiva lo comprueba con una traza numérica (n = 1000)."
     },
     {
       "type": "diagram",
@@ -526,7 +526,7 @@
       ],
       "calloutsY": 5.2,
       "calloutsH": 1.1,
-      "notes": "Ejemplo 1: el método calcula la suma y el producto de los elementos con dos loops secuenciales sobre el mismo arreglo, O(n + n) = O(2n) = O(n). Ejemplo 4 (el capítulo usa arrayA y arrayB y System.out.println; aquí se abrevian los nombres): el loop interno de 100000 iteraciones es O(100000), una constante, así que la complejidad es O(ab), donde a es el tamaño del primer arreglo y b el del segundo."
+      "notes": "Ejemplo 1: el método calcula la suma y el producto de los elementos con dos loops secuenciales sobre el mismo arreglo, O(n + n) = O(2n) = O(n). Ejemplo 4: el loop interno de 100000 iteraciones es O(100000), una constante, así que la complejidad es O(ab), donde a es el tamaño del primer arreglo y b el del segundo."
     },
     {
       "type": "code",
@@ -547,7 +547,7 @@
       ],
       "calloutsY": 4.9,
       "calloutsH": 1.1,
-      "notes": "Ejemplo 2: el loop interno empieza en i + 1, así que se hacen (N-1) + (N-2) + ... + 1 = N(N-1)/2 operaciones: O(n^2). Ejemplo 3: el loop externo recorre arrayA (a elementos) y el interno recorre arrayB (b elementos); la comparación del if es constante: O(ab). En el capítulo los ejemplos 2 y 3 usan System.out.println; aquí se abrevia a print."
+      "notes": "Ejemplo 2: el loop interno empieza en i + 1, así que se hacen (N-1) + (N-2) + ... + 1 = N(N-1)/2 operaciones: O(n^2). Ejemplo 3: el loop externo recorre arrayA (a elementos) y el interno recorre arrayB (b elementos); la comparación del if es constante: O(ab)."
     },
     {
       "type": "code",
@@ -593,7 +593,7 @@
       ],
       "calloutsY": 4.9,
       "calloutsH": 1.1,
-      "notes": "Ejemplo 6: dado que se recorren todos los nodos del árbol, la complejidad es O(n). Ejemplo 8: fib hace dos llamadas recursivas en cada paso, O(2^n) (cota que el capítulo da para este ejemplo). Ejemplo 9: factorial se llama n veces, O(n). Los códigos del capítulo usan if / else if / else; aquí se abrevian con if y return, que es equivalente."
+      "notes": "Ejemplo 6: dado que se recorren todos los nodos del árbol, la complejidad es O(n). Ejemplo 8: fib hace dos llamadas recursivas en cada paso, O(2^n). Ejemplo 9: factorial se llama n veces, O(n)."
     },
     {
       "type": "cards",
@@ -726,7 +726,7 @@
                   "callouts": [{ "tone": "teal", "text": "Cada vuelta descarta la mitad del arreglo: se necesitan unas `log2(n)` vueltas." }],
                   "calloutsY": 6.0,
                   "calloutsH": 0.8,
-      "notes": "La versión recursiva descarta la mitad del arreglo y hace una sola llamada recursiva, con trabajo constante por nivel: T(n) = T(n/2) + O(1), con a = 1, b = 2 y f(n) = O(1). Se calcula n^(log_b a) = n^(log_2 1) = n^0 = 1. Como f(n) = O(1) = Θ(1) = Θ(n^0), estamos en el Caso 2 (f(n) crece igual que n^(log_b a)): T(n) = Θ(n^0 · log n) = Θ(log n), es decir O(log n). El código del capítulo usa std::vector y comentarios que aquí se omiten por espacio."
+      "notes": "La versión recursiva descarta la mitad del arreglo y hace una sola llamada recursiva, con trabajo constante por nivel: T(n) = T(n/2) + O(1), con a = 1, b = 2 y f(n) = O(1). Se calcula n^(log_b a) = n^(log_2 1) = n^0 = 1. Como f(n) = O(1) = Θ(1) = Θ(n^0), estamos en el Caso 2 (f(n) crece igual que n^(log_b a)): T(n) = Θ(n^0 · log n) = Θ(log n), es decir O(log n)."
     },
     {
       "type": "compare",
@@ -753,7 +753,7 @@
         }
       ],
       "callout": { "tone": "teal", "label": "Resumen:", "text": "búsqueda binaria, `O(log n)` · merge sort, `O(n log n)` · `4T(n/2) + O(n)`, `O(n^2)`" },
-      "notes": "Merge sort: a = 2, b = 2, f(n) = O(n); n^(log_2 2) = n; f(n) = Θ(n), Caso 2, T(n) = Θ(n log n); coincide con lo obtenido por el árbol de recursión y por sustitución. Recurrencia con Caso 1: T(n) = 4T(n/2) + O(n); n^(log_2 4) = n^2; como n crece más lento que n^2 (f(n) = O(n^(2-1)), con ε = 1), T(n) = Θ(n^2). Tabla resumen del capítulo: T(n) = T(n/2) + O(1): a=1, b=2, caso 2, O(log n); T(n) = 2T(n/2) + O(n): a=2, b=2, caso 2, O(n log n); T(n) = 4T(n/2) + O(n): a=4, b=2, caso 1, O(n^2)."
+      "notes": "Merge sort: a = 2, b = 2, f(n) = O(n); n^(log_2 2) = n; f(n) = Θ(n), Caso 2, T(n) = Θ(n log n); coincide con lo obtenido por el árbol de recursión y por sustitución. Recurrencia con Caso 1: T(n) = 4T(n/2) + O(n); n^(log_2 4) = n^2; como n crece más lento que n^2 (f(n) = O(n^(2-1)), con ε = 1), T(n) = Θ(n^2). Tabla resumen: T(n) = T(n/2) + O(1): a=1, b=2, caso 2, O(log n); T(n) = 2T(n/2) + O(n): a=2, b=2, caso 2, O(n log n); T(n) = 4T(n/2) + O(n): a=4, b=2, caso 1, O(n^2)."
     },
     {
       "type": "cards",
@@ -769,7 +769,7 @@
         { "title": "C. Recurrencia", "text": "`T(n) = 2T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" },
         { "title": "D. Recurrencia", "text": "`T(n) = 8T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no están en el capítulo). Respuestas: A) n · n · 10 = 10n^2, O(n^2): el loop constante no cambia la complejidad. B) i vale 1, 2, 4, 8, ...: el loop se ejecuta cerca de log2(n) veces, O(log n); con n = 1000 son 10 vueltas, como en la traza de la diapositiva «Traza con n = 1000». C) a = 2, b = 2, n^(log_2 2) = n; f(n) = n^2 = Ω(n^(1+1)) con ε = 1, Caso 3; regularidad: 2·(n/2)^2 = n^2/2 <= k·n^2 con k = 1/2 < 1; T(n) = Θ(n^2). D) a = 8, b = 2, n^(log_2 8) = n^3; f(n) = n^2 = O(n^(3-1)) con ε = 1, Caso 1; T(n) = Θ(n^3)."
+      "notes": "Respuestas: A) n · n · 10 = 10n^2, O(n^2): el loop constante no cambia la complejidad. B) i vale 1, 2, 4, 8, ...: el loop se ejecuta cerca de log2(n) veces, O(log n); con n = 1000 son 10 vueltas, como en la traza de la diapositiva «Traza con n = 1000». C) a = 2, b = 2, n^(log_2 2) = n; f(n) = n^2 = Ω(n^(1+1)) con ε = 1, Caso 3; regularidad: 2·(n/2)^2 = n^2/2 <= k·n^2 con k = 1/2 < 1; T(n) = Θ(n^2). D) a = 8, b = 2, n^(log_2 8) = n^3; f(n) = n^2 = O(n^(3-1)) con ε = 1, Caso 1; T(n) = Θ(n^3)."
     },
     {
       "type": "cards",
@@ -800,7 +800,7 @@
       "yLabel": "Costo real de cada push_back",
       "axisLabel": "Número de push_back (capacidad inicial 1; se duplica al llenarse)",
       "callout": { "tone": "teal", "text": "`push_back` parece `O(n)`, pero la redimensión es rara: es **O(1) amortizado**." },
-      "notes": "El ejemplo canónico es el arreglo dinámico que duplica su capacidad cuando se llena, como std::vector en C++. En el caso común push_back coloca el elemento en el siguiente espacio libre: O(1). Cuando el arreglo está lleno reserva un bloque del doble de tamaño, copia todos los elementos y luego inserta: O(n). Los costos del gráfico (para 17 inserciones con capacidad inicial 1) son 1, 2, 3, 1, 5, 1, 1, 1, 9, ... y 17: son los costos exactos de contar cada copia y cada inserción como una unidad (valores calculados para esta presentación; no aparecen en el capítulo). El total para m = 17 es 48 unidades, unos 2.8 por operación."
+      "notes": "El ejemplo canónico es el arreglo dinámico que duplica su capacidad cuando se llena, como std::vector en C++. En el caso común push_back coloca el elemento en el siguiente espacio libre: O(1). Cuando el arreglo está lleno reserva un bloque del doble de tamaño, copia todos los elementos y luego inserta: O(n). Los costos del gráfico (para 17 inserciones con capacidad inicial 1) son 1, 2, 3, 1, 5, 1, 1, 1, 9, ... y 17: son los costos exactos de contar cada copia y cada inserción como una unidad (valores calculados para esta presentación). El total para m = 17 es 48 unidades, unos 2.8 por operación."
     },
     {
       "type": "compare",
@@ -868,7 +868,7 @@
       ],
       "calloutsY": 5.95,
       "calloutsH": 0.9,
-      "notes": "El programa del capítulo implementa un arreglo dinámico propio que duplica su capacidad y contabiliza el costo total (inserciones + copias) para mostrar empíricamente el comportamiento amortizado. Aquí se muestra un extracto (se omiten el constructor, el destructor y los métodos size() y costo()). El capítulo indica que el costo amortizado converge a una constante cercana a 3; al ejecutar la simulación con M = 1 000 000 el valor es ≈ 2.05, y se acerca a 3 (sin superarlo) justo después de cada redimensión. En ambos casos es una constante, lo que confirma que push_back es O(1) amortizado. Por esta razón std::vector crece duplicando (o multiplicando por un factor mayor que 1) su capacidad y no de uno en uno: sumando una posición a la vez cada inserción dispararía una copia y el costo amortizado sería O(n), no O(1)."
+      "notes": "El programa implementa un arreglo dinámico propio que duplica su capacidad y contabiliza el costo total (inserciones + copias) para mostrar empíricamente el comportamiento amortizado. Aquí se muestra un extracto (se omiten el constructor, el destructor y los métodos size() y costo()). Al ejecutar la simulación con M = 1 000 000 el costo amortizado es ≈ 2.05, y se acerca a 3 (sin superarlo) justo después de cada redimensión. En todos los casos es una constante, lo que confirma que push_back es O(1) amortizado. Por esta razón std::vector crece duplicando (o multiplicando por un factor mayor que 1) su capacidad y no de uno en uno: sumando una posición a la vez cada inserción dispararía una copia y el costo amortizado sería O(n), no O(1)."
     },
     {
       "type": "table",
@@ -886,7 +886,7 @@
         ["Doubly linked list", "O(n)", "O(n)", "O(1)", "O(1)"]
       ],
       "callout": { "tone": "teal", "text": "Todos los valores son de **peor caso**. Solo el arreglo accede en `O(1)`." },
-      "notes": "Resumen del capítulo (figura «Resumen de complejidad Big O»): el peor caso de algunas estructuras de datos comunes. Se reconstruyó como tabla; en el capítulo la figura usa N mayúscula."
+      "notes": "Resumen de complejidad Big O: el peor caso de algunas estructuras de datos comunes."
     },
     {
       "type": "table",
@@ -950,7 +950,7 @@
         { "title": "Laakmann, G. L. (2020). Cracking the Coding Interview (6th ed.). CareerCup." },
         { "title": "GeeksforGeeks. What is an algorithm and why analysis of it is important", "text": "https://www.geeksforgeeks.org/what-is-algorithm-and-why-analysis-of-it-is-important/" }
       ],
-      "notes": "Material complementario: el capítulo ce-2103\\02-analisis-de-algoritmos.md."
+      "notes": "Para profundizar: Skiena, The Algorithm Design Manual (2020), y Laakmann, Cracking the Coding Interview (2020), ambos citados en esta diapositiva."
     }
   ]
 }

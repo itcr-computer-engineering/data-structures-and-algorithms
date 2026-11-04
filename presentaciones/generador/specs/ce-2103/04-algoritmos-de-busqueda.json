@@ -145,7 +145,7 @@
           ]
         }
       ],
-      "notes": "Código del capítulo con los if sin llaves (equivalente). El ciclo termina cuando se encuentra el valor (return mid) o cuando el subarreglo queda vacío (left > right), y entonces se retorna -1. Calcular mid como left + (right - left) / 2 evita el desbordamiento que podría ocurrir con (left + right) / 2 en arrays muy grandes. La complejidad O(log n) no aparece explícita en el capítulo, pero es la referencia con la que se compara la búsqueda por interpolación."
+      "notes": "El ciclo termina cuando se encuentra el valor (return mid) o cuando el subarreglo queda vacío (left > right), y entonces se retorna -1. Calcular mid como left + (right - left) / 2 evita el desbordamiento que podría ocurrir con (left + right) / 2 en arrays muy grandes. La complejidad O(log n) es la referencia con la que se compara la búsqueda por interpolación."
     },
     {
       "type": "compare",
@@ -193,7 +193,7 @@
         { "title": "Se adapta a la llave", "text": "Si `x` está cerca de `arr[high]`, `mid` cae cerca de `high`.", "tone": "navy" }
       ],
       "callout": { "tone": "amber", "label": "Complejidad:", "text": "`O(log log n)` en el caso promedio (distribución uniforme); `O(n)` si los datos no son uniformes." },
-      "notes": "Low y high se refieren a los índices del array, y arr[low] y arr[high] a los valores en esos índices. La mejora con respecto a la búsqueda binaria se da en el caso promedio, que depende de la distribución uniforme de los elementos: O(log log n). En el peor caso (datos no uniformemente distribuidos) la complejidad degrada a O(n). Añadido: la tercera tarjeta es una lectura directa de la fórmula: la fracción (x - arr[low]) / (arr[high] - arr[low]) indica en qué punto del rango de valores está x,       y al multiplicarla por (high - low) se obtiene el desplazamiento en índices. Buena práctica (no está en el capítulo): antes de aplicar la fórmula compruebe que x esté entre arr[low] y arr[high] y que arr[high] != arr[low]; si no, la división es entre cero o el valor no puede estar en el rango."
+      "notes": "Low y high se refieren a los índices del array, y arr[low] y arr[high] a los valores en esos índices. La mejora con respecto a la búsqueda binaria se da en el caso promedio, que depende de la distribución uniforme de los elementos: O(log log n). En el peor caso (datos no uniformemente distribuidos) la complejidad degrada a O(n). La tercera tarjeta es una lectura directa de la fórmula: la fracción (x - arr[low]) / (arr[high] - arr[low]) indica en qué punto del rango de valores está x,       y al multiplicarla por (high - low) se obtiene el desplazamiento en índices. Buena práctica: antes de aplicar la fórmula compruebe que x esté entre arr[low] y arr[high] y que arr[high] != arr[low]; si no, la división es entre cero o el valor no puede estar en el rango."
     },
     {
             "type": "diagram",
@@ -214,7 +214,7 @@
               { "tone": "teal", "label": "Idea clave:", "text": "el `70` está a **2/3** del rango de valores (10 a 100), así que `mid` cae a 2/3 del rango de índices (0 a 9): el **6**." },
               { "tone": "amber", "label": "Ojo:", "text": "con valores no uniformes, como `[5, 6, 9, 11, 15, 18, 20, 25, 28, 39]`, la ventaja desaparece: para buscar el 28, ambas hacen 3 comparaciones." }
             ],
-            "notes": "Ejemplo añadido (no viene en el capítulo), verificado con un programa. Arreglo ordenado y uniforme [10, 20, …, 100], índices 0 a 9, buscar 70. Interpolación: mid = 0 + ((70 - 10) * (9 - 0)) / (100 - 10) = 540 / 90 = 6, y arr[6] = 70: una sola comparación. Binaria: mid = 4 (50 < 70), 7 (80 > 70), 5 (60 < 70) y 6 (70): cuatro comparaciones. La fracción (x - arr[low]) / (arr[high] - arr[low]) = 60 / 90 = 2/3 dice en qué punto del rango de valores está x; multiplicada por (high - low) = 9 da el desplazamiento 6. Importante: high es el último índice (9), no el tamaño del arreglo (10). Contraste con datos no uniformes: en [5, 6, 9, 11, 15, 18, 20, 25, 28, 39] buscar 28 da mid = 0 + (23 * 9) / 34 = 207 / 34 = 6,09, que la división entera trunca a 6 (valor 20); luego low = 7 y mid = 7 + (3 * 2) / 14 = 7 (valor 25); luego low = 8 y mid = 8 (valor 28). Son 3 comparaciones; la binaria compara los índices 4, 7 y 8, también 3. Con el salto de 28 a 39 los valores dejan de ser uniformes y la interpolación pierde su ventaja (y en el peor caso degrada a O(n)). Pregunta para la clase: ¿qué pasaría si el arreglo fuera [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000] y buscáramos el 9? Respuesta (verificada): el 1000 distorsiona la fracción y mid avanza de a un índice (0, 1, 2, …, 8): 9 comparaciones, mientras que la binaria necesita 3 (índices 4, 7 y 8)."
+            "notes": "Ejemplo verificado con un programa. Arreglo ordenado y uniforme [10, 20, …, 100], índices 0 a 9, buscar 70. Interpolación: mid = 0 + ((70 - 10) * (9 - 0)) / (100 - 10) = 540 / 90 = 6, y arr[6] = 70: una sola comparación. Binaria: mid = 4 (50 < 70), 7 (80 > 70), 5 (60 < 70) y 6 (70): cuatro comparaciones. La fracción (x - arr[low]) / (arr[high] - arr[low]) = 60 / 90 = 2/3 dice en qué punto del rango de valores está x; multiplicada por (high - low) = 9 da el desplazamiento 6. Importante: high es el último índice (9), no el tamaño del arreglo (10). Contraste con datos no uniformes: en [5, 6, 9, 11, 15, 18, 20, 25, 28, 39] buscar 28 da mid = 0 + (23 * 9) / 34 = 207 / 34 = 6,09, que la división entera trunca a 6 (valor 20); luego low = 7 y mid = 7 + (3 * 2) / 14 = 7 (valor 25); luego low = 8 y mid = 8 (valor 28). Son 3 comparaciones; la binaria compara los índices 4, 7 y 8, también 3. Con el salto de 28 a 39 los valores dejan de ser uniformes y la interpolación pierde su ventaja (y en el peor caso degrada a O(n)). Pregunta para la clase: ¿qué pasaría si el arreglo fuera [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000] y buscáramos el 9? Respuesta (verificada): el 1000 distorsiona la fracción y mid avanza de a un índice (0, 1, 2, …, 8): 9 comparaciones, mientras que la binaria necesita 3 (índices 4, 7 y 8)."
           },
           {
             "type": "cards",
@@ -238,7 +238,7 @@
       "image": "search-algo-2.png",
       "alt": "Array con los 16 primeros números de Fibonacci y flechas que saltan de 4 en 4 (índices 0, 4, 8 y 12); en el índice 12 el valor 144 es mayor que 55 y una flecha regresa al bloque anterior",
       "caption": "n = 16 y √n = 4: se salta de 4 en 4 hasta pasar el valor (144 > 55) y se retrocede.",
-      "notes": "Con n = 16 el bloque es de 4 elementos: se salta a los índices 0, 4, 8 y 12. Al llegar a 144 (mayor que 55) se regresa al bloque anterior. Añadido: dentro de ese bloque se busca secuencialmente (21, 34, 55), que es como funciona Jump Search en general; el capítulo solo muestra los saltos en la figura."
+      "notes": "Con n = 16 el bloque es de 4 elementos: se salta a los índices 0, 4, 8 y 12. Al llegar a 144 (mayor que 55) se regresa al bloque anterior. Dentro de ese bloque se busca secuencialmente (21, 34, 55), que es como funciona Jump Search en general; la figura solo muestra los saltos."
     },
     {
       "type": "table",
@@ -258,7 +258,7 @@
         ["Hash (repaso)", "No", "O(1) promedio · O(n) peor", "Función hash → índice"]
       ],
       "callout": { "tone": "teal", "label": "Regla práctica:", "text": "desordenado → secuencial; ordenado → binaria, interpolación o salto; muchas búsquedas sobre los mismos datos → tabla hash." },
-      "notes": "Las complejidades de secuencial (O(n) peor y O(1) mejor), interpolación (O(log log n) promedio y O(n) peor) y salto (O(sqrt(n))) provienen del capítulo. O(log n) para la binaria se añade como referencia estándar. La fila Hash es un repaso de Estructuras de Datos 1 (CE-1103, «Ordenamiento y búsqueda»: función hash, buckets, colisiones y separate chaining): no requiere orden, la función hash convierte la llave en un índice del arreglo y la búsqueda cuesta O(1) en promedio; si hay muchas colisiones, degrada a O(n). El O(1) promedio / O(n) peor se añade como referencia estándar (el capítulo de CE-1103 solo habla de «mejor rendimiento promedio»; los índices hash de la lección de bases de datos también ofrecen O(1) promedio). Conviene preguntar: ¿qué cuesta ordenar antes de buscar? Si solo se busca una vez, puede no valer la pena ordenar; si se busca muchas veces, la tabla hash (o un arreglo ordenado) amortiza el costo de prepararlos."
+      "notes": "Complejidades: secuencial (O(n) peor y O(1) mejor), interpolación (O(log log n) promedio y O(n) peor), salto (O(sqrt(n))) y binaria (O(log n)). La fila Hash es un repaso de Estructuras de Datos 1 (CE-1103, «Ordenamiento y búsqueda»: función hash, buckets, colisiones y separate chaining): no requiere orden, la función hash convierte la llave en un índice del arreglo y la búsqueda cuesta O(1) en promedio; si hay muchas colisiones, degrada a O(n). El O(1) promedio / O(n) peor es la referencia estándar de las tablas hash (los índices hash de la lección de bases de datos también ofrecen O(1) promedio). Conviene preguntar: ¿qué cuesta ordenar antes de buscar? Si solo se busca una vez, puede no valer la pena ordenar; si se busca muchas veces, la tabla hash (o un arreglo ordenado) amortiza el costo de prepararlos."
     },
     {
       "type": "cards",
@@ -273,7 +273,7 @@
         { "badge": "C", "title": "Salto", "text": "Un array ordenado tiene 100 elementos: ¿qué tamaño de bloque se usa?", "textSize": 17, "tone": "teal" },
         { "badge": "D", "title": "Ordenado", "text": "En `[10, 20, 30, 40]`, ¿cómo evita la secuencial recorrer todo al buscar el `15`?", "textSize": 17, "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no vienen en el capítulo). Respuestas: A) 9 comparaciones, porque el 40 es el último elemento (índice 8). B) Se compara con 5 (índice 4), luego con 2 (índice 1) y finalmente con 3 (índice 2): 3 comparaciones. C) √100 = 10 elementos por salto. D) Con el arreglo ordenado puede salir en cuanto arr[i] > x: compara 10 (menor) y 20 (mayor que 15) y retorna -1 tras 2 comparaciones, sin revisar el 30 ni el 40. Mejora el caso en que el valor no está, pero el peor caso sigue siendo O(n) (por ejemplo, buscar el último elemento)."
+      "notes": "Respuestas: A) 9 comparaciones, porque el 40 es el último elemento (índice 8). B) Se compara con 5 (índice 4), luego con 2 (índice 1) y finalmente con 3 (índice 2): 3 comparaciones. C) √100 = 10 elementos por salto. D) Con el arreglo ordenado puede salir en cuanto arr[i] > x: compara 10 (menor) y 20 (mayor que 15) y retorna -1 tras 2 comparaciones, sin revisar el 30 ni el 40. Mejora el caso en que el valor no está, pero el peor caso sigue siendo O(n) (por ejemplo, buscar el último elemento)."
     },
     {
       "type": "cards",
@@ -394,7 +394,7 @@
         }
       ],
       "callout": { "tone": "amber", "label": "Límite:", "text": "sirve para esquivar a un enemigo; para **llegar a una meta** entre muchos obstáculos el azar no es fiable y puede no alcanzarla." },
-      "notes": "El movimiento aleatorio es una solución simple y efectiva para evitar obstáculos, especialmente en ambientes con relativamente pocos obstáculos. Un movimiento aleatorio para evitar al enemigo puede ser suficiente y evita caer en un gasto computacional innecesario. Aclaración de alcance: este es el uso del capítulo (esquivar a un enemigo con pocos obstáculos y sin línea de visión). Usar el azar para llegar a una meta con muchos obstáculos es otra cosa: no es fiable, el personaje puede quedar atrapado en muchas situaciones y no llegar nunca; por eso hacen falta técnicas como el rodeo y, sobre todo, los algoritmos basados en grafos."
+      "notes": "El movimiento aleatorio es una solución simple y efectiva para evitar obstáculos, especialmente en ambientes con relativamente pocos obstáculos. Un movimiento aleatorio para evitar al enemigo puede ser suficiente y evita caer en un gasto computacional innecesario. Aclaración de alcance: este es el uso que se ilustra aquí (esquivar a un enemigo con pocos obstáculos y sin línea de visión). Usar el azar para llegar a una meta con muchos obstáculos es otra cosa: no es fiable, el personaje puede quedar atrapado en muchas situaciones y no llegar nunca; por eso hacen falta técnicas como el rodeo y, sobre todo, los algoritmos basados en grafos."
     },
     {
       "type": "flow",
@@ -534,7 +534,7 @@
           ]
         }
       ],
-      "notes": "Pseudocódigo del capítulo con la sangría corregida. Añadido: frontier es la cola de nodos pendientes y came_from registra de dónde se llegó a cada nodo (sirve también para reconstruir el camino al final y para no visitar un nodo dos veces)."
+      "notes": "Frontier es la cola de nodos pendientes y came_from registra de dónde se llegó a cada nodo (sirve también para reconstruir el camino al final y para no visitar un nodo dos veces)."
     },
     {
       "type": "diagram",
@@ -566,7 +566,7 @@
         }
       ],
       "callout": { "tone": "amber", "label": "Ojo:", "text": "DFS **no** garantiza el camino más corto. Si es recursivo, en un mapa grande puede desbordar la pila: use una pila explícita." },
-      "notes": "Repaso de Estructuras de Datos 1 (CE-1103, capítulo «Grafos»): mismo grafo y mismo nodo de inicio (D), con los adyacentes en orden alfabético; solo cambia la estructura que guarda los nodos pendientes. BFS usa una cola (FIFO): D; B C; C H; H R; R A T; A T; T. Orden de visita verificado: D B C H R A T. DFS usa una pila (LIFO): D; B C; B R; B H; B A T; B A; B. Orden verificado: D C R H T A B. En H se empujan A y T (D ya estaba visitado) y T queda en el tope, por eso se visita antes que A. Las aristas resaltadas muestran por cuál arista se descubrió (BFS) o se empujó (DFS) cada nodo: BFS explora todo el nivel actual antes de bajar al siguiente, por eso en un grafo sin pesos halla el camino con menos aristas; DFS puede llegar a la meta por un camino larguísimo. DFS recursivo: cada llamada consume espacio en la pila de llamadas, así que una profundidad grande puede producir un desbordamiento; la versión iterativa con una pila explícita lo evita."
+      "notes": "Repaso de Estructuras de Datos 1 (CE-1103, lección «Grafos»): mismo grafo y mismo nodo de inicio (D), con los adyacentes en orden alfabético; solo cambia la estructura que guarda los nodos pendientes. BFS usa una cola (FIFO): D; B C; C H; H R; R A T; A T; T. Orden de visita verificado: D B C H R A T. DFS usa una pila (LIFO): D; B C; B R; B H; B A T; B A; B. Orden verificado: D C R H T A B. En H se empujan A y T (D ya estaba visitado) y T queda en el tope, por eso se visita antes que A. Las aristas resaltadas muestran por cuál arista se descubrió (BFS) o se empujó (DFS) cada nodo: BFS explora todo el nivel actual antes de bajar al siguiente, por eso en un grafo sin pesos halla el camino con menos aristas; DFS puede llegar a la meta por un camino larguísimo. DFS recursivo: cada llamada consume espacio en la pila de llamadas, así que una profundidad grande puede producir un desbordamiento; la versión iterativa con una pila explícita lo evita."
     },
     {
       "type": "diagram",
@@ -625,7 +625,7 @@
           ]
         }
       ],
-      "notes": "Dijkstra lleva el rastro del costo acumulado y utiliza una cola de prioridad para escoger el siguiente paso. Pseudocódigo del capítulo (con la condición del if repartida en dos líneas y el break en una sola)."
+      "notes": "Dijkstra lleva el rastro del costo acumulado y utiliza una cola de prioridad para escoger el siguiente paso."
     },
     {
       "type": "cards",
@@ -689,7 +689,7 @@
               ["A*", "`g + h`", "Camino óptimo si H es admisible", "Menos que Dijkstra"]
             ],
             "callout": { "tone": "teal", "label": "Lo único que cambia:", "text": "el valor de `priority` en `frontier.put(next, priority)`. Todo lo demás es el mismo ciclo." },
-            "notes": "Familia de algoritmos sobre el mismo ciclo (frontier, came_from, cost_so_far); lo único que cambia es la prioridad con que se ordena la cola. BFS: cola FIFO, todos los pasos cuestan igual; halla el camino con menos pasos. Dijkstra: prioridad g (costo acumulado); maneja costos distintos (no negativos) y puede explorar mucho. Greedy Best-First (búsqueda voraz): prioridad h (solo la estimación de lo que falta); explora poco, pero el camino puede no ser el más corto. A*: prioridad g + h; con una heurística admisible halla el camino óptimo explorando menos que Dijkstra. Escriba siempre «Greedy Best-First» y no lo abrevie «BFS»: esa sigla ya significa Breadth-First Search. Greedy Best-First es una aportación de la presentación anterior; no figura en el capítulo."
+            "notes": "Familia de algoritmos sobre el mismo ciclo (frontier, came_from, cost_so_far); lo único que cambia es la prioridad con que se ordena la cola. BFS: cola FIFO, todos los pasos cuestan igual; halla el camino con menos pasos. Dijkstra: prioridad g (costo acumulado); maneja costos distintos (no negativos) y puede explorar mucho. Greedy Best-First (búsqueda voraz): prioridad h (solo la estimación de lo que falta); explora poco, pero el camino puede no ser el más corto. A*: prioridad g + h; con una heurística admisible halla el camino óptimo explorando menos que Dijkstra. Escriba siempre «Greedy Best-First» y no lo abrevie «BFS»: esa sigla ya significa Breadth-First Search."
           },
           {
             "type": "code",
@@ -775,7 +775,7 @@
               },
               { "type": "note", "tone": "teal", "text": "En cada celda: el número del nodo (arriba) y su **H** (centro)." }
             ],
-            "notes": "Traza de A* propuesta y verificada con un programa (no viene de la presentación anterior: allí la traza era una serie de capturas con inconsistencias de escala entre G y H). La rejilla tiene 6 columnas y 7 filas; los nodos se numeran por filas, de 1 a 42. Inicio = 14, meta = 35, muros = 16, 26, 28 y 34 (quedan 38 celdas libres). Convención única: 4 vecinos y costo 1 por paso, de modo que G cuenta pasos y H = |dx| + |dy| en celdas, sin escalar. Con esta convención Manhattan es admisible y A* encuentra el camino óptimo. La heurística ignora los muros: por eso H(14) = 6 aunque el 16 sea un muro. Observe que a lo largo del camino óptimo H baja de a uno (6, 5, 4, 3, 2, 1, 0). Pregunta para la clase: ¿cuál es el H del nodo 29? (1: está una fila arriba de la meta)."
+            "notes": "Traza de A* verificada con un programa. La rejilla tiene 6 columnas y 7 filas; los nodos se numeran por filas, de 1 a 42. Inicio = 14, meta = 35, muros = 16, 26, 28 y 34 (quedan 38 celdas libres). Convención única: 4 vecinos y costo 1 por paso, de modo que G cuenta pasos y H = |dx| + |dy| en celdas, sin escalar. Con esta convención Manhattan es admisible y A* encuentra el camino óptimo. La heurística ignora los muros: por eso H(14) = 6 aunque el 16 sea un muro. Observe que a lo largo del camino óptimo H baja de a uno (6, 5, 4, 3, 2, 1, 0). Pregunta para la clase: ¿cuál es el H del nodo 29? (1: está una fila arriba de la meta)."
           },
           {
             "type": "diagram",
@@ -910,7 +910,7 @@
         { "badge": "B", "title": "Terrenos con costo", "text": "Bosque, agua y desierto afectan la velocidad. ¿Qué algoritmo y qué estructura usa?", "textSize": 19, "tone": "teal" },
         { "badge": "C", "title": "Rejilla grande", "text": "Un solo destino conocido en una rejilla. ¿Cómo mejora A* a Dijkstra?", "textSize": 19, "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no vienen en el capítulo). Respuestas sugeridas: A) Pathfinding básico, mejor con línea de visión. B) Dijkstra, con cola de prioridad y costo acumulado (también serviría A*). C) A* con una heurística admisible (por ejemplo, Manhattan): la heurística guía la búsqueda hacia el destino y reduce las comparaciones; en el peor caso iguala a Dijkstra (en la traza de la rejilla: 7 nodos expandidos frente a 30)."
+      "notes": "Respuestas sugeridas: A) Pathfinding básico, mejor con línea de visión. B) Dijkstra, con cola de prioridad y costo acumulado (también serviría A*). C) A* con una heurística admisible (por ejemplo, Manhattan): la heurística guía la búsqueda hacia el destino y reduce las comparaciones; en el peor caso iguala a Dijkstra (en la traza de la rejilla: 7 nodos expandidos frente a 30)."
     },
     {
       "type": "summary",

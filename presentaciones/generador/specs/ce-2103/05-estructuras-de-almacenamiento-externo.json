@@ -39,7 +39,7 @@
               "Explicar por qué los **árboles B y B+** minimizan los accesos a disco",
               "Insertar claves en un árbol B (**split**) y comparar B con B+"
             ],
-            "notes": "Siete objetivos, uno por bloque de la lección (RAID y los i-nodos se agregaron respecto del capítulo). Los dos últimos son los más importantes para el curso de algoritmos: ordenamiento externo y árboles B/B+."
+            "notes": "Siete objetivos, uno por bloque de la lección. Los dos últimos son los más importantes para el curso de algoritmos: ordenamiento externo y árboles B/B+."
     },
     {
       "type": "image",
@@ -48,7 +48,7 @@
       "image": "estructuras-almacenamiento-externo-01.png",
       "alt": "Pirámide de la jerarquía de memoria: registros de la CPU, cache (SRAM), memoria principal (DRAM), disco magnético, disco óptico y cinta magnética",
       "caption": "Arriba: poca capacidad, muy rápida y cara. Abajo: gran capacidad, más lenta y barata.",
-      "notes": "Conforme se «sube» en la jerarquía, la cantidad de memoria disminuye pero el costo y la velocidad aumentan. Conforme se desciende, el costo y la velocidad disminuyen pero la capacidad aumenta. Por eso el cache es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es lento pero de gran capacidad. Las etiquetas de la imagen están en inglés (Level 0 a Level 4). Esta lección se concentra en los niveles de abajo: el almacenamiento externo. Pregunta de apertura (añadida): ¿en qué se diferencian el almacenamiento primario y el secundario? Primario: memoria que el CPU accede directamente (registros, cache, RAM), rápida y volátil. Secundario: disco, SSD o memoria USB; persistente, más lento y de mayor capacidad, y el CPU no lo accede directamente (los datos se copian primero a la memoria principal)."
+      "notes": "Conforme se «sube» en la jerarquía, la cantidad de memoria disminuye pero el costo y la velocidad aumentan. Conforme se desciende, el costo y la velocidad disminuyen pero la capacidad aumenta. Por eso el cache es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es lento pero de gran capacidad. Las etiquetas de la imagen están en inglés (Level 0 a Level 4). Esta lección se concentra en los niveles de abajo: el almacenamiento externo. Pregunta de apertura: ¿en qué se diferencian el almacenamiento primario y el secundario? Primario: memoria que el CPU accede directamente (registros, cache, RAM), rápida y volátil. Secundario: disco, SSD o memoria USB; persistente, más lento y de mayor capacidad, y el CPU no lo accede directamente (los datos se copian primero a la memoria principal)."
     },
     {
       "type": "cards",
@@ -80,7 +80,7 @@
         { "title": "Cabezales", "text": "Leen y escriben los datos en los platos." }
       ],
       "callout": { "tone": "teal", "size": 16, "text": "Giro: 5400 / 7200 RPM (consumidor) y 10 000 / 15 000 RPM (servidores). **Más RPM** → más velocidad de E/S, pero más consumo y costo." },
-      "notes": "Un disco duro (HDD, hard-disk drive) es almacenamiento persistente: conserva la información sin electricidad. Los datos se guardan magnetizando partículas del material magnético de los platos, y el disco lee detectando esos patrones de magnetización. No debe confundirse con un SSD. La combinación de platos, eje, brazo actuador y cabezales se llama hard disk assembly. La velocidad de giro influye directamente en la velocidad de I/O. La imagen está en inglés (head actuator, head arm, disk platters, read/write head). Hay otra ilustración más detallada del disco en el capítulo (estructuras-almacenamiento-externo-02.png) con el pivote, el carro (E-block) y el motor del eje."
+      "notes": "Un disco duro (HDD, hard-disk drive) es almacenamiento persistente: conserva la información sin electricidad. Los datos se guardan magnetizando partículas del material magnético de los platos, y el disco lee detectando esos patrones de magnetización. No debe confundirse con un SSD. La combinación de platos, eje, brazo actuador y cabezales se llama hard disk assembly. La velocidad de giro influye directamente en la velocidad de I/O. La imagen está en inglés (head actuator, head arm, disk platters, read/write head)."
     },
     {
       "type": "diagram",
@@ -96,7 +96,7 @@
         { "title": "Unidad mínima", "text": "Un sector (generalmente 512 bytes) es la unidad mínima de almacenamiento." }
       ],
       "callout": { "tone": "amber", "text": "El disco no lee ni escribe bytes sueltos: trabaja con **sectores completos**." },
-      "notes": "Los datos se escriben en pistas (círculos concéntricos) y estas se dividen en sectores. En la imagen (en inglés) se distinguen la pista (track), el sector de pista (track sector), el sector de disco (disk sector), el cluster, el cabezal (head) y el brazo actuador (actuator arm). Un cluster es un grupo de sectores que usa el sistema de archivos. Ampliación (cilindros y bloques; añadida): un cilindro es el conjunto de pistas que ocupan la misma posición en todas las superficies; como el brazo mueve todos los cabezales a la vez, leer un cilindro completo no exige un nuevo seek. Por eso una dirección de sector se expresa como (cilindro, superficie o cabezal, sector): la pista queda determinada por el cilindro y la superficie. Ejemplo coherente: un disco de 5 platos tiene 10 superficies (0 a 9); si cada cara tiene 200 pistas, hay 200 cilindros. Idea práctica (derivación propia): los datos que se leen juntos conviene guardarlos en el mismo cilindro o en cilindros vecinos para evitar seeks. También se puede numerar cada sector con un solo número lineal. Distinga sector y bloque: el sector es la unidad física del disco; el bloque del sistema de archivos es un múltiplo del sector (siempre igual o mayor)."
+      "notes": "Los datos se escriben en pistas (círculos concéntricos) y estas se dividen en sectores. En la imagen (en inglés) se distinguen la pista (track), el sector de pista (track sector), el sector de disco (disk sector), el cluster, el cabezal (head) y el brazo actuador (actuator arm). Un cluster es un grupo de sectores que usa el sistema de archivos. Ampliación (cilindros y bloques): un cilindro es el conjunto de pistas que ocupan la misma posición en todas las superficies; como el brazo mueve todos los cabezales a la vez, leer un cilindro completo no exige un nuevo seek. Por eso una dirección de sector se expresa como (cilindro, superficie o cabezal, sector): la pista queda determinada por el cilindro y la superficie. Ejemplo coherente: un disco de 5 platos tiene 10 superficies (0 a 9); si cada cara tiene 200 pistas, hay 200 cilindros. Idea práctica (derivación propia): los datos que se leen juntos conviene guardarlos en el mismo cilindro o en cilindros vecinos para evitar seeks. También se puede numerar cada sector con un solo número lineal. Distinga sector y bloque: el sector es la unidad física del disco; el bloque del sistema de archivos es un múltiplo del sector (siempre igual o mayor)."
     },
     {
       "type": "diagram",
@@ -117,7 +117,7 @@
       "cardsY": 3.6,
       "cardH": 2.35,
       "callout": { "tone": "teal", "text": "**Transferencia = tamaño del bloque / tasa de transferencia.** Con un external data rate de 300 MB/s se transfieren 300 MB por segundo." },
-      "notes": "Dos nombres para dos cosas. En el capítulo, el tiempo de acceso (también llamado tiempo de posicionamiento) es seek + latencia: lo que tarda el cabezal en quedar sobre el sector. El tiempo de una operación de E/S completa es ese acceso más la transferencia. Algunos textos (y la presentación anterior del curso) llaman «tiempo de acceso» a toda la suma: posicionamiento (seek) + latencia rotacional + transferencia, y a veces un pequeño tiempo de activación del cabezal que hoy se ignora. Ambas definiciones son compatibles: solo cambia qué se llama «acceso». Cálculo añadido: 8–10 ms de seek + 4–5 ms de latencia = 12–15 ms; sumando 0.5 ms de transferencia, una E/S aleatoria cuesta ≈ 12.5–15.5 ms. La transferencia no es fija por RPM: depende del tamaño del bloque y de la tasa de transferencia, y la velocidad de rotación y la densidad de los datos influyen sobre esa tasa. Los anchos de la barra son proporcionales a los tiempos (se usaron los puntos medios de los rangos). Ejemplo añadido de transferencia: un bloque de 150 KB a 300 MB/s tarda 150 KB / 300 000 KB/s = 0.5 ms. Idea clave para después: una comparación en CPU toma nanosegundos, un acceso a disco toma milisegundos."
+      "notes": "Dos nombres para dos cosas. El tiempo de acceso (también llamado tiempo de posicionamiento) es seek + latencia: lo que tarda el cabezal en quedar sobre el sector. El tiempo de una operación de E/S completa es ese acceso más la transferencia. Algunos textos llaman «tiempo de acceso» a toda la suma: posicionamiento (seek) + latencia rotacional + transferencia, y a veces un pequeño tiempo de activación del cabezal que hoy se ignora. Ambas definiciones son compatibles: solo cambia qué se llama «acceso». Cálculo: 8–10 ms de seek + 4–5 ms de latencia = 12–15 ms; sumando 0.5 ms de transferencia, una E/S aleatoria cuesta ≈ 12.5–15.5 ms. La transferencia no es fija por RPM: depende del tamaño del bloque y de la tasa de transferencia, y la velocidad de rotación y la densidad de los datos influyen sobre esa tasa. Los anchos de la barra son proporcionales a los tiempos (se usaron los puntos medios de los rangos). Ejemplo de transferencia: un bloque de 150 KB a 300 MB/s tarda 150 KB / 300 000 KB/s = 0.5 ms. Idea clave para después: una comparación en CPU toma nanosegundos, un acceso a disco toma milisegundos."
     },
     {
       "type": "table",
@@ -134,7 +134,7 @@
         ["SAS", "12 Gb/s (≈ 1.5 GB/s)", "Sí", "Servidores y estaciones de trabajo"]
       ],
       "callout": { "tone": "teal", "text": "**SATA** evolucionó de **PATA**; **SAS** (Serial Attached SCSI) evolucionó de **SCSI**." },
-      "notes": "El HDD se conecta al resto de la computadora mediante una interfaz. PATA (Parallel Advanced Technology Attachment): interfaz de 40 pines que se conecta a la placa madre. SATA (Serial Advanced Technology Attachment): evolución de PATA, estándar moderno. SCSI (Small Computer System Interface): interfaz de alta velocidad. SAS: evolución de SCSI. Hot-swappable significa que el disco se puede conectar o desconectar con el equipo encendido (aclaración añadida). Nota histórica (añadida): el término IDE (Integrated Drive Electronics) está obsoleto; la especificación IDE incluía la interfaz ATA, y cuando apareció SATA el ATA «de siempre» pasó a llamarse PATA (parallel-ATA). SAS es la versión serial de SCSI y sigue en uso."
+      "notes": "El HDD se conecta al resto de la computadora mediante una interfaz. PATA (Parallel Advanced Technology Attachment): interfaz de 40 pines que se conecta a la placa madre. SATA (Serial Advanced Technology Attachment): evolución de PATA, estándar moderno. SCSI (Small Computer System Interface): interfaz de alta velocidad. SAS: evolución de SCSI. Hot-swappable significa que el disco se puede conectar o desconectar con el equipo encendido. Nota histórica: el término IDE (Integrated Drive Electronics) está obsoleto; la especificación IDE incluía la interfaz ATA, y cuando apareció SATA el ATA «de siempre» pasó a llamarse PATA (parallel-ATA). SAS es la versión serial de SCSI y sigue en uso."
     },
     {
       "type": "compare",
@@ -203,7 +203,7 @@
         { "label": "SSD PCIe NVMe · escritura", "value": 3300, "text": "3300 MB/s", "tone": "amber" }
       ],
       "callout": { "tone": "teal", "text": "La transferencia de un SSD es mucho más rápida que la de un disco duro; con **NVMe** la lectura es ≈ 6 veces mayor que con SATA." },
-      "notes": "Valores máximos que pueden alcanzar los SSD modernos según el capítulo: hasta 550 MB/s de lectura y 520 MB/s de escritura con SATA, y hasta 3500 MB/s de lectura y 3300 MB/s de escritura con PCIe NVMe. La relación 3500 / 550 ≈ 6.4 es un cálculo añadido."
+      "notes": "Valores máximos que pueden alcanzar los SSD modernos: hasta 550 MB/s de lectura y 520 MB/s de escritura con SATA, y hasta 3500 MB/s de lectura y 3300 MB/s de escritura con PCIe NVMe. La relación 3500 / 550 ≈ 6.4 compara la lectura de NVMe con la de SATA."
     },
     {
       "type": "diagram",
@@ -245,7 +245,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "Los niveles de **RAID** combinan estas técnicas: **striping** para el rendimiento; **mirroring** y **paridad** para tolerar fallos." },
-      "notes": "RAID (Redundant Array of Independent Disks; en la bibliografía clásica, «Inexpensive») hace que varios discos físicos se comporten como un solo disco lógico. Tres técnicas. Striping (división en franjas): divide datos lógicamente secuenciales, como un archivo, entre varios discos que trabajan en paralelo; mejora el rendimiento pero no agrega redundancia. Mirroring (espejo): replica un volumen lógico en otro disco físico en tiempo real para tener disponibilidad continua. Paridad: información redundante calculada a partir de los datos (con XOR, se explica en las dos diapositivas siguientes) que permite reconstruir lo que contenía un disco que falló. Los dibujos son ilustrativos: A1…A4 son pedazos de un archivo A; en el panel de paridad, PA se calcula con A1 y A2 y PB con B1 y B2, y la paridad rota entre los discos. Contenido tomado de la presentación anterior del curso y recreado; RAID no está en el capítulo. Pregunta para la clase: en RAID 0, si falla un disco, ¿qué se pierde? (todo el arreglo, porque cada archivo tiene pedazos en todos los discos)."
+      "notes": "RAID (Redundant Array of Independent Disks; en la bibliografía clásica, «Inexpensive») hace que varios discos físicos se comporten como un solo disco lógico. Tres técnicas. Striping (división en franjas): divide datos lógicamente secuenciales, como un archivo, entre varios discos que trabajan en paralelo; mejora el rendimiento pero no agrega redundancia. Mirroring (espejo): replica un volumen lógico en otro disco físico en tiempo real para tener disponibilidad continua. Paridad: información redundante calculada a partir de los datos (con XOR, se explica en las dos diapositivas siguientes) que permite reconstruir lo que contenía un disco que falló. Los dibujos son ilustrativos: A1…A4 son pedazos de un archivo A; en el panel de paridad, PA se calcula con A1 y A2 y PB con B1 y B2, y la paridad rota entre los discos. Pregunta para la clase: en RAID 0, si falla un disco, ¿qué se pierde? (todo el arreglo, porque cada archivo tiene pedazos en todos los discos)."
     },
     {
       "type": "table",
@@ -264,7 +264,7 @@
         ["RAID 10", "Franjas de espejos (1+0)", "4 discos", "1 por espejo", "N / 2 × D", "Rendimiento y redundancia"]
       ],
       "callout": { "tone": "teal", "label": "Ejemplo:", "text": "con N = 4 discos de D = 1 TB, la capacidad útil es **4 TB** en RAID 0, **3 TB** en RAID 5 y **2 TB** en RAID 6 y RAID 10." },
-      "notes": "N = cantidad de discos y D = capacidad del disco más pequeño. Cálculo del ejemplo (verificado): RAID 0 = 4 × 1 = 4 TB; RAID 5 = (4 − 1) × 1 = 3 TB; RAID 6 = (4 − 2) × 1 = 2 TB; RAID 10 = 4 / 2 × 1 = 2 TB; RAID 1 con 2 discos de 1 TB = 1 TB. Las columnas de mínimo de discos, tolerancia y capacidad útil son los datos estándar de cada nivel (la presentación anterior no escribe todas); la tolerancia de RAID 10 depende de qué discos fallen: sobrevive mientras no fallen los dos discos de un mismo espejo. RAID 5: striping por bloques con paridad distribuida entre todos los discos; las lecturas son rápidas y las escrituras más lentas (hay que actualizar la paridad); tolera UN disco y necesita al menos TRES. RAID 6: doble paridad distribuida; tolera DOS discos y necesita al menos CUATRO. RAID 10 (también 1+0): franja de espejos; los datos se escriben en franjas entre los discos primarios y estos se espejan en los secundarios; excelente rendimiento y redundancia, la opción para aplicaciones críticas. Error frecuente: decir que RAID 5 tolera dos discos o que basta con dos discos; con dos discos solo hay RAID 0 o RAID 1. No se vieron RAID 2, 3 y 4: casi no se usan en la práctica; RAID 4 es como RAID 5 pero con toda la paridad en un único disco dedicado, que se vuelve el cuello de botella en las escrituras."
+      "notes": "N = cantidad de discos y D = capacidad del disco más pequeño. Cálculo del ejemplo (verificado): RAID 0 = 4 × 1 = 4 TB; RAID 5 = (4 − 1) × 1 = 3 TB; RAID 6 = (4 − 2) × 1 = 2 TB; RAID 10 = 4 / 2 × 1 = 2 TB; RAID 1 con 2 discos de 1 TB = 1 TB. Las columnas de mínimo de discos, tolerancia y capacidad útil son los datos estándar de cada nivel; la tolerancia de RAID 10 depende de qué discos fallen: sobrevive mientras no fallen los dos discos de un mismo espejo. RAID 5: striping por bloques con paridad distribuida entre todos los discos; las lecturas son rápidas y las escrituras más lentas (hay que actualizar la paridad); tolera UN disco y necesita al menos TRES. RAID 6: doble paridad distribuida; tolera DOS discos y necesita al menos CUATRO. RAID 10 (también 1+0): franja de espejos; los datos se escriben en franjas entre los discos primarios y estos se espejan en los secundarios; excelente rendimiento y redundancia, la opción para aplicaciones críticas. Error frecuente: decir que RAID 5 tolera dos discos o que basta con dos discos; con dos discos solo hay RAID 0 o RAID 1. No se vieron RAID 2, 3 y 4: casi no se usan en la práctica; RAID 4 es como RAID 5 pero con toda la paridad en un único disco dedicado, que se vuelve el cuello de botella en las escrituras."
     },
     {
       "type": "diagram",
@@ -278,7 +278,7 @@
         { "tone": "slate", "text": "**Paridad impar:** el bit extra es **1** si la cantidad de unos es **par**; así el total queda impar." }
       ],
       "callout": { "tone": "amber", "text": "Un bit de paridad **detecta** que un bit cambió, pero no dice **cuál**. En RAID, el mismo truco (XOR) permite **reconstruir** un disco completo." },
-      "notes": "El bit de paridad (o bit de verificación) es la forma más simple de código para detectar errores: se agrega un bit al final de una cadena de bits. Paridad par: el bit extra vale 1 si la cantidad de unos de los datos es impar, de modo que el total de unos, contando el bit extra, queda par. Paridad impar: lo contrario. Ejemplos (verificados con un script): 11001100 tiene 4 unos → par 110011000, impar 110011001; 11111011 tiene 7 unos → par 111110111, impar 111110110; 11001111 tiene 6 unos → par 110011110, impar 110011111; 01111111 tiene 7 unos → par 011111111, impar 011111110. Observación (añadida): el bit de paridad par es el XOR de todos los bits de los datos, y eso es justo lo que usa RAID 5 con bloques completos. Un solo bit de paridad detecta cualquier cantidad impar de bits alterados, pero no los corrige porque no sabe cuál cambió (y no detecta dos bits alterados). En un arreglo de discos sí se sabe cuál disco falló, y entonces la paridad por XOR alcanza para recalcular su contenido: es lo que sigue. Aclaración sobre la redacción: «paridad par» no significa que el bit sea par, sino que hace que la cantidad total de unos sea par."
+      "notes": "El bit de paridad (o bit de verificación) es la forma más simple de código para detectar errores: se agrega un bit al final de una cadena de bits. Paridad par: el bit extra vale 1 si la cantidad de unos de los datos es impar, de modo que el total de unos, contando el bit extra, queda par. Paridad impar: lo contrario. Ejemplos (verificados con un script): 11001100 tiene 4 unos → par 110011000, impar 110011001; 11111011 tiene 7 unos → par 111110111, impar 111110110; 11001111 tiene 6 unos → par 110011110, impar 110011111; 01111111 tiene 7 unos → par 011111111, impar 011111110. Observación: el bit de paridad par es el XOR de todos los bits de los datos, y eso es justo lo que usa RAID 5 con bloques completos. Un solo bit de paridad detecta cualquier cantidad impar de bits alterados, pero no los corrige porque no sabe cuál cambió (y no detecta dos bits alterados). En un arreglo de discos sí se sabe cuál disco falló, y entonces la paridad por XOR alcanza para recalcular su contenido: es lo que sigue. Aclaración sobre la redacción: «paridad par» no significa que el bit sea par, sino que hace que la cantidad total de unos sea par."
     },
     {
       "type": "diagram",
@@ -298,7 +298,7 @@
       "legend": "P = bloque de paridad; rota entre los discos de una franja a otra.",
       "side": { "text": "Se aplica XOR a los bloques que sobreviven de esa franja:", "note": "XOR da 1 si los dos bits son distintos." },
       "callout": { "tone": "teal", "text": "Con un disco caído el arreglo **sigue funcionando** (modo degradado: más lento, reconstruye al vuelo). **RAID 5 tolera un solo disco.**" },
-      "notes": "Datos de la presentación anterior (verificados con un script): en cada franja, el XOR de los cuatro bloques es 0000; por eso, cualquier bloque es el XOR de los otros tres. La paridad rota: franja 1 en el disco 4, franja 2 en el disco 3, franja 3 en el disco 2 y franja 4 en el disco 1 (se marca con P). Si el disco 2 falla, su contenido se recalcula con los bloques restantes de cada franja: franja 1: 0100 XOR 0010 XOR 0011 = 0101; franja 2: 0010 XOR 0110 XOR 0100 = 0000; franja 3 (aquí el disco 2 guardaba la paridad, y se recalcula): 0011 XOR 1010 XOR 1000 = 0001; franja 4: 0110 XOR 1101 XOR 1010 = 0001. Tabla XOR: 0 XOR 0 = 0, 0 XOR 1 = 1, 1 XOR 0 = 1, 1 XOR 1 = 0. Pregunta de la clase: ¿cómo reconstruimos el disco perdido? Con un disco caído el arreglo sigue funcionando, pero más lento, porque debe reconstruir los datos al vuelo (modo degradado). En la práctica se usa un disco de repuesto (hot spare) para reconstruir (rebuild) el disco fallado automáticamente; si falla un segundo disco antes de terminar la reconstrucción, en RAID 5 se pierde el arreglo (RAID 6 sí lo soportaría). Capacidad: (N − 1) × tamaño del disco más pequeño; cuantos más discos, más eficiente es el uso del espacio sin perder redundancia. El RAID puede ser por hardware (controladora) o por software (el sistema operativo); no se profundiza aquí."
+      "notes": "Datos (verificados con un script): en cada franja, el XOR de los cuatro bloques es 0000; por eso, cualquier bloque es el XOR de los otros tres. La paridad rota: franja 1 en el disco 4, franja 2 en el disco 3, franja 3 en el disco 2 y franja 4 en el disco 1 (se marca con P). Si el disco 2 falla, su contenido se recalcula con los bloques restantes de cada franja: franja 1: 0100 XOR 0010 XOR 0011 = 0101; franja 2: 0010 XOR 0110 XOR 0100 = 0000; franja 3 (aquí el disco 2 guardaba la paridad, y se recalcula): 0011 XOR 1010 XOR 1000 = 0001; franja 4: 0110 XOR 1101 XOR 1010 = 0001. Tabla XOR: 0 XOR 0 = 0, 0 XOR 1 = 1, 1 XOR 0 = 1, 1 XOR 1 = 0. Pregunta de la clase: ¿cómo reconstruimos el disco perdido? Con un disco caído el arreglo sigue funcionando, pero más lento, porque debe reconstruir los datos al vuelo (modo degradado). En la práctica se usa un disco de repuesto (hot spare) para reconstruir (rebuild) el disco fallado automáticamente; si falla un segundo disco antes de terminar la reconstrucción, en RAID 5 se pierde el arreglo (RAID 6 sí lo soportaría). Capacidad: (N − 1) × tamaño del disco más pequeño; cuantos más discos, más eficiente es el uso del espacio sin perder redundancia. El RAID puede ser por hardware (controladora) o por software (el sistema operativo); no se profundiza aquí."
     },
     {
       "type": "diagram",
@@ -318,7 +318,7 @@
         { "title": "Volumen", "text": "Partición inicializada con un sistema de archivos: la interfaz lógica que usa el SO.", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "text": "**MBR**: la tabla está en el primer sector del disco. **GPT** (GUID Partition Table): esquema moderno, con copias redundantes y sin las limitaciones de MBR." },
-      "notes": "Un disco físico se puede dividir en varias particiones que se formatean con distintos sistemas de archivos y se montan en distintos puntos de montaje. El enlace entre lo físico y lo lógico es la metadata de la tabla de particiones. En MBR la tabla está en el primer sector y la lee el sistema operativo al arrancar; los discos modernos suelen usar GPT. Los nombres NTFS y ext4 en el dibujo son un ejemplo (añadido) de dos sistemas de archivos conviviendo en el mismo disco."
+      "notes": "Un disco físico se puede dividir en varias particiones que se formatean con distintos sistemas de archivos y se montan en distintos puntos de montaje. El enlace entre lo físico y lo lógico es la metadata de la tabla de particiones. En MBR la tabla está en el primer sector y la lee el sistema operativo al arrancar; los discos modernos suelen usar GPT. Los nombres NTFS y ext4 en el dibujo son un ejemplo de dos sistemas de archivos conviviendo en el mismo disco."
     },
     {
       "type": "diagram",
@@ -337,7 +337,7 @@
         { "title": "Administrar", "text": "¿Cómo sabemos qué bloques están libres?", "footer": "→ Espacio libre" }
       ],
       "callout": { "tone": "teal", "text": "El **sistema de archivos** responde las tres preguntas." },
-      "notes": "Puente entre el hardware y el sistema de archivos (presentación anterior del curso). Hasta aquí vimos el almacenamiento externo desde el punto de vista del hardware: platos, pistas, sectores. A partir de ahora pensamos en el disco como una secuencia lineal de bloques numerados 0 … N − 1 que solo admite dos operaciones: leer el bloque k y escribir el bloque k. Con solo eso surgen tres preguntas: ¿cómo encontramos la información?, ¿cómo evitamos que un usuario lea los datos de otro? y ¿cómo sabemos qué bloques están libres? El sistema de archivos las responde con nombres y directorios, permisos y administración del espacio libre. Recordatorio: el bloque del sistema de archivos es un múltiplo del sector del disco (siempre igual o mayor)."
+      "notes": "Puente entre el hardware y el sistema de archivos. Hasta aquí vimos el almacenamiento externo desde el punto de vista del hardware: platos, pistas, sectores. A partir de ahora pensamos en el disco como una secuencia lineal de bloques numerados 0 … N − 1 que solo admite dos operaciones: leer el bloque k y escribir el bloque k. Con solo eso surgen tres preguntas: ¿cómo encontramos la información?, ¿cómo evitamos que un usuario lea los datos de otro? y ¿cómo sabemos qué bloques están libres? El sistema de archivos las responde con nombres y directorios, permisos y administración del espacio libre. Recordatorio: el bloque del sistema de archivos es un múltiplo del sector del disco (siempre igual o mayor)."
     },
     {
       "type": "cards",
@@ -351,7 +351,7 @@
         { "title": "Metadata", "text": "Guarda atributos de cada archivo: nombre, tamaño, fecha de creación…", "footer": "Ocupa espacio en disco", "tone": "teal" },
         { "title": "Según el SO", "text": "Windows usa NTFS; Linux, ext3 o ext4; macOS, APFS (antes HFS+).", "footer": "NTFS · ext4 · APFS", "tone": "teal" }
       ],
-      "notes": "El sistema de archivos es la abstracción que provee el sistema operativo para acceder a los datos del disco: determina cómo se nombran, organizan y almacenan los archivos, y guarda sus atributos. Ejemplo del capítulo: un archivo de 1 KB necesita espacio adicional para su metadata; por eso, después de formatear, el espacio disponible es menor al total. Actualización: macOS usó HFS+ hasta hace unos años y hoy usa APFS. Hay más sistemas de archivos: FAT y FAT32 (DOS y Windows; todavía comunes en memorias USB), CDFS (discos ópticos) y muchos otros. Los programadores usan un API para interactuar con el sistema de archivos."
+      "notes": "El sistema de archivos es la abstracción que provee el sistema operativo para acceder a los datos del disco: determina cómo se nombran, organizan y almacenan los archivos, y guarda sus atributos. Ejemplo: un archivo de 1 KB necesita espacio adicional para su metadata; por eso, después de formatear, el espacio disponible es menor al total. Actualización: macOS usó HFS+ hasta hace unos años y hoy usa APFS. Hay más sistemas de archivos: FAT y FAT32 (DOS y Windows; todavía comunes en memorias USB), CDFS (discos ópticos) y muchos otros. Los programadores usan un API para interactuar con el sistema de archivos."
     },
     {
       "type": "list",
@@ -367,7 +367,7 @@
         "Gestionar **permisos y restricciones** para la integridad y la seguridad",
         "**Funciones avanzadas**: compresión, cifrado, cuotas de disco"
       ],
-      "notes": "Funcionalidades principales del sistema de archivos según el capítulo. Pregunta para la clase: ¿qué pasaría si dos programas intentan escribir el mismo archivo al mismo tiempo? (discusión abierta, añadida)."
+      "notes": "Funcionalidades principales del sistema de archivos. Pregunta para la clase: ¿qué pasaría si dos programas intentan escribir el mismo archivo al mismo tiempo? (discusión abierta)."
     },
     {
       "type": "diagram",
@@ -378,7 +378,7 @@
       "dbms": { "title": "Archivo", "components": ["Leer bytes", "Escribir bytes", "Desplazarse a una posición"] },
       "right": { "title": "Disco", "text": "Pistas, sectores y bloques" },
       "callout": { "tone": "teal", "text": "Un archivo es un «canal de comunicación» que oculta al usuario los detalles complejos del disco." },
-      "notes": "Un archivo es el mecanismo de abstracción para hacer transparente al usuario los detalles complejos del disco. Provee un canal de comunicación para leer bytes, escribir bytes y desplazarse a una posición específica. Marco general (añadido): el sistema operativo abstrae cada recurso físico: la CPU en procesos, la memoria en espacios de direcciones y el disco en archivos. Los archivos son unidades lógicas de información creadas por procesos; un disco puede contener miles, independientes entre sí, y su información debe ser persistente: no la afecta crear ni terminar procesos. Metadata típica de un archivo (de la presentación anterior; la tabla completa tiene más campos): protección (permisos), propietario, creador, fecha de creación, de último acceso y de último cambio, tamaño actual y banderas (solo lectura, oculto, de sistema, archivo, temporal, bloqueo)."
+      "notes": "Un archivo es el mecanismo de abstracción para hacer transparente al usuario los detalles complejos del disco. Provee un canal de comunicación para leer bytes, escribir bytes y desplazarse a una posición específica. Marco general: el sistema operativo abstrae cada recurso físico: la CPU en procesos, la memoria en espacios de direcciones y el disco en archivos. Los archivos son unidades lógicas de información creadas por procesos; un disco puede contener miles, independientes entre sí, y su información debe ser persistente: no la afecta crear ni terminar procesos. Metadata típica de un archivo (la tabla completa tiene más campos): protección (permisos), propietario, creador, fecha de creación, de último acceso y de último cambio, tamaño actual y banderas (solo lectura, oculto, de sistema, archivo, temporal, bloqueo)."
     },
     {
       "type": "cards",
@@ -392,7 +392,7 @@
         { "title": "Aleatorio", "text": "Acceso directo a cualquier parte del archivo, sin importar el orden de escritura.", "footer": "Más flexible", "tone": "teal" },
         { "title": "Indexado", "text": "Un índice guarda la ubicación de los datos, p. ej. id de cliente → posición del registro.", "footer": "Precursor de las BD", "tone": "teal" }
       ],
-      "notes": "Acceso directo es otro nombre del acceso aleatorio. Ejemplo del capítulo para el acceso indexado: en un archivo de registros de clientes, un índice puede mapear el identificador de cada cliente a la posición de su registro en el archivo. Es el precursor de las bases de datos (y, como veremos, de los árboles B+). Nota histórica (añadida): el acceso secuencial era lo único posible cuando el almacenamiento era la cinta magnética; el acceso aleatorio nació con los discos y es esencial para muchas aplicaciones, p. ej. los sistemas de bases de datos. Idea opcional para la clase: copiar un archivo es leer y escribir bloque por bloque con un buffer del tamaño del bloque; la misma idea reaparece en el external merge y en el nodo-página del árbol B."
+      "notes": "Acceso directo es otro nombre del acceso aleatorio. Ejemplo para el acceso indexado: en un archivo de registros de clientes, un índice puede mapear el identificador de cada cliente a la posición de su registro en el archivo. Es el precursor de las bases de datos (y, como veremos, de los árboles B+). Nota histórica: el acceso secuencial era lo único posible cuando el almacenamiento era la cinta magnética; el acceso aleatorio nació con los discos y es esencial para muchas aplicaciones, p. ej. los sistemas de bases de datos. Idea opcional para la clase: copiar un archivo es leer y escribir bloque por bloque con un buffer del tamaño del bloque; la misma idea reaparece en el external merge y en el nodo-página del árbol B."
     },
     {
       "type": "cards",
@@ -407,7 +407,7 @@
         { "title": "Registros de tamaño fijo", "text": "Campos de tamaño fijo definidos al crear el archivo. Permite buscar y ordenar.", "footer": "Mainframes y BD", "tone": "teal" },
         { "title": "Árboles de registros", "text": "Cada nodo guarda un registro y apunta a otros nodos. Búsqueda y orden eficientes.", "footer": "Idea de los árboles B/B+", "tone": "teal" }
       ],
-      "notes": "Secuencia de bytes: los archivos son «cubetas» de bytes; el SO no puede hacer búsqueda ni indexación. Registros de tamaño fijo: por ejemplo, un archivo de empleados con nombre, apellido, edad y salario; se pueden leer o escribir de forma secuencial o aleatoria. Árboles de registros: en lugar de guardar los registros de forma secuencial, se almacenan en una estructura de árbol. Este concepto reaparece al final de la lección con los árboles B y B+. Observación (añadida): en un árbol de registros la operación básica no es «dame el siguiente registro», sino «dame el registro con esta clave»."
+      "notes": "Secuencia de bytes: los archivos son «cubetas» de bytes; el SO no puede hacer búsqueda ni indexación. Registros de tamaño fijo: por ejemplo, un archivo de empleados con nombre, apellido, edad y salario; se pueden leer o escribir de forma secuencial o aleatoria. Árboles de registros: en lugar de guardar los registros de forma secuencial, se almacenan en una estructura de árbol. Este concepto reaparece al final de la lección con los árboles B y B+. Observación: en un árbol de registros la operación básica no es «dame el siguiente registro», sino «dame el registro con esta clave»."
     },
     {
       "type": "cards",
@@ -427,7 +427,7 @@
         { "title": "Symbolic links", "text": "Archivos que apuntan a otros archivos." },
         { "title": "Binary files", "text": "Binarios: ejecutables, imágenes, video." }
       ],
-      "notes": "Los directorios son partes esenciales del sistema de archivos. Los nombres en inglés (character special files, block special files, sockets, pipes, symbolic links, binary files) son los que se usan en la práctica. Aclaración: los archivos regulares pueden ser de texto o binarios; los binarios incluyen los programas ejecutables, las imágenes y el video (no son solo ejecutables ni solo multimedia). Los archivos de bloques modelan los discos y los de caracteres modelan dispositivos como impresoras, terminales y redes. Directorios (añadido): en el sistema más simple un único directorio contiene todos los archivos (plano), lo cual no sirve para aplicaciones generales; por eso se usan directorios jerárquicos (un árbol de directorios), que permiten tantos directorios como se necesiten, agrupados de forma conveniente."
+      "notes": "Los directorios son partes esenciales del sistema de archivos. Los nombres en inglés (character special files, block special files, sockets, pipes, symbolic links, binary files) son los que se usan en la práctica. Aclaración: los archivos regulares pueden ser de texto o binarios; los binarios incluyen los programas ejecutables, las imágenes y el video (no son solo ejecutables ni solo multimedia). Los archivos de bloques modelan los discos y los de caracteres modelan dispositivos como impresoras, terminales y redes. Directorios: en el sistema más simple un único directorio contiene todos los archivos (plano), lo cual no sirve para aplicaciones generales; por eso se usan directorios jerárquicos (un árbol de directorios), que permiten tantos directorios como se necesiten, agrupados de forma conveniente."
     },
     {
       "type": "diagram",
@@ -445,7 +445,7 @@
         { "title": "Lista enlazada", "text": "Cada bloque apunta al siguiente. El acceso aleatorio es doloroso y los punteros están en el disco.", "kind": "linked", "file": [1, 4, 6, 10], "others": [0, 2, 3, 8, 9] },
         { "title": "I-nodo", "text": "Un i-nodo por archivo: atributos y direcciones de sus bloques. Está en memoria solo si el archivo está abierto.", "kind": "inode", "file": [0, 3, 7, 10], "others": [1, 5, 6] }
       ],
-      "notes": "Pregunta central: ¿cómo lleva la cuenta el sistema de archivos de qué bloques son de cada archivo? Tres respuestas clásicas (presentación anterior del curso, recreadas). Asignación contigua: todos los bloques de un archivo están uno junto al otro físicamente; la lectura es rápida, pero al borrar y crecer archivos queda el espacio fragmentado, y desfragmentar en memoria secundaria es carísimo. Lista enlazada: cada archivo es una lista enlazada de bloques de disco, cada uno con el puntero al siguiente; evita la fragmentación, pero el acceso aleatorio es doloroso (para llegar al bloque 10 hay que recorrer los anteriores) y, además, los punteros están en el disco, no en memoria. I-nodo (index-node): una estructura de datos por archivo que lista sus atributos y las direcciones de disco de sus bloques; la ventaja principal es que el i-nodo solo necesita estar en memoria cuando el archivo está abierto, con menos overhead. Analogía añadida: contigua ≈ arreglo, lista enlazada ≈ lista enlazada y i-nodo ≈ índice multinivel (como los árboles B, que veremos más adelante). Los números de los bloques del dibujo son ilustrativos. Siguiente diapositiva: cuántos bloques puede direccionar un i-nodo."
+      "notes": "Pregunta central: ¿cómo lleva la cuenta el sistema de archivos de qué bloques son de cada archivo? Tres respuestas clásicas. Asignación contigua: todos los bloques de un archivo están uno junto al otro físicamente; la lectura es rápida, pero al borrar y crecer archivos queda el espacio fragmentado, y desfragmentar en memoria secundaria es carísimo. Lista enlazada: cada archivo es una lista enlazada de bloques de disco, cada uno con el puntero al siguiente; evita la fragmentación, pero el acceso aleatorio es doloroso (para llegar al bloque 10 hay que recorrer los anteriores) y, además, los punteros están en el disco, no en memoria. I-nodo (index-node): una estructura de datos por archivo que lista sus atributos y las direcciones de disco de sus bloques; la ventaja principal es que el i-nodo solo necesita estar en memoria cuando el archivo está abierto, con menos overhead. Analogía: contigua ≈ arreglo, lista enlazada ≈ lista enlazada y i-nodo ≈ índice multinivel (como los árboles B, que veremos más adelante). Los números de los bloques del dibujo son ilustrativos. Siguiente diapositiva: cuántos bloques puede direccionar un i-nodo."
     },
     {
       "type": "diagram",
@@ -462,7 +462,7 @@
       ],
       "total": { "label": "Total", "formula": "12 + 128 + 128² + 128³", "count": "2 113 676", "size": "≈ 1032 MiB" },
       "callout": { "tone": "teal", "text": "Con bloques de **512 B** y punteros de **4 B**, un bloque de punteros guarda 512 / 4 = **128** punteros." },
-      "notes": "El i-nodo del ejemplo tiene 15 punteros: los primeros 12 apuntan directamente a bloques de datos; el 13.º es un bloque indirecto simple (un bloque que contiene punteros a bloques de datos); el 14.º es doblemente indirecto (un bloque de punteros a bloques de punteros) y el 15.º es triplemente indirecto. Supuesto (aclaración añadida): bloque de 512 B y puntero de 4 B, así que un bloque de punteros guarda 512 / 4 = 128 punteros. Cálculo (verificado con un script): 12 + 128 + 128² + 128³ = 12 + 128 + 16 384 + 2 097 152 = 2 113 676 bloques de datos. Tamaño máximo = 2 113 676 × 512 B = 1 082 202 112 B ≈ 1032 MiB (≈ 1.008 GiB; ≈ 1.08 GB decimales). Cada nivel aporta: 12 × 512 B = 6 KiB; 128 × 512 B = 64 KiB; 16 384 × 512 B = 8 MiB; 2 097 152 × 512 B = 1 GiB. Los archivos pequeños (los más comunes) se resuelven solo con punteros directos; los indirectos cuestan una lectura de disco más por nivel. Errores comunes: 128³ es 2 097 152 (no 2 037 152); los bloques son de 512 BYTES (no Kb) y el resultado son MiB, no GB. KiB, MiB y GiB son potencias de 1024 (1 MiB = 1 048 576 B). Es una simplificación didáctica estilo UNIX: los sistemas reales (ext4, NTFS) usan variantes (p. ej. extents). Ejercicio en «Ahora usted»: repetir el cálculo con otro tamaño de bloque."
+      "notes": "El i-nodo del ejemplo tiene 15 punteros: los primeros 12 apuntan directamente a bloques de datos; el 13.º es un bloque indirecto simple (un bloque que contiene punteros a bloques de datos); el 14.º es doblemente indirecto (un bloque de punteros a bloques de punteros) y el 15.º es triplemente indirecto. Supuesto: bloque de 512 B y puntero de 4 B, así que un bloque de punteros guarda 512 / 4 = 128 punteros. Cálculo (verificado con un script): 12 + 128 + 128² + 128³ = 12 + 128 + 16 384 + 2 097 152 = 2 113 676 bloques de datos. Tamaño máximo = 2 113 676 × 512 B = 1 082 202 112 B ≈ 1032 MiB (≈ 1.008 GiB; ≈ 1.08 GB decimales). Cada nivel aporta: 12 × 512 B = 6 KiB; 128 × 512 B = 64 KiB; 16 384 × 512 B = 8 MiB; 2 097 152 × 512 B = 1 GiB. Los archivos pequeños (los más comunes) se resuelven solo con punteros directos; los indirectos cuestan una lectura de disco más por nivel. Errores comunes: 128³ es 2 097 152 (no 2 037 152); los bloques son de 512 BYTES (no Kb) y el resultado son MiB, no GB. KiB, MiB y GiB son potencias de 1024 (1 MiB = 1 048 576 B). Es una simplificación didáctica estilo UNIX: los sistemas reales (ext4, NTFS) usan variantes (p. ej. extents). Ejercicio en «Ahora usted»: repetir el cálculo con otro tamaño de bloque."
     },
     {
       "type": "diagram",
@@ -516,7 +516,7 @@
         { "title": "LFU", "text": "Reemplaza la entrada que se ha usado menos veces.", "footer": "Least Frequently Used", "footerSize": 14, "tone": "teal" },
         { "title": "MRU", "text": "Reemplaza la entrada que se ha usado más recientemente.", "footer": "Most Recently Used", "footerSize": 14, "tone": "teal" }
       ],
-      "notes": "LRU se basa en que si un elemento no se ha usado recientemente, es menos probable que se use en el futuro. FIFO se basa en que los elementos que llevan más tiempo en el cache son menos probables de usarse. LFU se basa en que los menos usados son menos probables de usarse. Observación añadida sobre MRU: es útil, por ejemplo, en recorridos secuenciales cíclicos más grandes que el cache, donde lo último que se usó será lo último en volver a necesitarse; el capítulo justifica MRU de otra forma, que conviene discutir en clase."
+      "notes": "LRU se basa en que si un elemento no se ha usado recientemente, es menos probable que se use en el futuro. FIFO se basa en que los elementos que llevan más tiempo en el cache son menos probables de usarse. LFU se basa en que los menos usados son menos probables de usarse. Observación sobre MRU: es útil, por ejemplo, en recorridos secuenciales cíclicos más grandes que el cache, donde lo último que se usó será lo último en volver a necesitarse."
     },
     {
       "type": "diagram",
@@ -551,7 +551,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "LRU logra **2 hits** y FIFO solo **1**: FIFO expulsa a **A** por ser la más antigua, aunque se acaba de usar." },
-      "notes": "Ejemplo añadido (no está en el capítulo). Secuencia de accesos: A, B, C, A, D, A con un cache de 3 entradas. LRU: A, B, C son miss; A es hit (pasa a ser la más reciente: B, C, A); D es miss y expulsa a B, la menos recientemente usada (C, A, D); A es hit. FIFO: A, B, C son miss; A es hit pero no cambia su orden de llegada; D es miss y expulsa a A, la más antigua (B, C, D); A vuelve a ser miss y expulsa a B. Resultado: LRU 2 hits y 4 misses; FIFO 1 hit y 5 misses. Pregunta: ¿existe una secuencia donde FIFO gane a LRU? (Sí: A, B, C, A, D, B con 3 entradas: FIFO obtiene 2 hits y LRU solo 1)."
+      "notes": "Ejemplo de secuencia de accesos: A, B, C, A, D, A con un cache de 3 entradas. LRU: A, B, C son miss; A es hit (pasa a ser la más reciente: B, C, A); D es miss y expulsa a B, la menos recientemente usada (C, A, D); A es hit. FIFO: A, B, C son miss; A es hit pero no cambia su orden de llegada; D es miss y expulsa a A, la más antigua (B, C, D); A vuelve a ser miss y expulsa a B. Resultado: LRU 2 hits y 4 misses; FIFO 1 hit y 5 misses. Pregunta: ¿existe una secuencia donde FIFO gane a LRU? (Sí: A, B, C, A, D, B con 3 entradas: FIFO obtiene 2 hits y LRU solo 1)."
     },
     {
       "type": "table",
@@ -569,7 +569,7 @@
         ["Global", "Varios servidores", "Datos frecuentes a nivel global"]
       ],
       "callout": { "tone": "slate", "text": "**Generales:** en memoria, de disco y distribuido. **Específicos:** application server cache (una especialización del cache en memoria) y global." },
-      "notes": "Ejemplos del capítulo: el cache de disco guarda, por ejemplo, los datos de un archivo que se accede con frecuencia; el cache distribuido, los datos de un sitio web que se accede con frecuencia; el cache global, los datos de un sitio web que se accede con frecuencia en todo el mundo."
+      "notes": "Ejemplos: el cache de disco guarda, por ejemplo, los datos de un archivo que se accede con frecuencia; el cache distribuido, los datos de un sitio web que se accede con frecuencia; el cache global, los datos de un sitio web que se accede con frecuencia en todo el mundo."
     },
     {
       "type": "diagram",
@@ -622,7 +622,7 @@
           "caption": "4. Se sigue mezclando; cuando un frame de entrada se vacía, se lee otra página."
         }
       ],
-      "notes": "Al escribir la página llena en disco el frame temporal queda libre. Se sigue mezclando hasta que un frame de entrada se vacía; entonces se lee la siguiente página de esa lista (en el visualizador: «keep merging until one frame becomes empty» y «continue merging»). El proceso se repite («and so on…») hasta agotar ambas listas. El capítulo incluye más capturas de estos pasos (image-09 y image-11)."
+      "notes": "Al escribir la página llena en disco el frame temporal queda libre. Se sigue mezclando hasta que un frame de entrada se vacía; entonces se lee la siguiente página de esa lista (en el visualizador: «keep merging until one frame becomes empty» y «continue merging»). El proceso se repite («and so on…») hasta agotar ambas listas."
     },
     {
       "type": "cards",
@@ -674,7 +674,7 @@
         }
       ],
       "callout": { "tone": "teal", "text": "Cada mezcla duplica el tamaño de los runs (4 → 2 → 1). Con **multiway merge** se reduce el número de pasadas." },
-      "notes": "Los datos son los del visualizador del capítulo (archivo R con 18 elementos; páginas P1 a P4; la última página tiene solo 3). Cada fila es una pasada completa sobre el archivo. Los colores indican de dónde viene cada run. Cálculo añadido: con n páginas y mezclas de dos en dos hay 1 pasada de división y ⌈log2 n⌉ de mezcla (aquí 1 + 2 = 3 pasadas). Cada pasada lee y escribe todas las páginas, es decir 2n operaciones de E/S por pasada (aquí 2 × 4 = 8 por pasada, 24 en total). La mejora que menciona el capítulo, multiway merge, mezcla más de dos runs a la vez para reducir el número de pasadas."
+      "notes": "Los datos son los del visualizador (archivo R con 18 elementos; páginas P1 a P4; la última página tiene solo 3). Cada fila es una pasada completa sobre el archivo. Los colores indican de dónde viene cada run. Cálculo: con n páginas y mezclas de dos en dos hay 1 pasada de división y ⌈log2 n⌉ de mezcla (aquí 1 + 2 = 3 pasadas). Cada pasada lee y escribe todas las páginas, es decir 2n operaciones de E/S por pasada (aquí 2 × 4 = 8 por pasada, 24 en total). La mejora conocida como multiway merge mezcla más de dos runs a la vez para reducir el número de pasadas."
     },
     {
       "type": "diagram",
@@ -693,7 +693,7 @@
           "caption": "Mezcla de los dos primeros runs: F1 y F2 alimentan a F3 (OUT)."
         }
       ],
-      "notes": "Capturas del visualizador https://valeriodiste.github.io/ExternalMergeSortVisualizer (en inglés: main memory, secondary storage, buffer, run, file for R). Cada vez que el buffer de salida se llena, se escribe en un nuevo run de tamaño 2. Se repite el proceso con los runs de tamaño 2 y así sucesivamente hasta ordenar todo el archivo. El capítulo incluye también el estado inicial (image-12) y un nivel de mezcla posterior (image-16); image-15 es idéntica a image-14."
+      "notes": "Capturas del visualizador https://valeriodiste.github.io/ExternalMergeSortVisualizer (en inglés: main memory, secondary storage, buffer, run, file for R). Cada vez que el buffer de salida se llena, se escribe en un nuevo run de tamaño 2. Se repite el proceso con los runs de tamaño 2 y así sucesivamente hasta ordenar todo el archivo."
     },
     {
       "type": "compare",
@@ -887,7 +887,7 @@
         { "title": "Búsqueda de 30", "text": "En la raíz, 20 < 30 < 40: se baja al hijo central, donde está. 2 lecturas.", "tone": "amber", "h": 1.85 },
         { "title": "Balanceado", "text": "Todas las hojas están al mismo nivel; el árbol solo creció por la raíz.", "tone": "green", "h": 1.7 }
       ],
-      "notes": "El árbol permanece perfectamente balanceado (todas las hojas al mismo nivel) y creció en altura únicamente por la raíz, cuando esta se llenó. La búsqueda de 30 (ejemplo añadido sobre el árbol resultante): se lee la raíz, se compara con 20 y 40, se baja al hijo central [25 | 30] y se encuentra la clave: 2 lecturas de disco."
+      "notes": "El árbol permanece perfectamente balanceado (todas las hojas al mismo nivel) y creció en altura únicamente por la raíz, cuando esta se llenó. La búsqueda de 30 (sobre el árbol resultante): se lee la raíz, se compara con 20 y 40, se baja al hijo central [25 | 30] y se encuentra la clave: 2 lecturas de disco."
     },
     {
       "type": "cards",
@@ -947,7 +947,7 @@
         { "title": "1. Descender", "text": "Se busca el límite inferior (20): O(log_t n) accesos hasta su hoja.", "tone": "teal", "h": 1.75 },
         { "title": "2. Recorrer hojas", "text": "Se sigue la lista enlazada hasta superar el límite superior (50).", "tone": "amber", "h": 1.75 }
       ],
-      "notes": "Ejemplo del capítulo: «todos los clientes con id entre 100 y 500». Se busca el límite inferior en O(log_t n) accesos de disco hasta llegar a la hoja y luego se sigue la lista enlazada de hojas leyendo registros consecutivos hasta el límite superior. Es muy eficiente porque las hojas tienden a estar contiguas en disco. En el dibujo se usó el rango 20 a 50 (adaptación añadida): se llega a la hoja [20 | 30], se sigue el enlace a [40 | 50 | 60] y se detiene al ver 60 > 50."
+      "notes": "Ejemplo: «todos los clientes con id entre 100 y 500». Se busca el límite inferior en O(log_t n) accesos de disco hasta llegar a la hoja y luego se sigue la lista enlazada de hojas leyendo registros consecutivos hasta el límite superior. Es muy eficiente porque las hojas tienden a estar contiguas en disco. En el dibujo se usó el rango 20 a 50: se llega a la hoja [20 | 30], se sigue el enlace a [40 | 50 | 60] y se detiene al ver 60 > 50."
     },
     {
       "type": "cards",
@@ -982,7 +982,7 @@
         ["Búsqueda exitosa", "Puede terminar en un nodo interno", "Siempre llega a una hoja"]
       ],
       "callout": { "tone": "teal", "text": "**Uso típico.** B: propósito general y algunos índices. **B+**: DBMS y sistemas de archivos." },
-      "notes": "El capítulo agrega dos filas más: duplicación de claves (B: no; B+: sí, clave de ruteo más dato en la hoja) y uso típico. Relación con el resto de la lección: cada nodo es una página de disco, por lo que su tamaño se ajusta al de la página y leer un nodo cuesta una sola operación de E/S. El cache mantiene en memoria los nodos superiores, en especial la raíz, que se accede en toda búsqueda. Los datos de las hojas suelen ser registros de tamaño fijo o secuencias de bytes. El árbol B/B+ es la materialización de los árboles de registros y del acceso indexado vistos antes."
+      "notes": "Otras dos diferencias, para comentar de forma oral: duplicación de claves (B: no; B+: sí, clave de ruteo más dato en la hoja) y uso típico. Relación con el resto de la lección: cada nodo es una página de disco, por lo que su tamaño se ajusta al de la página y leer un nodo cuesta una sola operación de E/S. El cache mantiene en memoria los nodos superiores, en especial la raíz, que se accede en toda búsqueda. Los datos de las hojas suelen ser registros de tamaño fijo o secuencias de bytes. El árbol B/B+ es la materialización de los árboles de registros y del acceso indexado vistos antes."
     },
     {
       "type": "code",
@@ -1008,7 +1008,7 @@
         }
       ],
       "callouts": [{ "tone": "slate", "text": "Es un esbozo conceptualmente compilable (C++17); no incluye la inserción ni la eliminación." }],
-      "notes": "El código está recortado del capítulo (se quitaron los #include y varios comentarios). En un sistema real cada nodo correspondería a una página de disco; el esbozo usa punteros en memoria solo para ilustrar la idea. Para una hoja, children queda vacío."
+      "notes": "Se quitaron los #include y varios comentarios del código. En un sistema real cada nodo correspondería a una página de disco; el esbozo usa punteros en memoria solo para ilustrar la idea. Para una hoja, children queda vacío."
     },
     {
       "type": "code",
@@ -1050,7 +1050,7 @@
         { "badge": "B", "title": "Reconstruir con XOR", "text": "El disco 2 falló. En la franja 4 quedan 0110, 1101 y 1010. ¿Qué guardaba el disco 2?", "tone": "teal" },
         { "badge": "C", "title": "Tamaño máximo", "text": "Con bloques de 1 KiB y punteros de 4 B (12 directos + 3 indirectos), ¿cuál es el tamaño máximo de un archivo?", "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no están en la presentación anterior ni en el capítulo; resultados verificados con un script). A: RAID 0 = N × D = 4 TB; RAID 5 = (N − 1) × D = 3 TB; RAID 10 = N / 2 × D = 2 TB (y RAID 6 = (N − 2) × D = 2 TB). Tolerancia: RAID 0 ninguno, RAID 5 un disco, RAID 10 uno por espejo. B: 0110 XOR 1101 = 1011 y 1011 XOR 1010 = 0001; el disco 2 guardaba 0001 (coincide con la franja 4 del arreglo original). Extensión: ¿y si falla también otro disco? En RAID 5 ya no se puede reconstruir. C: un bloque de 1 KiB con punteros de 4 B guarda 1024 / 4 = 256 punteros. Bloques de datos = 12 + 256 + 256² + 256³ = 12 + 256 + 65 536 + 16 777 216 = 16 843 020. Tamaño = 16 843 020 × 1 KiB = 17 247 252 480 B ≈ 16 448 MiB ≈ 16.06 GiB."
+      "notes": "Soluciones (resultados verificados con un script). A: RAID 0 = N × D = 4 TB; RAID 5 = (N − 1) × D = 3 TB; RAID 10 = N / 2 × D = 2 TB (y RAID 6 = (N − 2) × D = 2 TB). Tolerancia: RAID 0 ninguno, RAID 5 un disco, RAID 10 uno por espejo. B: 0110 XOR 1101 = 1011 y 1011 XOR 1010 = 0001; el disco 2 guardaba 0001 (coincide con la franja 4 del arreglo original). Extensión: ¿y si falla también otro disco? En RAID 5 ya no se puede reconstruir. C: un bloque de 1 KiB con punteros de 4 B guarda 1024 / 4 = 256 punteros. Bloques de datos = 12 + 256 + 256² + 256³ = 12 + 256 + 65 536 + 16 777 216 = 16 843 020. Tamaño = 16 843 020 × 1 KiB = 17 247 252 480 B ≈ 16 448 MiB ≈ 16.06 GiB."
     },
     {
       "type": "cards",
@@ -1066,7 +1066,7 @@
         { "badge": "E", "title": "Árbol B con t = 2", "text": "Al árbol del ejemplo agréguele 60, 70 y 80. Dibuje el árbol resultante.", "tone": "teal" },
         { "badge": "F", "title": "Accesos a disco", "text": "Con t = 500 y mil millones de claves, ¿cuántas lecturas necesita una búsqueda? ¿Y en un BST?", "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no están en el capítulo). D: 1 pasada de división + 3 de mezcla (8 → 4 → 2 → 1 runs) = 4 pasadas; cada una lee y escribe las 8 páginas (16 E/S), así que son 64 E/S en total. E: 60 baja al hijo [50] y queda [50 | 60]; 70 queda [50 | 60 | 70] (lleno); al insertar 80 se hace split proactivo de [50 | 60 | 70]: la mediana 60 sube a la raíz, que queda [20 | 40 | 60], con hijos [10], [25 | 30], [50] y [70 | 80]. F: log_500(10^9) = 9 / log10(500) ≈ 9 / 2.7 ≈ 3.3, es decir 4 lecturas; un BST necesitaría log2(10^9) ≈ 30 accesos."
+      "notes": "Soluciones. D: 1 pasada de división + 3 de mezcla (8 → 4 → 2 → 1 runs) = 4 pasadas; cada una lee y escribe las 8 páginas (16 E/S), así que son 64 E/S en total. E: 60 baja al hijo [50] y queda [50 | 60]; 70 queda [50 | 60 | 70] (lleno); al insertar 80 se hace split proactivo de [50 | 60 | 70]: la mediana 60 sube a la raíz, que queda [20 | 40 | 60], con hijos [10], [25 | 30], [50] y [70 | 80]. F: log_500(10^9) = 9 / log10(500) ≈ 9 / 2.7 ≈ 3.3, es decir 4 lecturas; un BST necesitaría log2(10^9) ≈ 30 accesos."
     },
     {
       "type": "summary",
@@ -1086,7 +1086,7 @@
         "**Árboles B y B+:** un nodo = una página; el B+ guarda los datos en hojas enlazadas"
       ],
       "footnote": "Referencias: GeeksforGeeks (External Sorting; Introduction of B-Tree; B+ Tree) · Koutris, P. CS 564 (Spring 2018), Lecture 16 · Cormen, T. H. et al. Introduction to Algorithms (CLRS), «B-Trees» · valeriodiste.github.io/ExternalMergeSortVisualizer",
-      "notes": "Referencias completas del capítulo: https://www.geeksforgeeks.org/external-sorting/ ; Koutris, P. CS 564 [Spring 2018], https://pages.cs.wisc.edu/~paris/cs564-s18/lectures/lecture-16.pdf ; https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html ; Cormen, T. H. et al., Introduction to Algorithms (CLRS), capítulo «B-Trees» ; https://www.geeksforgeeks.org/introduction-of-b-tree/ ; https://www.geeksforgeeks.org/introduction-of-b-tree-2/ (árboles B+). Cierre: la jerarquía de memoria explica por qué el disco es el cuello de botella; RAID combina discos para ganar rendimiento y tolerar fallos; el cache, el ordenamiento externo y los árboles B/B+ son tres formas de reducir los accesos a disco. El material de RAID y de i-nodos proviene de la presentación anterior del curso (no está en el capítulo)."
+      "notes": "Referencias completas: https://www.geeksforgeeks.org/external-sorting/ ; Koutris, P. CS 564 [Spring 2018], https://pages.cs.wisc.edu/~paris/cs564-s18/lectures/lecture-16.pdf ; https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html ; Cormen, T. H. et al., Introduction to Algorithms (CLRS), capítulo «B-Trees» ; https://www.geeksforgeeks.org/introduction-of-b-tree/ ; https://www.geeksforgeeks.org/introduction-of-b-tree-2/ (árboles B+). Cierre: la jerarquía de memoria explica por qué el disco es el cuello de botella; RAID combina discos para ganar rendimiento y tolerar fallos; el cache, el ordenamiento externo y los árboles B/B+ son tres formas de reducir los accesos a disco."
     }
   ]
 }

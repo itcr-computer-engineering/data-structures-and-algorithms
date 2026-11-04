@@ -22,7 +22,7 @@
         "code": "$ comprimir bcaadddccacacac\n120 bits -> 28 bits\n$ descomprimir\nbcaadddccacacac"
       },
       "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
-      "notes": "Capítulo sobre compresión de datos: qué es comprimir, los dos tipos de compresión y los algoritmos sin pérdida más conocidos (Huffman, LZ77, LZ78 y LZW), junto con el límite teórico de Shannon. Se añaden la codificación aritmética (opcional: confirmar si entra en el alcance del curso) y ejercicios con solución."
+      "notes": "Esta lección trata de la compresión de datos: qué es comprimir, los dos tipos de compresión y los algoritmos sin pérdida más conocidos (Huffman, LZ77, LZ78 y LZW), junto con el límite teórico de Shannon. Incluye también la codificación aritmética (opcional: confirmar si entra en el alcance del curso) y ejercicios con solución."
     },
     {
       "type": "list",
@@ -36,7 +36,7 @@
         "Comprimir y descomprimir con **LZ77**, **LZ78** y **LZW**",
         "Comparar los algoritmos según sus características"
       ],
-      "notes": "Seis objetivos, uno por bloque de la lección. La codificación aritmética no está en el capítulo: es un añadido de la presentación (opcional: confirmar si entra en el alcance del curso); si no entra, omita ese objetivo y las tres diapositivas de la sección «Codificación aritmética». A lo largo de la lección hay ejercicios con solución para practicar en clase."
+      "notes": "Seis objetivos, uno por bloque de la lección. La codificación aritmética es opcional (confirmar si entra en el alcance del curso); si no entra, omita ese objetivo y las tres diapositivas de la sección «Codificación aritmética». A lo largo de la lección hay ejercicios con solución para practicar en clase."
     },
     {
       "type": "flow",
@@ -137,7 +137,7 @@
           "title": "Algoritmos comunes",
           "tone": "navy",
           "chips": ["Huffman", "LZW", "LZ77", "LZ78", "RLE", "Deflate (ZIP)", "BWT"],
-          "note": "En este capítulo: **Huffman**, **LZ77**, **LZ78** y **LZW**."
+          "note": "En esta lección: **Huffman**, **LZ77**, **LZ78** y **LZW**."
         }
       ],
       "notes": "RLE = Run-Length Encoding. BWT = Burrows-Wheeler Transform. Deflate es el que se utiliza en ZIP y combina LZ77 con Huffman (también lo usan gzip y PNG). La codificación aritmética no es un «tipo» de compresión: es una técnica de codificación que se puede usar tanto con pérdida como sin pérdida; se verá después de la entropía (opcional: confirmar si entra en el alcance del curso)."
@@ -429,7 +429,7 @@
         { "title": "Subintervalos", "text": "[0, 1) se divide según las probabilidades; cada símbolo reduce el intervalo.", "tone": "teal" },
         { "title": "Sin bits enteros", "text": "No exige un número entero de bits por símbolo: puede acercarse a H.", "tone": "teal" }
       ],
-      "notes": "(Opcional: confirmar si entra en el alcance del curso; esta sección no está en el capítulo.) En lugar de asignar un código a cada símbolo, la codificación aritmética representa el mensaje completo como un único número en [0, 1). Cada símbolo se queda con un subintervalo proporcional a su probabilidad y el intervalo se va estrechando: el ancho final es el producto de las probabilidades de los símbolos. Como el costo en bits es aproximadamente -log2(ancho), los símbolos frecuentes cuestan poco, y no hay que redondear cada símbolo a un número entero de bits: por eso puede acercarse a H, mientras que Huffman puede quedar hasta 1 bit por símbolo por encima. Se usa tanto en compresión sin pérdida como con pérdida; no es un tercer «tipo» de compresión, sino una técnica de codificación. Necesita el modelo de probabilidades y una condición de parada (la longitud del mensaje o un símbolo de fin)."
+      "notes": "(Opcional: confirmar si entra en el alcance del curso.) En lugar de asignar un código a cada símbolo, la codificación aritmética representa el mensaje completo como un único número en [0, 1). Cada símbolo se queda con un subintervalo proporcional a su probabilidad y el intervalo se va estrechando: el ancho final es el producto de las probabilidades de los símbolos. Como el costo en bits es aproximadamente -log2(ancho), los símbolos frecuentes cuestan poco, y no hay que redondear cada símbolo a un número entero de bits: por eso puede acercarse a H, mientras que Huffman puede quedar hasta 1 bit por símbolo por encima. Se usa tanto en compresión sin pérdida como con pérdida; no es un tercer «tipo» de compresión, sino una técnica de codificación. Necesita el modelo de probabilidades y una condición de parada (la longitud del mensaje o un símbolo de fin)."
     },
     {
       "type": "diagram",
@@ -562,13 +562,13 @@
       "columns": 3,
       "cardHeight": 2.4,
       "titleSize": 20,
-      "callout": { "tone": "slate", "text": "El **trie** es el mismo TDA que vimos en el capítulo de estructuras de datos jerárquicas (CE-1103)." },
+      "callout": { "tone": "slate", "text": "El **trie** es el mismo TDA que vimos en la lección de Estructuras de Datos Jerárquicas (CE-1103)." },
       "cards": [
         { "title": "Diccionario explícito", "text": "Se construye de forma incremental con un trie para guardar los prefijos conocidos.", "tone": "teal" },
         { "title": "Sin ventana", "text": "Evita la parametrización que LZ77 requiere para optimizar su desempeño.", "tone": "teal" },
         { "title": "Tupla (o, c)i", "text": "o: nodo padre · c: carácter nuevo · i: índice del nodo actual.", "tone": "teal" }
       ],
-      "notes": "El trie es el mismo TDA visto en el capítulo de estructuras de datos jerárquicas de CE-1103 (https://github.com/IsaacSNK/data-structures-and-algorithms/blob/main/ce-1103/03-estructuras-de-datos-jerarquicas.md#el-tda-trie). LZ78 «puro» no es lo que usan GIF y TIFF: emplean LZW, una variante de LZ78 que se ve en la siguiente sección."
+      "notes": "El trie es el mismo TDA visto en la lección de Estructuras de Datos Jerárquicas (CE-1103). LZ78 «puro» no es lo que usan GIF y TIFF: emplean LZW, una variante de LZ78 que se ve en la siguiente sección."
     },
     {
       "type": "diagram",
@@ -672,7 +672,7 @@
           ]
         }
       ],
-      "notes": "Pseudocódigo del capítulo, traducido al español."
+      "notes": "Pseudocódigo de la compresión con LZW: P es el prefijo reconocido hasta ahora y C el siguiente carácter de la entrada."
     },
     {
       "type": "table",
@@ -735,7 +735,7 @@
         { "badge": "B", "title": "LZW", "text": "Con la tabla inicial `a`, `c`, `w` (97, 99 y 119), comprima `waccawacca`.", "textSize": 17, "tone": "teal" },
         { "badge": "C", "title": "Aritmética", "text": "Con A = 20\u00a0%, B = 50\u00a0% y C = 30\u00a0%: ¿qué intervalo representa «CAB»? ¿Contiene 0.718?", "textSize": 17, "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no vienen en el capítulo); todas las respuestas se verificaron con un programa. A) LZ78: (0, a)(0, b)(0, r)(1, c)(1, d)(1, b)(3, a)(7, b)(1, r)(6, a)(7, EOF). Diccionario: 1 a, 2 b, 3 r, 4 ac, 5 ad, 6 ab, 7 ra, 8 rab, 9 ar, 10 aba. La entrada termina en «ra», una frase que ya está en el diccionario (índice 7), por eso la última tupla es (7, EOF). B) LZW: 119 97 99 99 97 256 258 97. Tabla nueva: wa = 256, ac = 257, cc = 258, ca = 259, aw = 260, wac = 261, cca = 262. Traza: w + a no está → emite 119 y agrega wa; a + c → 97, ac; c + c → 99, cc; c + a → 99, ca; a + w → 97, aw; w + a sí está; wa + c → 256, wac; c + c sí está; cc + a → 258, cca; al final se emite 97. Para comprobar, descomprima: debe reconstruir la misma tabla y obtener waccawacca. C) (Opcional: confirmar si entra en el alcance del curso.) «CAB»: C = [0.7, 1); dentro de C, A = [0.7, 0.76); dentro de ese, B = [0.712, 0.742). Sí contiene 0.718, que es justo el número que se decodificó como CAB."
+      "notes": "Todas las respuestas se verificaron con un programa. A) LZ78: (0, a)(0, b)(0, r)(1, c)(1, d)(1, b)(3, a)(7, b)(1, r)(6, a)(7, EOF). Diccionario: 1 a, 2 b, 3 r, 4 ac, 5 ad, 6 ab, 7 ra, 8 rab, 9 ar, 10 aba. La entrada termina en «ra», una frase que ya está en el diccionario (índice 7), por eso la última tupla es (7, EOF). B) LZW: 119 97 99 99 97 256 258 97. Tabla nueva: wa = 256, ac = 257, cc = 258, ca = 259, aw = 260, wac = 261, cca = 262. Traza: w + a no está → emite 119 y agrega wa; a + c → 97, ac; c + c → 99, cc; c + a → 99, ca; a + w → 97, aw; w + a sí está; wa + c → 256, wac; c + c sí está; cc + a → 258, cca; al final se emite 97. Para comprobar, descomprima: debe reconstruir la misma tabla y obtener waccawacca. C) (Opcional: confirmar si entra en el alcance del curso.) «CAB»: C = [0.7, 1); dentro de C, A = [0.7, 0.76); dentro de ese, B = [0.712, 0.742). Sí contiene 0.718, que es justo el número que se decodificó como CAB."
     },
     {
       "type": "table",
@@ -757,7 +757,7 @@
         { "tone": "teal", "text": "Los cuatro son **sin pérdida**: los datos originales se recuperan exactamente." },
         { "tone": "slate", "text": "**Deflate** = LZ77 + Huffman: lo usan ZIP, gzip y PNG." }
       ],
-      "notes": "Diapositiva de síntesis elaborada a partir del contenido del capítulo; la columna «Se usa en» es un añadido. Huffman: la etapa final de JPEG usa códigos de Huffman, y PNG usa Deflate (LZ77 + Huffman). LZ77: es la base de Deflate (gzip, ZIP, PNG). LZ78: es la base de LZW; GIF no usa LZ78 «puro» sino LZW. LZW: GIF y TIFF (en PDF existe como filtro opcional). Contraste clave: la tabla de Huffman sí viaja en el archivo; la de LZW no, porque el decodificador la reconstruye."
+      "notes": "Diapositiva de síntesis de la lección. Huffman: la etapa final de JPEG usa códigos de Huffman, y PNG usa Deflate (LZ77 + Huffman). LZ77: es la base de Deflate (gzip, ZIP, PNG). LZ78: es la base de LZW; GIF no usa LZ78 «puro» sino LZW. LZW: GIF y TIFF (en PDF existe como filtro opcional). Contraste clave: la tabla de Huffman sí viaja en el archivo; la de LZW no, porque el decodificador la reconstruye."
     },
     {
       "type": "summary",
@@ -790,7 +790,7 @@
         "https://hackernoon.com/how-lz78-compression-algorithm-works-x7103tlm",
         "https://www.geeksforgeeks.org/lzw-lempel-ziv-welch-compression-technique/"
       ],
-      "notes": "Referencias del capítulo."
+      "notes": "Referencias de la lección: artículos de consulta sobre las técnicas de compresión."
     }
   ]
 }

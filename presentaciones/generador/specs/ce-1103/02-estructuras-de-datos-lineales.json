@@ -22,7 +22,7 @@
         "code": "Node n = new Node(7);\nn.next = head;\nhead = n;\nsize++;"
       },
       "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
-      "notes": "Capítulo sobre estructuras de datos lineales: arreglos y matrices, listas (con arreglos y con nodos enlazados simples, dobles y circulares), pilas, colas, colas de prioridad y generics. Todos los ejemplos de código están en Java (el capítulo muestra la declaración de arreglos también en C#). Las diapositivas de diagramas se pueden avanzar «paso a paso» para ver cómo cambian las referencias."
+      "notes": "Esta lección trata de estructuras de datos lineales: arreglos y matrices, listas (con arreglos y con nodos enlazados simples, dobles y circulares), pilas, colas, colas de prioridad y generics. Todos los ejemplos de código están en Java (la declaración de arreglos se muestra también con sintaxis de C#). Las diapositivas de diagramas se pueden avanzar «paso a paso» para ver cómo cambian las referencias."
     },
     {
       "type": "list",
@@ -50,7 +50,7 @@
         { "badge": "3", "title": "Predecesor y sucesor", "text": "Cada elemento tiene un predecesor y un sucesor, excepto el primero y el último.", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "label": "En esta lección:", "text": "arreglos · listas · pilas · colas · colas de prioridad." },
-      "notes": "Definición del capítulo: una estructura de datos es una forma particular de organizar datos en una computadora para que puedan ser utilizados de manera eficiente; sirve para procesar, recuperar y almacenar datos. Existe una colección mínima de estructuras comunes en la mayoría de los lenguajes de programación. Las lineales organizan sus elementos secuencialmente: hay un solo nivel y se recorren en una sola pasada. Más adelante en el curso se verán estructuras jerárquicas (árboles) donde esta propiedad ya no se cumple."
+      "notes": "Definición: una estructura de datos es una forma particular de organizar datos en una computadora para que puedan ser utilizados de manera eficiente; sirve para procesar, recuperar y almacenar datos. Existe una colección mínima de estructuras comunes en la mayoría de los lenguajes de programación. Las lineales organizan sus elementos secuencialmente: hay un solo nivel y se recorren en una sola pasada. Más adelante en el curso se verán estructuras jerárquicas (árboles) donde esta propiedad ya no se cumple."
     },
     {
       "type": "image",
@@ -59,7 +59,7 @@
       "image": "image-00.png",
       "alt": "Arreglo de 12 enteros en posiciones contiguas de memoria con direcciones 200, 204, 208 hasta 244 y índices de 0 a 11",
       "caption": "Mismo tipo y mismo tamaño: un `int` ocupa 4 bytes; las direcciones suben de 4 en 4.",
-      "notes": "Un arreglo es una colección de elementos del mismo tipo almacenados en posiciones contiguas de memoria. Es la estructura de datos más básica y la usan casi todos los lenguajes. En la imagen se ven las direcciones en decimal (200, 204, 208...) y debajo el índice de cada posición. Nota para el profesor: el capítulo dice que un `char` ocupa 1 byte; eso es cierto en C/C++, pero en Java y C# un `char` ocupa 2 bytes. Para evitar confusión, en la lección se usa `int` (4 bytes) como ejemplo."
+      "notes": "Un arreglo es una colección de elementos del mismo tipo almacenados en posiciones contiguas de memoria. Es la estructura de datos más básica y la usan casi todos los lenguajes. En la imagen se ven las direcciones en decimal (200, 204, 208...) y debajo el índice de cada posición. Nota para el profesor: el tamaño de un `char` depende del lenguaje (1 byte en C/C++; 2 bytes en Java y C#). Para evitar confusión, en la lección se usa `int` (4 bytes) como ejemplo."
     },
     {
       "type": "diagram",
@@ -111,8 +111,8 @@
           ]
         }
       ],
-      "callouts": [{ "tone": "slate", "text": "El capítulo muestra esta sintaxis en **C#**; para estos ejemplos es idéntica en **Java**." }],
-      "notes": "El capítulo declara los arreglos en C#: `int[] arr; char[] arr2; float[] arr3;` y los inicializa en línea (`int[] arr = { 1, 2, 3, 4, 5 };`) o con tamaño (`int[] arr = new int[5];`). Para estos ejemplos la sintaxis de Java es idéntica. Acceso: `arr[0] = 1;` escribe y `int x = arr[0];` lee. Aclaración sobre ArrayList: algunos lenguajes, como C#, proveen una clase ArrayList o similar; corresponde a una implementación de lista (se ve más adelante) y no debe confundirse con un arreglo estático de posiciones contiguas."
+      "callouts": [{ "tone": "slate",       "text": "Para estos ejemplos, la sintaxis en **C#** es idéntica a la de **Java**." }],
+            "notes": "En C# los arreglos se declaran así: `int[] arr; char[] arr2; float[] arr3;` y se inicializan en línea (`int[] arr = { 1, 2, 3, 4, 5 };`) o con tamaño (`int[] arr = new int[5];`). Para estos ejemplos la sintaxis de Java es idéntica. Acceso: `arr[0] = 1;` escribe y `int x = arr[0];` lee. Aclaración sobre ArrayList: algunos lenguajes, como C#, proveen una clase ArrayList o similar; corresponde a una implementación de lista (se ve más adelante) y no debe confundirse con un arreglo estático de posiciones contiguas."
     },
     {
       "type": "diagram",
@@ -222,7 +222,7 @@
         }
       ],
       "callouts": [{ "tone": "slate", "text": "**C#** ofrece una forma más compacta: `int[,] matriz = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };`" }],
-      "notes": "Las matrices se declaran con un par de corchetes por dimensión. Se puede inicializar en línea o declarar con tamaño y luego asignar. El término «matriz» se usa comúnmente para dos dimensiones, pero también aplica a más: el capítulo muestra un arreglo de tres dimensiones, `int[][][] matriz3D = new int[3][3][3];`, inicializado en línea con tres bloques de 3×3 (valores del 1 al 27). C# provee la forma compacta `int[,] matriz = {...};`."
+      "notes": "Las matrices se declaran con un par de corchetes por dimensión. Se puede inicializar en línea o declarar con tamaño y luego asignar. El término «matriz» se usa comúnmente para dos dimensiones, pero también aplica a más: por ejemplo, un arreglo de tres dimensiones, `int[][][] matriz3D = new int[3][3][3];`, inicializado en línea con tres bloques de 3×3 (valores del 1 al 27). C# provee la forma compacta `int[,] matriz = {...};`."
     },
     {
       "type": "diagram",
@@ -312,7 +312,7 @@
         { "tone": "slate", "text": "Los ejemplos también usan `isEmpty()` y `clear()`." },
         { "tone": "amber", "label": "get:", "text": "con arreglo es `storage[i]`; con nodos se recorre desde `head`." }
       ],
-      "notes": "Operaciones básicas del TDA lista: obtener (get), agregar (add), eliminar (remove), contiene (contains) y tamaño (size). Las implementaciones del capítulo usan además `clear()` e `isEmpty()`. Todas las implementaciones que se verán (ArrayList, SinglyLinkedList, DoubleLinkedList y CircularLinkedList) ofrecen estas mismas operaciones; cambia el costo de cada una. Nota sobre `get`: el capítulo la declara en el TDA, pero ninguna implementación la muestra. Con arreglo es directa, un acceso por índice: `public int get(int index) { if (index < 0 || index >= currentSize) throw new IndexOutOfBoundsException(); return storage[index]; }`. Con nodos no hay acceso directo (los nodos están dispersos en el heap), así que hay que avanzar desde `head`: `public int get(int index) { if (index < 0 || index >= size) throw new IndexOutOfBoundsException(); Node current = head; for (int i = 0; i < index; i++) { current = current.next; } return current.value; }`. Es la misma diferencia de costo de la tabla comparativa: acceso rápido en ArrayList y lento en las listas enlazadas. Ejercicio rápido: ¿cuántos saltos hace `get(4)` en una lista simple? Respuesta: 4."
+      "notes": "Operaciones básicas del TDA lista: obtener (get), agregar (add), eliminar (remove), contiene (contains) y tamaño (size). Las implementaciones usan además `clear()` e `isEmpty()`. Todas las implementaciones que se verán (ArrayList, SinglyLinkedList, DoubleLinkedList y CircularLinkedList) ofrecen estas mismas operaciones; cambia el costo de cada una. Nota sobre `get`: se declara en el TDA, pero ninguna implementación de las diapositivas la muestra. Con arreglo es directa, un acceso por índice: `public int get(int index) { if (index < 0 || index >= currentSize) throw new IndexOutOfBoundsException(); return storage[index]; }`. Con nodos no hay acceso directo (los nodos están dispersos en el heap), así que hay que avanzar desde `head`: `public int get(int index) { if (index < 0 || index >= size) throw new IndexOutOfBoundsException(); Node current = head; for (int i = 0; i < index; i++) { current = current.next; } return current.value; }`. Es la misma diferencia de costo de la tabla comparativa: acceso rápido en ArrayList y lento en las listas enlazadas. Ejercicio rápido: ¿cuántos saltos hace `get(4)` en una lista simple? Respuesta: 4."
     },
     {
       "type": "cards",
@@ -416,7 +416,7 @@
       ],
       "calloutsY": 5.95,
       "calloutsH": 0.85,
-      "notes": "Código recortado del capítulo. Errores típicos que conviene evitar al escribir `remove`: usar una variable que no se declaró (`indexToRemove`), comparar `i == maxSize` en vez de `i == currentSize` para decidir si el elemento no existe, o no devolver el valor eliminado; aquí se muestra la versión correcta, igual a la del capítulo. Otros métodos del capítulo: `clear()` (currentSize = 0), `isEmpty()` (currentSize == 0), `size()` y `contains(int element)`, que recorre los primeros currentSize elementos con un `for`. La principal ventaja de ArrayList frente al arreglo directo es la abstracción de más alto nivel: el programador no tiene que lidiar con shifts, re-sizes ni otros problemas del arreglo."
+      "notes": "Código recortado. Errores típicos que conviene evitar al escribir `remove`: usar una variable que no se declaró (`indexToRemove`), comparar `i == maxSize` en vez de `i == currentSize` para decidir si el elemento no existe, o no devolver el valor eliminado; aquí se muestra la versión correcta. Otros métodos de la clase: `clear()` (currentSize = 0), `isEmpty()` (currentSize == 0), `size()` y `contains(int element)`, que recorre los primeros currentSize elementos con un `for`. La principal ventaja de ArrayList frente al arreglo directo es la abstracción de más alto nivel: el programador no tiene que lidiar con shifts, re-sizes ni otros problemas del arreglo."
     },
     {
       "type": "diagram",
@@ -546,7 +546,7 @@
           ]
         }
       ],
-      "notes": "El nodo no es `public`: es una clase interna del paquete para no exponerla a otras clases. El constructor del capítulo también asigna `this.next = null` (que es el valor por defecto). La lista guarda solo `head` y `size`. `clear()` pone `head = null` y `size = 0`; `isEmpty()` compara `size == 0`; `size()` devuelve `size`. `contains` recorre desde `head` hasta llegar a `null`."
+      "notes": "El nodo no es `public`: es una clase interna del paquete para no exponerla a otras clases. El constructor también puede asignar `this.next = null` (que es el valor por defecto). La lista guarda solo `head` y `size`. `clear()` pone `head = null` y `size = 0`; `isEmpty()` compara `size == 0`; `size()` devuelve `size`. `contains` recorre desde `head` hasta llegar a `null`."
     },
     {
       "type": "code",
@@ -574,7 +574,7 @@
           ]
         }
       ],
-      "notes": "Versión completa de `remove` del capítulo: primero, `if (head == null) throw new NoSuchElementException();`; después, si la cabeza contiene el valor, `head = head.next; size--; return element;`; luego el recorrido con `current.next` que se muestra en la diapositiva; y si se termina el recorrido sin encontrarlo, `throw new NoSuchElementException();`. En `add`, el recorrido hasta el último nodo es lo que se evita al mantener una referencia a `tail`."
+      "notes": "Versión completa de `remove`: primero, `if (head == null) throw new NoSuchElementException();`; después, si la cabeza contiene el valor, `head = head.next; size--; return element;`; luego el recorrido con `current.next` que se muestra en la diapositiva; y si se termina el recorrido sin encontrarlo, `throw new NoSuchElementException();`. En `add`, el recorrido hasta el último nodo es lo que se evita al mantener una referencia a `tail`."
     },
     {
       "type": "diagram",
@@ -613,7 +613,7 @@
         { "tone": "amber", "label": "Sin tail:", "text": "agregar al final recorre toda la lista (n pasos)." },
         { "tone": "teal", "label": "Con head y tail:", "text": "ambos extremos cuestan 2 asignaciones, sin importar n." }
       ],
-      "notes": "Dos operaciones de la lista simple que no necesitan recorrer. Insertar al inicio (`insertFirst`): el nuevo nodo apunta a la cabeza actual y pasa a ser la cabeza: `newNode.next = head; head = newNode;` (si la lista estaba vacía, `tail` también apunta al nuevo nodo). Son dos asignaciones sin importar cuántos nodos haya: tiempo constante. Insertar al final con `tail` (`insertLast`): `tail.next = newNode; tail = newNode;`, también dos asignaciones. Sin `tail`, el `add` que se vio recorre los n nodos para llegar al último (con 1000 nodos son 999 saltos). Mantener `head` y `tail` es lo que el capítulo llama DoubleEndedLinkedList (lista de doble extremo). Código: `public void insertFirst(int element) { Node newNode = new Node(element); newNode.next = head; head = newNode; if (tail == null) { tail = newNode; } size++; }` y `public void insertLast(int element) { Node newNode = new Node(element); if (tail == null) { head = newNode; } else { tail.next = newNode; } tail = newNode; size++; }`. Eliminar el primero también es de tiempo constante: `public int deleteFirst() { if (head == null) throw new NoSuchElementException(); int element = head.value; head = head.next; if (head == null) { tail = null; } size--; return element; }`; en cambio, eliminar el último en una lista simple sí exige recorrer para encontrar el penúltimo, porque `tail` no tiene referencia hacia atrás. Conexión con las pilas: insertar y quitar en la cabeza son exactamente `push` y `pop` de la pila con lista enlazada, por eso `top` es la cabeza. Y con las colas: `insertLast` y `deleteFirst` son `enqueue` y `dequeue`."
+      "notes": "Dos operaciones de la lista simple que no necesitan recorrer. Insertar al inicio (`insertFirst`): el nuevo nodo apunta a la cabeza actual y pasa a ser la cabeza: `newNode.next = head; head = newNode;` (si la lista estaba vacía, `tail` también apunta al nuevo nodo). Son dos asignaciones sin importar cuántos nodos haya: tiempo constante. Insertar al final con `tail` (`insertLast`): `tail.next = newNode; tail = newNode;`, también dos asignaciones. Sin `tail`, el `add` que se vio recorre los n nodos para llegar al último (con 1000 nodos son 999 saltos). Mantener `head` y `tail` es lo que se conoce como DoubleEndedLinkedList (lista de doble extremo). Código: `public void insertFirst(int element) { Node newNode = new Node(element); newNode.next = head; head = newNode; if (tail == null) { tail = newNode; } size++; }` y `public void insertLast(int element) { Node newNode = new Node(element); if (tail == null) { head = newNode; } else { tail.next = newNode; } tail = newNode; size++; }`. Eliminar el primero también es de tiempo constante: `public int deleteFirst() { if (head == null) throw new NoSuchElementException(); int element = head.value; head = head.next; if (head == null) { tail = null; } size--; return element; }`; en cambio, eliminar el último en una lista simple sí exige recorrer para encontrar el penúltimo, porque `tail` no tiene referencia hacia atrás. Conexión con las pilas: insertar y quitar en la cabeza son exactamente `push` y `pop` de la pila con lista enlazada, por eso `top` es la cabeza. Y con las colas: `insertLast` y `deleteFirst` son `enqueue` y `dequeue`."
     },
     {
       "type": "diagram",
@@ -635,7 +635,7 @@
         { "tone": "teal", "text": "Cada nodo guarda una referencia al **anterior** (`prev`) y al **siguiente** (`next`)." },
         { "tone": "teal", "text": "Se recorre en **ambos sentidos**; el primero y el último apuntan a `null`." }
       ],
-      "notes": "La lista doblemente enlazada es similar a la simple, pero cada nodo tiene una referencia al nodo anterior y otra al siguiente. En la imagen del capítulo se muestran también las referencias head y tail. El primer nodo tiene `prev = null` y el último `next = null`."
+      "notes": "La lista doblemente enlazada es similar a la simple, pero cada nodo tiene una referencia al nodo anterior y otra al siguiente. En la imagen se muestran también las referencias head y tail. El primer nodo tiene `prev = null` y el último `next = null`."
     },
     {
       "type": "compare",
@@ -658,7 +658,7 @@
         }
       ],
       "callout": { "tone": "teal", "label": "Aplicabilidad:", "text": "editor de texto (adelante y atrás) e historial de navegación del navegador web." },
-      "notes": "La ventaja sobre la lista simple es poder recorrer en ambas direcciones; la desventaja es que cada nodo mantiene una referencia adicional, lo que consume más memoria y complica la implementación. Ejemplos del capítulo: en un editor de texto se recorre el texto hacia adelante y hacia atrás; en un navegador se recorre el historial hacia adelante y hacia atrás."
+      "notes": "La ventaja sobre la lista simple es poder recorrer en ambas direcciones; la desventaja es que cada nodo mantiene una referencia adicional, lo que consume más memoria y complica la implementación. Ejemplos: en un editor de texto se recorre el texto hacia adelante y hacia atrás; en un navegador se recorre el historial hacia adelante y hacia atrás."
     },
     {
       "type": "diagram",
@@ -770,7 +770,7 @@
           "caption": "`tail` es el último y `tail.next` el primero: **sin recorrer**"
         }
       ],
-      "notes": "Pregunta para la clase (de la presentación original): ¿qué problemas pueden surgir si guardamos la referencia al primer nodo? Respuesta: el último nodo no es directo. Para insertar al final, o para eliminar el primer nodo, hay que actualizar el `next` del último, y la única manera de llegar a él es recorrer toda la lista desde `head` (n - 1 saltos: en el dibujo, con 3 nodos, son los 2 resaltados en ámbar en la fila de arriba; con 5 nodos serían 4). Si en cambio se guarda `tail`, se llega a los dos extremos sin recorrer: el último es `tail` y el primero es `tail.next` (la flecha ámbar de la fila de abajo, la que cierra el círculo). Operaciones sin recorrer con `tail`: insertar al final (`newNode.next = tail.next; tail.next = newNode; tail = newNode;`, la de la siguiente diapositiva), insertar al inicio (`newNode.next = tail.next; tail.next = newNode;`, sin mover `tail`) y eliminar el primero (`tail.next = tail.next.next;`, cuando hay más de un nodo). Esta es la razón por la que el capítulo pasa de dibujar `head` a guardar solamente `tail`: «para mejorar las inserciones». Detalle: con una lista vacía, `tail` es null; con un solo nodo, `tail.next` es el propio `tail`."
+      "notes": "Pregunta para la clase: ¿qué problemas pueden surgir si guardamos la referencia al primer nodo? Respuesta: el último nodo no es directo. Para insertar al final, o para eliminar el primer nodo, hay que actualizar el `next` del último, y la única manera de llegar a él es recorrer toda la lista desde `head` (n - 1 saltos: en el dibujo, con 3 nodos, son los 2 resaltados en ámbar en la fila de arriba; con 5 nodos serían 4). Si en cambio se guarda `tail`, se llega a los dos extremos sin recorrer: el último es `tail` y el primero es `tail.next` (la flecha ámbar de la fila de abajo, la que cierra el círculo). Operaciones sin recorrer con `tail`: insertar al final (`newNode.next = tail.next; tail.next = newNode; tail = newNode;`, la de la siguiente diapositiva), insertar al inicio (`newNode.next = tail.next; tail.next = newNode;`, sin mover `tail`) y eliminar el primero (`tail.next = tail.next.next;`, cuando hay más de un nodo). Esta es la razón por la que se pasa de dibujar `head` a guardar solamente `tail`: «para mejorar las inserciones». Detalle: con una lista vacía, `tail` es null; con un solo nodo, `tail.next` es el propio `tail`."
     },
     {
       "type": "diagram",
@@ -794,7 +794,7 @@
           "caption": "newNode.next = tail.next;  tail.next = newNode;  tail = newNode;"
         }
       ],
-      "notes": "Para mejorar las inserciones, en vez de mantener la referencia a head se utiliza una referencia a tail únicamente: el primer nodo siempre es `tail.next`. Así, agregar al final no requiere recorrer la lista: el nuevo nodo apunta a `tail.next` (el primero), `tail.next` apunta al nuevo nodo y `tail` se mueve al nuevo nodo. Esta es la optimización que muestra el segundo dibujo del capítulo."
+      "notes": "Para mejorar las inserciones, en vez de mantener la referencia a head se utiliza una referencia a tail únicamente: el primer nodo siempre es `tail.next`. Así, agregar al final no requiere recorrer la lista: el nuevo nodo apunta a `tail.next` (el primero), `tail.next` apunta al nuevo nodo y `tail` se mueve al nuevo nodo. Esta es la optimización que muestra el segundo dibujo."
     },
     {
       "type": "code",
@@ -839,7 +839,7 @@
         ["Lista circular", "Lento", "Rápido", "Como la simple; sin final ni principio"]
       ],
       "callout": { "tone": "teal", "text": "Acceso por posición: **ArrayList**. Inserciones y eliminaciones frecuentes: **listas enlazadas**." },
-      "notes": "El capítulo compara solamente ArrayList y LinkedList: ArrayList tiene acceso rápido, insertar y eliminar es costoso, siempre ocupa todo el espacio y no tiene overhead; LinkedList tiene acceso lento, insertar y eliminar es rápido, solo usa lo que ocupa y tiene overhead. Las filas de lista doble y circular se derivan de lo visto: cada nodo paga una o dos referencias extra. Matiz importante: «insertar rápido» significa que no hay que mover elementos; encontrar la posición sigue requiriendo recorrer (a menos que se conserve una referencia a tail). Pregunta para la clase: ¿qué estructura elegirían para guardar las calificaciones de un grupo que casi nunca cambia? ¿y para una fila que cambia todo el tiempo?"
+      "notes": "La comparación base es entre ArrayList y LinkedList: ArrayList tiene acceso rápido, insertar y eliminar es costoso, siempre ocupa todo el espacio y no tiene overhead; LinkedList tiene acceso lento, insertar y eliminar es rápido, solo usa lo que ocupa y tiene overhead. Las filas de lista doble y circular se derivan de lo visto: cada nodo paga una o dos referencias extra. Matiz importante: «insertar rápido» significa que no hay que mover elementos; encontrar la posición sigue requiriendo recorrer (a menos que se conserve una referencia a tail). Pregunta para la clase: ¿qué estructura elegirían para guardar las calificaciones de un grupo que casi nunca cambia? ¿y para una fila que cambia todo el tiempo?"
     },
     {
       "type": "diagram",
@@ -857,7 +857,7 @@
         { "tone": "teal", "text": "Solo se accede por el **tope**: el último elemento apilado es el primero en desapilarse." },
         { "tone": "slate", "label": "Dónde se usa:", "text": "procesadores, compiladores (interpretan expresiones) y muchos algoritmos." }
       ],
-      "notes": "Una pila es una estructura de datos lineal que sigue el principio LIFO (Last In, First Out): el último elemento en entrar es el primero en salir. La secuencia del diagrama es la del capítulo: pila vacía, push 3, push 5, pop (sale el 5) y pop (sale el 3). Analogía: una pila de platos; solo se puede tomar o agregar un plato por arriba. La pila permite acceso a un solo dato: el último insertado; si se quita, se puede acceder al penúltimo, y así sucesivamente. No hay otra forma de recorrerla que no sea con `push` y `pop`. Dónde se usa: los procesadores usan pilas de forma intensiva (por ejemplo, para llevar el control de las llamadas a funciones), los compiladores las usan para interpretar las expresiones de un lenguaje de programación y muchos algoritmos las necesitan. Nota para quien presenta: no adelante todavía las respuestas del ejercicio D (deshacer cambios, fila de un banco, historial del navegador); se piden al final."
+      "notes": "Una pila es una estructura de datos lineal que sigue el principio LIFO (Last In, First Out): el último elemento en entrar es el primero en salir. La secuencia del diagrama es: pila vacía, push 3, push 5, pop (sale el 5) y pop (sale el 3). Analogía: una pila de platos; solo se puede tomar o agregar un plato por arriba. La pila permite acceso a un solo dato: el último insertado; si se quita, se puede acceder al penúltimo, y así sucesivamente. No hay otra forma de recorrerla que no sea con `push` y `pop`. Dónde se usa: los procesadores usan pilas de forma intensiva (por ejemplo, para llevar el control de las llamadas a funciones), los compiladores las usan para interpretar las expresiones de un lenguaje de programación y muchos algoritmos las necesitan. Nota para quien presenta: no adelante todavía las respuestas del ejercicio D (deshacer cambios, fila de un banco, historial del navegador); se piden al final."
     },
     {
       "type": "cards",
@@ -871,7 +871,7 @@
         { "badge": "3", "title": "Tope (top)", "text": "Ve el elemento de la cima sin desapilarlo.", "footer": "int top()", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "text": "Como las listas, una pila se implementa con **arreglos** o con **listas enlazadas**." },
-      "notes": "Interfaz del capítulo: `public interface IStack { void push(int element); int pop(); int top(); }`. Al igual que en el caso de las listas, se pueden implementar pilas con arreglos o con listas enlazadas; las siguientes diapositivas muestran ambas. Terminología: la operación que ve la cima sin quitarla se llama `top()` en el capítulo, pero en la API de Java y en muchos textos se llama `peek()`; son lo mismo."
+      "notes": "Interfaz de la pila: `public interface IStack { void push(int element); int pop(); int top(); }`. Al igual que en el caso de las listas, se pueden implementar pilas con arreglos o con listas enlazadas; las siguientes diapositivas muestran ambas. Terminología: la operación que ve la cima sin quitarla se llama `top()` aquí, pero en la API de Java y en muchos textos se llama `peek()`; son lo mismo."
     },
     {
       "type": "diagram",
@@ -929,7 +929,7 @@
         }
       ],
       "callouts": [{ "tone": "teal", "text": "`++top` incrementa **antes** de escribir; `top--` decrementa **después** de leer." }],
-      "notes": "Código de `ArrayStack` recortado: el constructor recibe el tamaño, crea el arreglo y deja `top = -1`. `top()` es como `pop()` pero sin decrementar: devuelve `stack[top]`. Observación: en los errores (overflow/underflow) el capítulo imprime un mensaje y devuelve -1, lo cual mezcla un valor de error con un dato válido; se discute en la diapositiva de la pila con lista enlazada."
+      "notes": "Código de `ArrayStack` recortado: el constructor recibe el tamaño, crea el arreglo y deja `top = -1`. `top()` es como `pop()` pero sin decrementar: devuelve `stack[top]`. Observación: en los errores (overflow/underflow) esta implementación imprime un mensaje y devuelve -1, lo cual mezcla un valor de error con un dato válido; se discute en la diapositiva de la pila con lista enlazada."
     },
     {
       "type": "diagram",
@@ -980,7 +980,7 @@
           ]
         }
       ],
-      "notes": "Otro enfoque para que la clase nodo solo pueda usarse dentro de la pila: declararla `private class Node` dentro de `LinkedListStack`. El método `top()` devuelve `top.data` (o imprime «Stack Underflow» y devuelve -1 si la pila está vacía). Discusión del capítulo: preguntar a los estudiantes qué es mejor, este enfoque o lanzar excepciones como se vio en ejemplos anteriores. Respuesta sugerida: la excepción es más segura, porque -1 también podría ser un dato legítimo de la pila y el llamador no podría distinguirlo; devolver -1 es más simple pero ambiguo."
+      "notes": "Otro enfoque para que la clase nodo solo pueda usarse dentro de la pila: declararla `private class Node` dentro de `LinkedListStack`. El método `top()` devuelve `top.data` (o imprime «Stack Underflow» y devuelve -1 si la pila está vacía). Discusión: preguntar a los estudiantes qué es mejor, este enfoque o lanzar excepciones como se vio en ejemplos anteriores. Respuesta sugerida: la excepción es más segura, porque -1 también podría ser un dato legítimo de la pila y el llamador no podría distinguirlo; devolver -1 es más simple pero ambiguo."
     },
     {
       "type": "diagram",
@@ -996,7 +996,7 @@
         { "label": "Agregar 6", "nodes": [2, 3, 4, 5, { "v": 6, "tone": "amber" }], "ends": { "left": "Frente", "right": "Final" } },
         { "label": "Quitar dos", "nodes": [4, 5, 6], "ends": { "left": "Frente", "right": "Final" } }
       ],
-      "notes": "Una cola sigue el principio FIFO (First In, First Out): el primer elemento en entrar es el primero en salir; respeta el orden de llegada. Los elementos entran por el final y salen por el frente. La secuencia es la del capítulo: cola vacía, se agregan 1, 2, 3, 4 y 5, se quita un elemento (sale el 1), se agrega el 6 y se quitan dos elementos (salen el 2 y el 3). Analogía: la fila de un banco."
+      "notes": "Una cola sigue el principio FIFO (First In, First Out): el primer elemento en entrar es el primero en salir; respeta el orden de llegada. Los elementos entran por el final y salen por el frente. La secuencia es: cola vacía, se agregan 1, 2, 3, 4 y 5, se quita un elemento (sale el 1), se agrega el 6 y se quitan dos elementos (salen el 2 y el 3). Analogía: la fila de un banco."
     },
     {
       "type": "cards",
@@ -1010,7 +1010,7 @@
         { "badge": "3", "title": "Frente (front)", "text": "Ve el elemento del frente sin quitarlo.", "footer": "int front()", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "label": "Dónde se usa:", "text": "colas de impresión y entrada del teclado del sistema operativo. Se implementa con **arreglos** o con **listas enlazadas**." },
-      "notes": "Interfaz del capítulo: `public interface IQueue { void enqueue(int element); int dequeue(); int front(); }`. Compare con la pila: aquí se inserta por un extremo (final) y se extrae por el otro (frente); en la pila ambas operaciones ocurren por el tope. Dónde se usa: la cola sirve para abstraer muchas situaciones de la vida real; internamente, el sistema operativo usa colas de forma intensiva (colas de impresión, entrada del teclado, etc.). Terminología: la operación que ve el elemento del frente sin quitarlo se llama `front()` en el capítulo, pero en la API de Java y en muchos textos se llama `peek()`; son lo mismo. Como la pila, la cola se implementa con arreglos o con listas enlazadas, y respeta el orden de llegada."
+      "notes": "Interfaz de la cola: `public interface IQueue { void enqueue(int element); int dequeue(); int front(); }`. Compare con la pila: aquí se inserta por un extremo (final) y se extrae por el otro (frente); en la pila ambas operaciones ocurren por el tope. Dónde se usa: la cola sirve para abstraer muchas situaciones de la vida real; internamente, el sistema operativo usa colas de forma intensiva (colas de impresión, entrada del teclado, etc.). Terminología: la operación que ve el elemento del frente sin quitarlo se llama `front()` aquí, pero en la API de Java y en muchos textos se llama `peek()`; son lo mismo. Como la pila, la cola se implementa con arreglos o con listas enlazadas, y respeta el orden de llegada."
     },
     {
       "type": "diagram",
@@ -1041,7 +1041,7 @@
           "note": "front = 1\nrear = 2"
         }
       ],
-      "notes": "En la implementación con arreglo, `front` apunta al primer elemento y `rear` al último. La cola vacía se representa con `front = -1` y `rear = -1`. `enqueue` incrementa `rear` y escribe (si `front` era -1, lo pone en 0). `dequeue` lee `queue[front]` y avanza `front`; si `front == rear` era el único elemento y ambos vuelven a -1. Código de `ArrayQueue` del capítulo: `enqueue`: `if (rear == size - 1) { Queue Overflow } else { if (front == -1) front = 0; queue[++rear] = element; }`. `dequeue`: `if (front == -1) { Queue Underflow; return -1; } else { int element = queue[front]; if (front == rear) { front = -1; rear = -1; } else { front++; } return element; }`."
+      "notes": "En la implementación con arreglo, `front` apunta al primer elemento y `rear` al último. La cola vacía se representa con `front = -1` y `rear = -1`. `enqueue` incrementa `rear` y escribe (si `front` era -1, lo pone en 0). `dequeue` lee `queue[front]` y avanza `front`; si `front == rear` era el único elemento y ambos vuelven a -1. Código de `ArrayQueue`: `enqueue`: `if (rear == size - 1) { Queue Overflow } else { if (front == -1) front = 0; queue[++rear] = element; }`. `dequeue`: `if (front == -1) { Queue Underflow; return -1; } else { int element = queue[front]; if (front == rear) { front = -1; rear = -1; } else { front++; } return element; }`."
     },
     {
       "type": "diagram",
@@ -1121,7 +1121,7 @@
           ]
         }
       ],
-      "notes": "El operador módulo hace que los índices «den la vuelta». La cola está llena cuando `(rear + 1) % size == front` y vacía cuando `front == -1`. En `dequeue` se simplificó el `else` del capítulo (el `return -1` ya termina el método) y la asignación doble `front = rear = -1`; el comportamiento es el mismo. `front()` devuelve `queue[front]` o imprime «Queue Underflow» y devuelve -1. Alternativa de la presentación original: llevar un contador `nItems` (se suma en `enqueue` y se resta en `dequeue`); la cola está llena si `nItems == size` y vacía si `nItems == 0`, y entonces `front` puede empezar en 0 y `rear` en -1 sin usar -1 como marca de vacía. Ambos enfoques usan toda la capacidad del arreglo; el capítulo usa `front == -1` y no necesita el contador."
+      "notes": "El operador módulo hace que los índices «den la vuelta». La cola está llena cuando `(rear + 1) % size == front` y vacía cuando `front == -1`. En `dequeue`, el `return -1` ya termina el método, por lo que no se necesita un `else` tras la comprobación de cola vacía; `front = rear = -1` asigna ambos valores a la vez. `front()` devuelve `queue[front]` o imprime «Queue Underflow» y devuelve -1. Alternativa: llevar un contador `nItems` (se suma en `enqueue` y se resta en `dequeue`); la cola está llena si `nItems == size` y vacía si `nItems == 0`, y entonces `front` puede empezar en 0 y `rear` en -1 sin usar -1 como marca de vacía. Ambos enfoques usan toda la capacidad del arreglo; el de la diapositiva usa `front == -1` y no necesita el contador."
     },
     {
       "type": "diagram",
@@ -1220,7 +1220,7 @@
         { "tone": "teal", "label": "Ascendente:", "text": "el menor valor numérico tiene mayor prioridad." },
         { "tone": "slate", "label": "Descendente:", "text": "el mayor valor numérico tiene mayor prioridad." }
       ],
-      "notes": "Una cola de prioridad almacena elementos pero, en lugar de seguir el orden de llegada, los organiza según su prioridad: los de mayor prioridad se desencolan antes. En el ejemplo se usa orden ascendente (el valor más bajo es el más prioritario): llegan A (3), B (1) y C (2) y salen B, C y A. Los nombres A, B y C y sus prioridades son un ejemplo ilustrativo. Tipos del capítulo: orden ascendente (menor valor numérico = mayor prioridad) y orden descendente (mayor valor numérico = mayor prioridad). Analogía: un montón de cartas ordenadas por urgencia; una carta nueva se inserta más arriba cuanto más urgente sea, no al final, y siempre se procesa primero la carta de arriba."
+      "notes": "Una cola de prioridad almacena elementos pero, en lugar de seguir el orden de llegada, los organiza según su prioridad: los de mayor prioridad se desencolan antes. En el ejemplo se usa orden ascendente (el valor más bajo es el más prioritario): llegan A (3), B (1) y C (2) y salen B, C y A. Los nombres A, B y C y sus prioridades son un ejemplo ilustrativo. Tipos de cola de prioridad: orden ascendente (menor valor numérico = mayor prioridad) y orden descendente (mayor valor numérico = mayor prioridad). Analogía: un montón de cartas ordenadas por urgencia; una carta nueva se inserta más arriba cuanto más urgente sea, no al final, y siempre se procesa primero la carta de arriba."
     },
     {
       "type": "code",
@@ -1353,7 +1353,7 @@
           ]
         }
       ],
-      "notes": "En el ejemplo del capítulo, `T` es un parámetro de tipo: el compilador sustituye `T` por `String`, `Integer` o `Double` según se declare la variable, y verifica los tipos en tiempo de compilación (sin casting). Se muestra solo la parte esencial de `add`: `Node<T> newNode = new Node<>(data); if (head == null) head = newNode; else { Node<T> current = head; while (current.next != null) current = current.next; current.next = newNode; }`. Nota: en Java ya existe `java.util.LinkedList`; la clase del ejemplo es una implementación propia con el mismo nombre."
+      "notes": "En el ejemplo, `T` es un parámetro de tipo: el compilador sustituye `T` por `String`, `Integer` o `Double` según se declare la variable, y verifica los tipos en tiempo de compilación (sin casting). Se muestra solo la parte esencial de `add`: `Node<T> newNode = new Node<>(data); if (head == null) head = newNode; else { Node<T> current = head; while (current.next != null) current = current.next; current.next = newNode; }`. Nota: en Java ya existe `java.util.LinkedList`; la clase del ejemplo es una implementación propia con el mismo nombre."
     },
     {
       "type": "code",
@@ -1395,7 +1395,7 @@
         { "title": "C · Cola circular", "text": "`size = 5`, `front = 2`, `rear = 4`. Tras `enqueue(9)`, ¿cuánto vale `rear`?", "tone": "teal" },
         { "title": "D · ¿Qué estructura?", "text": "Deshacer cambios, fila de un banco e historial del navegador.", "tone": "amber" }
       ],
-      "notes": "Respuestas. A: push(4) → [4]; push(1) → [4, 1]; pop() devuelve 1 → [4]; push(7) → [4, 7]. Contiene 4 y 7, y el tope es 7. B: enqueue(4) → [4]; enqueue(1) → [4, 1]; dequeue() devuelve 4 → [1]; enqueue(7) → [1, 7]. Al frente está el 1. C: (rear + 1) % size = (4 + 1) % 5 = 0, así que rear = 0 (el final da la vuelta); la cola no está llena porque 0 != front (2). D: deshacer cambios → pila (LIFO: se deshace primero lo último que se hizo); fila de un banco → cola (FIFO); historial de navegación → lista doblemente enlazada (adelante y atrás), como se mencionó en la lección. Estos ejercicios no están en el capítulo; son una propuesta para practicar."
+      "notes": "Respuestas. A: push(4) → [4]; push(1) → [4, 1]; pop() devuelve 1 → [4]; push(7) → [4, 7]. Contiene 4 y 7, y el tope es 7. B: enqueue(4) → [4]; enqueue(1) → [4, 1]; dequeue() devuelve 4 → [1]; enqueue(7) → [1, 7]. Al frente está el 1. C: (rear + 1) % size = (4 + 1) % 5 = 0, así que rear = 0 (el final da la vuelta); la cola no está llena porque 0 != front (2). D: deshacer cambios → pila (LIFO: se deshace primero lo último que se hizo); fila de un banco → cola (FIFO); historial de navegación → lista doblemente enlazada (adelante y atrás), como se mencionó en la lección. Estos ejercicios son una propuesta para practicar."
     },
     {
       "type": "summary",
