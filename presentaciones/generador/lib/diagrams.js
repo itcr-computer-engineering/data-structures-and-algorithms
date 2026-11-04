@@ -176,7 +176,7 @@ function joinResult(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
   text(ctx, s.queryLabel, { x: mx, y: 1.8, w: 6, h: 0.4, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
-  const ch = codeBlock(ctx, { x: mx, y: 2.3, w: 6.5, code: s.query, fontSize: 16 });
+  const ch = codeBlock(ctx, { x: mx, y: 2.3, w: 6.5, code: s.query, lang: s.queryLang, fontSize: s.queryFontSize || 16 });
   ctx.slide.addShape(ctx.pptx.ShapeType.rightArrow, {
     x: 7.45, y: 2.3 + ch / 2 - 0.25, w: 0.5, h: 0.5, fill: { color: colors.teal }, line: { type: 'none' },
   });
@@ -439,6 +439,176 @@ function schema(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: by + 0.65, w: w - 2 * mx, h: 1.2, ...s.callout });
 }
 
+// ------------------------------------------------------------------ árbol genérico (Huffman, trie) con tabla opcional
+function tree(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const hasTable = !!s.table;
+  const tw = hasTable ? s.treeWidth || 6.4 : w - 2 * mx;
+  const y0 = s.top || 1.95, th = s.treeHeight || 3.9;
+  const pos = {};
+  s.nodes.forEach((n) => {
+    pos[n.id] = { x: mx + 0.45 + n.x * (tw - 0.9), y: y0 + 0.45 + n.y * (th - 0.9) };
+  });
+  // aristas primero (los nodos las tapan en los extremos)
+  s.edges.forEach((e) => {
+    const a = pos[e.from], b = pos[e.to];
+    C.arrow(ctx, { x1: a.x, y1: a.y, x2: b.x, y2: b.y, color: colors.slate, width: 2.5, head: !!s.arrows });
+  });
+  s.nodes.forEach((n) => {
+    const p = pos[n.id];
+    const square = n.shape === 'square';
+    const tone = ctx.T[n.tone || (square ? 'navy' : 'teal')];
+    const d = square ? 0.82 : 0.72;
+    const runs = [{ text: String(n.label), options: { fontSize: n.sub ? 18 : 20, bold: true, breakLine: !!n.sub } }];
+    if (n.sub) runs.push({ text: String(n.sub), options: { fontSize: 14, bold: false } });
+    ctx.slide.addText(runs, {
+      shape: square ? ctx.pptx.ShapeType.roundRect : ctx.pptx.ShapeType.ellipse, ...(square ? { rectRadius: 0.1 } : {}),
+      x: p.x - d / 2, y: p.y - d / 2, w: d, h: d, fill: { color: tone.accent },
+      line: square ? { color: colors.teal, width: 1.5 } : { type: 'none' }, color: tone.on,
+      fontFace: fonts.heading, align: 'center', valign: 'middle', margin: 0,
+    });
+  });
+  s.edges.forEach((e) => {
+    if (e.label === undefined) return;
+    const a = pos[e.from], b = pos[e.to];
+    const lx = a.x + (b.x - a.x) * 0.5, ly = a.y + (b.y - a.y) * 0.5, d = 0.34;
+    ctx.slide.addText(String(e.label), {
+      shape: ctx.pptx.ShapeType.ellipse, x: lx - d / 2, y: ly - d / 2, w: d, h: d, fill: { color: colors.bg },
+      line: { color: colors.border, width: 1 }, color: colors.amber, bold: true, fontSize: 14, fontFace: fonts.code,
+      align: 'center', valign: 'middle', margin: 0,
+    });
+  });
+  if (hasTable) {
+    const tx = mx + tw + 0.4;
+    const emph = s.table.emphasisCol;
+    table(ctx, {
+      x: tx, y: y0 + 0.1, colW: s.table.colW, header: s.table.columns, rows: s.table.rows, rowH: s.table.rowH || 0.5, fontSize: s.table.fontSize || 17,
+      cellStyle: (r, c) => (c === emph ? { bold: true, color: colors.tealDark, fill: colors.tealLight } : {}),
+    });
+  }
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.05, w: w - 2 * mx, h: s.calloutH || 0.75, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ pasos de unión de nodos (Huffman)
+function mergeSteps(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const rowH = s.rowHeight || 1.05, y0 = 1.95;
+  s.rows.forEach((r, i) => {
+    const y = y0 + i * rowH;
+    if (i > 0) ctx.slide.addShape(ctx.pptx.ShapeType.line, { x: mx, y, w: w - 2 * mx, h: 0, line: { color: colors.border, width: 0.75 } });
+    text(ctx, r.label, { x: mx, y, w: 1.5, h: rowH, fontSize: 18, bold: true, color: colors.slate, valign: 'middle' });
+    let x = mx + 1.7;
+    r.nodes.forEach((n) => {
+      const leaf = n.leaf !== undefined;
+      const d = 0.78;
+      const tone = ctx.T[leaf ? 'navy' : 'teal'];
+      const runs = leaf
+        ? [{ text: String(n.leaf), options: { fontSize: 18, bold: true, breakLine: true } }, { text: String(n.freq), options: { fontSize: 14 } }]
+        : [{ text: String(n.sum), options: { fontSize: 22, bold: true } }];
+      ctx.slide.addText(runs, {
+        shape: leaf ? ctx.pptx.ShapeType.roundRect : ctx.pptx.ShapeType.ellipse, ...(leaf ? { rectRadius: 0.1 } : {}),
+        x, y: y + (rowH - d) / 2, w: d, h: d, fill: { color: tone.accent },
+        line: n.hl ? { color: colors.amberMid, width: 3 } : leaf ? { color: colors.teal, width: 1.5 } : { type: 'none' },
+        color: tone.on, fontFace: fonts.heading, align: 'center', valign: 'middle', margin: 0,
+      });
+      x += d + 0.25;
+    });
+    text(ctx, r.note, { x: 7.1, y, w: w - mx - 7.1, h: rowH, fontSize: 17, color: colors.slate, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: y0 + s.rows.length * rowH + 0.2, w: w - 2 * mx, h: 0.7, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ flujo de bits o códigos con su valor (+ barras de tamaño)
+function bitstream(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const unit0 = s.unit || 0.34, gap = 0.06, y = s.top || 2.2, segH = 0.65;
+  const raw = s.segments.map((g) => (s.equalWidth ? s.equalWidth : Math.max(0.45, g.bits.length * unit0)));
+  const avail = w - 2 * mx;
+  const rawTotal = raw.reduce((a, b) => a + b, 0) + gap * (raw.length - 1);
+  const k = rawTotal > avail ? (avail - gap * (raw.length - 1)) / (rawTotal - gap * (raw.length - 1)) : 1;
+  const widths = raw.map((v) => v * k);
+  const total = widths.reduce((a, b) => a + b, 0) + gap * (widths.length - 1);
+  let x = mx + (w - 2 * mx - total) / 2;
+  if (s.streamLabel) text(ctx, s.streamLabel, { x: mx, y: y - 0.55, w: w - 2 * mx, h: 0.4, fontSize: 17, bold: true, color: colors.slate, valign: 'middle' });
+  s.segments.forEach((g, i) => {
+    const tone = i % 2 ? 'navy' : 'teal';
+    ctx.slide.addText(g.bits, {
+      shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.08, x, y, w: widths[i], h: segH,
+      fill: { color: ctx.T[tone].soft }, line: { color: ctx.T[tone].accent, width: 1.5 }, color: colors.ink, bold: true,
+      fontSize: s.bitsSize || 20, fontFace: fonts.code, align: 'center', valign: 'middle', margin: 0,
+    });
+    text(ctx, g.sym, { x, y: y + segH + 0.05, w: widths[i], h: 0.5, fontSize: s.symSize || 22, bold: true, color: colors.teal, fontFace: fonts.code, align: 'center', valign: 'middle' });
+    x += widths[i] + gap;
+  });
+  let by = y + segH + 0.85;
+  if (s.chips) {
+    text(ctx, s.chips.label, { x: mx, y: by, w: w - 2 * mx, h: 0.4, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+    by += 0.5;
+    let cx = mx;
+    s.chips.items.forEach((label) => {
+      const cw = chipW(label, 15) + 0.1;
+      if (cx > mx && cx + cw > w - mx) {
+        cx = mx;
+        by += 0.55;
+      }
+      chip(ctx, { x: cx, y: by, w: cw, h: 0.42, label, tone: 'navy', size: 15 });
+      cx += cw + 0.12;
+    });
+    by += 0.7;
+  }
+  if (s.bars) {
+    const max = Math.max(...s.bars.map((b) => b.value));
+    const lw = 3.2, bx = mx + lw + 0.1, barMax = w - mx - bx - 1.5;
+    s.bars.forEach((b, i) => {
+      const yy = by + i * 0.75;
+      text(ctx, b.label, { x: mx, y: yy, w: lw, h: 0.55, fontSize: 18, color: colors.ink, valign: 'middle', align: 'right' });
+      const bw = (b.value / max) * barMax;
+      box(ctx, { x: bx, y: yy + 0.05, w: bw, h: 0.45, fill: ctx.T[b.tone || 'teal'].accent, radius: 0.08 });
+      text(ctx, b.text, { x: bx + bw + 0.15, y: yy, w: 1.5, h: 0.55, fontSize: 18, bold: true, color: ctx.T[b.tone || 'teal'].text, valign: 'middle' });
+    });
+    by += s.bars.length * 0.75;
+  }
+  if (s.callout) callout(ctx, { x: mx, y: Math.max(by + 0.25, 5.75), w: w - 2 * mx, h: 0.85, size: 17, ...s.callout });
+}
+
+// ------------------------------------------------------------------ cadena con diccionario / coincidencia / siguiente (LZ77)
+function strips(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const cw = 0.56, ch = 0.56, gap = 0.05;
+  const legend = [['Procesado (diccionario)', 'green'], ['Coincidencia más larga', 'teal'], ['Siguiente carácter', 'amber']];
+  let lx = mx;
+  legend.forEach(([label, tone]) => {
+    const lw = chipW(label, 14) + 0.2;
+    chip(ctx, { x: lx, y: 1.85, w: lw, h: 0.38, label, tone, size: 14 });
+    lx += lw + 0.2;
+  });
+  const inRange = (k, r) => r && k >= r[0] && k <= r[1];
+  const x0 = mx + 1.1;
+  s.rows.forEach((r, i) => {
+    const y = 2.5 + i * 0.72;
+    text(ctx, `Paso ${i + 1}`, { x: mx, y, w: 1.0, h: ch, fontSize: 16, color: colors.slate, valign: 'middle', fontFace: fonts.code });
+    s.chars.forEach((c, k) => {
+      let tone = null;
+      if (k === r.next) tone = 'amber';
+      else if (inRange(k, r.match)) tone = 'teal';
+      else if (inRange(k, r.dict)) tone = 'green';
+      const T = tone && ctx.T[tone];
+      ctx.slide.addText(c, {
+        shape: ctx.pptx.ShapeType.rect, x: x0 + k * (cw + gap), y, w: cw, h: ch,
+        fill: { color: T ? (tone === 'green' ? T.soft : T.accent) : colors.panel },
+        line: { color: T ? T.accent : colors.border, width: 1 }, color: T ? (tone === 'green' ? T.text : T.on) : colors.slate,
+        bold: true, fontSize: 20, fontFace: fonts.code, align: 'center', valign: 'middle', margin: 0,
+      });
+    });
+    text(ctx, r.out, { x: x0 + s.chars.length * (cw + gap) + 0.4, y, w: 3.4, h: ch, fontSize: 24, bold: true, color: colors.heading, fontFace: fonts.code, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: 2.5 + s.rows.length * 0.72 + 0.15, w: w - 2 * mx, h: 0.65, size: 16, ...s.callout });
+}
+
 module.exports = {
   'dbms-architecture': dbmsArchitecture,
   'annotated-table': annotatedTable,
@@ -453,4 +623,8 @@ module.exports = {
   entities,
   er,
   schema,
+  tree,
+  'merge-steps': mergeSteps,
+  bitstream,
+  strips,
 };

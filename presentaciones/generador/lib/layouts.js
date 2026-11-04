@@ -36,13 +36,21 @@ const layouts = {
       });
       text(ctx, runs, { x: wx + 0.35, y: wy + 0.85, w: ww - 0.6, h: 1.9, fontSize: 17, fontFace: fonts.code, lineSpacing: 30, wrap: false });
     }
+    // Título: 60 pt si cabe en una línea; si no, 46 pt en dos líneas. El bloque tag + título + subtítulo se centra verticalmente.
+    const tw = 6.6;
+    const oneLine = s.title.length * 60 * 0.0071 <= tw;
+    const tsize = oneLine ? 60 : 46;
+    const tlines = oneLine ? 1 : Math.ceil((s.title.length * tsize * 0.0071) / tw);
+    const th = (tlines * tsize * 1.2) / 72;
+    const block = 0.4 + 0.1 + th + 0.15 + 0.9;
+    const top = Math.max(1.4, (h - block) / 2 - 0.2);
     text(ctx, s.tag, {
-      x: 0.9, y: 2.2, w: 6.5, h: 0.4, fontSize: 18, color: colors.teal, fontFace: fonts.code, valign: 'middle',
+      x: 0.9, y: top, w: 6.5, h: 0.4, fontSize: 18, color: colors.teal, fontFace: fonts.code, valign: 'middle',
     });
     text(ctx, s.title, {
-      x: 0.9, y: 2.7, w: 6.6, h: 1.3, fontSize: 60, bold: true, color: colors.white, fontFace: fonts.heading, valign: 'middle',
+      x: 0.9, y: top + 0.5, w: tw, h: th, fontSize: tsize, bold: true, color: colors.white, fontFace: fonts.heading, valign: 'middle',
     });
-    text(ctx, s.subtitle, { x: 0.9, y: 4.1, w: 6.4, h: 1.0, fontSize: 24, color: colors.titleSub });
+    text(ctx, s.subtitle, { x: 0.9, y: top + 0.65 + th, w: 6.4, h: 0.9, fontSize: 24, color: colors.titleSub });
     text(ctx, s.meta, { x: 0.9, y: h - 1.0, w: 8, h: 0.4, fontSize: 14, color: colors.muted });
   },
 
@@ -167,6 +175,10 @@ const layouts = {
         let cx = x + 0.35;
         p.chips.forEach((label) => {
           const cwid = label.length * 0.105 + 0.5;
+          if (cx > x + 0.35 && cx + cwid > x + pw - 0.35) {
+            cx = x + 0.35;
+            cy += 0.6;
+          }
           chip(ctx, { x: cx, y: cy, w: cwid, h: 0.45, label, tone: p.tone || 'navy', size: 16 });
           cx += cwid + 0.15;
         });
@@ -201,16 +213,25 @@ const layouts = {
     const tw = w - 2 * mx;
     const sum = (s.colWeights || s.columns.map(() => 1)).reduce((a, b) => a + b, 0);
     const colW = (s.colWeights || s.columns.map(() => 1)).map((x) => (x / sum) * tw);
-    const rowH = [0.55, ...s.rows.map((r) =>
-      Math.max(0.6, Math.max(...r.map((v, c) => estLines(v, fs, colW[c] - 0.3))) * lineH(fs) + 0.3)
+    const minRow = s.rowHeight || 0.6;
+    const pad = s.rowPad != null ? s.rowPad : 0.3;
+    const rowH = [s.headerHeight || 0.55, ...s.rows.map((r) =>
+      Math.max(minRow, Math.max(...r.map((v, c) => estLines(v, fs, colW[c] - 0.3))) * lineH(fs) + pad)
     )];
+    const hl = new Set(s.highlightRows || []);
     const t = table(ctx, {
       x: mx, y: 1.85, colW, header: s.columns, rows: s.rows, rowH, fontSize: fs,
-      cellStyle: (r, c) => (c === 0 && s.firstColBold !== false ? { bold: true, color: colors.heading, fill: colors.tealLight } : {}),
+      cellStyle: (r, c) => {
+        const base = c === 0 && s.firstColBold !== false ? { bold: true, color: colors.heading, fill: colors.tealLight } : {};
+        return hl.has(r) && c > 0 ? { ...base, fill: colors.amberLight } : base;
+      },
     });
-    if (s.callout) {
-      const cy = Math.min(Math.max(1.85 + t.h + 0.3, 5.5), 5.9);
-      callout(ctx, { x: mx, y: cy, w: tw, h: 0.85, ...s.callout });
+    const cy = s.calloutY || Math.min(Math.max(1.85 + t.h + 0.3, 5.5), 5.9);
+    if (s.callout) callout(ctx, { x: mx, y: cy, w: tw, h: s.calloutH || 0.85, ...s.callout });
+    if (s.callouts) {
+      const k = s.callouts.length;
+      const cwid = (tw - (k - 1) * 0.3) / k;
+      s.callouts.forEach((c, i) => callout(ctx, { x: mx + i * (cwid + 0.3), y: s.calloutY || Math.min(Math.max(1.85 + t.h + 0.3, 5.3), 5.9), w: cwid, h: s.calloutH || 1.0, size: 16, ...c }));
     }
   },
 

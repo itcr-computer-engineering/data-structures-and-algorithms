@@ -50,7 +50,7 @@ La skill `.github\skills\generar-presentacion\` guía a Copilot para crear una p
 | `compare` | Dos paneles | `panels[{title,tone,text,items,chips,code,note}]`, `vs`, `callout` |
 | `table` | Tabla comparativa | `columns`, `rows`, `colWeights`, `callout` |
 | `code` | Bloques de código en columnas | `columns[{weight,blocks[{label,code,lang}],cards}]`, `callouts`; lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `python`, `pseudo`, `plain` (por defecto `meta.codeLang`) |
-| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema` |
+| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema`, `tree`, `merge-steps`, `bitstream`, `strips` |
 
 Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagramas nuevos se agregan en `lib\diagrams.js`; los tipos de diapositiva, en `lib\layouts.js`.
 

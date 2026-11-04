@@ -61,7 +61,7 @@ Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bas
 | Comparar atributos de varias cosas | `table` |
 | Código, comandos, consultas, bloques lado a lado | `code` |
 | Una imagen del capítulo | `image` (solo PNG; se enmarca sobre fondo blanco) |
-| Esquemas específicos | `diagram` con `kind` (ver `references\spec-reference.md`) |
+| Esquemas específicos | `diagram` con `kind` (ver `references\spec-reference.md`): árboles/tries → `tree`; transformar una lista paso a paso → `merge-steps`; secuencia de códigos/bits → `bitstream`; ventana deslizante o coincidencias sobre una cadena → `strips`; entrada → salida → `join-result` |
 
 Detalles de campos, valores por defecto y límites de cada tipo: `references\spec-reference.md`.
 
@@ -76,6 +76,8 @@ Extienda el generador en vez de forzar el contenido:
 
 ## Trampas conocidas
 
+- **PowerPoint «could not open the file»:** casi siempre una forma no válida generada por pptxgenjs, p. ej. `rectRadius` aplicado a una elipse. Para localizarla, construya una presentación de una sola diapositiva por cada diapositiva del spec y ábralas con COM (`Presentations.Open`); la que falle es la culpable. Antes de reintentar, cierre procesos `POWERPNT` huérfanos con `Stop-Process -Id <PID>`.
+- **Ediciones por texto en el spec:** el JSON creado por las herramientas puede tener finales de línea CRLF; si hace reemplazos de varias líneas con PowerShell, normalice con `-replace "`r`n","`n"` antes de comparar y escriba UTF-8 sin BOM. Para cambios puntuales use la herramienta de edición.
 - Las propiedades de párrafo (viñetas, espaciado) solo van en la primera corrida de cada párrafo; en otra corrida abren un párrafo nuevo (ya resuelto en `paragraphs()`).
 - Las tablas crecen en PowerPoint si el texto no cabe, y empujan lo que está debajo: acorte el texto o ensanche columnas, y deje un margen antes del `callout`. Las mayúsculas son ~25 % más anchas que las minúsculas.
 - Anchos aproximados: Calibri ≈ 0.45–0.5 em por carácter; Consolas 0.55 em (14 pt ≈ 0.107 in, 16 pt ≈ 0.122 in). Un bloque de código no hace *wrap*: ensanche la columna (`weight`) o reduzca `codeSize`/sangría.

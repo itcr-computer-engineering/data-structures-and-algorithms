@@ -106,8 +106,9 @@ function circleLabel(ctx, { x, y, d, label, fill, color, size = 22 }) {
   });
 }
 
-function arrow(ctx, { x1, y1, x2, y2, color, width = 2.5, both = false }) {
-  const line = { color: color || ctx.theme.colors.slate, width, endArrowType: 'triangle' };
+function arrow(ctx, { x1, y1, x2, y2, color, width = 2.5, both = false, head = true }) {
+  const line = { color: color || ctx.theme.colors.slate, width };
+  if (head) line.endArrowType = 'triangle';
   if (both) line.beginArrowType = 'triangle';
   ctx.slide.addShape(ctx.pptx.ShapeType.line, {
     x: Math.min(x1, x2),
@@ -266,7 +267,6 @@ const LANGS = {
     types: words('int str float bool list dict set tuple'),
   },
   pseudo: {
-    ignoreCase: true,
     comment: '//',
     kw: words(
       'SI ENTONCES SINO MIENTRAS PARA HASTA REPETIR HACER RETORNAR DEVOLVER FIN FUNCION PROCEDIMIENTO LEER ESCRIBIR Y O NO VERDADERO FALSO ' +
