@@ -1,0 +1,13 @@
+{
+  "name": "generador-de-presentaciones",
+  "version": "1.0.0",
+  "description": "Genera las presentaciones .pptx del curso a partir de especificaciones JSON usando pptxgenjs.",
+  "private": true,
+  "scripts": {
+    "build:ce-2103-08": "node build.js specs/ce-2103/08-bases-de-datos.json"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  }
+}

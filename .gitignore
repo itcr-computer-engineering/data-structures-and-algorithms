@@ -203,3 +203,7 @@ _print/ce-2103/04-algoritmos-de-busqueda.html
 _print/ce-2103/05-estructuras-de-almacenamiento-externo.html
 _print/ce-2103/06-algoritmos-de-compresion.html
 _print/ce-2103/08-bases-de-datos.html
+
+# Generador de presentaciones
+presentaciones/generador/node_modules/
+presentaciones/generador/render/
