@@ -13,8 +13,8 @@ function dbmsArchitecture(ctx, s) {
   const cw = w - 2 * mx - 2 * (side + gap);
 
   // Programas
-  box(ctx, { x: mx, y: top + 0.7, w: side, h: h - 1.4, fill: colors.panel });
-  text(ctx, s.left.title, { x: mx + 0.2, y: top + 1.0, w: side - 0.4, h: 0.9, fontSize: 22, bold: true, color: colors.navy, align: 'center', valign: 'middle', fontFace: fonts.heading });
+  box(ctx, { x: mx, y: top + 0.7, w: side, h: h - 1.4, fill: colors.panel, line: colors.border });
+  text(ctx, s.left.title, { x: mx + 0.2, y: top + 1.0, w: side - 0.4, h: 0.9, fontSize: 22, bold: true, color: colors.heading, align: 'center', valign: 'middle', fontFace: fonts.heading });
   text(ctx, s.left.text, { x: mx + 0.2, y: top + 1.95, w: side - 0.4, h: 0.8, fontSize: 16, color: colors.slate, align: 'center' });
 
   // DBMS
@@ -24,7 +24,7 @@ function dbmsArchitecture(ctx, s) {
     const y = top + 0.75 + i * (0.52 + 0.12);
     ctx.slide.addText(label, {
       shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.1, x: cx + 0.3, y, w: cw - 0.6, h: 0.52,
-      fill: { color: colors.white }, line: { color: colors.teal, width: 1 }, color: colors.ink, fontSize: 17,
+      fill: { color: colors.bg }, line: { color: colors.teal, width: 1 }, color: colors.ink, fontSize: 17,
       fontFace: fonts.body, align: 'center', valign: 'middle', margin: 0, lang: 'es-ES',
     });
   });
@@ -77,8 +77,8 @@ function annotatedTable(ctx, s) {
 
   // Panel de términos adicionales
   const px = 9.1, pw = w - mx - px;
-  box(ctx, { x: px, y: 2.2, w: pw, h: 3.75, fill: colors.panel });
-  text(ctx, s.termsTitle, { x: px + 0.3, y: 2.4, w: pw - 0.6, h: 0.45, fontSize: 20, bold: true, color: colors.navy, valign: 'middle' });
+  box(ctx, { x: px, y: 2.2, w: pw, h: 3.75, fill: colors.panel, line: colors.border });
+  text(ctx, s.termsTitle, { x: px + 0.3, y: 2.4, w: pw - 0.6, h: 0.45, fontSize: 20, bold: true, color: colors.heading, valign: 'middle' });
   paragraphs(ctx, s.terms, { x: px + 0.3, y: 3.0, w: pw - 0.6, h: 2.8, fontSize: 17, color: colors.slate, spaceAfter: 12 });
 }
 
@@ -94,7 +94,7 @@ function m2m(ctx, s) {
   s.tables.forEach((t, i) => {
     const tb = table(ctx, {
       x, y: ty, colW: t.colW, header: t.columns, rows: t.rows, rowH: rh, fontSize: 16,
-      cellStyle: (r, c) => ({ fill: t.role === 'fk' ? colors.amberLight : c === 0 ? colors.tealLight : colors.white }),
+      cellStyle: (r, c) => ({ fill: t.role === 'fk' ? colors.amberLight : c === 0 ? colors.tealLight : colors.rowA }),
     });
     const lw = chipW(t.name, 16);
     chip(ctx, { x: x + (widths[i] - lw) / 2, y: 2.05, w: lw, h: 0.42, label: t.name, tone: t.role === 'fk' ? 'amber' : 'navy', size: 16 });
@@ -120,7 +120,7 @@ function scan(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
   codeBlock(ctx, { x: mx, y: 1.85, w: 7.0, code: s.query, fontSize: 17 });
-  text(ctx, s.cost, { x: 8.5, y: 1.7, w: w - mx - 8.5, h: 1.1, fontSize: 60, bold: true, color: colors.red, valign: 'middle' });
+  text(ctx, s.cost, { x: 8.5, y: 1.7, w: w - mx - 8.5, h: 1.1, fontSize: 60, bold: true, color: ctx.T.red.accent, valign: 'middle' });
   text(ctx, s.costText, { x: 8.5, y: 2.8, w: w - mx - 8.5, h: 0.5, fontSize: 17, color: colors.slate });
 
   text(ctx, s.stripLabel, { x: mx, y: 3.45, w: 8, h: 0.35, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
@@ -131,11 +131,11 @@ function scan(ctx, s) {
     ctx.slide.addText(String(i + 1), {
       shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.08, x: mx + i * (bw + gap), y: 3.9, w: bw, h: 0.75,
       fill: { color: hit ? colors.teal : colors.amberLight }, line: { color: hit ? colors.teal : colors.amberMid, width: 1 },
-      color: hit ? colors.white : colors.amber, bold: true, fontSize: 18, fontFace: ctx.theme.fonts.body,
+      color: hit ? ctx.T.teal.on : colors.amber, bold: true, fontSize: 18, fontFace: ctx.theme.fonts.body,
       align: 'center', valign: 'middle', margin: 0,
     });
   }
-  arrow(ctx, { x1: mx, y1: 4.9, x2: w - mx, y2: 4.9, color: colors.red, width: 3 });
+  arrow(ctx, { x1: mx, y1: 4.9, x2: w - mx, y2: 4.9, color: ctx.T.red.accent, width: 3 });
   text(ctx, s.caption, { x: mx, y: 5.0, w: w - 2 * mx, h: 0.45, fontSize: 17, color: colors.slate, align: 'center', valign: 'middle' });
   if (s.callout) callout(ctx, { x: mx, y: 5.85, w: w - 2 * mx, h: 0.85, ...s.callout });
 }
@@ -180,10 +180,11 @@ function joinResult(ctx, s) {
   ctx.slide.addShape(ctx.pptx.ShapeType.rightArrow, {
     x: 7.45, y: 2.3 + ch / 2 - 0.25, w: 0.5, h: 0.5, fill: { color: colors.teal }, line: { type: 'none' },
   });
-  const rx = 8.25;
+  const rw = s.result.colW.reduce((a, b) => a + b, 0);
+  const rx = w - mx - rw;
   text(ctx, s.resultLabel, { x: rx, y: 1.8, w: 4, h: 0.4, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
-  table(ctx, { x: rx, y: 2.3, colW: s.result.colW, header: s.result.columns, rows: s.result.rows, rowH: 0.55, fontSize: 17, headerFill: colors.teal });
-  if (s.callout) callout(ctx, { x: mx, y: 5.2, w: w - 2 * mx, h: 1.0, ...s.callout });
+  const rt = table(ctx, { x: rx, y: 2.3, colW: s.result.colW, header: s.result.columns, rows: s.result.rows, rowH: 0.55, fontSize: 17, headerFill: colors.teal, headerColor: ctx.T.teal.on });
+  if (s.callout) callout(ctx, { x: mx, y: Math.max(5.2, 2.3 + rt.h + 0.3), w: w - 2 * mx, h: 1.0, ...s.callout });
 }
 
 // ------------------------------------------------------------------ diagramas de Venn para JOIN
@@ -213,8 +214,8 @@ function venn(ctx, { cx, y, type }) {
   const circle = (x, o) => ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x, y, w: 2 * r, h: 2 * r, ...o });
   const fillA = type === 'left' || type === 'full';
   const fillB = type === 'right' || type === 'full';
-  circle(ax, { fill: { color: fillA ? colors.teal : colors.white }, line: { type: 'none' } });
-  circle(bx, { fill: { color: fillB ? colors.teal : colors.white }, line: { type: 'none' } });
+  circle(ax, { fill: { color: fillA ? colors.teal : colors.panel }, line: { type: 'none' } });
+  circle(bx, { fill: { color: fillB ? colors.teal : colors.panel }, line: { type: 'none' } });
   if (type === 'inner') {
     const lens = lensPoints(r, d);
     ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
@@ -222,10 +223,10 @@ function venn(ctx, { cx, y, type }) {
       fill: { color: colors.teal }, line: { type: 'none' },
     });
   }
-  circle(ax, { line: { color: colors.navy, width: 2 } });
-  circle(bx, { line: { color: colors.navy, width: 2 } });
+  circle(ax, { line: { color: colors.heading, width: 2 } });
+  circle(bx, { line: { color: colors.heading, width: 2 } });
   const label = (t, x, on) =>
-    text(ctx, t, { x: x + r - 0.2, y: y + r - 0.2, w: 0.4, h: 0.4, fontSize: 18, bold: true, color: on ? colors.white : colors.navy, align: 'center', valign: 'middle', fontFace: fonts.heading });
+    text(ctx, t, { x: x + r - 0.2, y: y + r - 0.2, w: 0.4, h: 0.4, fontSize: 18, bold: true, color: on ? ctx.T.teal.on : colors.heading, align: 'center', valign: 'middle', fontFace: fonts.heading });
   label('A', ax - 0.2, fillA);
   label('B', bx + 0.2, fillB);
 }
@@ -239,9 +240,9 @@ function vennGrid(ctx, s) {
   const y = 2.45, h = 3.45;
   s.items.forEach((it, i) => {
     const x = mx + i * (cw + gap);
-    box(ctx, { x, y, w: cw, h, fill: colors.panel });
+    box(ctx, { x, y, w: cw, h, fill: colors.panel, line: colors.border });
     venn(ctx, { cx: x + cw / 2, y: y + 0.35, type: it.type });
-    text(ctx, it.title, { x: x + 0.2, y: y + 1.65, w: cw - 0.4, h: 0.45, fontSize: 19, bold: true, color: colors.navy, align: 'center', valign: 'middle', fontFace: fonts.heading });
+    text(ctx, it.title, { x: x + 0.2, y: y + 1.65, w: cw - 0.4, h: 0.45, fontSize: 19, bold: true, color: colors.heading, align: 'center', valign: 'middle', fontFace: fonts.heading });
     text(ctx, it.text, { x: x + 0.25, y: y + 2.2, w: cw - 0.5, h: 1.1, fontSize: 16, color: colors.slate, align: 'center' });
   });
   if (s.callout) callout(ctx, { x: mx, y: 6.05, w: w - 2 * mx, h: 0.75, size: 16, ...s.callout });
@@ -258,8 +259,8 @@ function timelineCards(ctx, s) {
   s.events.forEach((e, i) => {
     const x = mx + i * colW;
     text(ctx, e.year, { x, y: 1.8, w: colW, h: 0.75, fontSize: 40, bold: true, color: colors.teal, valign: 'middle', fontFace: fonts.heading });
-    ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x, y: lineY - 0.13, w: 0.26, h: 0.26, fill: { color: colors.teal }, line: { color: colors.white, width: 2 } });
-    text(ctx, e.title, { x, y: 3.0, w: colW - 0.5, h: 0.4, fontSize: 19, bold: true, color: colors.navy, valign: 'middle' });
+    ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x, y: lineY - 0.13, w: 0.26, h: 0.26, fill: { color: colors.teal }, line: { color: colors.bg, width: 2 } });
+    text(ctx, e.title, { x, y: 3.0, w: colW - 0.5, h: 0.4, fontSize: 19, bold: true, color: colors.heading, valign: 'middle' });
     text(ctx, e.text, { x, y: 3.45, w: colW - 0.5, h: 0.9, fontSize: 16, color: colors.slate });
   });
   const k = s.cards.length, gap = 0.3;
@@ -270,10 +271,10 @@ function timelineCards(ctx, s) {
 // ------------------------------------------------------------------ escalar hacia arriba / afuera
 function server(ctx, { x, y, w, h }) {
   const { colors } = ctx.theme;
-  box(ctx, { x, y, w, h, fill: 'E2E8F0', line: colors.slate, lineWidth: 1.5, radius: 0.06 });
+  box(ctx, { x, y, w, h, fill: colors.serverFill, line: colors.slate, lineWidth: 1.5, radius: 0.06 });
   const slit = h * 0.1;
   for (let i = 0; i < 3; i++) {
-    box(ctx, { x: x + w * 0.15, y: y + h * 0.12 + i * slit * 1.5, w: w * 0.7, h: slit, fill: 'CBD5E1', shape: 'rect' });
+    box(ctx, { x: x + w * 0.15, y: y + h * 0.12 + i * slit * 1.5, w: w * 0.7, h: slit, fill: colors.serverSlit, shape: 'rect' });
   }
   ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: x + w * 0.15, y: y + h * 0.78, w: h * 0.07, h: h * 0.07, fill: { color: colors.teal }, line: { type: 'none' } });
 }
@@ -285,8 +286,8 @@ function scale(ctx, s) {
   const floor = top + 3.3;
   [['up', mx], ['out', mx + pw + 0.5]].forEach(([key, x]) => {
     const p = s[key];
-    box(ctx, { x, y: top, w: pw, h, fill: key === 'out' ? colors.tealLight : colors.panel });
-    text(ctx, p.title, { x: x + 0.35, y: top + 0.2, w: pw - 0.7, h: 0.45, fontSize: 22, bold: true, color: key === 'out' ? colors.tealDark : colors.navy, valign: 'middle', fontFace: fonts.heading });
+    box(ctx, { x, y: top, w: pw, h, fill: key === 'out' ? colors.tealLight : colors.panel, line: key === 'out' ? colors.teal : colors.border, lineTransparency: key === 'out' ? 70 : 0 });
+    text(ctx, p.title, { x: x + 0.35, y: top + 0.2, w: pw - 0.7, h: 0.45, fontSize: 22, bold: true, color: key === 'out' ? colors.tealDark : colors.heading, valign: 'middle', fontFace: fonts.heading });
     text(ctx, p.subtitle, { x: x + 0.35, y: top + 0.7, w: pw - 0.7, h: 0.65, fontSize: 17, color: colors.slate });
     const sw = 0.7, sh = 1.1;
     const ay = floor - 0.55;
@@ -304,6 +305,140 @@ function scale(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: 6.05, w: w - 2 * mx, h: 0.75, size: 17, ...s.callout });
 }
 
+// ------------------------------------------------------------------ diseño: tabla plana con redundancia
+function flatTable(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const hl = new Set((s.highlight || []).map(([r, c]) => `${r}:${c}`));
+  chip(ctx, { x: mx, y: 1.78, w: chipW(s.tableLabel, 15), h: 0.4, label: s.tableLabel, tone: 'navy', size: 15 });
+  table(ctx, {
+    x: mx, y: 2.3, colW: s.table.colW, header: s.table.columns, rows: s.table.rows, rowH: 0.5, fontSize: 16,
+    cellStyle: (r, c) => (hl.has(`${r}:${c}`) ? { fill: colors.amberLight, color: colors.amber, bold: true } : {}),
+  });
+  const k = s.cards.length, gap = 0.3;
+  const cw = (w - 2 * mx - (k - 1) * gap) / k;
+  s.cards.forEach((c, i) => card(ctx, { textSize: 16, titleSize: 20, ...c }, { x: mx + i * (cw + gap), y: 5.0, w: cw, h: 1.8 }));
+}
+
+// ------------------------------------------------------------------ diseño: entidades con atributos
+function entities(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const n = s.entities.length, gap = 0.3;
+  const pw = s.puzzle ? 3.0 : 0;
+  const areaW = w - 2 * mx - (s.puzzle ? pw + 0.4 : 0);
+  const ew = (areaW - (n - 1) * gap) / n;
+  const rows = Math.max(...s.entities.map((e) => e.attrs.length));
+  const y = 1.95, hd = 0.6, rh = 0.5;
+  const h = hd + rows * rh + 0.35;
+  s.entities.forEach((e, i) => {
+    const x = mx + i * (ew + gap);
+    box(ctx, { x, y, w: ew, h, fill: colors.panel, line: colors.border });
+    box(ctx, { x, y, w: ew, h: hd, fill: colors.teal });
+    box(ctx, { x, y: y + hd - 0.2, w: ew, h: 0.2, fill: colors.teal, shape: 'rect' });
+    text(ctx, e.name, { x, y, w: ew, h: hd, fontSize: 20, bold: true, color: ctx.T.teal.on, align: 'center', valign: 'middle', fontFace: fonts.heading });
+    e.attrs.forEach((a, j) => {
+      const at = typeof a === 'string' ? { name: a } : a;
+      const ay = y + hd + 0.2 + j * rh;
+      text(ctx, at.name, { x: x + 0.3, y: ay, w: ew - 0.6, h: rh - 0.05, fontSize: 18, color: colors.ink, fontFace: fonts.code, valign: 'middle' });
+      if (at.tag) {
+        text(ctx, at.tag, { x: x + 0.3, y: ay, w: ew - 0.6, h: rh - 0.05, fontSize: 13, color: colors.teal, align: 'right', valign: 'middle' });
+      }
+    });
+  });
+  if (s.puzzle) {
+    const px = w - mx - pw;
+    card(ctx, { textSize: 17, titleSize: 22, ...s.puzzle }, { x: px, y, w: pw, h });
+  }
+  if (s.callout) callout(ctx, { x: mx, y: y + h + 0.45, w: w - 2 * mx, h: 1.0, ...s.callout });
+}
+
+// ------------------------------------------------------------------ diseño: modelo entidad-relación
+function er(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const n = s.entities.length;
+  const ew = 2.6, eh = 1.0, y = 2.0;
+  const step = (w - 2 * mx - ew) / (n - 1);
+  const xs = s.entities.map((_, i) => mx + i * step);
+  s.entities.forEach((e, i) => {
+    ctx.slide.addText(e.name, {
+      shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.12, x: xs[i], y, w: ew, h: eh,
+      fill: { color: colors.panel }, line: { color: colors.teal, width: 2 }, color: colors.heading, bold: true, fontSize: 22,
+      fontFace: fonts.heading, align: 'center', valign: 'middle', margin: 0,
+    });
+  });
+  const ly = y + eh / 2;
+  s.links.forEach((l) => {
+    const x1 = xs[l.from] + ew, x2 = xs[l.to];
+    ctx.slide.addShape(ctx.pptx.ShapeType.line, { x: x1, y: ly, w: x2 - x1, h: 0, line: { color: colors.slate, width: 2.5 } });
+    const tag = (t, x, align) => text(ctx, t, { x, y: ly - 0.5, w: 0.55, h: 0.4, fontSize: 22, bold: true, color: colors.teal, align, valign: 'middle', fontFace: fonts.code });
+    tag(l.fromCard, x1 + 0.12, 'left');
+    tag(l.toCard, x2 - 0.67, 'right');
+    const lw = l.label.length * 0.12 + 0.6;
+    chip(ctx, { x: (x1 + x2) / 2 - lw / 2, y: ly - 0.2, w: lw, h: 0.4, label: l.label, tone: 'navy', size: 15 });
+    if (l.attr) {
+      const aw = l.attr.length * 0.11 + 0.5;
+      chip(ctx, { x: (x1 + x2) / 2 - aw / 2, y: ly + 0.3, w: aw, h: 0.38, label: l.attr, tone: 'amber', solid: false, size: 14 });
+    }
+  });
+  const k = s.cards.length, gap = 0.3;
+  const cw = (w - 2 * mx - (k - 1) * gap) / k;
+  s.cards.forEach((c, i) => card(ctx, { textSize: 18, titleSize: 20, ...c }, { x: mx + i * (cw + gap), y: 3.9, w: cw, h: 2.0 }));
+  if (s.callout) callout(ctx, { x: mx, y: 6.05, w: w - 2 * mx, h: 0.7, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ diseño: esquema relacional con claves
+function schema(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const n = s.tables.length, tw = 2.7;
+  const gap = (w - 2 * mx - n * tw) / (n - 1);
+  const ty = 2.7, rh = 0.5;
+  const hl = new Set((s.highlight || []).map(([t, r]) => `${t}:${r}`));
+  const placed = s.tables.map((t, i) => {
+    const x = mx + i * (tw + gap);
+    const tb = table(ctx, {
+      x, y: ty, colW: [tw - 0.95, 0.95], rows: t.rows, rowH: rh, fontSize: 16, cellMargin: [0, 0.08, 0, 0.08],
+      cellStyle: (r, c) => {
+        const key = t.rows[r][1];
+        if (c === 1) {
+          if (!key) return {};
+          const fk = key.includes('FK');
+          return { fill: fk ? colors.amberLight : colors.tealLight, color: fk ? colors.amber : colors.tealDark, bold: true, align: 'center' };
+        }
+        return hl.has(`${i}:${r}`) ? { fill: colors.amberLight } : {};
+      },
+    });
+    const lw = chipW(t.name, 15);
+    chip(ctx, { x: x + (tw - lw) / 2, y: ty - 0.6, w: lw, h: 0.42, label: t.name, tone: 'navy', size: 15 });
+    return { x, tb };
+  });
+  const seg = (xa, ya, xb, yb) =>
+    ctx.slide.addShape(ctx.pptx.ShapeType.line, {
+      x: Math.min(xa, xb), y: Math.min(ya, yb), w: Math.abs(xb - xa), h: Math.abs(yb - ya), line: { color: colors.amberMid, width: 2.5 },
+    });
+  s.links.forEach(({ from, to }) => {
+    const [ft, fr] = from, [tt, tr] = to;
+    const left = ft > tt;
+    const xf = left ? placed[ft].x - 0.04 : placed[ft].x + tw + 0.04;
+    const xt = left ? placed[tt].x + tw + 0.04 : placed[tt].x - 0.04;
+    const yf = ty + fr * rh + rh / 2, yt = ty + tr * rh + rh / 2;
+    const mid = (xf + xt) / 2;
+    if (Math.abs(yf - yt) < 0.01) {
+      C.arrow(ctx, { x1: xf, y1: yf, x2: xt, y2: yt, color: colors.amberMid, width: 2.5 });
+    } else {
+      seg(xf, yf, mid, yf);
+      seg(mid, yf, mid, yt);
+      C.arrow(ctx, { x1: mid, y1: yt, x2: xt, y2: yt, color: colors.amberMid, width: 2.5 });
+    }
+  });
+  const by = ty + 3 * rh + 0.35;
+  chip(ctx, { x: mx, y: by, w: 2.5, h: 0.4, label: s.legend.pk, tone: 'teal', solid: false, size: 15 });
+  chip(ctx, { x: mx + 2.7, y: by, w: 2.5, h: 0.4, label: s.legend.fk, tone: 'amber', solid: false, size: 15 });
+  if (s.callout) callout(ctx, { x: mx, y: by + 0.65, w: w - 2 * mx, h: 1.2, ...s.callout });
+}
+
 module.exports = {
   'dbms-architecture': dbmsArchitecture,
   'annotated-table': annotatedTable,
@@ -314,4 +449,8 @@ module.exports = {
   'venn-grid': vennGrid,
   'timeline-cards': timelineCards,
   scale,
+  'flat-table': flatTable,
+  entities,
+  er,
+  schema,
 };

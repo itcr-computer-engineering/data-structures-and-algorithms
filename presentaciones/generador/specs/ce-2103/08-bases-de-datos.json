@@ -26,9 +26,10 @@
         "Cómo se modelan los datos en el **modelo relacional**",
         "Cómo los **índices** (árboles B+) aceleran las búsquedas",
         "Cómo consultar y modificar datos con **SQL**",
+        "Cómo **diseñar** una base de datos relacional paso a paso",
         "Qué ofrecen las bases de datos **NoSQL** y cuándo usarlas"
       ],
-      "notes": "Cinco objetivos, uno por bloque de la lección. Conectar con la lección de almacenamiento externo: los índices de bases de datos son árboles B+."
+      "notes": "Seis objetivos, uno por bloque de la lección. Conectar con la lección de almacenamiento externo: los índices de bases de datos son árboles B+."
     },
     {
       "type": "flow",
@@ -472,6 +473,219 @@
     },
     {
       "type": "diagram",
+      "kind": "flat-table",
+      "section": "Diseño relacional",
+      "title": "Una sola tabla: ¿qué puede salir mal?",
+      "tableLabel": "PEDIDOS (todo junto)",
+      "table": {
+        "columns": ["PEDIDO", "FECHA", "CLIENTE", "CORREO", "PRODUCTO", "PRECIO", "CANTIDAD"],
+        "colW": [1.2, 1.3, 1.5, 2.8, 1.8, 1.6, 1.7],
+        "rows": [
+          ["1", "03/11", "Ana", "ana@mail.com", "Teclado", "25", "1"],
+          ["1", "03/11", "Ana", "ana@mail.com", "Mouse", "10", "2"],
+          ["2", "04/11", "Ana", "ana@mail.com", "Mouse", "10", "1"],
+          ["3", "04/11", "Luis", "luis@mail.com", "Teclado", "25", "1"]
+        ]
+      },
+      "highlight": [[0, 2], [0, 3], [1, 2], [1, 3], [2, 2], [2, 3], [1, 4], [1, 5], [2, 4], [2, 5]],
+      "cards": [
+        { "title": "Actualizar", "text": "Cambiar el correo de Ana obliga a editar 3 filas.", "tone": "red" },
+        { "title": "Insertar", "text": "No se puede registrar un cliente que aún no tiene pedidos.", "tone": "red" },
+        { "title": "Eliminar", "text": "Al borrar el pedido 3 se pierde también a Luis.", "tone": "red" }
+      ],
+      "notes": "Gancho para la sección de diseño: una tienda en línea guardada en una sola tabla. Los datos repetidos (en ámbar) son la señal de un mal diseño y provocan las anomalías de actualización, inserción y eliminación. Pregunta para la clase: ¿qué pasa si el correo de Ana cambia y solo actualizamos una fila?"
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Diseñar una base de datos en 6 pasos",
+      "intro": "Caso que usaremos de principio a fin: **una tienda en línea**.",
+      "columns": 3,
+      "textSize": 18,
+      "cards": [
+        { "title": "1 · Requisitos", "text": "¿Qué guarda el sistema y qué debe responder?", "tone": "teal" },
+        { "title": "2 · Entidades", "text": "Las «cosas» importantes y sus atributos.", "tone": "teal" },
+        { "title": "3 · Relaciones", "text": "¿Cómo se conectan? 1:1, 1:N o N:M.", "tone": "teal" },
+        { "title": "4 · Tablas y claves", "text": "Del modelo a tablas con claves primarias y foráneas.", "tone": "teal" },
+        { "title": "5 · Normalizar", "text": "Elimine la redundancia con las formas normales.", "tone": "teal" },
+        { "title": "6 · Crear y probar", "text": "Escriba el SQL, cargue datos y pruebe consultas.", "tone": "teal" }
+      ],
+      "notes": "Este proceso es iterativo: al probar (paso 6) es normal volver a los pasos anteriores. Cada diapositiva siguiente muestra en la esquina superior derecha en qué paso estamos."
+    },
+    {
+      "type": "compare",
+      "section": "Diseño relacional",
+      "title": "Paso 1 · Requisitos de la tienda",
+      "step": 1,
+      "panels": [
+        {
+          "title": "Lo que dice el negocio",
+          "tone": "teal",
+          "items": [
+            "Los **clientes** se registran con su nombre y su correo (único).",
+            "Un cliente puede hacer **muchos pedidos**; cada pedido es de un solo cliente.",
+            "Cada pedido tiene una **fecha** y varios **productos**.",
+            "De cada producto se guarda el **nombre** y el **precio**.",
+            "En cada pedido se anota la **cantidad** de cada producto."
+          ]
+        },
+        {
+          "title": "Cómo leerlo",
+          "tone": "slate",
+          "items": [
+            "**Sustantivos:** posibles entidades o atributos",
+            "**Verbos:** posibles relaciones (hace, contiene)",
+            "**Cuántos:** cardinalidad (1:1, 1:N, N:M)"
+          ],
+          "note": "Ej.: «Un **cliente** **hace** **pedidos**» → entidades CLIENTE y PEDIDO, y la relación «hace»."
+        }
+      ],
+      "notes": "Pida a los estudiantes que subrayen los sustantivos y los verbos del texto. Es la técnica más simple para empezar: casi todo requisito en lenguaje natural esconde entidades, atributos y relaciones."
+    },
+    {
+      "type": "diagram",
+      "kind": "entities",
+      "section": "Diseño relacional",
+      "title": "Paso 2 · Entidades y atributos",
+      "step": 2,
+      "entities": [
+        { "name": "CLIENTE", "attrs": [{ "name": "ID", "tag": "único" }, "NOMBRE", "CORREO"] },
+        { "name": "PEDIDO", "attrs": [{ "name": "ID", "tag": "único" }, "FECHA"] },
+        { "name": "PRODUCTO", "attrs": [{ "name": "ID", "tag": "único" }, "NOMBRE", "PRECIO"] }
+      ],
+      "puzzle": { "title": "¿Y la cantidad?", "tone": "amber", "text": "No es del pedido ni del producto: depende de **ambos**. La resolveremos en el paso 3." },
+      "callout": { "tone": "teal", "text": "**Entidad:** una «cosa» sobre la que guardamos datos. **Atributo:** una propiedad de esa cosa. Toda entidad necesita un **identificador único** (`ID`)." },
+      "notes": "Cada entidad se convertirá en una tabla y su identificador en la clave primaria. La cantidad es la pregunta clave: no pertenece a una sola entidad, sino a la relación entre pedido y producto."
+    },
+    {
+      "type": "diagram",
+      "kind": "er",
+      "section": "Diseño relacional",
+      "title": "Paso 3 · Relaciones y cardinalidad",
+      "step": 3,
+      "entities": [{ "name": "CLIENTE" }, { "name": "PEDIDO" }, { "name": "PRODUCTO" }],
+      "links": [
+        { "from": 0, "to": 1, "label": "hace", "fromCard": "1", "toCard": "N" },
+        { "from": 1, "to": 2, "label": "contiene", "fromCard": "N", "toCard": "M", "attr": "CANTIDAD" }
+      ],
+      "cards": [
+        { "title": "1:N · uno a muchos", "tone": "teal", "text": "Un cliente hace **muchos** pedidos. Cada pedido pertenece a **un solo** cliente." },
+        { "title": "N:M · muchos a muchos", "tone": "amber", "text": "Un pedido contiene **varios** productos y un producto aparece en **varios** pedidos. La `CANTIDAD` es un atributo de la relación." }
+      ],
+      "callout": { "tone": "slate", "text": "Cardinalidades posibles: **1:1** (uno a uno), **1:N** (uno a muchos) y **N:M** (muchos a muchos)." },
+      "notes": "Esta es la representación de un modelo entidad-relación simplificado: cajas para entidades, líneas para relaciones y cardinalidad en los extremos. Pregunta: ¿qué cardinalidad habría entre CLIENTE y PEDIDO si cada pedido pudiera ser compartido por varios clientes?"
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Paso 4 · De relaciones a tablas",
+      "step": 4,
+      "columns": 3,
+      "cardHeight": 3.3,
+      "cards": [
+        { "badge": "1:1", "title": "Uno a uno", "text": "Una clave foránea **única** en una de las dos tablas.", "footer": "p. ej., USUARIO y PERFIL", "tone": "teal" },
+        { "badge": "1:N", "title": "Uno a muchos", "text": "La clave foránea va en la tabla del lado **«muchos»**.", "footer": "PEDIDO.CLIENTE_ID", "tone": "teal" },
+        { "badge": "N:M", "title": "Muchos a muchos", "text": "Se crea una **tabla intermedia** con dos claves foráneas.", "footer": "DETALLE_PEDIDO", "tone": "amber" }
+      ],
+      "callout": { "tone": "slate", "text": "Además: cada entidad se convierte en una **tabla** y su `ID` en la **clave primaria**." },
+      "notes": "En nuestro caso no hay relaciones 1:1; se muestra solo como referencia (por ejemplo, un usuario y su perfil). La regla 1:N: la clave foránea siempre va del lado de los muchos."
+    },
+    {
+      "type": "diagram",
+      "kind": "schema",
+      "section": "Diseño relacional",
+      "title": "Paso 4 · El esquema relacional",
+      "step": 4,
+      "tables": [
+        { "name": "CLIENTE", "rows": [["ID", "PK"], ["NOMBRE", ""], ["CORREO", ""]] },
+        { "name": "PEDIDO", "rows": [["ID", "PK"], ["FECHA", ""], ["CLIENTE_ID", "FK"]] },
+        { "name": "DETALLE_PEDIDO", "rows": [["PEDIDO_ID", "PK, FK"], ["PRODUCTO_ID", "PK, FK"], ["CANTIDAD", ""]] },
+        { "name": "PRODUCTO", "rows": [["ID", "PK"], ["NOMBRE", ""], ["PRECIO", ""]] }
+      ],
+      "links": [
+        { "from": [1, 2], "to": [0, 0] },
+        { "from": [2, 0], "to": [1, 0] },
+        { "from": [2, 1], "to": [3, 0] }
+      ],
+      "highlight": [[2, 2]],
+      "legend": { "pk": "PK  clave primaria", "fk": "FK  clave foránea" },
+      "callout": { "tone": "teal", "text": "**1:N:** `PEDIDO.CLIENTE_ID` apunta a `CLIENTE.ID`. **N:M:** `DETALLE_PEDIDO` une pedidos y productos; su clave primaria es compuesta y `CANTIDAD` vive ahí." },
+      "notes": "Las flechas van de cada clave foránea hacia la clave primaria que referencia. CANTIDAD (resaltada) vive en la tabla intermedia porque describe la relación entre un pedido y un producto."
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Paso 5 · Revisar las formas normales",
+      "step": 5,
+      "intro": "Regla de oro: cada dato vive **en un solo lugar**. Nuestro esquema cumple estas tres formas normales:",
+      "columns": 3,
+      "cardHeight": 3.3,
+      "titleSize": 20,
+      "cards": [
+        { "badge": "1FN", "title": "Un valor por celda", "text": "**Mal:** `PRODUCTOS = 'Teclado, Mouse'`. **Bien:** una fila por cada producto.", "tone": "teal" },
+        { "badge": "2FN", "title": "Toda la clave", "text": "**Mal:** `NOMBRE_PRODUCTO` dentro de DETALLE_PEDIDO (depende solo del producto). **Bien:** en PRODUCTO.", "tone": "teal" },
+        { "badge": "3FN", "title": "Nada más que la clave", "text": "**Mal:** `CORREO_CLIENTE` dentro de PEDIDO (depende del cliente). **Bien:** en CLIENTE.", "tone": "teal" }
+      ],
+      "notes": "1FN: sin listas en una celda. 2FN: cada atributo debe depender de toda la clave primaria (importa cuando la clave es compuesta). 3FN: los atributos no clave no deben depender de otros atributos no clave. Nuestro esquema ya cumple 3FN. Existen más formas normales, que se estudian en el curso de bases de datos."
+    },
+    {
+      "type": "code",
+      "section": "Diseño relacional",
+      "title": "Paso 6 · Crear las tablas",
+      "step": 6,
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "PEDIDO · relación 1:N", "code": "CREATE TABLE PEDIDO (\n  ID INT PRIMARY KEY,\n  FECHA DATE NOT NULL,\n  CLIENTE_ID INT NOT NULL,\n  FOREIGN KEY (CLIENTE_ID)\n    REFERENCES CLIENTE(ID)\n);" }
+          ],
+          "cards": [
+            { "title": "Restricciones útiles", "text": "`NOT NULL` obliga a dar un valor. `UNIQUE` evita repetidos (p. ej., el correo).", "tone": "teal", "h": 1.8 }
+          ]
+        },
+        {
+          "weight": 1.25,
+          "blocks": [
+            { "label": "DETALLE_PEDIDO · relación N:M", "code": "CREATE TABLE DETALLE_PEDIDO (\n  PEDIDO_ID INT,\n  PRODUCTO_ID INT,\n  CANTIDAD INT NOT NULL,\n  PRIMARY KEY (PEDIDO_ID, PRODUCTO_ID),\n  FOREIGN KEY (PEDIDO_ID)\n    REFERENCES PEDIDO(ID),\n  FOREIGN KEY (PRODUCTO_ID)\n    REFERENCES PRODUCTO(ID)\n);" }
+          ]
+        }
+      ],
+      "notes": "CLIENTE y PRODUCTO se crean igual que ESTUDIANTE y CURSO (ver diapositivas anteriores); la tabla CLIENTE puede declarar CORREO VARCHAR(120) UNIQUE. Orden de creación: primero las tablas que no dependen de otras (CLIENTE, PRODUCTO), luego PEDIDO y por último DETALLE_PEDIDO."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "Diseño relacional",
+      "title": "Paso 6 · Probar con consultas",
+      "step": 6,
+      "queryLabel": "¿Qué compró cada cliente?",
+      "query": "SELECT C.NOMBRE, P.NOMBRE, D.CANTIDAD\nFROM CLIENTE C\nJOIN PEDIDO O ON O.CLIENTE_ID = C.ID\nJOIN DETALLE_PEDIDO D ON D.PEDIDO_ID = O.ID\nJOIN PRODUCTO P ON P.ID = D.PRODUCTO_ID;",
+      "resultLabel": "Resultado",
+      "result": {
+        "columns": ["C.NOMBRE", "P.NOMBRE", "D.CANTIDAD"],
+        "colW": [1.4, 1.5, 1.7],
+        "rows": [["Ana", "Teclado", "1"], ["Ana", "Mouse", "2"], ["Ana", "Mouse", "1"], ["Luis", "Teclado", "1"]]
+      },
+      "callout": { "tone": "teal", "text": "El `JOIN` recorre el esquema siguiendo las claves foráneas y reconstruye la información de la tabla única, ahora sin redundancia." },
+      "notes": "Es el mismo contenido de la tabla plana del inicio, pero ahora cada dato vive en un solo lugar. Si el esquema no permite responder una pregunta con consultas razonables, hay que volver a los pasos anteriores."
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Ahora usted: extienda el modelo",
+      "intro": "Aplique los 6 pasos a cada requisito nuevo: dibuje, defina tablas y claves, y escriba el SQL.",
+      "columns": 3,
+      "cardHeight": 3.5,
+      "cards": [
+        { "badge": "A", "title": "Categorías", "text": "Cada producto pertenece a una categoría. ¿Qué cardinalidad hay? ¿Dónde va la clave foránea?", "tone": "teal" },
+        { "badge": "B", "title": "Reseñas", "text": "Los clientes califican productos con estrellas y un comentario. ¿Qué tabla nueva aparece?", "tone": "teal" },
+        { "badge": "C", "title": "Precio histórico", "text": "El precio cambia con el tiempo. ¿Cómo conservar lo que pagó cada cliente?", "tone": "teal" }
+      ],
+      "notes": "Respuestas sugeridas. A: relación 1:N entre CATEGORIA y PRODUCTO; la clave foránea CATEGORIA_ID va en PRODUCTO. B: relación N:M entre CLIENTE y PRODUCTO con atributos propios (CALIFICACION, COMENTARIO); tabla intermedia RESENA. C: guardar PRECIO_UNITARIO en DETALLE_PEDIDO al momento de la compra, en lugar de depender del precio actual de PRODUCTO."
+    },
+    {
+      "type": "diagram",
       "kind": "timeline-cards",
       "section": "NoSQL",
       "title": "NoSQL: origen y características",
@@ -571,6 +785,7 @@
         "El **modelo relacional** organiza los datos en tablas unidas por claves primarias y foráneas.",
         "Los **índices** (árboles B+) aceleran las lecturas de `O(n)` a `O(log n)`, a costa de escrituras y espacio.",
         "**SQL** define (DDL) y manipula (DML) los datos; `JOIN` combina tablas.",
+        "**Diseñar** es un proceso: requisitos, entidades, relaciones, tablas, normalización y pruebas.",
         "**NoSQL** ofrece esquemas flexibles y escalabilidad horizontal."
       ],
       "footnote": "Referencias: Gillenson, M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons. · Sullivan, M. (2019). NoSQL for Mere Mortals. Addison-Wesley.",

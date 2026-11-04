@@ -26,13 +26,15 @@ powershell -File contact-sheet.ps1
 
 ```json
 {
-  "meta": { "title": "", "footer": "", "assetsDir": "ruta a las imágenes", "output": "ruta del .pptx" },
+  "meta": { "title": "", "footer": "", "theme": "dark", "assetsDir": "ruta a las imágenes", "output": "ruta del .pptx" },
   "theme": { "colors": {}, "fonts": {} },
   "slides": [ { "type": "...", "notes": "notas del orador" } ]
 }
 ```
 
-Texto enriquecido: `**negrita**` y `` `código en línea` ``. Tonos disponibles: `teal`, `navy`, `slate`, `amber`, `red`, `green`.
+- **Temas:** `meta.theme` admite `dark` (predeterminado, estilo editor de código) y `light`. Los colores están en `lib\theme.js`; `theme.colors` en el spec sobrescribe valores sueltos.
+- **Texto enriquecido:** `**negrita**` y `` `código en línea` ``. Tonos disponibles: `teal`, `navy`, `slate`, `amber`, `red`, `green`.
+- **Indicador de pasos:** cualquier diapositiva acepta `step` (y opcionalmente `stepTotal`, 6 por defecto) para mostrar "paso n/total" arriba a la derecha.
 
 | `type` | Uso | Campos principales |
 |--------|-----|--------------------|
@@ -44,7 +46,7 @@ Texto enriquecido: `**negrita**` y `` `código en línea` ``. Tonos disponibles:
 | `compare` | Dos paneles | `panels[{title,tone,text,items,chips,code,note}]`, `vs`, `callout` |
 | `table` | Tabla comparativa | `columns`, `rows`, `colWeights`, `callout` |
 | `code` | Bloques de código (`sql`, `json`) en columnas | `columns[{weight,blocks[{label,code}],cards}]`, `callouts` |
-| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale` |
+| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema` |
 
 Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagramas nuevos se agregan en `lib\diagrams.js`; los tipos de diapositiva, en `lib\layouts.js`.
 

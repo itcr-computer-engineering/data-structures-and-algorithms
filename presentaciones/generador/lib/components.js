@@ -53,18 +53,20 @@ function paragraphs(ctx, items, { bullet = false, spaceAfter = 6, ...o } = {}) {
 }
 
 // ---------- Formas básicas ----------
-function box(ctx, { x, y, w, h, fill, line, radius = 0.12, shape = 'roundRect', lineWidth = 1 }) {
+function box(ctx, { x, y, w, h, fill, line, radius = 0.12, shape = 'roundRect', lineWidth = 1, lineTransparency }) {
   const opts = { x, y, w, h };
   if (fill) opts.fill = { color: fill };
-  if (line) opts.line = { color: line, width: lineWidth };
-  else opts.line = { type: 'none' };
+  if (line) {
+    opts.line = { color: line, width: lineWidth };
+    if (lineTransparency) opts.line.transparency = lineTransparency;
+  } else opts.line = { type: 'none' };
   if (shape === 'roundRect') opts.rectRadius = radius;
   ctx.slide.addShape(ctx.pptx.ShapeType[shape], opts);
 }
 
 function chip(ctx, { x, y, w, h = 0.4, label, tone = 'teal', solid = true, size = 14 }) {
   const t = ctx.T[tone];
-  const { colors, fonts } = ctx.theme;
+  const { fonts } = ctx.theme;
   ctx.slide.addText(label, {
     shape: ctx.pptx.ShapeType.roundRect,
     rectRadius: h / 2,
@@ -74,7 +76,7 @@ function chip(ctx, { x, y, w, h = 0.4, label, tone = 'teal', solid = true, size 
     h,
     fill: { color: solid ? t.accent : t.soft },
     line: { type: 'none' },
-    color: solid ? (tone === 'amber' ? colors.ink : colors.white) : t.text,
+    color: solid ? t.on : t.text,
     bold: true,
     fontSize: size,
     fontFace: fonts.body,
@@ -123,15 +125,38 @@ function header(ctx, s) {
   const { colors, fonts } = ctx.theme;
   const { mx, w } = ctx.theme.page;
   if (s.section) {
-    text(ctx, s.section.toUpperCase(), {
-      x: mx, y: 0.42, w: w - 2 * mx, h: 0.3,
-      fontSize: 13, bold: true, color: colors.teal, charSpacing: 3,
-    });
+    if (ctx.theme.sectionStyle === 'comment') {
+      text(ctx, '// ' + s.section.toLowerCase(), {
+        x: mx, y: 0.4, w: 7, h: 0.32, fontSize: 15, color: colors.teal, fontFace: fonts.code, valign: 'middle',
+      });
+    } else {
+      text(ctx, s.section.toUpperCase(), {
+        x: mx, y: 0.42, w: 7, h: 0.3, fontSize: 13, bold: true, color: colors.teal, charSpacing: 3,
+      });
+    }
   }
   text(ctx, s.title, {
     x: mx, y: 0.74, w: w - 2 * mx, h: 0.75,
-    fontSize: 32, bold: true, color: colors.navy, fontFace: fonts.heading, valign: 'middle',
+    fontSize: 32, bold: true, color: colors.heading, fontFace: fonts.heading, valign: 'middle',
   });
+  if (s.step) progress(ctx, s.step, s.stepTotal || 6);
+}
+
+// Indicador "paso n/total" para las diapositivas del proceso de diseño.
+function progress(ctx, current, total) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const d = 0.16, gap = 0.1;
+  const x0 = w - mx - (total * d + (total - 1) * gap);
+  text(ctx, `paso ${current}/${total}`, {
+    x: x0 - 1.6, y: 0.4, w: 1.45, h: 0.32, fontSize: 13, color: colors.slate, fontFace: fonts.code, align: 'right', valign: 'middle',
+  });
+  for (let i = 0; i < total; i++) {
+    ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, {
+      x: x0 + i * (d + gap), y: 0.48, w: d, h: d,
+      fill: { color: i < current ? colors.teal : colors.border }, line: { type: 'none' },
+    });
+  }
 }
 
 function footer(ctx) {
@@ -147,20 +172,33 @@ function footer(ctx) {
 }
 
 // ---------- Tarjetas y avisos ----------
+// Fondo de tarjeta/panel: con tono -> fondo suave y borde del acento; sin tono -> superficie neutra con borde.
+function surface(ctx, tone, rect) {
+  const { colors } = ctx.theme;
+  if (tone && tone !== 'navy') {
+    const t = ctx.T[tone];
+    box(ctx, { ...rect, fill: t.soft, line: t.accent, lineTransparency: 70 });
+  } else {
+    box(ctx, { ...rect, fill: colors.panel, line: colors.border });
+  }
+}
+
 function card(ctx, c, { x, y, w, h }) {
   const { colors, fonts } = ctx.theme;
   const t = ctx.T[c.tone || 'navy'];
   const pad = 0.3;
-  box(ctx, { x, y, w, h, fill: c.tone ? t.soft : colors.panel });
+  surface(ctx, c.tone, { x, y, w, h });
   let cy = y + pad;
   if (c.badge) {
-    circleLabel(ctx, { x: x + pad, y: cy, d: 0.62, label: c.badge, fill: t.accent, color: colors.white, size: 24 });
+    circleLabel(ctx, {
+      x: x + pad, y: cy, d: 0.62, label: c.badge, fill: t.accent, color: t.on, size: String(c.badge).length > 1 ? 16 : 24,
+    });
     cy += 0.62 + 0.15;
   }
   const titleH = c.titleH || 0.42;
   text(ctx, c.title, {
     x: x + pad, y: cy, w: w - 2 * pad, h: titleH,
-    fontSize: c.titleSize || 20, bold: true, color: c.tone ? t.text : colors.navy, fontFace: fonts.heading, valign: 'middle',
+    fontSize: c.titleSize || 20, bold: true, color: c.tone ? t.text : colors.heading, fontFace: fonts.heading, valign: 'middle',
   });
   cy += titleH + 0.08;
   if (c.text) {
@@ -190,14 +228,24 @@ function callout(ctx, { x, y, w, h, tone = 'teal', label, text: body, size = 17 
 // ---------- Código con resaltado simple ----------
 const SQL_KW = new Set(
   ('SELECT FROM WHERE JOIN ON CREATE TABLE INDEX INSERT INTO VALUES UPDATE SET DELETE PRIMARY KEY FOREIGN ' +
-    'REFERENCES INT VARCHAR ALTER DROP AND OR NOT NULL ORDER BY GROUP INNER LEFT RIGHT FULL OUTER AS')
+    'REFERENCES ALTER DROP AND OR NOT NULL ORDER BY GROUP INNER LEFT RIGHT FULL OUTER AS UNIQUE DEFAULT CONSTRAINT')
     .split(' ')
 );
+const SQL_TYPES = new Set('INT VARCHAR DATE DECIMAL TEXT'.split(' '));
 
 function highlightLine(line, lang, ctx) {
   const { colors, fonts } = ctx.theme;
   const mk = (t, color) => ({ text: t, options: { color, fontFace: fonts.code } });
   if (lang === 'plain') return [mk(line || ' ', colors.codeText)];
+  // Comentarios SQL: todo lo que sigue a "--" (fuera de cadenas simples)
+  let comment = null;
+  if (lang === 'sql') {
+    const ci = line.search(/--/);
+    if (ci >= 0 && (line.slice(0, ci).match(/'/g) || []).length % 2 === 0) {
+      comment = line.slice(ci);
+      line = line.slice(0, ci);
+    }
+  }
   const out = [];
   const re = /("[^"]*"|'[^']*')|(\b\d+\b)|([A-Za-zÁÉÍÓÚáéíóúñÑ_][\wÁÉÍÓÚáéíóúñÑ]*)|(\s+)|(.)/g;
   let m;
@@ -205,11 +253,15 @@ function highlightLine(line, lang, ctx) {
     const [tok, str, num, word] = m;
     if (str) {
       const isKey = lang === 'json' && /^\s*:/.test(line.slice(m.index + tok.length));
-      out.push(mk(tok, isKey ? colors.codeKw : colors.codeStr));
+      out.push(mk(tok, isKey ? colors.codeType : colors.codeStr));
     } else if (num) out.push(mk(tok, colors.codeNum));
-    else if (word) out.push(mk(tok, lang === 'sql' && SQL_KW.has(tok.toUpperCase()) ? colors.codeKw : colors.codeText));
-    else out.push(mk(tok, colors.codeText));
+    else if (word) {
+      const up = tok.toUpperCase();
+      const isSql = lang === 'sql';
+      out.push(mk(tok, isSql && SQL_KW.has(up) ? colors.codeKw : isSql && SQL_TYPES.has(up) ? colors.codeType : colors.codeText));
+    } else out.push(mk(tok, colors.codeText));
   }
+  if (comment) out.push(mk(comment, colors.codeComment));
   return out.length ? out : [mk(' ', colors.codeText)];
 }
 
@@ -220,7 +272,7 @@ function codeHeight(code, fontSize) {
 function codeBlock(ctx, { x, y, w, code, lang = 'sql', fontSize = 15 }) {
   const lines = code.split('\n');
   const h = codeHeight(code, fontSize);
-  box(ctx, { x, y, w, h, fill: ctx.theme.colors.codeBg, radius: 0.1 });
+  box(ctx, { x, y, w, h, fill: ctx.theme.colors.codeBg, line: ctx.theme.colors.codeBorder, radius: 0.1 });
   const runs = [];
   lines.forEach((ln, i) => {
     const rs = highlightLine(ln, lang, ctx);
@@ -236,14 +288,14 @@ function codeBlock(ctx, { x, y, w, code, lang = 'sql', fontSize = 15 }) {
 
 // ---------- Tablas ----------
 // cellStyle(r, c) -> { fill, color, bold, align } opcional por celda de datos.
-function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellStyle, headerFill, headerSize, align }) {
+function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellStyle, headerFill, headerColor, headerSize, align, cellMargin }) {
   const { colors, fonts } = ctx.theme;
   const border = { type: 'solid', pt: 1, color: colors.border };
   const cell = (txt, o) => ({
     text: String(txt),
     options: {
       fontFace: fonts.body, fontSize, color: colors.ink, valign: 'middle', border,
-      margin: [0, 0.12, 0, 0.12], align: align || 'left', ...o,
+      margin: cellMargin || [0, 0.12, 0, 0.12], align: align || 'left', ...o,
     },
   });
   const data = [];
@@ -251,7 +303,7 @@ function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellS
     data.push(
       header.map((h, c) =>
         cell(h, {
-          bold: true, color: colors.white, fill: { color: headerFill || colors.navy },
+          bold: true, color: headerColor || colors.white, fill: { color: headerFill || colors.navy },
           fontSize: headerSize || fontSize, align: (Array.isArray(align) ? align[c] : align) || 'left',
         })
       )
@@ -263,7 +315,7 @@ function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellS
         const st = (cellStyle && cellStyle(ri, c)) || {};
         const o = { ...st };
         if (st.fill) o.fill = { color: st.fill };
-        else o.fill = { color: ri % 2 ? colors.panel : colors.white };
+        else o.fill = { color: ri % 2 ? colors.rowB : colors.rowA };
         if (Array.isArray(align)) o.align = st.align || align[c];
         return cell(v, o);
       })
@@ -298,5 +350,5 @@ function image(ctx, file, box_, altText) {
 
 module.exports = {
   rich, text, paragraphs, box, chip, circleLabel, arrow,
-  header, footer, card, callout, codeBlock, codeHeight, table, image,
+  header, footer, card, surface, callout, codeBlock, codeHeight, highlightLine, table, image,
 };

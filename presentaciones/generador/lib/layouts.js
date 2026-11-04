@@ -16,24 +16,33 @@ const layouts = {
   title(ctx, s) {
     const { colors, fonts } = ctx.theme;
     const { w, h } = ctx.theme.page;
-    ctx.slide.background = { color: colors.navy };
-    // Decoración: una tabla estilizada con una fila resaltada
-    const cols = 4, rows = 6, cw = 1.05, ch = 0.5, gap = 0.1;
-    const gx = w - 0.9 - (cols * cw + (cols - 1) * gap);
-    const gy = 1.4;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const fill = r === 0 ? colors.teal : r === 3 ? '1F6F8B' : '17395C';
-        box(ctx, { x: gx + c * (cw + gap), y: gy + r * (ch + gap), w: cw, h: ch, fill, radius: 0.08 });
-      }
-    }
-    text(ctx, s.tag.toUpperCase(), {
-      x: 0.9, y: 2.2, w: 7, h: 0.4, fontSize: 16, bold: true, color: '5EEAD4', charSpacing: 4,
+    ctx.slide.background = { color: colors.titleBg };
+    // Decoración: ventana de terminal con una consulta SQL
+    const wx = 7.7, wy = 1.95, ww = w - 0.9 - 7.7, wh = 3.0;
+    box(ctx, { x: wx, y: wy, w: ww, h: wh, fill: colors.codeBg, line: colors.border, radius: 0.14 });
+    box(ctx, { x: wx, y: wy, w: ww, h: 0.5, fill: colors.panel, line: colors.border, radius: 0.14 });
+    box(ctx, { x: wx + 0.01, y: wy + 0.3, w: ww - 0.02, h: 0.21, fill: colors.panel, shape: 'rect' });
+    ['FF5F56', 'FFBD2E', '27C93F'].forEach((c, i) => {
+      ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: wx + 0.3 + i * 0.28, y: wy + 0.17, w: 0.17, h: 0.17, fill: { color: c }, line: { type: 'none' } });
+    });
+    text(ctx, 'bases_de_datos.sql', { x: wx, y: wy, w: ww, h: 0.5, fontSize: 12, color: colors.muted, fontFace: fonts.code, align: 'center', valign: 'middle' });
+    const code = "-- Lección 08\nSELECT *\nFROM bases_de_datos\nWHERE tema IN ('SQL', 'NoSQL');";
+    const runs = [];
+    const lines = code.split('\n');
+    lines.forEach((ln, i) => {
+      const rs = C.highlightLine(ln, 'sql', ctx);
+      rs[rs.length - 1].options.breakLine = i < lines.length - 1;
+      runs.push(...rs);
+    });
+    text(ctx, runs, { x: wx + 0.35, y: wy + 0.85, w: ww - 0.6, h: 1.9, fontSize: 17, fontFace: fonts.code, lineSpacing: 30, wrap: false });
+
+    text(ctx, s.tag, {
+      x: 0.9, y: 2.2, w: 6.5, h: 0.4, fontSize: 18, color: colors.teal, fontFace: fonts.code, valign: 'middle',
     });
     text(ctx, s.title, {
-      x: 0.9, y: 2.7, w: 7.2, h: 1.3, fontSize: 60, bold: true, color: colors.white, fontFace: fonts.heading, valign: 'middle',
+      x: 0.9, y: 2.7, w: 6.6, h: 1.3, fontSize: 60, bold: true, color: colors.white, fontFace: fonts.heading, valign: 'middle',
     });
-    text(ctx, s.subtitle, { x: 0.9, y: 4.1, w: 6.8, h: 1.0, fontSize: 24, color: 'CBD5E1' });
+    text(ctx, s.subtitle, { x: 0.9, y: 4.1, w: 6.4, h: 1.0, fontSize: 24, color: colors.titleSub });
     text(ctx, s.meta, { x: 0.9, y: h - 1.0, w: 8, h: 0.4, fontSize: 14, color: colors.muted });
   },
 
@@ -43,7 +52,7 @@ const layouts = {
     const { mx, w } = ctx.theme.page;
     header(ctx, s);
     const n = s.items.length;
-    const rowH = Math.min(0.95, 4.7 / n);
+    const rowH = Math.min(0.95, 4.4 / n);
     const y0 = 1.95;
     s.items.forEach((it, i) => {
       const y = y0 + i * rowH;
@@ -52,9 +61,9 @@ const layouts = {
       if (s.marker === 'dot') {
         box(ctx, { x: mx + 0.1, y: y + (rowH - 0.22) / 2, w: 0.22, h: 0.22, fill: colors.teal, radius: 0.05 });
       } else {
-        circleLabel(ctx, { x: mx, y: y + (rowH - d) / 2, d, label: String(i + 1), fill: colors.teal, color: colors.white, size: 22 });
+        circleLabel(ctx, { x: mx, y: y + (rowH - d) / 2, d, label: String(i + 1), fill: colors.teal, color: ctx.T.teal.on, size: 22 });
       }
-      const runs = C.rich(item.title, ctx, { fontSize: s.titleSize || 24, bold: s.bold !== false, color: colors.navy, fontFace: fonts.heading });
+      const runs = C.rich(item.title, ctx, { fontSize: s.titleSize || 24, bold: s.bold !== false, color: colors.heading, fontFace: fonts.heading });
       if (item.text) {
         runs[runs.length - 1].options.breakLine = true;
         runs.push(...C.rich(item.text, ctx, { fontSize: 17, color: colors.slate }));
@@ -77,9 +86,9 @@ const layouts = {
     const y = 2.0, h = 3.1;
     s.steps.forEach((st, i) => {
       const x = mx + i * (bw + gap);
-      box(ctx, { x, y, w: bw, h, fill: colors.panel });
-      circleLabel(ctx, { x: x + 0.3, y: y + 0.3, d: 0.6, label: String(i + 1), fill: colors.teal, color: colors.white, size: 22 });
-      text(ctx, st.title, { x: x + 0.3, y: y + 1.05, w: bw - 0.6, h: 0.5, fontSize: 26, bold: true, color: colors.navy, fontFace: fonts.heading, valign: 'middle' });
+      box(ctx, { x, y, w: bw, h, fill: colors.panel, line: colors.border });
+      circleLabel(ctx, { x: x + 0.3, y: y + 0.3, d: 0.6, label: String(i + 1), fill: colors.teal, color: ctx.T.teal.on, size: 22 });
+      text(ctx, st.title, { x: x + 0.3, y: y + 1.05, w: bw - 0.6, h: 0.5, fontSize: 26, bold: true, color: colors.heading, fontFace: fonts.heading, valign: 'middle' });
       text(ctx, st.text, { x: x + 0.3, y: y + 1.65, w: bw - 0.6, h: h - 1.9, fontSize: 17, color: colors.slate, lineSpacingMultiple: 1.05 });
       if (i < n - 1) {
         ctx.slide.addShape(ctx.pptx.ShapeType.rightArrow, {
@@ -96,7 +105,10 @@ const layouts = {
     const { mx, w } = ctx.theme.page;
     header(ctx, s);
     const hasCap = !!s.caption;
-    image(ctx, s.image, { x: mx, y: 1.8, w: w - 2 * mx, h: hasCap ? 4.35 : 5.0 }, s.alt);
+    const area = { x: mx, y: 1.8, w: w - 2 * mx, h: hasCap ? 4.35 : 5.0 };
+    // Las imágenes con fondo blanco se enmarcan en una tarjeta clara para que se vean bien en temas oscuros
+    box(ctx, { x: area.x + 0.8, y: area.y, w: area.w - 1.6, h: area.h, fill: 'FFFFFF', radius: 0.15 });
+    image(ctx, s.image, { x: area.x + 1.0, y: area.y + 0.15, w: area.w - 2.0, h: area.h - 0.3 }, s.alt);
     if (hasCap) {
       text(ctx, s.caption, { x: mx, y: 6.3, w: w - 2 * mx, h: 0.5, fontSize: 18, color: colors.slate, align: 'center', valign: 'middle' });
     }
@@ -141,7 +153,7 @@ const layouts = {
     s.panels.forEach((p, i) => {
       const x = mx + i * (pw + gap);
       const t = ctx.T[p.tone || 'navy'];
-      box(ctx, { x, y: top, w: pw, h: bottom - top, fill: t.soft });
+      C.surface(ctx, p.tone, { x, y: top, w: pw, h: bottom - top });
       text(ctx, p.title, { x: x + 0.35, y: top + 0.25, w: pw - 0.7, h: 0.5, fontSize: 24, bold: true, color: t.text, fontFace: fonts.heading, valign: 'middle' });
       let cy = top + 0.95;
       const iw = pw - 0.7;
@@ -194,7 +206,7 @@ const layouts = {
     )];
     const t = table(ctx, {
       x: mx, y: 1.85, colW, header: s.columns, rows: s.rows, rowH, fontSize: fs,
-      cellStyle: (r, c) => (c === 0 && s.firstColBold !== false ? { bold: true, color: colors.navy, fill: colors.tealLight } : {}),
+      cellStyle: (r, c) => (c === 0 && s.firstColBold !== false ? { bold: true, color: colors.heading, fill: colors.tealLight } : {}),
     });
     if (s.callout) {
       const cy = Math.min(Math.max(1.85 + t.h + 0.3, 5.5), 5.9);

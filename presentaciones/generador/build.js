@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const PptxGenJS = require('pptxgenjs');
-const { defaultTheme, merge, tones } = require('./lib/theme');
+const { getTheme, merge, tones } = require('./lib/theme');
 const { layouts } = require('./lib/layouts');
 const { footer } = require('./lib/components');
 
@@ -17,9 +17,9 @@ async function main() {
   const specFile = path.resolve(specPath);
   const specDir = path.dirname(specFile);
   const spec = JSON.parse(fs.readFileSync(specFile, 'utf8'));
-  const theme = merge(defaultTheme, spec.theme);
-  const T = tones(theme.colors);
   const meta = spec.meta || {};
+  const theme = merge(getTheme(meta.theme || 'dark'), spec.theme);
+  const T = tones(theme.colors);
 
   const pptx = new PptxGenJS();
   pptx.layout = 'LAYOUT_WIDE';
@@ -34,7 +34,7 @@ async function main() {
     const layout = layouts[s.type];
     if (!layout) throw new Error(`Diapositiva ${i + 1}: tipo desconocido "${s.type}"`);
     const slide = pptx.addSlide();
-    if (!slide.background) slide.background = { color: theme.colors.white };
+    slide.background = { color: theme.colors.bg };
     const ctx = { pptx, slide, theme, T, meta, assetsDir };
     try {
       layout(ctx, s);
