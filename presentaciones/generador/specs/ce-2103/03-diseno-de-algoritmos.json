@@ -31,12 +31,12 @@
       "titleSize": 22,
       "items": [
         "Aplicar **divide y vencerás** con Merge Sort y búsqueda binaria",
-        "Evitar subproblemas repetidos con **programación dinámica**",
+        "Evitar subproblemas repetidos con **programación dinámica** (mochila, monedas)",
         "Resolver problemas con **backtracking** y algoritmos **ávidos**",
         "Diferenciar **Monte Carlo** de **Las Vegas** y usar filtros de **Bloom**",
-        "Describir cómo funciona un **algoritmo genético**"
+        "Describir cómo funciona un **algoritmo genético** (ejemplo: la mochila)"
       ],
-      "notes": "Cinco objetivos, uno por bloque de la lección. Pregunta de apertura: ¿cuántos de estos nombres ya habían escuchado? Idea para la clase: cada paradigma es una «estrategia» distinta para atacar un problema, y conocerlas ayuda a escoger la adecuada."
+      "notes": "Cinco objetivos, uno por bloque de la lección. Pregunta de apertura: ¿cuántos de estos nombres ya habían escuchado? Idea para la clase: cada paradigma es una «estrategia» distinta para atacar un problema, y conocerlas ayuda a escoger la adecuada. Proceso de diseño de un algoritmo: 1) formular el problema con la precisión suficiente; 2) diseñar un algoritmo para resolverlo; 3) analizarlo, para verificar que es correcto y evaluar su eficiencia (vea la lección de Análisis de Algoritmos). Los paradigmas de hoy son las herramientas del paso 2: conocerlas es un proceso gradual y, con la práctica, se asocia cada problema con su categoría. Hilo conductor: un mismo problema se puede atacar con varios paradigmas (monedas: ávido o programación dinámica; mochila: programación dinámica, backtracking o algoritmo genético)."
     },
     {
       "type": "flow",
@@ -48,7 +48,7 @@
         { "title": "Combinar", "text": "Une las soluciones parciales para obtener la solución del problema original." }
       ],
       "callout": { "tone": "teal", "label": "Eficiencia:", "text": "mejora cuando combinar toma menos tiempo que resolver los subproblemas." },
-      "notes": "Es uno de los paradigmas que ya vieron en cursos introductorios. Fase de división: los subproblemas son de la misma forma que el original, pero más pequeños, y se divide hasta el caso base. Fase de conquista: el objetivo es resolverlos de forma independiente. Fase de combinación: se mezclan las soluciones parciales para obtener la solución final."
+      "notes": "Es uno de los paradigmas que ya vieron en cursos introductorios. Fase de división: los subproblemas son de la misma forma que el original, pero más pequeños, y se divide hasta el caso base. Fase de conquista: el objetivo es resolverlos de forma independiente. Fase de combinación: se mezclan las soluciones parciales para obtener la solución final. Ventajas: los subproblemas son independientes (se pueden resolver en paralelo) y el código recursivo suele ser simple, claro y fácil de depurar. Costos: la versión recursiva puede ser más lenta que una iterativa y usa la pila de llamadas. Que el paradigma sea «muy eficiente» depende del costo de combinar, como indica el recuadro."
     },
     {
       "type": "image",
@@ -112,9 +112,10 @@
         }
       ],
       "callouts": [
-        { "tone": "amber", "label": "Investigar:", "text": "¿por qué la versión recursiva es `O(n)` y no `O(log n)`?" }
+        { "tone": "amber", "label": "Investigar:", "text": "¿por qué la versión recursiva es `O(n)` y no `O(log n)`?" },
+        { "tone": "teal", "label": "En la práctica:", "text": "ambas son `O(n)`; la recursiva no es más rápida (llamadas y pila)." }
       ],
-      "notes": "Ambas soluciones son O(n); el análisis del capítulo indica que la versión recursiva realiza menos comparaciones que la trivial. RESPUESTA a la pregunta «Investigar» (para la clase): la recurrencia es T(n) = 2T(n/2) + O(1). A diferencia de la búsqueda binaria, que sigue una sola mitad, aquí se procesan las dos mitades, así que el árbol de recursión tiene n hojas y n-1 nodos internos (unas 2n llamadas, cada una con trabajo constante): T(n) = O(n). Por ejemplo, con n = 4 hay 4 hojas y 7 llamadas en total."
+      "notes": "Ambas soluciones son O(n). El capítulo dice que la versión recursiva «realiza menos comparaciones»: es cierto, pero solo por una (n − 1 comparaciones entre máximos parciales frente a n comparaciones a[i] > max en el ciclo; con n = 8 son 7 frente a 8). Esa diferencia es despreciable y se paga con unas 2n − 1 llamadas recursivas (15 con n = 8) y una pila de llamadas de profundidad O(log n), así que en la práctica la versión recursiva NO es más rápida; aquí se usa para practicar el paradigma, no porque sea mejor. Divide y vencerás rinde cuando dividir reduce el trabajo (búsqueda binaria) o permite paralelizar (Merge Sort). RESPUESTA a la pregunta «Investigar» (para la clase): la recurrencia es T(n) = 2T(n/2) + O(1). A diferencia de la búsqueda binaria, que sigue una sola mitad, aquí se procesan las dos mitades, así que el árbol de recursión tiene n hojas y n-1 nodos internos (unas 2n llamadas, cada una con trabajo constante): T(n) = O(n). Por ejemplo, con n = 4 hay 4 hojas y 7 llamadas en total."
     },
     {
       "type": "cards",
@@ -190,6 +191,23 @@
       "notes": "En el diagrama de la izquierda cada subproblema alimenta a un único problema padre (estructura de árbol). A la derecha, un mismo subproblema contribuye a varios problemas mayores: por eso conviene resolverlo una sola vez y reutilizarlo."
     },
     {
+      "type": "cards",
+      "section": "Programación dinámica",
+      "title": "¿Cuándo sirve la programación dinámica?",
+      "columns": 2,
+      "cardHeight": 1.6,
+      "titleSize": 22,
+      "textSize": 18,
+      "callout": { "tone": "teal", "label": "Contraste:", "text": "en Merge Sort los subproblemas no se repiten; por eso le basta divide y vencerás." },
+      "cards": [
+        { "title": "Subestructura óptima", "text": "La solución óptima se arma con soluciones óptimas de subproblemas.", "tone": "teal" },
+        { "title": "Subproblemas repetidos", "text": "Pocos subproblemas distintos que se translapan: se resuelven una y otra vez.", "tone": "teal" },
+        { "title": "Memoización (top-down)", "text": "Recursión con una tabla: antes de calcular, se consulta si ya está guardado.", "tone": "navy" },
+        { "title": "Tabulación (bottom-up)", "text": "Se llena la tabla de menor a mayor, sin recursión, como el arreglo `mem`.", "tone": "navy" }
+      ],
+      "notes": "Dos propiedades que debe tener el problema. 1) Subestructura óptima: la solución óptima del problema se obtiene combinando soluciones óptimas de sus subproblemas; la veremos en LCS, en la mochila y en el cambio de monedas. Ojo: Fibonacci no es un problema de optimización, así que sirve para ver el traslape de subproblemas, no la subestructura óptima. 2) Subproblemas que se translapan: el espacio de subproblemas es pequeño y se repiten; en fib(10), fib(7) se calcula 3 veces (y fib(1), 55 veces). Dos formas de implementarlo. Memoización (top-down): se escribe la recursión natural y, antes de calcular un subproblema, se consulta una tabla; si ya está, se reutiliza. Por ejemplo: int fib(int n, int[] memo) { if (n < 2) return n; if (memo[n] != 0) return memo[n]; return memo[n] = fib(n - 1, memo) + fib(n - 2, memo); }. Con fib(10) hace 19 llamadas en lugar de 177. Tabulación (bottom-up): se llena la tabla de menor a mayor, que es lo que hace el arreglo mem de la diapositiva de Fibonacci. Ambas dan la misma complejidad asintótica; la memoización solo calcula los subproblemas que hacen falta y la tabulación evita la recursión. Contraste: en Merge Sort cada subproblema (una mitad distinta del arreglo) se resuelve una sola vez, así que memoizar no ahorraría nada y basta divide y vencerás."
+    },
+    {
       "type": "code",
       "section": "Programación dinámica",
       "title": "LCS: subsecuencia común más larga",
@@ -210,12 +228,12 @@
             { "label": "Dos cadenas de ejemplo", "code": "S1 = \"BCDAACD\"\nS2 = \"ACDBAC\"", "lang": "plain" }
           ],
           "cards": [
-            { "title": "No es contigua", "text": "Subsecuencias comunes: `BC`, `CDAC`, `DAC`…", "tone": "teal", "h": 1.5 },
-            { "title": "Sin memoización", "text": "Repite subproblemas: `O(2^(n+m))`.", "tone": "red", "h": 1.5 }
+            { "title": "No es contigua", "text": "Puede saltar letras, a diferencia de una subcadena: `BC`, `CDAC`, `DAC`…", "tone": "teal", "h": 1.6 },
+            { "title": "Sin memoización", "text": "Repite subproblemas: `O(2^(n+m))`.", "tone": "red", "h": 1.4 }
           ]
         }
       ],
-      "notes": "LCS (Longest Common Subsequence): la cadena más larga común entre dos strings, no necesariamente contigua. Para S1 = BCDAACD y S2 = ACDBAC hay subsecuencias comunes como BC, CDAC y DAC; la más larga tiene longitud 4 (CDAC). El código recursivo compara los últimos caracteres: si coinciden suma 1 y retrocede en ambas cadenas; si no, toma el máximo de descartar el último carácter de una u otra cadena."
+      "notes": "LCS (Longest Common Subsequence): la cadena más larga común entre dos strings, no necesariamente contigua. Para S1 = BCDAACD y S2 = ACDBAC hay subsecuencias comunes como BC, CDAC y DAC; la más larga tiene longitud 4 (CDAC). El código recursivo compara los últimos caracteres: si coinciden suma 1 y retrocede en ambas cadenas; si no, toma el máximo de descartar el último carácter de una u otra cadena. Terminología: una subsecuencia (subsequence) conserva el orden pero puede saltar caracteres; una subcadena (substring) es contigua. La subcadena común más larga (longest common substring) es otro problema: en su tabla D[i, j], cuando los caracteres no coinciden la celda se reinicia en 0 en lugar de tomar el máximo de arriba e izquierda (por ejemplo, «abcdxyz» y «xyzabcd» tienen como subcadena común más larga «abcd»). Esta lección resuelve la versión de subsecuencia."
     },
     {
       "type": "diagram",
@@ -290,6 +308,54 @@
       "notes": "La primera fila y la primera columna (cadena vacía) valen 0. Si los caracteres coinciden, la celda es la diagonal + 1; si no, el máximo entre la celda de arriba y la de la izquierda. Para BCDA y ACDB, la subsecuencia común más larga tiene longitud 2 (por ejemplo CD). La complejidad temporal pasa de O(2^(n+m)) a O(nm), porque cada celda se calcula una sola vez."
     },
     {
+      "type": "diagram",
+      "kind": "diseno-matriz",
+      "section": "Programación dinámica",
+      "title": "Mochila 0/1: ¿qué comer con 800 kcal?",
+      "top": 2.05,
+      "code": {
+        "w": 2.9,
+        "label": "Productos",
+        "size": 14,
+        "lang": "plain",
+        "code": "   kcal  saciedad\nA   100         2\nB   200         5\nC   400         6\nD   500        10\nE   700        13\nF   800        16"
+      },
+      "label": "Saciedad máxima según las kcal",
+      "legend": [{ "label": "Mejora la fila anterior", "tone": "teal" }, { "label": "Óptimo", "tone": "green" }],
+      "corner": "Con",
+      "colHeaders": ["100", "200", "300", "400", "500", "600", "700", "800"],
+      "rowHeaders": ["A", "A–B", "A–C", "A–D", "A–E", "A–F"],
+      "headW": 1.1,
+      "cellW": 0.8,
+      "cellH": 0.46,
+      "size": 18,
+      "headerSize": 16,
+      "cells": [
+        [2, 2, 2, 2, 2, 2, 2, 2],
+        [2, 5, 7, 7, 7, 7, 7, 7],
+        [2, 5, 7, 7, 8, 11, 13, 13],
+        [2, 5, 7, 7, 10, 12, 15, 17],
+        [2, 5, 7, 7, 10, 12, 15, 17],
+        [2, 5, 7, 7, 10, 12, 15, 17]
+      ],
+      "tones": [
+        [null, null, null, null, null, null, null, null],
+        [null, "teal", "teal", "teal", "teal", "teal", "teal", "teal"],
+        [null, null, null, null, "teal", "teal", "teal", "teal"],
+        [null, null, null, null, "teal", "teal", "teal", "teal"],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null]
+      ],
+      "highlight": [[5, 7, "green"]],
+      "calloutY": 5.9,
+      "calloutH": 0.85,
+      "callouts": [
+        { "tone": "teal", "label": "Cada celda:", "text": "el mayor entre copiar la de arriba y tomar el producto más la celda de arriba con las kcal restantes." },
+        { "tone": "amber", "label": "Óptimo: 17 (A + B + D).", "text": "¿Por qué las filas E y F no cambian nada?" }
+      ],
+      "notes": "Problema: elegir entre los productos A–F (kcal 100, 200, 400, 500, 700 y 800; saciedad 2, 5, 6, 10, 13 y 16) sin pasar de 800 kcal y maximizando la saciedad. «0/1» significa que cada producto se toma entera o no se toma. Tabla: la fila i considera los productos A hasta i y la columna c es la capacidad en kcal (todas las kcal son múltiplos de 100, así que se avanza de 100 en 100). Cada celda V[i][c] es la mejor saciedad posible: V[i][c] = max(V[i-1][c], saciedad_i + V[i-1][c - kcal_i]); la primera opción es no tomar el producto i y la segunda es tomarlo (solo si cabe). Es subestructura óptima: la mejor mochila se arma con la mejor mochila de un problema más pequeño. Las celdas en teal son las que mejoran respecto a la fila de arriba. Cómo se recupera la respuesta: V[D][800] = 10 + V[C][300] (D pesa 500, quedan 300 kcal); V[C][300] = 7 = V[B][300] = 5 + V[A][100] = 5 + 2. Es decir, D + B + A: saciedad 17 con 800 kcal. RESPUESTA a la pregunta: las filas E y F no cambian nada porque ningún producto de 700 u 800 kcal supera lo que ya se logra con A–D: con 700 kcal, B + D vale 15 y E vale 13; con 800 kcal, A + B + D vale 17, mientras que A + E vale 15 y F vale 16. Costo: una celda por producto y capacidad, O(n × capacidad): aquí 6 × 8 = 48 celdas, en lugar de probar las 2^6 = 64 combinaciones (con muchos productos la diferencia es enorme). Tarea: resolver la mochila con backtracking."
+    },
+    {
       "type": "code",
       "section": "Backtracking",
       "title": "Backtracking: probar y retroceder",
@@ -316,7 +382,7 @@
       "callouts": [
         { "tone": "teal", "text": "Si ningún hijo lleva a la solución, `return false` hace que el nodo anterior pruebe con otro hijo." }
       ],
-      "notes": "Backtracking es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione; fue popularizado por Derrick Henry Lehmer, matemático estadounidense. NOTA SOBRE EL CÓDIGO: el capítulo escribe «return backtrack(nodo)» dentro del ciclo, lo que solo exploraría el primer hijo; aquí se muestra la forma completa, donde se retorna true únicamente si la llamada recursiva tuvo éxito y, si ninguna alternativa funciona, se retorna false para que el nodo anterior pruebe otro hijo."
+      "notes": "Backtracking es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione; fue popularizado por Derrick Henry Lehmer, matemático estadounidense. NOTA SOBRE EL CÓDIGO: el capítulo escribe «return backtrack(nodo)» dentro del ciclo, lo que solo exploraría el primer hijo; aquí se muestra la forma completa, donde se retorna true únicamente si la llamada recursiva tuvo éxito y, si ninguna alternativa funciona, se retorna false para que el nodo anterior pruebe otro hijo. Dato histórico: SNOBOL pudo haber sido el primer lenguaje en ofrecer retroceso (backtracking) como facilidad, y Prolog lo utiliza de forma extensiva."
     },
     {
       "type": "diagram",
@@ -338,7 +404,7 @@
         { "title": "Una reina ataca…", "text": "Cualquier pieza en su misma fila, columna o diagonal.", "tone": "amber", "h": 1.5 },
         { "title": "En la figura", "text": "R es la reina; las casillas con × son las que ataca.", "tone": "navy", "h": 1.5 }
       ],
-      "notes": "Dado un tablero de ajedrez de NxN, colocar N reinas de modo que ninguna ataque a otra. Una reina puede atacar a otra si están en la misma fila, columna o diagonal. En la figura, la reina en la casilla (fila 1, columna 1) ataca 11 casillas de un tablero de 4x4. Para N = 4 existen exactamente dos soluciones."
+      "notes": "Dado un tablero de ajedrez de NxN, colocar N reinas de modo que ninguna ataque a otra. Una reina puede atacar a otra si están en la misma fila, columna o diagonal. En la figura, la reina en la casilla (fila 1, columna 1) ataca 11 casillas de un tablero de 4x4. Para N = 4 existen exactamente dos soluciones. Dato: con N = 8 hay 92 soluciones (12 distintas si se consideran iguales las que son rotaciones o reflexiones de otra)."
     },
     {
       "type": "code",
@@ -351,7 +417,7 @@
           "blocks": [
             {
               "label": "Se coloca una reina por columna",
-              "code": "bool solve(board[][] board, int col) {\n    if (col == N) {\n        return true;\n    }\n    for (int i = 0; i < N; i++) {\n        if (isSafe(board, i, col)) {\n            board[i][col] = 1;\n            if (solve(board, col + 1)) {\n                return true;\n            }\n            board[i][col] = 0;\n        }\n    }\n    return false;\n}"
+              "code": "boolean solve(int[][] board, int col) {\n    if (col == N) {\n        return true;\n    }\n    for (int i = 0; i < N; i++) {\n        if (isSafe(board, i, col)) {\n            board[i][col] = 1;\n            if (solve(board, col + 1)) {\n                return true;\n            }\n            board[i][col] = 0;\n        }\n    }\n    return false;\n}"
             }
           ]
         },
@@ -363,7 +429,36 @@
           ]
         }
       ],
-      "notes": "Caso base: col == N significa que las N reinas ya están colocadas, así que se retorna true. isSafe revisa que no haya otra reina en la misma fila ni en las diagonales de las columnas ya llenas. Si ninguna fila de la columna actual funciona, el método retorna false y quien lo llamó (la columna anterior) quita su reina y prueba la fila siguiente: eso es retroceder."
+      "notes": "Caso base: col == N significa que las N reinas ya están colocadas, así que se retorna true. N es el tamaño del tablero y board es una matriz de 0 y 1 (1 = hay una reina). isSafe revisa que no haya otra reina en la misma fila ni en las diagonales de las columnas ya llenas; se muestra en la siguiente diapositiva. Si ninguna fila de la columna actual funciona, el método retorna false y quien lo llamó (la columna anterior) quita su reina y prueba la fila siguiente: eso es retroceder. (El capítulo escribe bool y board[][] como pseudocódigo; aquí se usa la sintaxis de Java.)"
+    },
+    {
+      "type": "code",
+      "section": "Backtracking",
+      "title": "isSafe: ¿es segura esta casilla?",
+      "codeSize": 14,
+      "calloutsY": 5.85,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "Revisa fila y diagonales, hacia la izquierda",
+              "code": "boolean isSafe(int[][] board, int row, int col) {\n    for (int j = 0; j < col; j++)\n        if (board[row][j] == 1) return false;\n    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)\n        if (board[i][j] == 1) return false;\n    for (int i = row, j = col; i < N && j >= 0; i++, j--)\n        if (board[i][j] == 1) return false;\n    return true;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Misma fila", "text": "¿Hay una reina a la izquierda en la fila `row`?", "tone": "teal", "h": 1.6 },
+            { "title": "Dos diagonales", "text": "Una sube y otra baja, una fila por cada columna que retrocede.", "tone": "amber", "h": 1.6 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Solo se mira a la izquierda: la columna actual y las siguientes todavía no tienen reinas." }
+      ],
+      "notes": "isSafe se llama antes de colocar la reina en (row, col). Como las reinas se colocan de izquierda a derecha, una por columna, en la columna actual y en las siguientes aún no hay reinas: basta revisar hacia la izquierda. 1) La misma fila: el primer ciclo recorre las columnas 0 a col - 1. 2) La diagonal que sube hacia la izquierda: se decrementan fila y columna. 3) La diagonal que baja hacia la izquierda: se incrementa la fila y se decrementa la columna. No hace falta revisar la columna porque solo hay una reina por columna. Cada llamada cuesta O(N). Ejemplo con N = 4 y una reina en (0,0): en la columna 1, isSafe es false para las filas 0 (misma fila) y 1 (diagonal) y true para las filas 2 y 3; por eso la traza de la siguiente diapositiva coloca primero (2,1) y, al retroceder, prueba (3,1)."
     },
     {
       "type": "diagram",
@@ -394,7 +489,7 @@
       ],
       "calloutY": 6.05,
       "callout": { "tone": "teal", "text": "Retroceder descarta toda una rama del árbol de decisiones sin explorarla completa." },
-      "notes": "Recorrido real del algoritmo con N = 4 (filas y columnas desde 0): 1) Reina en (0,0). En la columna 1 solo es segura la fila 2; se coloca (2,1). En la columna 2 todas las filas están atacadas (fila 0 por la primera reina, filas 1 y 3 por la diagonal de la segunda y fila 2 por su fila): no hay opción, se retrocede. 2) Se prueba la fila 3 en la columna 1, que tampoco lleva a una solución, y se agotan las opciones de la primera reina, que pasa a la fila 1. 3) Con la primera reina en (1,0) se colocan (3,1), (0,2) y (2,3): solución."
+      "notes": "Recorrido real del algoritmo con N = 4 (filas y columnas desde 0; en cada columna se prueban las filas en orden 0, 1, 2, 3; verificado ejecutando el backtracking). 1) Reina en (0,0). En la columna 1 las filas 0 y 1 están atacadas (fila y diagonal); la primera fila segura es la 2 (la fila 3 también es segura, y se prueba al retroceder). Se coloca (2,1). En la columna 2 todas las filas están atacadas (fila 0 por la primera reina, filas 1 y 3 por la diagonal de la segunda y fila 2 por su fila): no hay opción, se retrocede. 2) Se quita (2,1) y se prueba la fila 3 en la columna 1: se coloca (3,1) y en la columna 2 solo es segura la fila 1, así que se coloca (1,2). En la columna 3 todas las filas están atacadas: se retrocede dos veces y se agotan las opciones de la primera reina, que pasa a la fila 1. 3) Con la primera reina en (1,0) se colocan (3,1), (0,2) y (2,3): solución."
     },
     {
       "type": "cards",
@@ -437,7 +532,7 @@
         { "tone": "teal", "label": "Regla:", "text": "elegir la moneda más grande que no supere el cambio restante, restarla y repetir." },
         { "tone": "green", "label": "Resultado:", "text": "10 + 10 + 10 + 5 + 2 + 2 = **6 monedas**." }
       ],
-      "notes": "Enunciado: con un conjunto infinito de monedas de 1, 2, 5 y 10 colones, ¿cuál es el número mínimo de monedas para dar 39 colones de cambio? El proceso ávido: seleccionar la denominación más grande menor o igual al cambio restante (10), restarla del cambio restante y agregarla al resultado, y repetir hasta que el cambio restante sea 0. Con estas denominaciones la solución ávida sí es óptima."
+      "notes": "Enunciado: con un conjunto infinito de monedas de 1, 2, 5 y 10 colones, ¿cuál es el número mínimo de monedas para dar 39 colones de cambio? El proceso ávido: seleccionar la denominación más grande menor o igual al cambio restante (10), restarla del cambio restante y agregarla al resultado, y repetir hasta que el cambio restante sea 0. Con estas denominaciones la solución ávida sí es óptima. Terminología opcional: un algoritmo ávido tiene cinco componentes; aquí, el conjunto de candidatos son las monedas disponibles; la función de selección escoge la moneda más grande; la función de factibilidad exige que no supere el cambio restante; la función objetivo es minimizar el número de monedas y la función de solución indica que se terminó cuando el cambio restante es 0."
     },
     {
       "type": "compare",
@@ -462,8 +557,44 @@
           "chips": ["7", "7"]
         }
       ],
-      "notes": "Con monedas de 1, 7 y 10 y un cambio de 14, la solución ávida da 10, 1, 1, 1 y 1 (cinco monedas), cuando la solución óptima sería dos monedas de 7. Moraleja: un algoritmo ávido es rápido y simple, pero hay que verificar que sea correcto para el problema (en muchos casos la solución ávida es suficiente). Para encontrar siempre el óptimo en este problema se puede usar programación dinámica."
+      "notes": "Con monedas de 1, 7 y 10 y un cambio de 14, la solución ávida da 10, 1, 1, 1 y 1 (cinco monedas), cuando la solución óptima sería dos monedas de 7. Moraleja: un algoritmo ávido es rápido y simple, pero hay que verificar que sea correcto para el problema (en muchos casos la solución ávida es suficiente). Para encontrar siempre el óptimo en este problema se puede usar programación dinámica, como se muestra en la siguiente diapositiva."
     },
+          {
+            "type": "diagram",
+            "kind": "diseno-matriz",
+            "section": "Programación dinámica",
+            "title": "Cuando el ávido falla: monedas con DP",
+            "top": 2.05,
+            "label": "Mínimo de monedas para cada monto",
+            "legend": [{ "label": "Mejora la fila anterior", "tone": "teal" }, { "label": "Resultado", "tone": "green" }],
+            "corner": "Monedas",
+            "colHeaders": ["0", "1", "2", "3", "4", "5", "6", "7", "8"],
+            "rowHeaders": ["{1}", "{1, 4}", "{1, 4, 6}"],
+            "headW": 1.7,
+            "cellW": 0.8,
+            "cellH": 0.5,
+            "size": 18,
+            "cells": [
+              [0, 1, 2, 3, 4, 5, 6, 7, 8],
+              [0, 1, 2, 3, 1, 2, 3, 4, 2],
+              [0, 1, 2, 3, 1, 2, 1, 2, 2]
+            ],
+            "tones": [
+              [null, null, null, null, null, null, null, null, null],
+              [null, null, null, null, "teal", "teal", "teal", "teal", "teal"],
+              [null, null, null, null, null, null, "teal", "teal", null]
+            ],
+            "highlight": [[2, 8, "green"]],
+            "cards": [
+              { "title": "Ávido: 3 monedas", "text": "6 + 1 + 1", "textSize": 20, "tone": "red", "h": 1.3 },
+              { "title": "DP: 2 monedas", "text": "4 + 4", "textSize": 20, "tone": "green", "h": 1.3 },
+              { "title": "Costo", "text": "`O(monedas × monto)`", "textSize": 18, "tone": "navy", "h": 1.3 }
+            ],
+            "calloutY": 5.95,
+            "calloutH": 0.7,
+            "callout": { "tone": "teal", "label": "Cada celda:", "text": "el menor entre la celda de arriba y `1 +` la celda de su fila a «moneda» columnas a la izquierda." },
+            "notes": "Problema: dar el cambio de 8 colones con el mínimo de monedas, con denominaciones de 1, 4 y 6. El ávido toma 6 y luego 1 + 1: 3 monedas; el óptimo es 4 + 4: 2 monedas. Con programación dinámica se construye una tabla: la fila d usa solo las primeras d denominaciones y la columna a es el monto. Fila {1}: el mínimo es a (a monedas de 1). Fila {1, 4}: 0, 1, 2, 3, 1, 2, 3, 4, 2. Fila {1, 4, 6}: 0, 1, 2, 3, 1, 2, 1, 2, 2. Cada celda sale de otras ya calculadas (subestructura óptima y subproblemas que se repiten): M[d][a] = min(M[d-1][a], 1 + M[d][a - moneda_d]), con M[d][0] = 0; es decir, «no uso la moneda d» o «uso una moneda d y resuelvo el monto restante». Ejemplo: M[{1,4,6}][8] = min(M[{1,4}][8], 1 + M[{1,4,6}][2]) = min(2, 1 + 2) = 2. Las celdas en teal son las que mejoran respecto a la fila de arriba. Para saber qué monedas se usaron se recorre la tabla hacia atrás: el 2 del monto 8 ya aparece en la fila {1, 4} (no hace falta el 6) y sale de 1 + M[{1,4}][4] = 1 + 1: una moneda de 4 más la solución del monto 4, que es otra moneda de 4. Costo: una celda por denominación y monto, O(denominaciones × monto). DP siempre da el mínimo; el ávido es más rápido pero no siempre es correcto. Con el ejemplo de la diapositiva anterior (monedas de 1, 7 y 10, cambio de 14) la tabla termina en 2 (7 + 7), frente a las 5 monedas del ávido."
+          },
     {
       "type": "cards",
       "section": "Probabilísticos",
@@ -571,7 +702,7 @@
       "callouts": [
         { "tone": "amber", "text": "Puede devolver `false` aunque exista un mayoritario, si el índice al azar no lo contiene." }
       ],
-      "notes": "Requerimiento: dado un array de N elementos, determinar si hay un elemento mayoritario (que aparezca más de N/2 veces). Solución trivial: contar cuántas veces aparece cada elemento, O(N^2). Con Monte Carlo se escoge un índice al azar y se cuenta cuántas veces aparece ese valor: O(N). El elemento mayoritario ocupa más de la mitad de las posiciones, así que la probabilidad de escogerlo es mayor a 1/2 y la de error es menor a 1/2. Ejecutar varias veces reduce el error (si el pseudo-random es bueno): después de k ejecuciones, es 1/2^k. Por ejemplo, con k = 10 es menos de 0,1 %. (En el código del capítulo el parámetro se llama «lenght»; aquí se usa n.)"
+      "notes": "Requerimiento: dado un array de N elementos, determinar si hay un elemento mayoritario (que aparezca más de N/2 veces). Solución trivial: contar cuántas veces aparece cada elemento, O(N^2). Con Monte Carlo se escoge un índice al azar y se cuenta cuántas veces aparece ese valor: O(N). El elemento mayoritario ocupa más de la mitad de las posiciones, así que la probabilidad de escogerlo es mayor a 1/2 y la de error es menor a 1/2. Ejecutar varias veces reduce el error (si el pseudo-random es bueno): después de k ejecuciones, es 1/2^k. Por ejemplo, con k = 10 es menos de 0,1 %. Pregunta para la clase: aunque un algoritmo sea determinista, ¿garantiza ser exacto? No necesariamente: un fallo de hardware (por ejemplo, un bit que se corrompe en memoria) también puede producir un resultado incorrecto, así que aceptar un error diminuto es razonable; con k = 30 ejecuciones el error es menor que una en mil millones (2^30 = 1 073 741 824). (En el código del capítulo el parámetro se llama «lenght»; aquí se usa n.)"
     },
     {
       "type": "diagram",
@@ -729,10 +860,10 @@
       "callout": { "tone": "teal", "label": "Heurística:", "text": "en griego significa «encontrar», la raíz de «eureka»." },
       "cards": [
         { "title": "Búsqueda", "text": "Técnica para optimización y aprendizaje automático que simula la selección natural.", "tone": "teal" },
-        { "title": "Heurístico", "text": "No garantiza el óptimo, pero sí una solución aceptable en un tiempo razonable.", "tone": "amber" },
+        { "title": "Heurístico", "text": "No garantiza el óptimo; suele dar buenas soluciones en un tiempo razonable, sin garantía formal.", "tone": "amber" },
         { "title": "Inspiración", "text": "Selección natural, reproducción y mutación.", "tone": "teal" }
       ],
-      "notes": "Historia: John Holland publicó en 1975 el libro «Adaptation in Natural and Artificial Systems»; en 1980 los algoritmos genéticos se aplican en problemas de optimización y en 1989 en problemas de aprendizaje automático. Heurística: búsqueda de soluciones de forma rápida y eficiente, pero no necesariamente óptima."
+      "notes": "Historia: John Holland publicó en 1975 el libro «Adaptation in Natural and Artificial Systems»; en 1980 los algoritmos genéticos se aplican en problemas de optimización y en 1989 en problemas de aprendizaje automático. Heurística: búsqueda de soluciones de forma rápida y eficiente, pero no necesariamente óptima. Matiz: un heurístico suele dar buenas soluciones, pero no ofrece garantías formales de qué tan cerca queda del óptimo; esa garantía sí la dan los algoritmos de aproximación. Dato: la teoría de la evolución de Darwin se publicó en 1859."
     },
     {
       "type": "cards",
@@ -750,6 +881,49 @@
       ],
       "notes": "Un individuo puede ser una cadena de bits, un vector de números, una estructura de datos, etc. Representación: el objetivo es optimizar el espacio de búsqueda escogiendo una representación adecuada; usualmente se recomiendan bit-vectors, donde cada entrada indica si cierta característica está presente o no."
     },
+          {
+            "type": "diagram",
+            "kind": "diseno-matriz",
+            "section": "Algoritmos genéticos",
+            "title": "GA sobre la mochila: bit-vector y fitness",
+            "top": 2.05,
+            "code": {
+              "w": 2.9,
+              "label": "Productos",
+              "size": 14,
+              "lang": "plain",
+              "code": "   kcal  saciedad\nA   100         2\nB   200         5\nC   400         6\nD   500        10\nE   700        13\nF   800        16"
+            },
+            "label": "Cuatro individuos de la población",
+            "corner": "Lleva",
+            "colHeaders": ["A", "B", "C", "D", "E", "F", "kcal", "fitness"],
+            "rowHeaders": ["A+B+D", "F", "A+B", "A+C+D"],
+            "headW": 1.3,
+            "colW": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.95, 1.2],
+            "cellH": 0.58,
+            "size": 18,
+            "headerSize": 16,
+            "cells": [
+              [1, 1, 0, 1, 0, 0, 800, 17],
+              [0, 0, 0, 0, 0, 1, 800, 16],
+              [1, 1, 0, 0, 0, 0, 300, 7],
+              [1, 0, 1, 1, 0, 0, 1000, 0]
+            ],
+            "tones": [
+              ["teal", "teal", null, "teal", null, null, null, null],
+              [null, null, null, null, null, "teal", null, null],
+              ["teal", "teal", null, null, null, null, null, null],
+              ["teal", null, "teal", "teal", null, null, "red", null]
+            ],
+            "highlight": [[0, 7, "green"], [3, 7, "red"]],
+            "calloutY": 5.5,
+            "calloutH": 0.9,
+            "callouts": [
+              { "tone": "teal", "label": "Fitness:", "text": "la saciedad total si las kcal no pasan de 800; si pasan, 0 (individuo inválido)." },
+              { "tone": "amber", "label": "Sin garantía:", "text": "la tabla de DP asegura el 17; el GA solo busca valores cercanos." }
+            ],
+            "notes": "Retomamos la mochila (6 productos y tope de 800 kcal), ahora con un algoritmo genético. Individuo: un bit-vector de 6 posiciones, una por producto (A a F); 1 = el producto va en la mochila y 0 = no. Ejemplo: 110100 = A + B + D, con 800 kcal y saciedad 17. Fitness: la saciedad total del individuo si no pasa del tope de 800 kcal; si lo pasa, 0 (otra opción es penalizarlo). Ejemplos de la tabla: 110100 → 800 kcal, fitness 17; 000001 (solo F) → 800 kcal, fitness 16; 110000 (A + B) → 300 kcal, fitness 7; 101100 (A + C + D) → 1000 kcal: su saciedad sería 18, pero se pasa del tope, así que es inválido y su fitness es 0. Población inicial: bit-vectors al azar; luego se repite el ciclo de la siguiente diapositiva (calcular el fitness, seleccionar, recombinar y mutar). Comparación con programación dinámica: la tabla garantiza el óptimo (17 = A + B + D); el GA es un heurístico: busca valores cercanos sin garantía, pero no necesita llenar la tabla. Aquí hay solo 2^6 = 64 individuos posibles, así que se podrían probar todos; con 40 productos serían 2^40 (más de 10^12 combinaciones), y ahí un GA es una opción. Nota sobre bit-vectors: en C o Java un bit-vector de hasta 32 posiciones cabe en un int (por ejemplo int bit_vector = 0;) y se manipula con operaciones bit a bit (&, |, ^, desplazamientos); ahorra espacio y se usa en compresión y cifrado."
+          },
     {
       "type": "diagram",
       "kind": "diseno-ciclo",
@@ -764,8 +938,8 @@
         { "title": "Nueva población", "text": "Hijos por recombinación y mutación; reemplazan a la anterior.", "tone": "teal" }
       ],
       "loop": { "from": 3, "to": 1, "label": "se repite en cada generación" },
-      "callout": { "tone": "amber", "label": "¿Cuándo se detiene?", "text": "Al llegar a un máximo de generaciones o a un fitness mínimo o máximo." },
-      "notes": "Se inicia con una población de individuos aleatorios. En cada generación se evalúa el fitness de cada individuo, se seleccionan los mejores y se reproducen para generar una nueva generación; la nueva población reemplaza a la anterior y se repite hasta que se cumple un criterio de parada (número máximo de generaciones, fitness mínimo, fitness máximo, etc.). Selección de padres: después de aplicar el fitness se obtiene un grupo de posibles padres, que pueden emparejarse en secuencia (1-2, 3-4…) o al azar."
+      "callout": { "tone": "amber", "label": "¿Cuándo se detiene?", "text": "Al llegar a un máximo de generaciones, a un fitness mínimo o máximo, o cuando la población ya no cambia. Una población inicial muy pequeña puede quedar en un óptimo local." },
+      "notes": "Se inicia con una población de individuos aleatorios. En cada generación se evalúa el fitness de cada individuo, se seleccionan los mejores y se reproducen para generar una nueva generación; la nueva población reemplaza a la anterior y se repite hasta que se cumple un criterio de parada (número máximo de generaciones, fitness mínimo, fitness máximo, etc.). Selección de padres: después de aplicar el fitness se obtiene un grupo de posibles padres, que pueden emparejarse en secuencia (1-2, 3-4…) o al azar. En la práctica: la población inicial se genera al azar procurando cubrir bien el espacio de búsqueda; su tamaño depende del problema (si es muy pequeña, puede quedar atrapada en un óptimo local; si es enorme, requiere demasiado cómputo). Otra forma común de escoger padres es con probabilidad proporcional al fitness: los individuos más aptos se reproducen más. Criterios de parada: un máximo de generaciones o la convergencia (la población ya no cambia). Un algoritmo genético puede no encontrar una solución adecuada: no hay garantía."
     },
     {
       "type": "diagram",
@@ -811,13 +985,13 @@
       "titleSize": 20,
       "items": [
         "**Divide y vencerás:** dividir, conquistar y combinar (Merge Sort, búsqueda binaria).",
-        "**Programación dinámica:** memoizar subproblemas que se translapan (Fibonacci, LCS).",
+        "**Programación dinámica:** reutilizar subproblemas que se translapan (LCS, mochila, monedas).",
         "**Backtracking:** probar decisiones y retroceder si fallan (N-reinas).",
         "**Algoritmos ávidos:** elegir lo mejor en cada paso, sin reconsiderar (monedas).",
         "**Probabilísticos:** Monte Carlo, Las Vegas y filtros de Bloom.",
-        "**Genéticos:** población, fitness, selección, recombinación y mutación."
+        "**Genéticos:** población, fitness, selección, recombinación y mutación (mochila)."
       ],
-      "notes": "Cada paradigma es una estrategia distinta: divide y vencerás reduce el problema; DP reutiliza subproblemas; backtracking explora y deshace; los ávidos deciden y no vuelven atrás; los probabilísticos usan azar para ganar velocidad a cambio de certeza; los genéticos buscan soluciones aceptables simulando la evolución."
+      "notes": "Cada paradigma es una estrategia distinta: divide y vencerás reduce el problema; DP reutiliza subproblemas (subestructura óptima y subproblemas que se translapan, con memoización o tabulación); backtracking explora y deshace; los ávidos deciden y no vuelven atrás (y cuando fallan, como en las monedas de 1, 4 y 6, DP da el óptimo); los probabilísticos usan azar para ganar velocidad a cambio de certeza; los genéticos buscan soluciones aceptables simulando la evolución, por ejemplo en la mochila."
     },
     {
       "type": "list",
@@ -828,10 +1002,12 @@
       "titleSize": 22,
       "items": [
         { "title": "¿Por qué `findMax` por divide y vencerás es `O(n)` y no `O(log n)`?", "text": "Pista: cuente cuántas llamadas recursivas se generan para n = 4 y para n = 8." },
-        { "title": "¿Cómo se puede implementar paralelismo en la búsqueda binaria y en Merge Sort?", "text": "Pista: ¿qué partes del problema son independientes entre sí?" }
+        { "title": "¿Cómo se puede implementar paralelismo en la búsqueda binaria y en Merge Sort?", "text": "Pista: ¿qué partes del problema son independientes entre sí?" },
+        { "title": "Resuelva la mochila (800 kcal) con backtracking.", "text": "Pista: en cada nivel del árbol, ¿lleva o no el producto? ¿Cuándo retrocede?" },
+        { "title": "¿Qué paradigmas sirven para la mochila, las N-reinas y las monedas?", "text": "Pista: un mismo problema admite varios paradigmas; compare su corrección, tiempo y simplicidad." }
       ],
       "footnote": "Referencias: GeeksforGeeks. «Introduction to Divide and Conquer Algorithm» (geeksforgeeks.org/introduction-to-divide-and-conquer-algorithm). GeeksforGeeks. «Introduction to Greedy Algorithm: Data Structures and Algorithm Tutorials» (geeksforgeeks.org/introduction-to-greedy-algorithm-data-structures-and-algorithm-tutorials).",
-      "notes": "Las dos preguntas «Investigar» del capítulo. Respuestas sugeridas en las notas de las diapositivas «Encontrar el máximo de un arreglo» y «Paralelismo en divide y vencerás». Próximos pasos: practicar con los ejemplos de código y tratar de reconocer qué paradigma usa cada algoritmo que ya conocen."
+      "notes": "Las dos primeras preguntas «Investigar» son las del capítulo; respuestas sugeridas en las notas de las diapositivas «Encontrar el máximo de un arreglo» y «Paralelismo en divide y vencerás». Las otras dos son práctica adicional. Mochila con backtracking: se prueba, producto por producto, llevarlo o no llevarlo; se retrocede cuando las kcal pasan de 800 (y se guarda la mejor saciedad encontrada). Un mismo problema, varios paradigmas: mochila → programación dinámica (óptimo), backtracking (prueba todas las combinaciones factibles) y algoritmo genético (aproximado); N-reinas → backtracking (determinista) y Las Vegas (aleatorio); monedas → ávido (rápido, no siempre óptimo) y programación dinámica (óptimo). Más problemas para practicar, por paradigma: divide y vencerás: Quicksort, multiplicación de Karatsuba, multiplicación de matrices de Strassen; backtracking: el recorrido del caballo, laberintos, coloreado de grafos, subconjuntos de números primos que suman S; programación dinámica: costo mínimo de un camino en una matriz, números feos (ugly numbers), LCS de tres cadenas; ávidos: Kruskal y Prim (árboles de expansión mínima), Dijkstra (vea la lección de Algoritmos de Búsqueda), Huffman (vea la lección de Algoritmos de Compresión), el viajante con una heurística ávida; genéticos: el viajante y el cambio de monedas. Próximos pasos: practicar con los ejemplos de código y tratar de reconocer qué paradigma usa cada algoritmo que ya conocen."
     }
   ]
 }

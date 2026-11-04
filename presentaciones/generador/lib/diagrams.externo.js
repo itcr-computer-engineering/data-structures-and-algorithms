@@ -68,7 +68,7 @@ function images(ctx, s) {
 function timebar(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
-  const barW = w - 2 * mx, gap = 0.05, y = 2.45, h = 0.8;
+  const barW = w - 2 * mx, gap = 0.05, y = s.barY || 2.45, h = s.barH || 0.8;
   const n = s.segments.length;
   const totalMs = s.segments.reduce((a, g) => a + g.ms, 0);
   const avail = barW - gap * (n - 1);
@@ -90,19 +90,23 @@ function timebar(ctx, s) {
       fontFace: ctx.theme.fonts.heading, align: 'center', valign: 'middle', margin: 0, lang: 'es-ES',
     });
   });
-  if (s.bracket) {
-    const x1 = xs[s.bracket.from], x2 = xs[s.bracket.to] + widths[s.bracket.to];
-    const by = y - 0.14;
-    arrow(ctx, { x1, y1: by, x2, y2: by, color: colors.tealDark, width: 2, head: false });
-    arrow(ctx, { x1, y1: by, x2: x1, y2: by + 0.1, color: colors.tealDark, width: 2, head: false });
-    arrow(ctx, { x1: x2, y1: by, x2, y2: by + 0.1, color: colors.tealDark, width: 2, head: false });
-    text(ctx, s.bracket.label, { x: x1, y: by - 0.45, w: x2 - x1, h: 0.4, fontSize: 18, bold: true, color: colors.tealDark, align: 'center', valign: 'middle' });
-  }
+  // Uno o varios corchetes apilados (el primero es el más cercano a la barra)
+  const brackets = s.brackets || (s.bracket ? [s.bracket] : []);
+  brackets.forEach((br, lvl) => {
+    const x1 = xs[br.from], x2 = xs[br.to] + widths[br.to];
+    const by = y - 0.14 - lvl * 0.5;
+    const col = br.tone ? ctx.T[br.tone].text : colors.tealDark;
+    arrow(ctx, { x1, y1: by, x2, y2: by, color: col, width: 2, head: false });
+    arrow(ctx, { x1, y1: by, x2: x1, y2: by + 0.1, color: col, width: 2, head: false });
+    arrow(ctx, { x1: x2, y1: by, x2, y2: by + 0.1, color: col, width: 2, head: false });
+    const lh = brackets.length > 1 ? 0.34 : 0.4;
+    text(ctx, br.label, { x: x1, y: by - lh - 0.05, w: x2 - x1, h: lh, fontSize: brackets.length > 1 ? 17 : 18, bold: true, color: col, align: 'center', valign: 'middle' });
+  });
   const cg = 0.3, cw = (barW - cg * (n - 1)) / n;
   s.segments.forEach((g, i) => {
-    card(ctx, { title: g.label, text: g.text, footer: g.range, tone: g.tone, titleSize: 20, textSize: 16, footerSize: 17 }, { x: mx + i * (cw + cg), y: 3.55, w: cw, h: 2.4 });
+    card(ctx, { title: g.label, text: g.text, footer: g.range, tone: g.tone, titleSize: 20, textSize: 16, footerSize: 17 }, { x: mx + i * (cw + cg), y: s.cardsY || 3.55, w: cw, h: s.cardH || 2.4 });
   });
-  if (s.callout) callout(ctx, { x: mx, y: 6.07, w: barW, h: 0.78, size: 16, ...s.callout });
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.07, w: barW, h: 0.78, size: 16, ...s.callout });
 }
 
 // ------------------------------------------------------------------ barras horizontales
@@ -372,6 +376,326 @@ function btree(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 5.85, w: w - 2 * mx, h: 0.9, size: 16, ...s.callout });
 }
 
+// ------------------------------------------------------------------ celda con texto (bloque de disco, franja, bloque del SO)
+function cell(ctx, { x, y, w, h, label, tone = 'teal', solid = false, dashed = false, size = 16, font, color }) {
+  const { colors, fonts } = ctx.theme;
+  const t = ctx.T[tone];
+  ctx.slide.addText(label == null ? '' : String(label), {
+    shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.06, x, y, w, h,
+    fill: { color: solid ? t.accent : dashed ? colors.bg : t.soft },
+    line: { color: t.accent, width: 1.5, dashType: dashed ? 'dash' : 'solid' },
+    color: color || (solid ? t.on : colors.heading), bold: true, fontSize: size,
+    fontFace: font || fonts.code, align: 'center', valign: 'middle', margin: 0, lang: 'es-ES',
+  });
+}
+
+// ------------------------------------------------------------------ RAID: técnicas con minidiscos (striping, mirroring, paridad)
+// Campos: panels[{ title, tone, disks[{ label, blocks[{ t, parity }] }], text, footer }], panelHeight, callout
+function raid(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const n = s.panels.length, gap = 0.3;
+  const pw = (w - 2 * mx - (n - 1) * gap) / n;
+  const top = 1.85, ph = s.panelHeight || 3.95;
+  s.panels.forEach((p, i) => {
+    const x = mx + i * (pw + gap);
+    const tone = p.tone || 'teal';
+    const t = ctx.T[tone];
+    C.surface(ctx, tone, { x, y: top, w: pw, h: ph });
+    text(ctx, p.title, { x: x + 0.3, y: top + 0.2, w: pw - 0.6, h: 0.45, fontSize: 22, bold: true, color: t.text, fontFace: fonts.heading, valign: 'middle' });
+    const nd = p.disks.length, dgap = 0.14;
+    const dw = Math.min(1.05, (pw - 0.6 - (nd - 1) * dgap) / nd);
+    const rowsN = Math.max(...p.disks.map((d) => d.blocks.length));
+    const bh = 0.46, bgap = 0.08;
+    const dh = 0.42 + rowsN * (bh + bgap);
+    const dy = top + 0.8;
+    let dx = x + (pw - (nd * dw + (nd - 1) * dgap)) / 2;
+    p.disks.forEach((d) => {
+      box(ctx, { x: dx, y: dy, w: dw, h: dh, fill: colors.bg, line: colors.border, radius: 0.1 });
+      text(ctx, d.label, { x: dx, y: dy + 0.05, w: dw, h: 0.32, fontSize: 14, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+      d.blocks.forEach((b, k) => {
+        cell(ctx, { x: dx + 0.07, y: dy + 0.42 + k * (bh + bgap), w: dw - 0.14, h: bh, label: b.t, tone: b.parity ? 'amber' : p.blockTone || tone, solid: !!b.parity, size: 16 });
+      });
+      dx += dw + dgap;
+    });
+    text(ctx, p.text, { x: x + 0.3, y: dy + dh + 0.15, w: pw - 0.6, h: 0.9, fontSize: 16, color: colors.slate });
+    if (p.footer) text(ctx, p.footer, { x: x + 0.3, y: top + ph - 0.62, w: pw - 0.6, h: 0.4, fontSize: 15, bold: true, color: t.text, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: w - 2 * mx, h: 0.8, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ bit de paridad (par / impar) calculado a partir de los datos
+// Campos: columns[4], data[cadenas de bits], rules[2 callouts], callout
+function paridad(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const W = w - 2 * mx;
+  const cols = [2.9, 1.8, 3.6, 3.6].map((v) => (v / 11.9) * W);
+  const xs = [];
+  let acc = mx;
+  cols.forEach((cw) => { xs.push(acc); acc += cw; });
+  const y0 = 1.85, hh = 0.45, rh = 0.62;
+  s.columns.forEach((hd, c) => text(ctx, hd, { x: xs[c], y: y0, w: cols[c], h: hh, fontSize: 16, bold: true, color: colors.slate, align: 'center', valign: 'middle' }));
+  const charW = 0.2; // Consolas 24 pt
+  s.data.forEach((d, r) => {
+    const y = y0 + hh + r * rh;
+    const ones = [...d].filter((b) => b === '1').length;
+    const even = ones % 2 === 1 ? '1' : '0';
+    const odd = even === '1' ? '0' : '1';
+    const bandH = rh - 0.06, mid = y + bandH / 2;
+    box(ctx, { x: mx, y, w: W, h: bandH, fill: colors.panel, line: colors.border, radius: 0.08 });
+    const bitsAt = (str, cx) => text(ctx, str, { x: cx, y: mid - 0.22, w: str.length * charW, h: 0.44, fontSize: 24, bold: true, fontFace: fonts.code, color: colors.heading, valign: 'middle' });
+    bitsAt(d, xs[0] + (cols[0] - d.length * charW) / 2);
+    text(ctx, String(ones), { x: xs[1], y: mid - 0.22, w: cols[1], h: 0.44, fontSize: 22, color: colors.ink, align: 'center', valign: 'middle' });
+    [even, odd].forEach((bit, k) => {
+      const tw = d.length * charW + 0.06 + 0.38;
+      const cx = xs[2 + k] + (cols[2 + k] - tw) / 2;
+      bitsAt(d, cx);
+      cell(ctx, { x: cx + d.length * charW + 0.06, y: mid - 0.23, w: 0.38, h: 0.46, label: bit, tone: 'amber', solid: true, size: 22 });
+    });
+  });
+  const ry = y0 + hh + s.data.length * rh + 0.15;
+  const k = (s.rules || []).length;
+  const rw = (W - (k - 1) * 0.3) / Math.max(1, k);
+  (s.rules || []).forEach((r, i) => callout(ctx, { x: mx + i * (rw + 0.3), y: ry, w: rw, h: 0.85, size: 16, ...r }));
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 5.95, w: W, h: 0.85, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ RAID 5: franjas, paridad rotada y reconstrucción con XOR
+// Campos: drives[], stripes[[bloques]], parity[disco de paridad por franja], failed, focus (franja), side{ text, note }, callout.
+// Valida que el XOR de cada franja sea 0 y calcula los pasos de la reconstrucción.
+function raid5(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const xor = (a, b) => (parseInt(a, 2) ^ parseInt(b, 2)).toString(2).padStart(a.length, '0');
+  s.stripes.forEach((st, i) => {
+    if (!/^0+$/.test(st.reduce(xor))) throw new Error(`externo-raid5: el XOR de la franja ${i + 1} no es cero`);
+  });
+  const nd = s.drives.length;
+  const labW = 1.3, cw = 1.4, gap = 0.08, rh = 0.62, y0 = 1.85, hh = 0.8;
+  const gx = mx + labW;
+  s.drives.forEach((d, k) => {
+    const x = gx + k * (cw + gap);
+    text(ctx, d, { x, y: y0, w: cw, h: 0.36, fontSize: 16, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+    if (k === s.failed) chip(ctx, { x: x + 0.2, y: y0 + 0.42, w: cw - 0.4, h: 0.32, label: 'falló', tone: 'red', size: 14 });
+  });
+  const gridW = labW + nd * (cw + gap);
+  s.stripes.forEach((st, i) => {
+    const y = y0 + hh + i * (rh + gap);
+    text(ctx, 'Franja ' + (i + 1), { x: mx, y, w: labW - 0.1, h: rh, fontSize: 16, color: colors.slate, valign: 'middle' });
+    st.forEach((v, k) => {
+      const x = gx + k * (cw + gap);
+      if (k === s.failed) cell(ctx, { x, y, w: cw, h: rh, label: '????', tone: 'red', dashed: true, size: 20 });
+      else cell(ctx, { x, y, w: cw, h: rh, label: s.parity[i] === k ? 'P ' + v : v, tone: s.parity[i] === k ? 'amber' : 'teal', size: 20 });
+    });
+    if (i === s.focus) {
+      ctx.slide.addShape(ctx.pptx.ShapeType.rect, { x: mx - 0.08, y: y - 0.05, w: gridW + 0.04, h: rh + 0.1, fill: { type: 'none' }, line: { color: colors.amberMid, width: 3 } });
+    }
+  });
+  text(ctx, s.legend || '', { x: mx, y: y0 + hh + s.stripes.length * (rh + gap) + 0.02, w: gridW, h: 0.3, fontSize: 14, color: colors.slate, valign: 'middle' });
+
+  // Panel lateral: reconstrucción de la franja enfocada
+  const f = s.focus;
+  const others = s.stripes[f].filter((_, k) => k !== s.failed);
+  const steps = [];
+  let res = others[0];
+  for (let k = 1; k < others.length; k++) {
+    const r = xor(res, others[k]);
+    steps.push(`${res} XOR ${others[k]} = ${r}`);
+    res = r;
+  }
+  if (res !== s.stripes[f][s.failed]) throw new Error('externo-raid5: la reconstrucción no coincide con el bloque perdido');
+  const px = mx + gridW + 0.35, pw = w - mx - px;
+  C.surface(ctx, 'teal', { x: px, y: y0, w: pw, h: 3.6 });
+  text(ctx, `Reconstruir la franja ${f + 1}`, { x: px + 0.3, y: y0 + 0.2, w: pw - 0.6, h: 0.45, fontSize: 21, bold: true, color: ctx.T.teal.text, fontFace: fonts.heading, valign: 'middle' });
+  text(ctx, s.side.text, { x: px + 0.3, y: y0 + 0.8, w: pw - 0.6, h: 0.65, fontSize: 16, color: colors.slate });
+  const runs = steps.map((ln, i) => ({ text: ln, options: { fontSize: 18, bold: true, fontFace: fonts.code, color: colors.heading, breakLine: i < steps.length - 1 } }));
+  text(ctx, runs, { x: px + 0.3, y: y0 + 1.5, w: pw - 0.6, h: 0.8, lineSpacing: 26 });
+  cell(ctx, { x: px + 0.3, y: y0 + 2.4, w: pw - 0.6, h: 0.62, label: `${s.drives[s.failed]}, franja ${f + 1} = ${res}`, tone: 'green', solid: true, size: 19, font: fonts.body });
+  if (s.side.note) text(ctx, s.side.note, { x: px + 0.3, y: y0 + 3.1, w: pw - 0.6, h: 0.4, fontSize: 15, color: colors.slate, valign: 'middle' });
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 5.95, w: w - 2 * mx, h: 0.85, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ el disco visto por el SO: secuencia de bloques + preguntas
+// Campos: intro, cells[] (rótulos; «…» deja un hueco), highlight (índice), highlightLabel, opsLabel, ops[], cards[], callout
+function bloques(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const W = w - 2 * mx;
+  if (s.intro) text(ctx, s.intro, { x: mx, y: 1.75, w: W, h: 0.45, fontSize: 18, color: colors.slate, valign: 'middle' });
+  const n = s.cells.length, gap = 0.08, y = 2.35, h = 0.6;
+  const cw = (W - (n - 1) * gap) / n;
+  s.cells.forEach((c, i) => {
+    const x = mx + i * (cw + gap);
+    if (c === '…') {
+      text(ctx, '…', { x, y, w: cw, h, fontSize: 26, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+      return;
+    }
+    const hi = i === s.highlight;
+    cell(ctx, { x, y, w: cw, h, label: c, tone: hi ? 'amber' : 'teal', solid: hi, size: 16 });
+    if (hi && s.highlightLabel) text(ctx, s.highlightLabel, { x: x + cw / 2 - 0.8, y: y + h + 0.05, w: 1.6, h: 0.32, fontSize: 15, bold: true, color: ctx.T.amber.text, align: 'center', valign: 'middle' });
+  });
+  const cy = 3.5;
+  let x = mx;
+  if (s.opsLabel) {
+    const lw = s.opsLabel.length * 0.105 + 0.3;
+    text(ctx, s.opsLabel, { x, y: cy, w: lw, h: 0.42, fontSize: 17, bold: true, color: colors.slate, valign: 'middle' });
+    x += lw + 0.1;
+  }
+  (s.ops || []).forEach((op) => {
+    const ow = op.length * 0.115 + 0.6;
+    chip(ctx, { x, y: cy, w: ow, h: 0.42, label: op, tone: 'teal', size: 16 });
+    x += ow + 0.2;
+  });
+  const k = s.cards.length, cg = 0.3, kw = (W - (k - 1) * cg) / k;
+  s.cards.forEach((c, i) => card(ctx, { tone: 'amber', titleSize: 21, textSize: 17, footerSize: 15, ...c }, { x: mx + i * (kw + cg), y: 4.2, w: kw, h: s.cardHeight || 2.05 }));
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.4, w: W, h: 0.5, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ asignación de bloques: contigua, lista enlazada, i-nodo
+// Campos: blocks (12), legend[{ label, tone, solid, dashed }], rows[{ title, text, kind: contiguous|linked|inode, file[], others[], note }]
+function asignacion(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const W = w - 2 * mx;
+  const n = s.blocks || 12, bw = 0.5, bgap = 0.07, bh = 0.5;
+  const stripW = n * bw + (n - 1) * bgap;
+  const sx = w - mx - stripW;
+  const labW = sx - mx - 0.4;
+  const top = s.top || 2.25, rh = s.rowHeight || 1.4;
+  const cx = (k) => sx + k * (bw + bgap) + bw / 2;
+  let lx = mx;
+  (s.legend || []).forEach((it) => {
+    cell(ctx, { x: lx, y: 1.8, w: 0.3, h: 0.3, label: '', tone: it.tone, solid: it.solid, dashed: it.dashed });
+    const tw = it.label.length * 0.1 + 0.2;
+    text(ctx, it.label, { x: lx + 0.4, y: 1.75, w: tw, h: 0.4, fontSize: 15, color: colors.slate, valign: 'middle' });
+    lx += 0.4 + tw + 0.3;
+  });
+  s.rows.forEach((r, i) => {
+    const y = top + i * rh;
+    if (i > 0) ctx.slide.addShape(ctx.pptx.ShapeType.line, { x: mx, y: y - 0.03, w: W, h: 0, line: { color: colors.border, width: 0.75 } });
+    const runs = C.rich(r.title, ctx, { fontSize: 22, bold: true, color: colors.heading, fontFace: fonts.heading });
+    runs[runs.length - 1].options.breakLine = true;
+    runs.push(...C.rich(r.text, ctx, { fontSize: 16, color: colors.slate }));
+    text(ctx, runs, { x: mx, y: y + 0.05, w: labW, h: rh - 0.1, valign: 'middle' });
+    const by = y + 0.78;
+    const file = new Set(r.file), others = new Set(r.others || []);
+    for (let k = 0; k < n; k++) {
+      const mine = file.has(k), other = others.has(k);
+      cell(ctx, { x: sx + k * (bw + bgap), y: by, w: bw, h: bh, label: k, tone: mine ? 'teal' : 'slate', solid: mine, dashed: !mine && !other, size: 14 });
+    }
+    const last = r.file[r.file.length - 1];
+    if (r.kind === 'contiguous') {
+      const x1 = cx(r.file[0]) - bw / 2, x2 = cx(last) + bw / 2;
+      text(ctx, r.note || 'bloques consecutivos', { x: x1 - 0.5, y: by - 0.36, w: x2 - x1 + 1.0, h: 0.3, fontSize: 14, bold: true, color: colors.tealDark, align: 'center', valign: 'middle' });
+    } else if (r.kind === 'linked') {
+      const lane = by - 0.3;
+      r.file.forEach((a, m) => {
+        if (m === r.file.length - 1) return;
+        const xa = cx(a) + 0.1, xb = cx(r.file[m + 1]) - 0.1;
+        arrow(ctx, { x1: xa, y1: by, x2: xa, y2: lane, color: colors.amberMid, width: 2, head: false });
+        arrow(ctx, { x1: xa, y1: lane, x2: xb, y2: lane, color: colors.amberMid, width: 2, head: false });
+        arrow(ctx, { x1: xb, y1: lane, x2: xb, y2: by - 0.02, color: colors.amberMid, width: 2 });
+      });
+      text(ctx, r.note || 'fin', { x: cx(last) + 0.02, y: by - 0.36, w: 0.6, h: 0.3, fontSize: 14, bold: true, color: colors.amber, align: 'left', valign: 'middle' });
+    } else if (r.kind === 'inode') {
+      const bwid = 2.3, bx = sx + stripW / 2 - bwid / 2, byy = y + 0.05;
+      cell(ctx, { x: bx, y: byy, w: bwid, h: 0.4, label: r.note || 'i-nodo del archivo', tone: 'amber', solid: true, size: 16, font: fonts.body });
+      const m = r.file.length;
+      r.file.forEach((k, j) => {
+        arrow(ctx, { x1: bx + bwid / 2 + (j - (m - 1) / 2) * 0.5, y1: byy + 0.4, x2: cx(k), y2: by - 0.02, color: colors.amberMid, width: 2 });
+      });
+    }
+  });
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.55, w: W, h: 0.5, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ i-nodo: punteros directos e indirectos y tamaño máximo
+// Campos: headers[4], rows[{ label, ptr, hops, count, size }], total{ label, formula, count, size }, callout
+function inodo(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const W = w - 2 * mx;
+  const colW = [2.3, 5.4, 2.35, W - 10.05];
+  const xs = [mx, mx + 2.3, mx + 7.7, mx + 10.05];
+  const y0 = 1.85, hh = 0.42, rh = s.rowHeight || 0.74;
+  s.headers.forEach((hd, c) => {
+    text(ctx, hd, { x: xs[c] + (c === 0 ? 0.15 : 0), y: y0, w: colW[c], h: hh, fontSize: 15, bold: true, color: colors.slate, valign: 'middle', align: c >= 2 ? 'center' : 'left' });
+  });
+  const all = [...s.rows, ...(s.total ? [{ ...s.total, isTotal: true }] : [])];
+  all.forEach((r, i) => {
+    const y = y0 + hh + i * rh + (r.isTotal ? 0.08 : 0);
+    const bandH = rh - 0.08, mid = y + bandH / 2;
+    box(ctx, { x: mx, y, w: W, h: bandH, fill: r.isTotal ? ctx.T.teal.soft : colors.panel, line: r.isTotal ? ctx.T.teal.accent : colors.border, radius: 0.08 });
+    text(ctx, r.label, { x: xs[0] + 0.15, y, w: colW[0] - 0.15, h: bandH, fontSize: 17, bold: true, color: r.isTotal ? ctx.T.teal.text : colors.heading, valign: 'middle' });
+    if (r.isTotal) {
+      text(ctx, r.formula, { x: xs[1] + 0.1, y, w: colW[1] - 0.1, h: bandH, fontSize: 19, bold: true, color: colors.heading, valign: 'middle' });
+    } else {
+      const aW = 0.24, ptrW = 0.7, hopW = 0.95, dW = 0.8, ch = 0.4;
+      let x = xs[1] + 0.1;
+      chip(ctx, { x, y: mid - ch / 2, w: ptrW, h: ch, label: r.ptr, tone: 'navy', size: 15 });
+      x += ptrW;
+      for (let k = 0; k < r.hops; k++) {
+        arrow(ctx, { x1: x + 0.02, y1: mid, x2: x + aW - 0.02, y2: mid, color: colors.slate, width: 2 });
+        x += aW;
+        chip(ctx, { x, y: mid - ch / 2, w: hopW, h: ch, label: 'punteros', tone: 'amber', solid: false, size: 15 });
+        x += hopW;
+      }
+      arrow(ctx, { x1: x + 0.02, y1: mid, x2: x + aW - 0.02, y2: mid, color: colors.slate, width: 2 });
+      x += aW;
+      chip(ctx, { x, y: mid - ch / 2, w: dW, h: ch, label: 'datos', tone: 'teal', size: 15 });
+    }
+    text(ctx, r.count, { x: xs[2], y, w: colW[2], h: bandH, fontSize: 18, bold: true, color: colors.ink, align: 'center', valign: 'middle' });
+    text(ctx, r.size, { x: xs[3], y, w: colW[3], h: bandH, fontSize: 18, bold: true, color: r.isTotal ? ctx.T.green.text : colors.ink, align: 'center', valign: 'middle' });
+  });
+  const end = y0 + hh + all.length * rh + 0.08;
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || Math.max(end + 0.2, 5.8), w: W, h: 0.85, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ anatomía: disco -> partición -> estructuras del sistema de archivos
+// Campos: diskLabel, disk[{ label, sub, w, tone }], zoom (índice en disk), zoomLabel, parts[{ label, title, text, w, tone }], callout
+function layout(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const W = w - 2 * mx;
+  const segBar = (items, y, h, numbered) => {
+    const gap = 0.06;
+    const total = items.reduce((a, g) => a + g.w, 0);
+    const avail = W - gap * (items.length - 1);
+    let x = mx;
+    return items.map((g, i) => {
+      const sw = (g.w / total) * avail;
+      const t = ctx.T[g.tone || 'teal'];
+      const runs = [{ text: (numbered ? `${i + 1}  ` : '') + g.label, options: { fontSize: 17, bold: true, color: t.text, breakLine: !!g.sub } }];
+      if (g.sub) runs.push({ text: g.sub, options: { fontSize: 14, color: colors.ink } });
+      ctx.slide.addText(runs, {
+        shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.08, x, y, w: sw, h,
+        fill: { color: g.dashed ? colors.bg : t.soft }, line: { color: t.accent, width: 2, dashType: g.dashed ? 'dash' : 'solid' },
+        fontFace: fonts.body, align: 'center', valign: 'middle', margin: 0, lang: 'es-ES',
+      });
+      const r = { x, w: sw };
+      x += sw + gap;
+      return r;
+    });
+  };
+  text(ctx, s.diskLabel, { x: mx, y: 1.68, w: 8, h: 0.32, fontSize: 15, bold: true, color: colors.slate, valign: 'middle' });
+  const topY = 2.05, topH = 0.62, lowY = 3.25, lowH = 0.65;
+  const top = segBar(s.disk, topY, topH, false);
+  const z = top[s.zoom];
+  arrow(ctx, { x1: z.x, y1: topY + topH, x2: mx, y2: lowY, color: colors.slate, width: 1.5, head: false });
+  arrow(ctx, { x1: z.x + z.w, y1: topY + topH, x2: mx + W, y2: lowY, color: colors.slate, width: 1.5, head: false });
+  if (s.zoomLabel) text(ctx, s.zoomLabel, { x: mx + 2.6, y: topY + topH + 0.12, w: W - 5.2, h: 0.32, fontSize: 15, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+  segBar(s.parts, lowY, lowH, true);
+  const k = Math.ceil(s.parts.length / 2), colw = (W - 0.4) / 2, ly = 4.1, lh = 0.6;
+  s.parts.forEach((p, i) => {
+    const col = Math.floor(i / k), row = i % k;
+    const x = mx + col * (colw + 0.4), y = ly + row * lh;
+    circleLabel(ctx, { x, y: y + 0.12, d: 0.36, label: String(i + 1), fill: ctx.T[p.tone || 'teal'].accent, color: ctx.T[p.tone || 'teal'].on, size: 15 });
+    text(ctx, C.rich(`**${p.title}:** ${p.text}`, ctx, { fontSize: 16, color: colors.ink }), { x: x + 0.5, y, w: colw - 0.5, h: lh, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: W, h: 0.82, size: 16, ...s.callout });
+}
+
 module.exports = {
   'externo-image-side': imageSide,
   'externo-images': images,
@@ -382,4 +706,11 @@ module.exports = {
   'externo-cache-trace': cacheTrace,
   'externo-runs': runs,
   'externo-btree': btree,
+  'externo-raid': raid,
+  'externo-paridad': paridad,
+  'externo-raid5': raid5,
+  'externo-bloques': bloques,
+  'externo-asignacion': asignacion,
+  'externo-inodo': inodo,
+  'externo-layout': layout,
 };

@@ -30,14 +30,48 @@
       "title": "¿Qué aprenderemos hoy?",
       "titleSize": 22,
       "items": [
-        "Identificar la **terminología** de los árboles y sus recorridos",
+        "Identificar los **usos**, la **terminología** y los **recorridos** de los árboles",
         "Implementar un **BST**: búsqueda, inserción y eliminación",
-        "Representar un **heap** con un arreglo",
+        "Representar un **heap** con un arreglo y usarlo como cola de prioridad",
         "Mantener el balance con **árboles AVL** y rotaciones",
-        "Construir **árboles de expresión** a partir de una expresión",
+        "Construir **árboles de expresión** y leerlos en tres notaciones",
         "Describir los **árboles B** y los **tries**"
       ],
-      "notes": "Seis bloques: terminología y TDA, BST, heap, AVL, árboles de expresión y, al final, los árboles N-arios (árboles B y tries). La diapositiva final propone cuatro ejercicios cortos."
+      "notes": "Seis bloques: motivación (¿por qué árboles?), terminología y TDA, BST, heap, AVL, árboles de expresión (con sus notaciones prefija, infija y postfija) y, al final, los árboles N-arios (árboles B y tries). La diapositiva final propone cuatro ejercicios cortos."
+    },
+    {
+      "type": "cards",
+      "section": "Introducción",
+      "title": "¿Por qué usar árboles?",
+      "intro": "Tres formas de guardar datos ordenados por llave:",
+      "columns": 3,
+      "cardHeight": 2.9,
+      "textSize": 18,
+      "cards": [
+        {
+          "title": "Arreglo ordenado",
+          "text": "**Buscar:** rápido (búsqueda binaria). **Insertar o eliminar:** lento, hay que desplazar elementos.",
+          "tone": "navy",
+          "footer": "buscar O(log n) · insertar O(n)",
+          "footerSize": 16
+        },
+        {
+          "title": "Lista enlazada",
+          "text": "**Insertar o eliminar:** rápido, solo cambian referencias. **Buscar:** lento, nodo por nodo.",
+          "tone": "navy",
+          "footer": "insertar O(1) · buscar O(n)",
+          "footerSize": 16
+        },
+        {
+          "title": "Árbol",
+          "text": "Nodos con referencias, como la lista, organizados para que **las tres operaciones sean rápidas**.",
+          "tone": "teal",
+          "footer": "O(log n) si está balanceado",
+          "footerSize": 16
+        }
+      ],
+      "callout": { "tone": "teal", "label": "Se usan en:", "text": "sistemas de archivos, bases de datos (árboles B), compresión y compiladores (árboles de expresión)." },
+      "notes": "Pregunta para la clase: ¿por qué buscar es rápido en un arreglo y lento en una lista enlazada, y al revés al insertar y eliminar? En un arreglo ordenado se puede saltar a la posición central (búsqueda binaria), pero insertar o eliminar obliga a desplazar los elementos que vienen después. En una lista enlazada insertar o eliminar solo cambia referencias (O(1) cuando ya se tiene el nodo anterior; ubicar la posición cuesta O(n)), pero no hay acceso directo: hay que recorrer los nodos uno por uno. El árbol combina las dos ventajas, pero solo si está balanceado: un BST degenerado es una lista (se ve más adelante) y las operaciones vuelven a costar O(n). Las complejidades se añadieron para comparar (no están en el capítulo).\n\nIdeas de apoyo: un árbol son nodos (dato más referencias, como en las listas) conectados por aristas; se dibuja «invertido», con la raíz arriba y las hojas abajo; es un tipo especial de grafo (los grafos se ven en la lección siguiente). Aplicaciones: el sistema de archivos (carpetas dentro de carpetas), los datos que se buscan con frecuencia, las bases de datos (se guardan como árboles B o variantes), los algoritmos de compresión (árbol de Huffman, en CE-2103) y los compiladores (árboles de expresión)."
     },
     {
       "type": "compare",
@@ -119,7 +153,50 @@
           }
         ]
       },
-      "notes": "Árbol de la figura del capítulo (trees-1.png, con rótulos en inglés: root, parent, left child, level, path, subtree). Recorra la tabla señalando cada término en el árbol. Una hoja es un nodo sin hijos (término estándar, no está en el capítulo). La altura se define más adelante, en AVL: número de nodos del camino más largo hasta una hoja, con altura 0 para un subárbol vacío."
+      "notes": "Árbol de la figura del capítulo (trees-1.png, con rótulos en inglés: root, parent, left child, level, path, subtree). Recorra la tabla señalando cada término en el árbol. Una hoja es un nodo sin hijos (término estándar, no está en el capítulo). En la siguiente diapositiva se amplía la terminología (arista, hermanos, longitud de camino, profundidad y altura)."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Terminología",
+      "title": "Más terminología: profundidad y altura",
+      "legend": [
+        { "label": "Camino A → C → F → J", "tone": "amber" },
+        { "label": "Hermanos D y E", "tone": "green" }
+      ],
+      "trees": [
+        {
+          "tree": "A(B(D(,H),E),C(F(I,J),G))",
+          "path": ["A", "C", "F", "J"],
+          "marks": {
+            "D": { "tone": "green" },
+            "E": { "tone": "green" }
+          }
+        }
+      ],
+      "side": {
+        "w": 5.8,
+        "items": [
+          {
+            "table": {
+              "columns": ["Término", "En el ejemplo"],
+              "colW": [2.2, 3.6],
+              "fontSize": 15,
+              "rowH": [0.45, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+              "rows": [
+                ["Arista", "Unión padre–hijo: B — D"],
+                ["Hermanos", "Mismo padre: D y E (hijos de B)"],
+                ["Longitud de camino", "A → C → F → J: 3 aristas"],
+                ["Profundidad", "J está a profundidad 3"],
+                ["Altura", "El árbol: 4 nodos (A → C → F → J)"],
+                ["Visitar", "Llegar a un nodo para operar sobre él"]
+              ]
+            }
+          }
+        ]
+      },
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "en esta lección la **altura** cuenta **nodos** (hoja = 1, árbol vacío = 0). Otros textos cuentan **aristas** (hoja = 0)." },
+      "notes": "Se usa el mismo árbol de la diapositiva anterior. Arista: la unión entre un nodo y su hijo. Hermanos: nodos con el mismo padre (D y E son hijos de B). Longitud de un camino: número de aristas del camino; de un nodo a sí mismo es 0; A → C → F → J mide 3. Profundidad de un nodo: longitud del camino único desde la raíz; coincide con su nivel (la raíz está a profundidad 0; J, H e I están a 3). Altura: camino más largo desde el nodo hasta una hoja. Convención de la lección (la del código de AVL y heap): se cuentan nodos, una hoja tiene altura 1 y un subárbol vacío tiene altura 0; el árbol del ejemplo tiene altura 4. Otros textos cuentan aristas (hoja = 0, vacío = −1) y obtendrían 3: al leer otros libros, verifique la convención. Visitar un nodo es llegar a él para hacer algo (imprimirlo, sumarlo, compararlo); recorrer el árbol es visitar todos sus nodos en un orden definido (siguientes diapositivas). Contenido tomado de la presentación anterior del curso; las cifras del ejemplo se verificaron sobre este árbol."
     },
     {
       "type": "cards",
@@ -195,7 +272,7 @@
           ]
         }
       ],
-      "notes": "Estructura básica de un BST. TreeNode guarda la llave y las referencias al hijo izquierdo y al derecho; la clase BinarySearchTree solo conserva la referencia a la raíz. Un hijo ausente es null."
+      "notes": "Estructura básica de un BST. TreeNode guarda la llave y las referencias al hijo izquierdo y al derecho; la clase BinarySearchTree solo conserva la referencia a la raíz. Un hijo ausente es null. Versión genérica (opcional): para guardar cualquier tipo comparable se declara `BinarySearchTree<T extends Comparable<? super T>>` con `T key` en el nodo, y se compara con `compareTo` en lugar de `<`, `>` y `==`; la lección usa `int` para simplificar el código."
     },
     {
       "type": "diagram",
@@ -225,7 +302,7 @@
         ]
       },
       "callout": { "tone": "teal", "label": "Recorrido:", "text": "8 → 3 → 6 → 7. En cada nodo se descarta un subárbol completo: 7 < 8 va a la izquierda, 7 > 3 y 7 > 6 van a la derecha." },
-      "notes": "Como los árboles son estructuras jerárquicas, la búsqueda se hace de forma recursiva (se prefiere por simplicidad). La mayoría de los métodos van en parejas: uno público que recibe los parámetros iniciales y otro privado que realiza la operación recursiva.\n\nCódigo del capítulo (equivalente, con if/else explícitos):\npublic boolean search(int key) { return searchRecursive(root, key); }\nprivate boolean searchRecursive(TreeNode root, int key) {\n    if (root == null) { return false; }\n    if (root.key == key) { return true; }\n    else if (key > root.key) { return searchRecursive(root.right, key); }\n    else { return searchRecursive(root.left, key); }\n}\n(En el .md falta el punto y coma de `return false`.)"
+      "notes": "Como los árboles son estructuras jerárquicas, la búsqueda se hace de forma recursiva (se prefiere por simplicidad). La mayoría de los métodos van en parejas: uno público que recibe los parámetros iniciales y otro privado que realiza la operación recursiva.\n\nCódigo del capítulo (equivalente, con if/else explícitos):\npublic boolean search(int key) { return searchRecursive(root, key); }\nprivate boolean searchRecursive(TreeNode root, int key) {\n    if (root == null) { return false; }\n    if (root.key == key) { return true; }\n    else if (key > root.key) { return searchRecursive(root.right, key); }\n    else { return searchRecursive(root.left, key); }\n}"
     },
     {
       "type": "diagram",
@@ -250,7 +327,7 @@
         ]
       },
       "callout": { "tone": "teal", "text": "Se sigue la misma ruta que la búsqueda (8 → 3 → 6 → 4); el nodo nuevo queda como **hoja**, a la derecha del 4." },
-      "notes": "La inserción usa el mismo principio de búsqueda para encontrar el lugar donde va el nuevo nodo. Si el nodo ya existe, no se inserta. Note que insert reasigna root al resultado de insertRecursive: es necesario para que los cambios se reflejen en la raíz (siguiente diapositiva). El capítulo escribe el caso base en tres líneas (root = new TreeNode(key); return root;); aquí se compactó en un solo return equivalente."
+      "notes": "La inserción usa el mismo principio de búsqueda para encontrar el lugar donde va el nuevo nodo. Si el nodo ya existe, no se inserta (política elegida para simplificar: para aceptar duplicados habría que decidir qué hacer con ellos, por ejemplo guardar un contador en el nodo). Note que insert reasigna root al resultado de insertRecursive: es necesario para que los cambios se reflejen en la raíz (siguiente diapositiva). El capítulo escribe el caso base en tres líneas (root = new TreeNode(key); return root;); aquí se compactó en un solo return equivalente."
     },
     {
       "type": "compare",
@@ -364,7 +441,7 @@
           ]
         }
       ],
-      "notes": "Si falta el hijo izquierdo se devuelve el derecho (cubre la hoja y el caso de un hijo); si falta el derecho se devuelve el izquierdo. Con dos hijos se usa minValue para hallar la llave del sucesor y luego se elimina esa llave del subárbol derecho. Se compactaron algunas líneas respecto al capítulo y minValue recorre el subárbol izquierdo hasta el último nodo (en el capítulo guarda el valor en una variable auxiliar; el resultado es el mismo)."
+      "notes": "Si falta el hijo izquierdo se devuelve el derecho (cubre la hoja y el caso de un hijo); si falta el derecho se devuelve el izquierdo. Con dos hijos se usa minValue para hallar la llave del sucesor y luego se elimina esa llave del subárbol derecho. Se compactaron algunas líneas respecto al capítulo y minValue recorre el subárbol izquierdo hasta el último nodo (en el capítulo guarda el valor en una variable auxiliar; el resultado es el mismo). Operación hermana (opcional): el máximo se obtiene con el recorrido simétrico, `while (root.right != null) root = root.right; return root.key;`; con él se implementa la variante del predecesor en el caso de dos hijos."
     },
     {
       "type": "table",
@@ -488,7 +565,26 @@
               { "badge": "3", "title": "Para qué sirve", "text": "Es la opción natural para las colas de prioridad y la base de heap sort.", "tone": "amber" }
             ],
             "callout": { "tone": "teal", "text": "A diferencia del BST, el heap se implementa sobre un **arreglo**, no con nodos enlazados." },
-            "notes": "Un heap es un árbol binario completo que cumple la propiedad de heap: el valor de cada nodo es mayor o igual (heap máximo) o menor o igual (heap mínimo) que el de sus hijos. Es una opción natural para implementar colas de prioridad y es la estructura esencial para heap sort, que se verá más adelante en los algoritmos de ordenamiento."
+            "notes": "Un heap es un árbol binario completo que cumple la propiedad de heap: el valor de cada nodo es mayor o igual (heap máximo) o menor o igual (heap mínimo) que el de sus hijos. Es una opción natural para implementar colas de prioridad y es la estructura esencial para heap sort, que se verá más adelante en los algoritmos de ordenamiento. Contraejemplo (opcional): el árbol 10(8(,5),7) cumple el orden de heap (10 ≥ 8 y 7; 8 ≥ 5), pero no es completo (el 8 tiene hijo derecho y no izquierdo), así que no es un heap; guardado en un arreglo dejaría un hueco."
+          },
+          {
+            "type": "table",
+            "section": "Heap",
+            "title": "Heap vs. lista: colas de prioridad",
+            "columns": ["Operación", "Lista enlazada ordenada", "Heap"],
+            "colWeights": [1.7, 2.6, 2.7],
+            "fontSize": 18,
+            "rowHeight": 0.7,
+            "rowPad": 0.2,
+            "calloutY": 5.35,
+            "rows": [
+              ["Encolar (`insert`)", "O(n): hay que hallar la posición", "O(log n): sube, a lo sumo, la altura"],
+              ["Desencolar (`delete`)", "O(1): se quita la cabeza", "O(log n): baja, a lo sumo, la altura"],
+              ["Ver el primero (`get`)", "O(1)", "O(1): está en la raíz"],
+              ["Buscar una llave", "O(n)", "O(n): no hay orden entre hermanos"]
+            ],
+            "callout": { "tone": "teal", "label": "Balance:", "text": "con n encolar y n desencolar, la lista cuesta **O(n²)** y el heap **O(n log n)**. Es la implementación con heap que anunciaba la lección de estructuras lineales." },
+            "notes": "Motivación del heap: en la lección de estructuras lineales se implementó una cola de prioridad con una lista enlazada ordenada: encolar recorre la lista hasta hallar la posición (O(n)), desencolar solo quita la cabeza (O(1)) y ver el primero es O(1). Con un heap, encolar (insert) y desencolar (delete) cuestan O(log n) porque cada operación sube o baja, a lo sumo, la altura del árbol completo; ver la raíz (get) es O(1). Para n encolar y n desencolar: la lista suma n operaciones O(n) más n operaciones O(1), es decir O(n²); el heap suma 2n operaciones O(log n), es decir O(n log n). Las complejidades se añadieron (el capítulo no las incluye) y se verificaron contra el código de ambas implementaciones.\n\nUn heap no sirve para buscar una llave cualquiera como un BST: solo se garantiza el orden entre un padre y sus hijos, no entre hermanos ni primos; buscar un valor arbitrario obliga a revisar el arreglo (O(n)). También conviene notar que subir es más simple que bajar: insertar compara el elemento con un único padre, mientras que eliminar compara con dos hijos y elige el mayor. Pregunta para la clase: ¿qué estructura elegiría para atender los pedidos más urgentes primero? (Heap.)"
           },
           {
             "type": "image",
@@ -623,7 +719,7 @@
                 ]
               }
             ],
-            "notes": "El heap se implementa con un arreglo heap y un contador size. insert añade al final y sube el elemento; delete devuelve la raíz, mueve el último elemento a la posición 0 y lo baja; get solo mira la raíz. Costo (añadido): insert y delete son O(log n) porque heapifyUp/heapifyDown recorren, como mucho, la altura de un árbol completo; get es O(1).\n\nNota sobre el código del capítulo: allí insert llama heapifyUp(size) después de size++, pero el nuevo elemento está en la posición size - 1; aquí se corrigió. Cada método valida: insert lanza IllegalStateException(\"Heap is full\") si size == heap.length; delete y get lanzan IllegalStateException(\"Heap is empty\") si size == 0."
+            "notes": "El heap se implementa con un arreglo heap y un contador size. insert añade al final y sube el elemento; delete devuelve la raíz, mueve el último elemento a la posición 0 y lo baja; get solo mira la raíz. Costo (añadido): insert y delete son O(log n) porque heapifyUp/heapifyDown recorren, como mucho, la altura de un árbol completo; get es O(1).\n\nNota: después de size++ el nuevo elemento está en la posición size - 1, por eso se llama heapifyUp(size - 1) (una versión anterior del capítulo llamaba heapifyUp(size), un error ya corregido allí). Cada método valida: insert lanza IllegalStateException(\"Heap is full\") si size == heap.length; delete y get lanzan IllegalStateException(\"Heap is empty\") si size == 0."
           },
           {
             "type": "code",
@@ -649,7 +745,7 @@
                 ]
               }
             ],
-            "notes": "heapifyUp restaura la propiedad de heap después de insertar: compara el elemento en index con su padre y, mientras sea mayor, los intercambia con swap y continúa desde la posición del padre. swap es el intercambio clásico con una variable temporal: int temp = heap[index1]; heap[index1] = heap[index2]; heap[index2] = temp;"
+            "notes": "heapifyUp restaura la propiedad de heap después de insertar: compara el elemento en index con su padre y, mientras sea mayor, los intercambia con swap y continúa desde la posición del padre. swap es el intercambio clásico con una variable temporal: int temp = heap[index1]; heap[index1] = heap[index2]; heap[index2] = temp; Optimización (opcional): en vez de intercambiar en cada paso se puede guardar el elemento nuevo en una variable, bajar a los padres uno a uno y escribir el elemento una sola vez al final; hace menos escrituras, pero el swap es más claro. Observación: subir es más simple que bajar, porque aquí solo se compara con un padre."
           },
           {
             "type": "code",
@@ -705,7 +801,7 @@
               }
             ],
             "callout": { "tone": "teal", "label": "Factor de balance =", "text": "altura del subárbol derecho − altura del izquierdo. Aquí todos valen −1, 0 o 1: es un AVL." },
-            "notes": "El número pequeño dentro de cada nodo es su factor de balance. Para contar alturas se usa la convención del código: un subárbol vacío tiene altura 0 y una hoja tiene altura 1. Ejemplos: el nodo 5 tiene subárbol izquierdo (3 con sus hijos) de altura 2 y derecho (8) de altura 1: 1 − 2 = −1. El nodo 15 tiene izquierdo (12) de altura 1 y derecho (20 con sus hijos) de altura 2: 2 − 1 = +1. La raíz 10 tiene ambos subárboles de altura 3: 0. (La tabla del capítulo llega a los mismos factores con una forma de contar distinta en cada nodo.)"
+            "notes": "El número pequeño dentro de cada nodo es su factor de balance. Para contar alturas se usa la convención del código: un subárbol vacío tiene altura 0 y una hoja tiene altura 1. Ejemplos: el nodo 5 tiene subárbol izquierdo (3 con sus hijos) de altura 2 y derecho (8) de altura 1: 1 − 2 = −1. El nodo 15 tiene izquierdo (12) de altura 1 y derecho (20 con sus hijos) de altura 2: 2 − 1 = +1. La raíz 10 tiene ambos subárboles de altura 3: 0. (La tabla del capítulo usa esa misma convención.) Pregunta para la clase: ¿es AVL el árbol 10(5(3(2,),),15(12,20))? No: la raíz tiene factor −1 (izquierda 3, derecha 2), pero el nodo 5 tiene −2 (izquierda 2, derecha 0); la condición debe cumplirse en todos los nodos, no solo en la raíz."
           },
           {
             "type": "compare",
@@ -766,8 +862,8 @@
                 ]
               }
             ],
-            "callout": { "tone": "slate", "text": "En ambos casos hay **4 disposiciones** posibles de x, y y z: LL, RR, LR y RL." },
-            "notes": "Para insertar un nodo w: se hace la inserción normal de un BST; iniciando en w se recorre el camino hacia la raíz; z es el primer nodo no balanceado, y el hijo de z en el camino de w a z, y x el nieto de z en ese camino; se rebalancea con rotaciones simples o dobles en el subárbol con raíz en z. Para eliminar el proceso es el mismo, pero y y x son los hijos de mayor altura (no hay camino desde w). Hay cuatro disposiciones posibles de x, y y z, que se ven en las siguientes diapositivas."
+            "callout": { "tone": "teal", "text": "Hay **4 disposiciones** de x, y y z: LL, RR, LR y RL. Al **insertar**, basta **una** rotación (simple o doble) en z para balancear todo el árbol; al eliminar pueden hacer falta más." },
+            "notes": "Para insertar un nodo w: se hace la inserción normal de un BST; iniciando en w se recorre el camino hacia la raíz; z es el primer nodo no balanceado, y el hijo de z en el camino de w a z, y x el nieto de z en ese camino; se rebalancea con rotaciones simples o dobles en el subárbol con raíz en z. Para eliminar el proceso es el mismo, pero y y x son los hijos de mayor altura (no hay camino desde w). Hay cuatro disposiciones posibles de x, y y z, que se ven en las siguientes diapositivas.\n\nAfirmación añadida (no está en el capítulo; procede de la presentación anterior): al insertar, solo cambian de altura los nodos del camino desde w hasta la raíz, y la rotación en z (simple o doble) deja ese subárbol con la misma altura que tenía antes de la inserción; por eso los ancestros de z ya no se desbalancean y una sola rotación basta para todo el árbol, y la subida para balancear se detiene en z. Al eliminar, en cambio, la rotación puede reducir la altura del subárbol y desbalancear a un ancestro, de modo que a veces hay que rotar varias veces (hasta O(log n) rotaciones)."
           },
           {
             "type": "diagram",
@@ -870,7 +966,41 @@
               }
             ],
             "callout": { "tone": "teal", "text": "**x** = 3 es hijo derecho de **y** = 2, e **y** es hijo izquierdo de **z** = 4: caso **LR**, dos rotaciones." },
-            "notes": "Se parte del AVL 10(5(4(2,),8),15(12,20(17,25))) y se inserta el 3 como hijo derecho del 2. Desde el 3 hacia la raíz: el 2 queda con factor +1 y el 4 con −2, así que z = 4 (es el primer nodo desbalanceado; el 5 también queda desbalanceado, pero se arregla al rotar en z). El capítulo escribe que «el factor de balance del nodo 5 es 2», pero los rótulos z, y, x de su figura corresponden a 4, 2 y 3. Primero se rota a la izquierda el subárbol de y = 2 (el 3 sube) y luego a la derecha el de z = 4. Subárbol final: 3(2,4)."
+            "notes": "Se parte del AVL 10(5(4(2,),8),15(12,20(17,25))) y se inserta el 3 como hijo derecho del 2. Desde el 3 hacia la raíz: el 2 queda con factor +1 y el 4 con −2, así que z = 4 (es el primer nodo desbalanceado; el 5 también queda desbalanceado, pero se arregla al rotar en z). El factor del nodo 5 también queda en −2 (izquierda 3, derecha 1), pero se arregla al rotar en z. Primero se rota a la izquierda el subárbol de y = 2 (el 3 sube) y luego a la derecha el de z = 4. Subárbol final: 3(2,4)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Traza AVL: insertar 8, 9, 10, 2, 1 y 5",
+            "rows": [
+              {
+                "h": 2.75,
+                "trees": [
+                  {
+                    "title": "Tras 8, 9, 10: RR", "tree": "8(,9(,10))", "d": 0.45,
+                    "marks": { "8": { "tag": "z", "tone": "red" }, "9": { "tag": "y" }, "10": { "tag": "x" } }
+                  },
+                  {
+                    "title": "Tras 2 y 1: LL", "tree": "9(8(2(1,),),10)", "d": 0.45,
+                    "marks": { "8": { "tag": "z", "tone": "red" }, "2": { "tag": "y" }, "1": { "tag": "x" } }
+                  },
+                  {
+                    "title": "Tras 5: LR", "tree": "9(2(1,8(5,)),10)", "d": 0.45,
+                    "marks": { "9": { "tag": "z", "tone": "red" }, "2": { "tag": "y" }, "8": { "tag": "x" } }
+                  }
+                ]
+              },
+              {
+                "h": 2.1,
+                "trees": [
+                  { "title": "Izquierda en 8", "tree": "9(8,10)", "d": 0.45 },
+                  { "title": "Derecha en 8", "tree": "9(2(1,8),10)", "d": 0.45 },
+                  { "title": "Izquierda en 2 y derecha en 9", "tree": "8(2(1,5),9(,10))", "d": 0.45 }
+                ]
+              }
+            ],
+            "notes": "Equivale a la secuencia H, I, J, B, A, E de la presentación anterior del curso (con números, para ser coherente con el resto de la lección). Arriba, el árbol justo antes de rotar (z en rojo, con y y x); abajo, el resultado de la rotación. Cada columna parte del resultado de la anterior más las llaves nuevas.\n\n1) Se insertan 8, 9 y 10 en orden: el 8 queda con factor +2 (derecha 2, izquierda 0). y = 9 y x = 10 son hijos derechos: caso RR, rotación izquierda en 8. Resultado: 9(8,10).\n2) Se insertan 2 y 1: el 2 queda a la izquierda del 8 y el 1 a la izquierda del 2. El 8 queda con factor −2. y = 2 y x = 1 son hijos izquierdos: caso LL, rotación derecha en 8. Resultado: 9(2(1,8),10).\n3) Se inserta 5: va a la izquierda del 8 (5 < 8). El 9 queda con factor −2 (izquierda 3, derecha 1). y = 2 es hijo izquierdo de z y x = 8 es hijo derecho de y: caso LR. Primero rotación izquierda en y = 2 (el 8 sube) y luego derecha en z = 9. Resultado: 8(2(1,5),9(,10)), un árbol perfectamente balanceado.\n\nEn una sola secuencia aparecen los tres tipos de rotación (RR, LL y LR). Actividad: antes de mostrar la fila inferior, pida a la clase que identifique z, y, x y el caso. Las trazas se verificaron con un programa que aplica el código de inserción AVL de la lección. Pregunta para la clase: en el paso 3, ¿por qué z es el 9 y no el 8? (Subiendo desde el 5, el 8 tiene −1, el 2 tiene +1 y el primer factor fuera de rango es el −2 del 9.)"
           },
           {
             "type": "code",
@@ -922,7 +1052,7 @@
                 ]
               }
             ],
-            "notes": "Al volver de la recursión cada ancestro del nodo insertado actualiza su altura y revisa su balance (derecha − izquierda). Si balance < −1 el nodo pesa a la izquierda: si la llave se insertó a la izquierda de node.left es el caso LL (rotación derecha); si se insertó a la derecha de node.left es LR (rotación izquierda del hijo y luego derecha). Si balance > 1 el nodo pesa a la derecha: RR (rotación izquierda) o RL (derecha del hijo y luego izquierda). El código completo del capítulo incluye al inicio la inserción normal de BST: si node es null devuelve new AVLNode(key); si key < node.key va a la izquierda; si key > node.key a la derecha; si es igual devuelve node (no se permiten duplicados). Búsquedas y recorridos no cambian respecto al BST."
+            "notes": "Al volver de la recursión cada ancestro del nodo insertado actualiza su altura y revisa su balance (derecha − izquierda). Si balance < −1 el nodo pesa a la izquierda: si la llave se insertó a la izquierda de node.left es el caso LL (rotación derecha); si se insertó a la derecha de node.left es LR (rotación izquierda del hijo y luego derecha). Si balance > 1 el nodo pesa a la derecha: RR (rotación izquierda) o RL (derecha del hijo y luego izquierda). El código completo del capítulo incluye al inicio la inserción normal de BST: si node es null devuelve new AVLNode(key); si key < node.key va a la izquierda; si key > node.key a la derecha; si es igual devuelve node (no se permiten duplicados). Búsquedas y recorridos no cambian respecto al BST. Nota (opcional): esta versión decide el caso comparando la llave insertada con la de los hijos, por lo que solo sirve al insertar. Para que también sirva al eliminar se decide por el balance del hijo pesado y: si balance(node) < −1, rotación simple (rightRotate) cuando getBalance(node.left) <= 0 y doble (LR) en caso contrario; si balance(node) > 1, rotación simple (leftRotate) cuando getBalance(node.right) >= 0 y doble (RL) en caso contrario. El caso en que y está balanceado (balance 0) solo ocurre al eliminar y se resuelve con rotación simple."
           },
           {
             "type": "diagram",
@@ -964,7 +1094,7 @@
               }
             ],
             "callout": { "tone": "teal", "text": "El 10 queda con factor **+2** (su derecha es más alta). **y** = 15 y **x** = 20 son hijos derechos: caso **RR**." },
-            "notes": "Continuación del ejemplo: se eliminan el 2 y el 4, y queda 10(3,15(12,20(17,25))). El nodo 10 tiene un subárbol izquierdo de altura 1 (solo el 3) y uno derecho de altura 3: factor +2. z = 10, y = 15 (hijo de mayor altura de z), x = 20 (hijo de mayor altura de y: 20 tiene altura 2 y 12 tiene altura 1). Es el caso RR: rotación izquierda en 10. El 15 sube, el 10 baja a su izquierda y el 12 (antes hijo izquierdo del 15) pasa a ser hijo derecho del 10. Resultado final: 15(10(3,12),20(17,25)). En el capítulo los rótulos y/x de este último paso aparecen cambiados; aquí se corrigieron."
+            "notes": "Continuación del ejemplo: se eliminan el 2 y el 4, y queda 10(3,15(12,20(17,25))). El nodo 10 tiene un subárbol izquierdo de altura 1 (solo el 3) y uno derecho de altura 3: factor +2. z = 10, y = 15 (hijo de mayor altura de z), x = 20 (hijo de mayor altura de y: 20 tiene altura 2 y 12 tiene altura 1). Es el caso RR: rotación izquierda en 10. El 15 sube, el 10 baja a su izquierda y el 12 (antes hijo izquierdo del 15) pasa a ser hijo derecho del 10. Resultado final: 15(10(3,12),20(17,25))."
           },
           {
             "type": "diagram",
@@ -998,7 +1128,38 @@
               { "file": "expression-tree-5.png", "alt": "Árbol de expresión de ((A * (X + Y)) * C)", "caption": "`((A * (X + Y)) * C)`" }
             ],
             "callout": { "tone": "teal", "text": "Recorrer el árbol en **inorden** (izquierda, raíz, derecha) deja cada operador entre sus operandos." },
-            "notes": "La notación infija es la forma tradicional de escribir expresiones, con los operadores entre los operandos. Para generar la expresión únicamente se requiere recorrer el árbol en inorden, con el mismo método inOrderRecursive visto para los BST. Observación (añadida): el inorden por sí solo no escribe los paréntesis; para conservar el orden de las operaciones hay que escribir un paréntesis de apertura antes de cada subárbol que no sea una hoja y uno de cierre después. Las tres figuras son las del capítulo."
+            "notes": "La notación infija es la forma tradicional de escribir expresiones, con los operadores entre los operandos. Para generar la expresión únicamente se requiere recorrer el árbol en inorden, con el mismo método inOrderRecursive visto para los BST. Observación (añadida): el inorden por sí solo no escribe los paréntesis; para conservar el orden de las operaciones hay que escribir un paréntesis de apertura antes de cada subárbol que no sea una hoja y uno de cierre después. Las tres figuras son las del capítulo. Actividad (de la presentación anterior): tape el pie de cada figura y pida a la clase escribir la expresión con un recorrido inorden con paréntesis; compare después con el pie. En la siguiente diapositiva se ve que un árbol de expresión también se puede leer en preorden y postorden."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles de expresión",
+            "title": "Un árbol, tres notaciones",
+            "legend": [
+              { "label": "Operador", "tone": "teal" },
+              { "label": "Operando", "tone": "navy" }
+            ],
+            "trees": [{ "type": "expr", "tree": "+(3,*(4,5))" }],
+            "side": {
+              "w": 6.6,
+              "items": [
+                {
+                  "table": {
+                    "columns": ["Recorrido", "Notación", "Resultado"],
+                    "colW": [1.8, 1.5, 3.3],
+                    "fontSize": 18,
+                    "rowH": [0.5, 0.7, 0.7, 0.7],
+                    "rows": [
+                      ["Preorden", "prefija", "`+ 3 * 4 5`"],
+                      ["Inorden", "infija", "`(3 + (4 * 5))`"],
+                      ["Postorden", "postfija", "`3 4 5 * +`"]
+                    ]
+                  }
+                }
+              ]
+            },
+            "callout": { "tone": "teal", "text": "La **infija** necesita paréntesis: «(» antes del subárbol izquierdo de cada operador y «)» después del derecho. La **postfija** es la que produce Shunting Yard." },
+            "notes": "El mismo árbol de 3 + (4 * 5) se puede leer de tres formas según el recorrido: preorden da la notación prefija (el operador antes de sus operandos: + 3 * 4 5), inorden da la infija (el operador entre sus operandos) y postorden da la postfija (el operador después de sus operandos: 3 4 5 * +). En la postfija no hacen falta paréntesis, y se evalúa con una pila: 3, 4 y 5 se apilan; * toma 4 y 5 y deja 20; + toma 3 y 20 y deja 23. Con el inorden «puro» se pierde la agrupación: el árbol de (x + y) * (a - b) saldría x + y * a - b, que significa otra cosa; por eso, al visitar un nodo operador se escribe «(» antes de recorrer su subárbol izquierdo y «)» después de recorrer el derecho. Con esa regla el resultado es (3 + (4 * 5)); el par exterior es redundante y puede omitirse. Es la regla de las figuras de la diapositiva anterior (por ejemplo ((A * (X + Y)) * C)). La postfija es la salida del algoritmo Shunting Yard de las siguientes diapositivas y se usa en el ejercicio D. Contenido tomado de la presentación anterior; los resultados se verificaron con un programa. Ejercicio extra: pida escribir las tres notaciones de (a + b) * c (prefija: * + a b c; infija: ((a + b) * c); postfija: a b + c *)."
           },
           {
             "type": "flow",
@@ -1085,20 +1246,52 @@
             "notes": "Los árboles B son una variante de los N-arios para almacenar grandes cantidades de datos en disco; muy usados en bases de datos y sistemas de archivos. Descritos por Rudolf Bayer y Edward M. McCreight en 1972, son balanceados y cada nodo puede tener más de dos hijos. Cada nodo se compone de llaves y ramas; las llaves están ordenadas y dividen las ramas en el orden esperado. El árbol de la figura es el del capítulo (b-tree-1.png); aquí se redibujó porque la figura original repite la llave 30 en una hoja (un árbol B no repite llaves): se usó 30 y 32."
           },
           {
+            "type": "compare",
+            "section": "Árboles B",
+            "title": "¿Por qué existen los árboles B?",
+            "vs": true,
+            "panelHeight": 3.5,
+            "panels": [
+              {
+                "title": "BST: una llave por nodo",
+                "tone": "amber",
+                "itemSize": 21,
+                "items": [
+                  "Cada nodo guarda una sola llave",
+                  "Con 1 000 000 de llaves: **≈ 20 niveles**",
+                  "Cada nivel puede costar una lectura de disco"
+                ]
+              },
+              {
+                "title": "Árbol B (orden 100)",
+                "tone": "green",
+                "itemSize": 21,
+                "items": [
+                  "Cada nodo ocupa un **bloque de disco** y guarda muchas llaves",
+                  "Con 1 000 000 de llaves: **a lo sumo 4 niveles**",
+                  "Pocas lecturas de disco por búsqueda"
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Leer un bloque cuesta casi lo mismo con una llave que con cien: se llena cada nodo de llaves para **reducir la altura** y, con ella, los accesos al disco." },
+            "notes": "Los árboles vistos hasta ahora suponen que toda la estructura cabe en la memoria principal. Cuando los datos crecen hay que dejarlos (al menos en parte) en disco, y el disco tiene una latencia mucho mayor que la memoria: las estructuras deben reducir las operaciones de disco. El disco se lee por bloques; leer un bloque cuesta casi lo mismo si se usa una llave que si se usan cien. Por eso el orden m se elige para que un nodo (una «página») quepa en un bloque de disco, y eso depende del disco. Un árbol B reduce la altura del árbol y, con ella, los accesos a disco. Para que no degenere en algo parecido a un árbol binario, cada nodo debe estar al menos medio lleno (la antigua presentación lo decía así: «medio lleno»). Cifras (añadidas, ilustrativas): un BST perfectamente balanceado con 1 000 000 de llaves tiene 20 niveles (log2 de 1 000 001, redondeado hacia arriba); en un árbol B de orden 100 cada nodo interno (menos la raíz) tiene al menos 50 ramas, así que 1 000 000 de llaves caben, como máximo, en 4 niveles (se verificó con la cota n ≥ 2·50^(h−1) − 1, donde h es el número de niveles). Variante B+ (se menciona en la siguiente diapositiva): guarda los datos solo en las hojas."
+          },
+          {
             "type": "cards",
             "section": "Árboles B",
             "title": "Características de un árbol B de orden m",
             "columns": 3,
             "cardHeight": 2.4,
+            "textSize": 17,
             "cards": [
               { "title": "Llaves y ramas", "text": "Las llaves ordenadas dividen las ramas en el orden esperado.", "tone": "teal" },
               { "title": "Hojas al mismo nivel", "text": "Todas las hojas están a la misma profundidad.", "tone": "teal" },
               { "title": "Orden m", "text": "Se define según el tamaño del bloque de disco.", "tone": "teal" },
-              { "title": "Mínimo de llaves", "text": "Cada nodo (menos la raíz) guarda un mínimo, ≈ m/2; la raíz, al menos una.", "tone": "navy" },
-              { "title": "Inserción en hojas", "text": "La inserción siempre ocurre en una hoja.", "tone": "navy" },
-              { "title": "Crecen desde la raíz", "text": "El árbol crece o decrece por la raíz.", "tone": "navy" }
+              { "title": "Mínimo de llaves", "text": "Salvo la raíz, cada nodo está al menos **medio lleno** (m/2 ramas). La raíz: al menos una llave.", "tone": "navy" },
+              { "title": "Crecen desde la raíz", "text": "La inserción ocurre en una hoja; el árbol crece o decrece por la raíz.", "tone": "navy" },
+              { "title": "Variante B+", "text": "Los datos solo están en las hojas, enlazadas entre sí; los nodos internos solo guían la búsqueda.", "tone": "amber" }
             ],
-            "notes": "Características de un árbol B de orden m según el capítulo. Pueden implementarse en memoria principal o secundaria (el propósito original); en el curso se estudia la implementación en memoria principal. Precisión sobre el mínimo: el capítulo dice «al menos m/2 llaves»; en los ejemplos de orden 3 cada nodo (salvo la raíz) tiene al menos 1 llave, o sea ⌈m/2⌉ − 1 llaves (⌈m/2⌉ ramas). Y el máximo es m − 1 llaves (en orden 5, hasta 4 llaves)."
+            "notes": "Características de un árbol B de orden m según el capítulo. Pueden implementarse en memoria principal o secundaria (el propósito original); en el curso se estudia la implementación en memoria principal. Mínimo de llaves: cada nodo (salvo la raíz) está al menos medio lleno, es decir, tiene al menos ⌈m/2⌉ ramas y, por tanto, al menos ⌈m/2⌉ − 1 llaves (en orden 5: al menos 3 ramas y 2 llaves; en orden 3: 2 ramas y 1 llave); la raíz, al menos una llave (y, si no es hoja, al menos 2 hijos). El máximo es m − 1 llaves y m ramas (en orden 5, hasta 4 llaves). Las llaves de un nodo con k ramas son k − 1. Tarjeta «Variante B+» (de la presentación anterior; no está en el capítulo salvo como mención): en un árbol B+ los datos se guardan solo en las hojas, los nodos internos guardan llaves que dirigen la búsqueda y, por lo general, cada hoja tiene una referencia a la hoja vecina de la derecha, lo que permite recorrer todos los datos en orden y hacer búsquedas por rango. No se desarrolla en el curso."
           },
           {
             "type": "diagram",
@@ -1181,15 +1374,26 @@
             "title": "Inserción: el árbol crece hacia arriba",
             "rows": [
               {
+                "h": 2.15,
                 "joiners": ["varios elementos después"],
                 "trees": [
                   { "title": "Una hoja llena", "type": "btree", "tree": "6(4 5,8 9 11 12)" },
                   { "title": "Tras varias divisiones", "type": "btree", "tree": "6 11 15 19(3 4 5,8 9 10,12 14,16 17,21 28 32)" }
                 ]
+              },
+              {
+                "h": 2.85,
+                "trees": [
+                  {
+                    "title": "Se insertan el 26 y el 27: dos divisiones seguidas y el árbol gana un nivel",
+                    "type": "btree",
+                    "tree": "15(6 11(3 4 5,8 9 10,12 14),19 27(16 17,21 26,28 32))",
+                    "marks": { "27": { "tone": "amber" }, "15": { "tone": "amber" } }
+                  }
+                ]
               }
             ],
-            "callout": { "tone": "teal", "text": "Cada vez que un nodo se llena se divide; las llaves medianas suben y las hojas siguen al mismo nivel." },
-            "notes": "Las dos figuras restantes del capítulo (b-tree-insertion-3 y -4), de orden 5. En la primera, el hijo derecho ya tiene 4 llaves (lleno): la siguiente inserción en él provocará otra división. En la segunda, después de varias divisiones la raíz tiene 4 llaves y cinco hijos, todos hojas al mismo nivel. El capítulo no indica qué llaves se insertaron entre una y otra."
+            "notes": "Las dos figuras de arriba son las del capítulo (b-tree-insertion-3 y -4), de orden 5. En la primera, el hijo derecho ya tiene 4 llaves (lleno): la siguiente inserción en él provocará otra división. En la segunda, después de varias divisiones la raíz tiene 4 llaves y cinco hijos, todos hojas al mismo nivel. El capítulo no indica qué llaves se insertaron entre una y otra.\n\nTercer estado (añadido, de la presentación anterior del curso: la división en cascada hasta la raíz; el árbol resultante se calculó y verificó con un programa). Se inserta el 26: va a la hoja [21 28 32], que queda [21 26 28 32] (4 llaves, llena pero válida). Se inserta el 27: la hoja tendría 5 llaves (21 26 27 28 32), así que se divide: la mediana 27 sube al padre y quedan [21 26] y [28 32]. Ahora la raíz tiene 5 llaves (6 11 15 19 27), también se divide: la mediana 15 sube y se crea una raíz nueva; los nodos [6 11] y [19 27] son sus hijos. El árbol pasa de 2 a 3 niveles y todas las hojas siguen al mismo nivel. En amarillo, las llaves medianas que subieron. Idea clave: el árbol B no crece por las hojas sino por la raíz, y por eso queda siempre perfectamente balanceado."
           },
           {
             "type": "diagram",
@@ -1215,7 +1419,7 @@
               }
             ],
             "callout": { "tone": "teal", "text": "Orden 3: mínimo de **1 llave** por nodo. Prestar: sube la mayor del hermano (28) y baja la del padre (30)." },
-            "notes": "Caso 1: la llave está en una hoja. Subcaso 1.1: el nodo tiene más del mínimo de llaves; simplemente se elimina la llave. Subcaso 1.2: el nodo tiene el mínimo; se pide prestada una llave a un hermano: primero se visita el hermano izquierdo y, si tiene más del mínimo, se toma su llave más grande (que sube al padre, mientras la llave del padre que los separa baja al nodo); si no, se revisa el hermano derecho. Se muestran subárboles de los ejemplos del capítulo (árbol de orden 3). Precisión: el capítulo escribe «m − 1» donde se refiere al mínimo de llaves del nodo; en orden 3 el mínimo es 1 y el máximo 2."
+            "notes": "Caso 1: la llave está en una hoja. Subcaso 1.1: el nodo tiene más del mínimo de llaves; simplemente se elimina la llave. Subcaso 1.2: el nodo tiene el mínimo; se pide prestada una llave a un hermano: primero se visita el hermano izquierdo y, si tiene más del mínimo, se toma su llave más grande (que sube al padre, mientras la llave del padre que los separa baja al nodo); si no, se revisa el hermano derecho. Se muestran subárboles de los ejemplos del capítulo (árbol de orden 3): el mínimo es 1 llave por nodo y el máximo 2."
           },
           {
             "type": "diagram",
@@ -1450,7 +1654,7 @@
               { "title": "C · Heap", "text": "Inserte 5, 10, 3 y 8, en ese orden, en un heap máximo. ¿Cómo queda el arreglo?", "tone": "amber" },
               { "title": "D · Expresión", "text": "Dibuje el árbol de `(a + b) * c` y escriba su expresión postfija.", "tone": "amber" }
             ],
-            "notes": "Ejercicios añadidos (el capítulo no trae ejercicios). Respuestas:\nA) El árbol queda perfecto: 50(30(20,40),70(60,80)). Inorden: 20 30 40 50 60 70 80 (ascendente).\nB) Al insertar el 30, el 10 queda con factor +2; y = 20 y x = 30 son hijos derechos: caso RR, rotación izquierda en 10. Resultado: 20(10,30).\nC) Se inserta 5: [5]. Se inserta 10: se añade al final y sube sobre el 5: [10, 5]. Se inserta 3: [10, 5, 3]. Se inserta 8: se añade en la posición 3 (padre: posición 1, valor 5); 8 > 5, se intercambian; el nuevo padre es 10 y 8 < 10, se detiene: [10, 8, 3, 5].\nD) Árbol: raíz *, hijo izquierdo + (con hojas a y b), hijo derecho c. Postfija: a b + c *."
+            "notes": "Ejercicios añadidos (el capítulo no trae ejercicios). Respuestas:\nA) El árbol queda perfecto: 50(30(20,40),70(60,80)). Inorden: 20 30 40 50 60 70 80 (ascendente).\nB) Al insertar el 30, el 10 queda con factor +2; y = 20 y x = 30 son hijos derechos: caso RR, rotación izquierda en 10. Resultado: 20(10,30).\nC) Se inserta 5: [5]. Se inserta 10: se añade al final y sube sobre el 5: [10, 5]. Se inserta 3: [10, 5, 3]. Se inserta 8: se añade en la posición 3 (padre: posición 1, valor 5); 8 > 5, se intercambian; el nuevo padre es 10 y 8 < 10, se detiene: [10, 8, 3, 5].\nD) Árbol: raíz *, hijo izquierdo + (con hojas a y b), hijo derecho c. Postfija: a b + c *. Para practicar más con AVL puede usar la traza de 8, 9, 10, 2, 1 y 5 (casos RR, LL y LR), pidiendo que identifiquen z, y y x antes de rotar."
           },
           {
             "type": "summary",
@@ -1460,11 +1664,11 @@
             "bold": false,
             "titleSize": 20,
             "items": [
-              "**Árboles:** una raíz y nodos con cero o más hijos; insertar, eliminar, buscar y recorrer.",
+              "**Árboles:** una raíz y nodos con cero o más hijos; reúnen la búsqueda rápida del arreglo y la inserción ágil de la lista.",
               "**BST:** izquierdo < nodo < derecho; el inorden da el orden; puede degenerar en una lista.",
-              "**Heap:** árbol completo con la propiedad de heap; se guarda en un arreglo.",
+              "**Heap:** árbol completo con la propiedad de heap; se guarda en un arreglo y sirve para colas de prioridad.",
               "**AVL:** BST con factor de balance −1, 0 o 1; rotaciones LL, RR, LR y RL.",
-              "**Árboles de expresión:** hojas = operandos, nodos internos = operadores.",
+              "**Árboles de expresión:** hojas = operandos, nodos internos = operadores; pre, in y postorden dan la prefija, infija y postfija.",
               "**Árboles B y tries:** árboles n-arios para datos en disco y para cadenas de caracteres."
             ],
             "footnote": "Orígenes mencionados en el capítulo: AVL (Adelson-Velsky y Landis, 1962) · árboles B (Bayer y McCreight, 1972) · Shunting Yard (Dijkstra, 1961).",

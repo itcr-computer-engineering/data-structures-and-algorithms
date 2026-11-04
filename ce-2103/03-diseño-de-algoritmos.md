@@ -236,13 +236,11 @@ backtrack(x) {
         return true;
     }
     for (nodo in x.nodos) {
-        if (nodo == solution) {
+        if (backtrack(nodo)) {
             return true;
-        } else {
-            return backtrack(nodo);
         }
-        
     }
+    return false;
 }
 ```    
 

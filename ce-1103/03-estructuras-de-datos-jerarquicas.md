@@ -13,7 +13,7 @@ Existen muchos tipos de árboles, cada uno con sus propias características y ap
   - **Árboles rojinegros**: Es un árbol binario de búsqueda balanceado.
   - **Heap**: Es un árbol binario que cumple con ciertas reglas y se utiliza para implementar colas de prioridad.
 
-- **Arboles N-arios**: Cada nodo puede tener un número variable de hijos.
+- **Árboles N-arios**: Cada nodo puede tener un número variable de hijos.
   - **Árboles B**: Es un árbol que permite almacenar grandes cantidades de datos en disco.
   - **Árboles B+**: Es una variante del árbol B que se utiliza en bases de datos y sistemas de archivos.
   - **Árboles trie**: Es un árbol que se utiliza para almacenar un conjunto de cadenas de caracteres.
@@ -73,7 +73,7 @@ public class BinarySearchTree {
 
     private boolean searchRecursive(TreeNode root, int key) {
         if (root == null) {
-            return false
+            return false;
         } 
         if (root.key == key) {
             return true;
@@ -347,7 +347,7 @@ public class HeapTree {
             throw new IllegalStateException("Heap is full");
         }
         heap[size++] = element;
-        heapifyUp(size);
+        heapifyUp(size - 1);
     }
 
     public int delete() {
@@ -436,17 +436,17 @@ Factores de balance de cada nodo:
 
 | Nodo | Factor de Balance |
 |------|------------------|
-| 10   | 4 - 4 = 0       |
-| 5    | 2 - 3 = -1       |
-| 15   | 3 - 2 = 1       |
-| 3    | 2 - 2 = 0       |
-| 8    | 1 - 1 = 0       |
-| 12   | 1 - 1 = 0       |
-| 20   | 2 - 2 = 0       |
+| 10   | 3 - 3 = 0       |
+| 5    | 1 - 2 = -1       |
+| 15   | 2 - 1 = 1       |
+| 3    | 1 - 1 = 0       |
+| 8    | 0 - 0 = 0       |
+| 12   | 0 - 0 = 0       |
+| 20   | 1 - 1 = 0       |
 | 2    | 0 - 0 = 0       |
 | 4    | 0 - 0 = 0       |
-| 17   | 1 - 1 = 0       |
-| 25   | 1 - 1 = 0       |
+| 17   | 0 - 0 = 0       |
+| 25   | 0 - 0 = 0       |
 
 
 ### Ventajas
@@ -502,7 +502,7 @@ Se inserta el nodo 1:
  1
 ```
 
-El factor de balance del nodo 5 es 2, por lo que se debe rebalancear el árbol. El nodo 3 es el hijo de 5 que está en el camino de 1 a 5 y el nodo 2 es el nieto de 5 que está en el camino de 1 a 5. Estamos en el caso de rotación derecha.
+El factor de balance del nodo 5 es -2, por lo que se debe rebalancear el árbol. El nodo 3 es el hijo de 5 que está en el camino de 1 a 5 y el nodo 2 es el nieto de 5 que está en el camino de 1 a 5. Estamos en el caso de rotación derecha.
 
 Aplicando el siguiente código a _z_:
 
@@ -556,7 +556,7 @@ Se inserta el nodo 3:
      3 ----------------------> 3 es x
 ```
 
-El factor de balance del nodo 5 es 2, por lo que se debe rebalancear el árbol. El nodo 4 es el hijo de 5 que está en el camino de 3 a 5 y el nodo 2 es el nieto de 5 que está en el camino de 3 a 5. Estamos en el caso de rotación izquierda-derecha.
+El factor de balance del nodo 4 es -2, por lo que se debe rebalancear el árbol. El nodo 2 es el hijo de 4 que está en el camino de 3 a 4 y el nodo 3 es el nieto de 4 que está en el camino de 3 a 4. Estamos en el caso de rotación izquierda-derecha.
 
 Aplicando el siguiente código a _z_:
 
@@ -789,9 +789,9 @@ Se eliminan 2 y 4:
 ```java
           10-------> 10 es z
         /    \
-       3      15----> 17 es y  
+       3      15----> 15 es y  
              /  \
-            12  20-------> 15 es x
+            12  20-------> 20 es x
                 / \
                17 25 
 ```
@@ -901,7 +901,7 @@ Un árbol B de orden _m_, tiene las siguientes características:
 - Cada nodo se compone de llaves y ramas. Las llaves están ordenadas y dividen las ramas en el órden esperado. Por ejemplo, entre las llaves 15 y 20, hay un nodo hijo, cuyas llaves serán mayores a 15 pero menores a 20.
 - Todas las hojas están al mismo nivel.
 - Se define con un orden _m_, que depende del tamaño del bloque del disco
-- Cada nodo excepto la raíz **debe** contener al menos _m/2_ llaves. La raíz contiene un mínimo de una una llave.
+- Cada nodo excepto la raíz **debe** contener al menos _⌈m/2⌉ - 1_ llaves (es decir, al menos _⌈m/2⌉_ ramas). La raíz contiene un mínimo de una llave.
 - La inserción siempre ocurre en las hojas.
 - Crecen o decrecen desde la raíz.
 
@@ -992,17 +992,17 @@ Eliminar en un árbol B consiste de:
 #### Caso #1 - El nodo es hoja
 En este caso, la llave por eliminar está en un nodo _hoja_. Hay dos sub-casos:
  
-*1.1* El nodo tiene más de _m-1_ llaves. En este caso, simplemente se elimina la llave.
+*1.1* El nodo tiene más del mínimo de llaves. En este caso, simplemente se elimina la llave.
 
 Por ejemplo en este árbol de orden 3:
 
 ![Árbol B](images/b-tree-deletion-1.png)
 
-*1.2* El nodo tiene _m-1_ llaves. En este caso, se _pide prestado_ una llave de uno de los nodos hermanos. Primero se visita el hermano izquierdo. Si el hermano izquierdo tiene más de _m-1_ llaves, se toma la llave más grande del hermano izquierdo Si no, se chequea el hermano derecho
+*1.2* El nodo tiene el mínimo de llaves. En este caso, se _pide prestado_ una llave de uno de los nodos hermanos. Primero se visita el hermano izquierdo. Si el hermano izquierdo tiene más del mínimo de llaves, se toma la llave más grande del hermano izquierdo Si no, se chequea el hermano derecho
 
 ![Árbol B](images/b-tree-deletion-2.png)
 
-Si los dos hermanos tienen _m-1_ llaves, se fusionan los nodos y se elimina la llave del nodo padre. La mezcla de los nodos se haces mediante el nodo padre.
+Si los dos hermanos tienen el mínimo de llaves, se fusionan los nodos y se elimina la llave del nodo padre. La mezcla de los nodos se haces mediante el nodo padre.
 
 ![Árbol B](images/b-tree-deletion-3.png)
 
@@ -1013,7 +1013,7 @@ Si la llave por eliminar está dentro de un nodo interno, los siguientes casos p
 
 ![Árbol B](images/b-tree-deletion-4.png)
 
-*2.2* Si ninguno de los hijos izquierdo o derecho tiene más de _m-1_ llaves, se fusionan los nodos y se elimina la llave del nodo padre.
+*2.2* Si ninguno de los hijos izquierdo o derecho tiene más del mínimo de llaves, se fusionan los nodos y se elimina la llave del nodo padre.
 
 ![Árbol B](images/b-tree-deletion-5.png)
 

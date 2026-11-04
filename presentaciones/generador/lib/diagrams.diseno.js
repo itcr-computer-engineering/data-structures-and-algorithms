@@ -9,7 +9,9 @@ const chipW = (label, size = 14) => String(label).length * (size * 0.0072) + 0.4
 // ------------------------------------------------------------------ matriz / arreglo de celdas
 // Tabla con encabezados, celdas resaltadas, línea de corte vertical y, opcionalmente, un bloque de código a la izquierda.
 // Campos: cells[[...]], colHeaders[], rowHeaders[], corner, headW, cellW, cellH, size, tones[[tono|null]], highlight[[fila,col,tono]],
-//         vline{after,label}, rowTags[{row,label,tone}], code{code,lang,size,w,label}, label, cards[], callout.
+//         vline{after,label}, rowTags[{row,label,tone}], code{code,lang,size,w,label}, label, legend[{label,tone}] (chips en la fila del rótulo),
+//         cards[], callout o callouts[] (varios lado a lado),
+//         colW[] (ancho de cada columna de datos; por defecto cellW), headerSize (tamaño del encabezado; por defecto size).
 function matriz(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
@@ -20,7 +22,7 @@ function matriz(ctx, s) {
   const cellW = s.cellW || 0.7;
   const cellH = s.cellH || 0.55;
   const off = hasRowH ? 1 : 0;
-  const colW = [...(hasRowH ? [s.headW || 1.0] : []), ...Array(nc).fill(cellW)];
+  const colW = [...(hasRowH ? [s.headW || 1.0] : []), ...(s.colW || Array(nc).fill(cellW))];
   const tw = colW.reduce((a, b) => a + b, 0);
   const top = s.top || 2.35;
 
@@ -33,7 +35,14 @@ function matriz(ctx, s) {
     rx = mx + cw + 0.45;
     rw = w - mx - rx;
   }
-  if (s.label) text(ctx, s.label, { x: rx, y: top - 0.45, w: rw, h: 0.35, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+  const legendW = (s.legend || []).reduce((a, g) => a + chipW(g.label, 14) + 0.15, 0);
+  if (s.label) text(ctx, s.label, { x: rx, y: top - 0.45, w: rw - legendW, h: 0.35, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+  let lgx = rx + rw - legendW + 0.15;
+  (s.legend || []).forEach((g) => {
+    const lw = chipW(g.label, 14);
+    chip(ctx, { x: lgx, y: top - 0.48, w: lw, h: 0.38, label: g.label, tone: g.tone, size: 14 });
+    lgx += lw + 0.15;
+  });
 
   const tx = rx + (rw - tw) / 2;
   const hl = {};
@@ -46,7 +55,7 @@ function matriz(ctx, s) {
     ...Array.from({ length: nc }, (_, k) => (r[k] === undefined || r[k] === null ? '' : r[k])),
   ]);
   const t = table(ctx, {
-    x: tx, y: top, colW, header, rows, rowH: cellH, fontSize: s.size || 20, align: 'center',
+    x: tx, y: top, colW, header, rows, rowH: cellH, fontSize: s.size || 20, headerSize: s.headerSize, align: 'center',
     cellStyle: (ri, c) => {
       const k = c - off;
       if (k < 0) return { bold: true, color: colors.heading, fill: colors.panel };
@@ -77,6 +86,11 @@ function matriz(ctx, s) {
     const cw = (rw - (k - 1) * gap) / k;
     const cy = top + t.h + (s.vline ? 0.9 : 0.4);
     s.cards.forEach((c, i) => card(ctx, { textSize: 16, ...c }, { x: rx + i * (cw + gap), y: cy, w: cw, h: c.h || 1.6 }));
+  }
+  if (s.callouts) {
+    const k = s.callouts.length;
+    const cwid = (w - 2 * mx - (k - 1) * 0.3) / k;
+    s.callouts.forEach((c, i) => callout(ctx, { x: mx + i * (cwid + 0.3), y: s.calloutY || 5.9, w: cwid, h: s.calloutH || 0.85, size: 16, ...c }));
   }
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: w - 2 * mx, h: s.calloutH || 0.75, size: 16, ...s.callout });
 }

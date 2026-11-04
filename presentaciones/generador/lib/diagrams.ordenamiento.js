@@ -1,6 +1,9 @@
 // Diagramas de la lección «Ordenamiento y Búsqueda» (CE-1103).
 //   ordenamiento-array : filas de celdas (arreglos) con estados, marcas e índices, para mostrar algoritmos paso a paso.
-//   ordenamiento-hash  : tabla hash con llaves, buckets, colisión y separate chaining.
+//   ordenamiento-hash  : tabla hash con llaves, buckets, colisión y separate chaining. Opciones: bucketWidth, bucketY, nameSize,
+//                        callout o callouts[] (varios lado a lado). Si dos llaves de entrada se pisan, la segunda baja una fila.
+//   ordenamiento-escalera : filas de comparaciones (una celda por comparación) que forman una escalera, con una tabla a la derecha.
+//                        Campos: legend, stairs[{label, cells[], note}], total, table{title, columns, rows, colW, highlight}, callout.
 const C = require('./components');
 
 const { text, box, chip, arrow, callout } = C;
@@ -149,7 +152,8 @@ function hash(ctx, s) {
   const bw = s.bucketWidth || 1.1, gap = 0.06;
   const total = n * bw + (n - 1) * gap;
   const x0 = (w - total) / 2;
-  const bucketY = 3.9, bh = 0.8;
+  const bucketY = s.bucketY || 3.9, bh = 0.8;
+  const nameSize = s.nameSize || 18;
   const cx = (i) => x0 + i * (bw + gap) + bw / 2;
 
   if (s.formula) {
@@ -170,9 +174,20 @@ function hash(ctx, s) {
     ctx.slide.addText(e ? e.name : '', {
       shape: ctx.pptx.ShapeType.rect, x: x0 + i * (bw + gap), y: bucketY, w: bw, h: bh,
       fill: { color: e ? T.teal.soft : colors.panel }, line: { color: e ? T.teal.accent : colors.border, width: 1.25 },
-      color: colors.heading, bold: true, fontSize: 18, fontFace: ctx.theme.fonts.body, align: 'center', valign: 'middle', margin: 0,
+      color: colors.heading, bold: true, fontSize: nameSize, fontFace: ctx.theme.fonts.body, align: 'center', valign: 'middle', margin: 0,
     });
   }
+
+  // Si dos llaves de entrada se pisan (buckets contiguos), la segunda baja a una segunda fila
+  const chipRow = new Map();
+  const rowEnd = [-Infinity, -Infinity];
+  s.entries.filter((e) => byBucket[e.index][0] === e).sort((a, b) => a.index - b.index).forEach((e) => {
+    const cwid = chipW(e.key, 15) + 0.1;
+    const left = cx(e.index) - cwid / 2;
+    const r = rowEnd[0] + 0.08 <= left ? 0 : rowEnd[1] + 0.08 <= left ? 1 : 0;
+    rowEnd[r] = left + cwid;
+    chipRow.set(e, r);
+  });
 
   // llaves que llegan por arriba (la primera de cada bucket) y colisiones o cadenas por abajo
   s.entries.forEach((e) => {
@@ -180,8 +195,9 @@ function hash(ctx, s) {
     const x = cx(e.index);
     if (first) {
       const cwid = chipW(e.key, 15) + 0.1;
-      chip(ctx, { x: x - cwid / 2, y: 2.55, w: cwid, h: 0.42, label: e.key, tone: 'teal', size: 15 });
-      arrow(ctx, { x1: x, y1: 3.0, x2: x, y2: bucketY - 0.36, color: colors.teal, width: 2.5 });
+      const chipY = 2.55 + chipRow.get(e) * 0.5;
+      chip(ctx, { x: x - cwid / 2, y: chipY, w: cwid, h: 0.42, label: e.key, tone: 'teal', size: 15 });
+      arrow(ctx, { x1: x, y1: chipY + 0.45, x2: x, y2: bucketY - 0.36, color: colors.teal, width: 2.5 });
     } else if (e.extra === 'chain') {
       const ny = bucketY + bh + 0.5;
       arrow(ctx, { x1: x, y1: bucketY + bh + 0.03, x2: x, y2: ny - 0.03, color: colors.teal, width: 2.5 });
@@ -201,9 +217,74 @@ function hash(ctx, s) {
   });
 
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: w - 2 * mx, h: s.calloutH || 0.75, size: 16, ...s.callout });
+  if (s.callouts) {
+    const k = s.callouts.length;
+    const cwid = (w - 2 * mx - (k - 1) * 0.3) / k;
+    s.callouts.forEach((c, i) => callout(ctx, { x: mx + i * (cwid + 0.3), y: s.calloutY || 6.0, w: cwid, h: s.calloutH || 0.95, size: 16, ...c }));
+  }
+}
+
+function escalera(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const T = ctx.T;
+  const cw = s.cellWidth || 0.7, gap = 0.06, ch = s.cellHeight || 0.5, rowGap = s.rowGap || 0.14;
+  const labelW = s.labelW || 1.4;
+  const leftW = s.leftW || 6.9;
+  let y = 1.85;
+  if (s.legend) {
+    text(ctx, s.legend, { x: mx, y, w: leftW, h: 0.4, fontSize: 16, color: colors.slate, valign: 'middle' });
+    y += 0.55;
+  }
+  const x0 = mx + labelW;
+  const maxN = Math.max(...s.stairs.map((r) => r.cells.length));
+  const noteX = x0 + maxN * (cw + gap) + 0.15;
+  const st = cellStyle(ctx, 'teal');
+  s.stairs.forEach((r) => {
+    text(ctx, r.label, { x: mx, y, w: labelW - 0.1, h: ch, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+    r.cells.forEach((c, k) => {
+      ctx.slide.addText(String(c), {
+        shape: ctx.pptx.ShapeType.rect, x: x0 + k * (cw + gap), y, w: cw, h: ch,
+        fill: { color: st.fill }, line: { color: st.line, width: 1.25 }, color: st.color,
+        bold: true, fontSize: 20, fontFace: fonts.code, align: 'center', valign: 'middle', margin: 0,
+      });
+    });
+    if (r.note) text(ctx, r.note, { x: noteX, y, w: mx + leftW - noteX, h: ch, fontSize: 16, color: colors.slate, valign: 'middle' });
+    y += ch + rowGap;
+  });
+  if (s.total) {
+    box(ctx, { x: mx, y: y + 0.05, w: leftW, h: 0.55, fill: T.amber.soft, line: T.amber.accent, lineTransparency: 40 });
+    text(ctx, s.total, { x: mx + 0.3, y: y + 0.05, w: leftW - 0.6, h: 0.55, fontSize: 18, bold: true, color: T.amber.text, valign: 'middle' });
+  }
+
+  if (s.table) {
+    const rx = mx + leftW + 0.6;
+    const rw = w - mx - rx;
+    const t = s.table;
+    let ty = 1.85;
+    if (t.title) {
+      text(ctx, t.title, { x: rx, y: ty, w: rw, h: 0.4, fontSize: 16, color: colors.slate, valign: 'middle' });
+      ty += 0.55;
+    }
+    const hl = new Set(t.highlight || []);
+    const sum = (t.colW || [1, 2]).reduce((a, b) => a + b, 0);
+    const colW = (t.colW || [1, 2]).map((c) => (c / sum) * rw);
+    C.table(ctx, {
+      x: rx, y: ty, colW, header: t.columns, rows: t.rows, rowH: t.rowH || 0.5, fontSize: t.fontSize || 17,
+      align: t.align || ['center', 'right'],
+      cellStyle: (r, c) => (hl.has(r) ? { fill: colors.amberLight } : c === 0 ? { bold: true, color: colors.heading, fill: colors.tealLight } : {}),
+    });
+  }
+
+  if (s.callout) {
+    const cyc = s.calloutY || 5.75;
+    if (cyc + (s.calloutH || 0.95) > 6.95) console.warn(`  aviso: el callout del diagrama "${s.title}" termina en y=${(cyc + (s.calloutH || 0.95)).toFixed(2)}`);
+    callout(ctx, { x: mx, y: cyc, w: w - 2 * mx, h: s.calloutH || 0.95, size: 16, ...s.callout });
+  }
 }
 
 module.exports = {
   'ordenamiento-array': arrayRows,
   'ordenamiento-hash': hash,
+  'ordenamiento-escalera': escalera,
 };

@@ -342,7 +342,7 @@ Paso a paso se realizaría de la siguiente forma:
 | `a b a c a b a c [a]` | `P+C` no está    | ac | a  |   aca  | 97 98 97 99 256 258     |
 | `a b a c a b a c [a]` | Final            | a  |    |        | 97 98 97 99 256 258 97  |
 
-La descompresión se reduce a buscar cada uno de los códigos generados en la tabla y hacer el output del valor en el diccionario:
+La tabla no se incluye en el archivo comprimido (a diferencia de Huffman): el decodificador parte de la misma tabla inicial (0 a 255) y la reconstruye mientras lee los códigos, agregando después de cada código la cadena anterior más el primer carácter de la cadena actual. De este modo, la descompresión se reduce a buscar cada uno de los códigos generados en la tabla y hacer el output del valor en el diccionario:
 
 ```
 97 98 97 99 256 258 97 

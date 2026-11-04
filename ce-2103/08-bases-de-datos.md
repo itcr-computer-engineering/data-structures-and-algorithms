@@ -349,7 +349,7 @@ La sentencia `JOIN` y sus variantes puede entenderse visualmente mediante el sig
 
 NoSQL (Not Only SQL) es un término utilizado para describir bases de datos que no utilizan el modelo relacional tradicional basado en tablas. Estas bases de datos están diseñadas para manejar grandes volúmenes de datos no estructurados o semi-estructurados de manera flexible y escalable.
 
-El término _NoSQL_ fue usado por Carl Strozzi en 1998 cuando lanzó su base de datos "NoSQL", que era un sistema de bases de datos que no usaba SQL. En ese contexto original, "NoSQL" significaba literalmente que la base de datos no utilizaba el lenguaje SQL; su base de datos estaba más centrada en ser ligera y simple para aplicaciones específicas, en lugar de seguir los principios y características de las bases de datos relacionales.
+El término _NoSQL_ fue usado por Carlo Strozzi en 1998 cuando lanzó su base de datos "NoSQL", que era un sistema de bases de datos que no usaba SQL. En ese contexto original, "NoSQL" significaba literalmente que la base de datos no utilizaba el lenguaje SQL; su base de datos estaba más centrada en ser ligera y simple para aplicaciones específicas, en lugar de seguir los principios y características de las bases de datos relacionales.
 
 Más adelante, hacia 2009, el término fue reutilizado y reinterpretado para nombrar a una nueva generación de bases de datos no relacionales. Bajo este sentido moderno, NoSQL se entiende como "Not Only SQL" (No solo SQL), lo que indica que no se trata de bases de datos exclusivamente relacionales, sino que existen alternativas. En otras palabras, en su acepción actual NoSQL sugiere que las bases de datos pueden usar otros modelos de datos y lenguajes de consulta, o no requerir de SQL en absoluto.
 

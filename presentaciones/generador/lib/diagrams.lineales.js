@@ -593,10 +593,67 @@ function matrixRefs(ctx, s) {
   bottomCallouts(ctx, s);
 }
 
+// ------------------------------------------------------------------ lista doble: insertar entre dos nodos (4 enlaces numerados)
+// Campos: `current`, `next`, `newNode` (valores de los tres nodos), `code` (las 4 asignaciones, en orden),
+// `codeLabel`, `codeW` (ancho de la columna de código), `side` (callout bajo el código) y `callout(s)` al pie.
+function dllInsert(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const codeW = s.codeW || 4.3;
+  const dw = w - 2 * mx - codeW - 0.3;
+  const nw = 2.0, nh = 0.9, ptrW = nw * 0.21, dy = 0.17;
+  const A = { x: mx + 0.2, y: 2.6 };
+  const B = { x: mx + dw - 0.2 - nw, y: 2.6 };
+  const N = { x: (A.x + nw + B.x) / 2 - nw / 2, y: 4.1 };
+  const nextDot = (n) => ({ x: n.x + nw - ptrW / 2, y: n.y + nh / 2 - dy });
+  const prevDot = (n) => ({ x: n.x + ptrW / 2, y: n.y + nh / 2 + dy });
+  const amber = ctx.T.amber;
+
+  // nodos y punteros con nombre
+  drawNode(ctx, s.current === undefined ? 5 : s.current, A.x, A.y, nw, nh, 'double');
+  drawNode(ctx, s.next === undefined ? 6 : s.next, B.x, B.y, nw, nh, 'double');
+  drawNode(ctx, { v: s.newNode === undefined ? 9 : s.newNode, tone: 'amber' }, N.x, N.y, nw, nh, 'double');
+  [['current', A, 'amber'], ['current.next', B, 'slate']].forEach(([name, n, tone]) => {
+    const wd = chipWd(name, 14);
+    const cx = n.x + nw / 2;
+    chip(ctx, { x: cx - wd / 2, y: n.y - PTR, w: wd, h: 0.34, label: name, tone, size: 14 });
+    seg(ctx, cx, n.y - PTR + 0.34, cx, n.y - 0.03, { color: ctx.T[tone].accent, width: 2.5, head: true });
+  });
+  const wn = chipWd('newNode', 14);
+  chip(ctx, { x: N.x + nw / 2 - wn / 2, y: N.y + nh + 0.3, w: wn, h: 0.34, label: 'newNode', tone: 'amber', size: 14 });
+  seg(ctx, N.x + nw / 2, N.y + nh + 0.28, N.x + nw / 2, N.y + nh + 0.03, { color: amber.accent, width: 2.5, head: true });
+
+  // enlaces actuales (se reemplazan)
+  const red = { color: ctx.T.red.accent, dash: 'dash', head: true };
+  seg(ctx, nextDot(A).x, nextDot(A).y, B.x - 0.03, nextDot(A).y, red);
+  seg(ctx, prevDot(B).x, prevDot(B).y, A.x + nw + 0.03, prevDot(B).y, red);
+  text(ctx, s.oldLinks || 'enlaces actuales', {
+    x: A.x + nw + 0.25, y: A.y - 0.02, w: B.x - A.x - nw - 0.5, h: 0.34, fontSize: 14, bold: true, color: ctx.T.red.text, align: 'center', valign: 'middle',
+  });
+
+  // los cuatro enlaces nuevos, numerados en el orden de las asignaciones
+  const hit = (from, to, n) => {
+    seg(ctx, from.x, from.y, to.x, to.y, { color: amber.accent, width: 3, head: true });
+    circleLabel(ctx, { x: (from.x + to.x) / 2 - 0.18, y: (from.y + to.y) / 2 - 0.18, d: 0.36, label: String(n), fill: amber.accent, color: amber.on, size: 14 });
+  };
+  hit(nextDot(N), { x: B.x + nw / 2, y: B.y + nh + 0.03 }, 1);
+  hit(prevDot(B), { x: N.x + nw * 0.7, y: N.y - 0.03 }, 2);
+  hit(prevDot(N), { x: A.x + nw / 2, y: A.y + nh + 0.03 }, 3);
+  hit(nextDot(A), { x: N.x + nw * 0.3, y: N.y - 0.03 }, 4);
+
+  // código y aviso a la derecha
+  const cx = w - mx - codeW;
+  text(ctx, s.codeLabel || 'Las cuatro asignaciones, en orden:', { x: cx, y: 1.95, w: codeW, h: 0.4, fontSize: 17, bold: true, color: colors.slate, valign: 'middle' });
+  const ch = C.codeBlock(ctx, { x: cx, y: 2.4, w: codeW, code: s.code, lang: s.codeLang || 'java', fontSize: 14 });
+  if (s.side) C.callout(ctx, { x: cx, y: 2.4 + ch + 0.2, w: codeW, h: 5.7 - (2.4 + ch + 0.2), tone: 'amber', size: 16, ...s.side });
+  bottomCallouts(ctx, s);
+}
+
 module.exports = {
   'lineales-array': arrayDiagram,
   'lineales-nodes': nodesDiagram,
   'lineales-stack': stackDiagram,
   'lineales-ring': ringDiagram,
   'lineales-matrix-refs': matrixRefs,
+  'lineales-doble-insertar': dllInsert,
 };

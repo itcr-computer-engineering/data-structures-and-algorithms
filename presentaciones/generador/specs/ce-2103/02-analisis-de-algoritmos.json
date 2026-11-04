@@ -89,7 +89,7 @@
         { "title": "Clasificar", "text": "El algoritmo según su complejidad.", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "label": "Muchos factores influyen:", "text": "hardware, sistema operativo, lenguaje, cantidad de datos y hasta la pericia del programador." },
-      "notes": "Esto no es una práctica reciente: se remonta a los inicios de la computación. Charles Babbage observó: «As soon as an Analytic Engine exists, it will necessarily guide the future course of the science. Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the shortest time?». Décadas después Turing observó: «It is convenient to have a measure of the amount of work involved in a computing process, even though it be a very crude one. We may count up the number of times that various elementary operations are applied in the whole process». Ambos se referían a la necesidad de determinar la eficiencia de un algoritmo para optimizarlo o compararlo con otros de la misma «familia». En las siguientes secciones veremos dos formas de analizar: empírico y teórico."
+      "notes": "Esto no es una práctica reciente: se remonta a los inicios de la computación. Charles Babbage observó: «As soon as an Analytic Engine exists, it will necessarily guide the future course of the science. Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the shortest time?». Décadas después Turing observó: «It is convenient to have a measure of the amount of work involved in a computing process, even though it be a very crude one. We may count up the number of times that various elementary operations are applied in the whole process». Ambos se referían a la necesidad de determinar la eficiencia de un algoritmo para optimizarlo o compararlo con otros de la misma «familia». En las siguientes secciones veremos dos formas de analizar: empírico y teórico. Aclaración de vocabulario: un algoritmo es eficaz si hace lo correcto (resuelve el problema) y eficiente si lo hace de forma óptima, consumiendo pocos recursos (por ejemplo, el menor tiempo o la menor memoria). Este curso se centra en la eficiencia. El tiempo y el espacio son las métricas más comunes, pero hay otras: consumo de energía, uso temporal o permanente de disco, velocidad de transmisión y tiempo de respuesta. Aquí usamos «eficaz» y «eficiente» para estos dos conceptos y reservamos «factible» para la característica del algoritmo (diapositiva «Características de un algoritmo»)."
     },
     {
       "type": "list",
@@ -125,13 +125,13 @@
       "columns": 3,
       "cardHeight": 3.0,
       "textSize": 17,
-      "callout": { "tone": "teal", "text": "No importan los nanosegundos: importa la **tasa de crecimiento** de las operaciones según el tamaño de la entrada." },
+      "callout": { "tone": "teal", "text": "Se mide `f(n)`: pasos (tiempo) o posiciones de memoria (espacio) según el tamaño n. No importan los nanosegundos, sino la **tasa de crecimiento**: el algoritmo es **eficiente** si `f(n)` crece lentamente." },
       "cards": [
         { "badge": "1", "title": "Operaciones simples", "text": "+, -, *, /, =, == toman tiempo constante: las operaciones elementales de Turing.", "tone": "teal" },
         { "badge": "2", "title": "Loops y funciones", "text": "No son operaciones simples: son la composición de muchas operaciones simples.", "tone": "teal" },
         { "badge": "3", "title": "Acceso a memoria", "text": "Cada acceso a memoria toma tiempo constante.", "tone": "teal" }
       ],
-      "notes": "Si el análisis empírico no da una solución a prueba del tiempo y de la plataforma, la respuesta es el análisis teórico. Este modelo es una abstracción de la realidad, pero es perfecto para determinar el comportamiento de un algoritmo: nos interesa cuál es la tasa de crecimiento de la cantidad de operaciones realizadas conforme crece el tamaño de la entrada."
+      "notes": "Si el análisis empírico no da una solución a prueba del tiempo y de la plataforma, la respuesta es el análisis teórico. Este modelo es una abstracción de la realidad, pero es perfecto para determinar el comportamiento de un algoritmo: nos interesa cuál es la tasa de crecimiento de la cantidad de operaciones realizadas conforme crece el tamaño de la entrada. Analizar teóricamente un algoritmo es determinar su complejidad: una función f(n) que relaciona el tamaño n de la entrada con el número de pasos que ejecuta (complejidad en tiempo) o con el número de posiciones de memoria que usa (complejidad en espacio). Se dice que un algoritmo es eficiente cuando los valores de f(n) son pequeños o crecen lentamente al aumentar n. (La teoría de la complejidad computacional, que clasifica los problemas según su dificultad inherente, queda fuera del alcance de esta lección.) Operaciones elementales, además de +, -, *, / y ==: los operadores lógicos (&&, ||, !, !=), los de bits (<<, >>), la asignación, el acceso a un elemento de un arreglo por su índice y el retorno de un valor. Ojo: ^ en C, C++, C# y Java es XOR (no es potencia), y la potencia no es una operación elemental. Llamar a una función cuesta una constante, pero hay que sumar el costo de ejecutar su cuerpo."
     },
     {
       "type": "code",
@@ -157,7 +157,7 @@
       ],
       "callouts": [{ "tone": "amber", "label": "Ojo:", "text": "este nivel de detalle no es práctico. Más adelante lo simplificamos con el **análisis asintótico**." }],
       "calloutsY": 5.7,
-      "notes": "Con el modelo computacional encontramos una función f(n) del tamaño de la entrada. Línea por línea: la asignación inicial cuesta 3T; el for cuesta T + 2nT; en el peor caso (arreglo creciente) la condición del if se cumple siempre, así que el if y la asignación interna cuestan 2T(n-1) cada uno; el return cuesta T. Suma: 3T + T + 2nT + 4nT - 4T + T = 6nT + T. Imagínese el trabajo de una función como f(n) = 12754n^2 + 4353n + 834 lg2(n) + 13546: por eso conviene el análisis asintótico."
+      "notes": "Con el modelo computacional encontramos una función f(n) del tamaño de la entrada. Línea por línea: la asignación inicial cuesta 3T; el for cuesta T + 2nT; en el peor caso (arreglo creciente) la condición del if se cumple siempre, así que el if y la asignación interna cuestan 2T(n-1) cada uno; el return cuesta T. Suma: 3T + T + 2nT + 4nT - 4T + T = 6nT + T. Imagínese el trabajo de una función como f(n) = 12754n^2 + 4353n + 834 lg2(n) + 13546: por eso conviene el análisis asintótico. Reglas para contar en el peor caso: una secuencia suma el costo de sus instrucciones; un if cuesta la condición más el máximo entre sus ramas; un for cuesta la inicialización (una sola vez) más la condición, el incremento y n veces el cuerpo. Sobre el conteo del for: la condición se evalúa n veces (n-1 veces verdadera y una falsa) y el incremento n-1 veces; contando con más finura el for cuesta 2nT y el total es 6nT. La diapositiva usa T + 2nT (total 6nT + T), una aproximación que se diferencia en una sola T: las constantes aditivas no importan, en ambos casos f(n) = O(n)."
     },
     {
       "type": "image",
@@ -174,13 +174,42 @@
       "title": "Mejor, peor y caso promedio",
       "columns": 3,
       "cardHeight": 2.8,
-      "callout": { "tone": "teal", "text": "El **peor caso** es el más útil: si lo peor que puede pasar es aceptable, el algoritmo es eficiente." },
+      "callout": { "tone": "teal", "text": "El **peor caso** es el más útil: es una cota superior fácil de calcular (aunque a veces pesimista). Si es aceptable, el algoritmo es eficiente." },
       "cards": [
         { "title": "Mejor caso", "text": "Se realiza la menor cantidad de operaciones. Ej.: el elemento buscado es el primero.", "tone": "green" },
         { "title": "Peor caso", "text": "Se realiza la mayor cantidad de operaciones. Ej.: el elemento buscado es el último.", "tone": "red" },
-        { "title": "Caso promedio", "text": "Promedio sobre todos los inputs posibles. Ej.: el elemento está en cualquier posición.", "tone": "amber" }
+        { "title": "Caso promedio", "text": "Valor esperado según la probabilidad de cada input. Ej.: el elemento está en cualquier posición.", "tone": "amber" }
       ],
-      "notes": "Los ejemplos se refieren al algoritmo de búsqueda secuencial. En el caso promedio se suman todos los valores calculados y se divide entre el total de entradas. El peor caso nos da una idea de la eficiencia del algoritmo en el peor escenario posible: conociendo lo peor que puede llegar, y siendo este aceptable, podemos asumir que el algoritmo es eficiente."
+      "notes": "Los ejemplos se refieren al algoritmo de búsqueda secuencial. En el caso promedio se suman todos los valores calculados y se divide entre el total de entradas; con rigor, es el valor esperado: cada entrada se pondera por su probabilidad de aparecer, así que hay que suponer una distribución (para la búsqueda secuencial, que el elemento está en el arreglo y que cada posición es igual de probable). Por eso el caso promedio casi no se calcula en la práctica: no es sencillo y a veces es muy difícil conocer la distribución de las entradas. El peor caso nos da una idea de la eficiencia del algoritmo en el peor escenario posible: es una cota superior fácil de calcular, aunque a menudo es demasiado pesimista; conociendo lo peor que puede llegar, y siendo este aceptable, podemos asumir que el algoritmo es eficiente."
+    },
+    {
+      "type": "code",
+      "section": "Mejor, peor y promedio",
+      "title": "Búsqueda secuencial: el algoritmo y su mejor caso",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Mejor caso: x está en a[0] (T = costo de una operación simple)",
+              "code": "boolean contains(int[] a, int x) {\n    for (int i = 0; i < a.length; i++) {  // 2T\n        if (x == a[i]) {                  // 2T\n            return true;                  // T\n        }\n    }\n    return false;\n}",
+              "note": "Se retorna en la primera vuelta: no se ejecuta `i++`."
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Mejor caso", "text": "x está en `a[0]`: solo se ejecuta la primera vuelta.", "footer": "2T + 2T + T = 5T", "footerSize": 20, "tone": "green", "h": 2.05 },
+            { "title": "Peor caso", "text": "x no está (o es el último): se revisan los n elementos.", "footer": "n comparaciones", "footerSize": 20, "tone": "red", "h": 2.05 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "label": "Constante:", "text": "el mejor caso cuesta `5T` aunque el arreglo tenga un millón de elementos: **no depende de n**." }],
+      "calloutsY": 6.25,
+      "calloutsH": 0.6,
+      "notes": "Algoritmo de búsqueda secuencial: recorre el arreglo de izquierda a derecha y retorna true apenas encuentra x; si termina el recorrido, retorna false. Contando con la convención de la diapositiva «Contar operaciones: el máximo de un arreglo» (T = costo de una operación simple): en el mejor caso x está en a[0] y solo se ejecuta la primera vuelta. El for cuesta 2T (la inicialización i = 0 y la primera evaluación de i < a.length); el if cuesta 2T (acceder a a[i] y compararlo con x); el return true cuesta T. Como se retorna en la primera vuelta, no se ejecuta el incremento i++. Total: 5T, una constante que no depende del tamaño del arreglo. En el peor caso, x no está (o es el último elemento) y se revisan los n elementos: el tiempo crece con n, como se ve en la siguiente diapositiva. Preguntas para la clase: ¿qué entradas producen el mejor y el peor caso? ¿Cambia el mejor caso si el arreglo tiene un millón de elementos? (No: sigue siendo 5T.)"
     },
     {
       "type": "diagram",
@@ -194,8 +223,8 @@
         { "label": "Caso promedio", "tone": "amber", "hit": 4, "count": "i comparaciones", "note": "Promedio: (n+1)/2." },
         { "label": "Peor caso", "tone": "red", "hit": 8, "count": "n comparaciones", "note": "El elemento está al final." }
       ],
-      "callout": { "tone": "teal", "label": "Promedio:", "text": "`1 + 2 + ... + n = n(n+1)/2`, y al dividir entre n posiciones queda `(n+1)/2`." },
-      "notes": "Si el elemento está en la posición i se ejecutan i operaciones. La suma de comparaciones sobre todas las posiciones es 1 + 2 + 3 + ... + n = n(n+1)/2. El promedio por elemento es n(n+1)/2 / n = (n+1)/2: en promedio se revisa cerca de la mitad del arreglo. En el diagrama se muestra el caso promedio con el elemento en la posición 4 solo como ejemplo de una posición intermedia."
+      "callout": { "tone": "teal", "label": "Promedio:", "text": "si el elemento está y cada posición es igual de probable (`p = 1/n`): `1 + 2 + ... + n = n(n+1)/2`; al dividir entre n queda `(n+1)/2`." },
+      "notes": "Si el elemento está en la posición i se ejecutan i operaciones. La suma de comparaciones sobre todas las posiciones es 1 + 2 + 3 + ... + n = n(n+1)/2. El promedio por elemento es n(n+1)/2 / n = (n+1)/2: en promedio se revisa cerca de la mitad del arreglo. En el diagrama se muestra el caso promedio con el elemento en la posición 4 solo como ejemplo de una posición intermedia. Hipótesis del cálculo: el elemento está en el arreglo y la probabilidad de que esté en cada posición es la misma, p(i) = 1/n (distribución uniforme). Con eso, el caso promedio es el valor esperado del número de comparaciones: la suma de i · p(i) para i de 1 a n, es decir, (1/n)(1 + 2 + ... + n) = (n+1)/2. Si el elemento puede no estar, o las posiciones no son igual de probables, el resultado cambia: por eso el caso promedio casi no se calcula."
     },
     {
       "type": "image",
@@ -216,6 +245,28 @@
       "notes": "Suponga que debe enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiendo que ir a Guanacaste sin presas siempre tarda 3 horas: no importa qué tan grande sea el archivo, llevarlo físicamente tarda lo mismo, O(1). Por medio electrónico el tiempo depende del tamaño del archivo, O(n), y en algún momento será mayor que las 3 horas. El análisis asintótico busca la función que representa el crecimiento con respecto a n."
     },
     {
+      "type": "diagram",
+      "kind": "analisis-tabla-terminos",
+      "section": "Análisis asintótico",
+      "title": "¿Qué término determina el crecimiento?",
+      "lead": "Si contar los pasos de un código da",
+      "formula": "f(n) = 2n^3 + 3n^2 + log10(n) + 333",
+      "table": {
+        "columns": ["n", "2n^3", "3n^2", "log10(n)", "Constante", "f(n)", "2n^3 / f(n)"],
+        "colW": [1.1, 2.4, 1.8, 1.3, 1.3, 2.4, 1.6],
+        "rows": [
+          ["1", "2", "3", "0", "333", "338", "0.59 %"],
+          ["10", "2\u00a0000", "300", "1", "333", "2\u00a0634", "75.93 %"],
+          ["100", "2\u00a0000\u00a0000", "30\u00a0000", "2", "333", "2\u00a0030\u00a0335", "98.51 %"],
+          ["1\u00a0000", "2\u00a0000\u00a0000\u00a0000", "3\u00a0000\u00a0000", "3", "333", "2\u00a0003\u00a0000\u00a0336", "99.85 %"],
+          ["10\u00a0000", "2\u00a0000\u00a0000\u00a0000\u00a0000", "300\u00a0000\u00a0000", "4", "333", "2\u00a0000\u00a0300\u00a0000\u00a0337", "99.99 %"]
+        ]
+      },
+      "highlightCols": [1, 6],
+      "callout": { "tone": "teal", "text": "Al crecer n, **2n^3** casi lo es todo: los demás términos y la constante dejan de importar. Por eso `f(n) = O(n^3)`." },
+      "notes": "Pregunta para la clase: ¿qué término determina el crecimiento de f(n)? Respuesta: el de mayor grado, 2n^3. Con n = 1 la constante 333 domina (f(1) = 338), pero al crecer n el término cúbico pasa de aportar el 0.59 % de f(n) a más del 99.9 %: los demás términos y la constante se vuelven irrelevantes y f(n) = O(n^3). Los valores de la tabla se calcularon y verificaron para esta lección; la última columna es el porcentaje de f(n) que aporta 2n^3. Aquí log10 es el logaritmo en base 10; en computación suele usarse la base 2, pero la base no cambia el orden de crecimiento. Conecte con la función 12754n^2 + 4353n + 834 lg2(n) + 13546 de la diapositiva «Contar operaciones» y con la siguiente diapositiva, que formaliza el descarte de términos y constantes."
+    },
+    {
       "type": "table",
       "section": "Análisis asintótico",
       "title": "Análisis asintótico: descartar lo menos relevante",
@@ -230,7 +281,7 @@
         ["O(5 * 2^n + 100n^2)", "O(2^n)"]
       ],
       "callout": { "tone": "teal", "text": "Se descartan los **términos de menor relevancia** y las **constantes**: lo que importa es la **escalabilidad**." },
-      "notes": "Análisis asintótico: encontrar la función que represente el crecimiento con respecto a n sin entrar en detalles abrumadores, descartando los términos que no son significativos para el crecimiento. Las constantes también se eliminan: f(n) = 6nT + T se expresa como f(n) = O(n)."
+      "notes": "Análisis asintótico: encontrar la función que represente el crecimiento con respecto a n sin entrar en detalles abrumadores, descartando los términos que no son significativos para el crecimiento. Como mostró la tabla de la diapositiva anterior, al crecer n domina el término de mayor grado. Las constantes también se eliminan: f(n) = 6nT + T se expresa como f(n) = O(n)."
     },
     {
       "type": "diagram",
@@ -312,7 +363,7 @@
         { "tone": "green", "label": "O(1):", "text": "no hay llamadas anidadas: la memoria no crece con n." }
       ],
       "calloutsY": 5.75,
-      "notes": "Lo visto hasta ahora se enfoca en complejidad en tiempo, pero la cantidad de memoria que un algoritmo requiere también se describe con Big-O, Big-Omega y Big-Theta. En sum(n) cada llamada recursiva queda en la pila hasta que se resuelve la siguiente: n llamadas en la pila, O(n). En foo(n) cada llamada a bar termina antes de la siguiente: no hay llamadas anidadas, O(1). Nota: en el capítulo la función bar se declara con dos parámetros pero se llama con uno; aquí se llama con dos argumentos para que el código sea correcto."
+      "notes": "Lo visto hasta ahora se enfoca en complejidad en tiempo, pero la cantidad de memoria que un algoritmo requiere también se describe con Big-O, Big-Omega y Big-Theta. En sum(n) cada llamada recursiva queda en la pila hasta que se resuelve la siguiente: n llamadas en la pila, O(n). En foo(n) cada llamada a bar termina antes de la siguiente: no hay llamadas anidadas, O(1)."
     },
     {
       "type": "image",
@@ -320,8 +371,8 @@
       "title": "Complejidades comunes (Big-O conocidas)",
       "image": "03-analisis-teorico-2.png",
       "alt": "Gráfica de complejidad contra tamaño de la entrada con las curvas O(log n), O(n), O(n log n), O(n^2), O(2^n) y O(n!)",
-      "caption": "De menor a mayor crecimiento: O(log n), O(n), O(n log n), O(n^2), O(2^n), O(n!).",
-      "notes": "Estas son las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos. Además de las que aparecen en la gráfica, O(1) (constante) es la de menor crecimiento. Las curvas se separan más conforme crece el tamaño de la entrada: por eso escalar un algoritmo O(2^n) o O(n!) es inviable."
+      "caption": "De menor a mayor crecimiento: logarítmica, lineal, n log n, cuadrática, exponencial y factorial.",
+      "notes": "Estas son las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos. Además de las que aparecen en la gráfica, O(1) (constante) es la de menor crecimiento. Nombres: O(1) constante, O(log n) logarítmica, O(n) lineal, O(n log n) lineal-logarítmica, O(n^2) cuadrática, O(n^3) cúbica, O(2^n) exponencial y O(n!) factorial. La cuadrática y la cúbica son polinómicas (O(n^k) con k fijo); la exponencial no lo es. Las curvas se separan más conforme crece el tamaño de la entrada: por eso escalar un algoritmo O(2^n) o O(n!) es inviable."
     },
     {
       "type": "code",
@@ -390,7 +441,34 @@
         "rows": [["1", "n"], ["2", "n/2"], ["3", "n/4"], ["k + 1", "n/2^k"]]
       },
       "callout": { "tone": "teal", "text": "El loop termina cuando `n/2^k = 1`, o sea `k = log2(n)`: **cuántas veces se puede dividir n entre 2** hasta llegar a 1." },
-      "notes": "En cada iteración i se divide por 2: en la primera iteración i es n, en la segunda n/2, en la tercera n/4, y en general en la iteración k+1 vale n/2^k (el capítulo lo escribe como n/2^k en la «k-ésima» iteración contando desde k = 0). La complejidad es O(log2 n) porque k es el número de veces que se puede dividir n por 2 hasta llegar a 1."
+      "notes": "En cada iteración i se divide por 2: en la primera iteración i es n, en la segunda n/2, en la tercera n/4, y en general en la iteración k+1 vale n/2^k (el capítulo lo escribe como n/2^k en la «k-ésima» iteración contando desde k = 0). La complejidad es O(log2 n) porque k es el número de veces que se puede dividir n por 2 hasta llegar a 1. La siguiente diapositiva lo comprueba con una traza numérica (n = 1000)."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-traza-loops",
+      "section": "Determinar la complejidad",
+      "title": "Traza con n = 1000: multiplicar vs. dividir entre 2",
+      "rows": [
+        {
+          "label": "Multiplica por 2: valor de i en cada iteración",
+          "count": "10 iteraciones",
+          "code": "int i = 1;\nwhile (i < n) {\n    statement;\n    i = i * 2;\n}",
+          "values": ["1", "2", "4", "8", "16", "32", "64", "128", "256", "512"],
+          "exit": "1024",
+          "note": "La siguiente vuelta tendría `i = 1024`: ya no cumple `i < n`."
+        },
+        {
+          "label": "Divide entre 2: valor de i en cada iteración",
+          "count": "10 iteraciones",
+          "code": "int i = n;\nwhile (i > 0) {\n    statement;\n    i = i / 2;\n}",
+          "values": ["1000", "500", "250", "125", "62", "31", "15", "7", "3", "1"],
+          "exit": "0",
+          "note": "División entera: la siguiente vuelta tendría `i = 0` y el loop termina."
+        }
+      ],
+      "exitLabel": "sale",
+      "callout": { "tone": "teal", "label": "Conclusión:", "text": "ambos dan unas `log2(1000) ≈ 10` vueltas, pues `2^10 = 1024 ≈ 1000`: son **O(log n)**." },
+      "notes": "Compare los dos loops con n = 1000. Multiplica: i vale 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, o sea 10 iteraciones; la siguiente sería 1024, que ya no cumple i < 1000. Divide (división entera): i vale 1000, 500, 250, 125, 62, 31, 15, 7, 3, 1, otras 10 iteraciones; después i = 0 y el loop termina. En ambos casos el número de iteraciones k cumple 2^k ≈ n, es decir k ≈ log2(1000) ≈ 9.97, que redondeado son 10. En general, con n >= 2 el loop que multiplica hace el techo de log2(n) vueltas y el que divide hace el piso de log2(n) más 1 (comprobado para n de 2 a 100 000): ambos son O(log n). Cuidado con la inecuación «2^iteraciones < n»: en la iteración k el valor de i es 2^(k-1), no 2^k, así que hay un desfase de uno; no afecta el resultado asintótico. La base del logaritmo no importa en Big O: cambiar de base solo multiplica por una constante (log2 n = log10 n / log10 2). Variante: si un loop logarítmico se anida dentro de un loop de n vueltas, las complejidades se multiplican y resulta O(n log n); por ejemplo, for (i = 0; i < n; i++) { j = n; while (j > 0) { statement; j = j / 2; } } ejecuta statement n · (piso de log2 n + 1) veces; con n = 1000 son 1000 · 10 = 10 000 veces. Esta traza es la base del ejercicio B de «Ahora usted»."
     },
     {
       "type": "code",
@@ -490,7 +568,7 @@
       ],
       "calloutsY": 5.2,
       "calloutsH": 1.0,
-      "notes": "Ejemplo 5: reverse intercambia cada elemento con su simétrico; el loop solo recorre la mitad del arreglo, O(n/2) = O(n). Ejemplo 7: isPrime prueba divisores desde 2 hasta sqrt(n), así que en el peor caso (n primo) hace sqrt(n) iteraciones: O(sqrt(n)). Nota: en el capítulo el código usa n % X (error de mayúscula); aquí se escribe n % x."
+      "notes": "Ejemplo 5: reverse intercambia cada elemento con su simétrico; el loop solo recorre la mitad del arreglo, O(n/2) = O(n). Ejemplo 7: isPrime prueba divisores desde 2 hasta sqrt(n), así que en el peor caso (n primo) hace sqrt(n) iteraciones: O(sqrt(n))."
     },
     {
       "type": "code",
@@ -691,7 +769,7 @@
         { "title": "C. Recurrencia", "text": "`T(n) = 2T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" },
         { "title": "D. Recurrencia", "text": "`T(n) = 8T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" }
       ],
-      "notes": "Ejercicios añadidos (no están en el capítulo). Respuestas: A) n · n · 10 = 10n^2, O(n^2): el loop constante no cambia la complejidad. B) i vale 1, 2, 4, 8, ...: el loop se ejecuta cerca de log2(n) veces, O(log n). C) a = 2, b = 2, n^(log_2 2) = n; f(n) = n^2 = Ω(n^(1+1)) con ε = 1, Caso 3; regularidad: 2·(n/2)^2 = n^2/2 <= k·n^2 con k = 1/2 < 1; T(n) = Θ(n^2). D) a = 8, b = 2, n^(log_2 8) = n^3; f(n) = n^2 = O(n^(3-1)) con ε = 1, Caso 1; T(n) = Θ(n^3)."
+      "notes": "Ejercicios añadidos (no están en el capítulo). Respuestas: A) n · n · 10 = 10n^2, O(n^2): el loop constante no cambia la complejidad. B) i vale 1, 2, 4, 8, ...: el loop se ejecuta cerca de log2(n) veces, O(log n); con n = 1000 son 10 vueltas, como en la traza de la diapositiva «Traza con n = 1000». C) a = 2, b = 2, n^(log_2 2) = n; f(n) = n^2 = Ω(n^(1+1)) con ε = 1, Caso 3; regularidad: 2·(n/2)^2 = n^2/2 <= k·n^2 con k = 1/2 < 1; T(n) = Θ(n^2). D) a = 8, b = 2, n^(log_2 8) = n^3; f(n) = n^2 = O(n^(3-1)) con ε = 1, Caso 1; T(n) = Θ(n^3)."
     },
     {
       "type": "cards",
@@ -840,8 +918,8 @@
         "**Algoritmo:** procedimiento para cumplir una tarea; el programa es su implementación.",
         "**Empírico vs. teórico:** medir ejecutando (depende de la máquina) o contar operaciones con un modelo computacional.",
         "**Casos:** mejor, peor y promedio; el **peor caso** es el más útil.",
-        "**Asintótico:** se descartan constantes y términos menores; **O**, **Omega** y **Theta** son cotas superior, inferior y ajustada.",
-        "**Complejidad:** secuencia suma, if toma el máximo, loops multiplican; la recursión se analiza con su árbol de llamadas."
+        "**Asintótico:** se descartan constantes y términos menores (domina el de mayor grado); **O**, **Ω** y **Θ** son cotas superior, inferior y ajustada.",
+        "**Complejidad:** secuencia suma, if toma el máximo, loops multiplican; la recursión usa su árbol de llamadas; dividir entre 2 da `O(log n)`."
       ],
       "notes": "Cierre de la primera mitad. La complejidad espacial también se describe con O, Ω y Θ: la recursión de profundidad n usa O(n) de pila."
     },

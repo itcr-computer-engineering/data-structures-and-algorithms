@@ -268,18 +268,18 @@ Si visualizamos la memoria como una tabla con columnas y filas, para el código 
 | 0x0       | ptr    | 0x64  | 4B      | Stack     | Pointer |
 | 0x4       | cptr   | 0x68  | 4B      | Stack     | Pointer |
 | 0x8       | dptr   | 0x69  | 4B      | Stack     | Pointer |
-| 0x12      | myptr  | 0x72  | 4B      | Stack     | Pointer |
-| 0x16      | vptr   | 0x92  | 4B      | Stack     | Pointer |
-| 0x1A      | nPtr   | 0x0   | 4B      | Stack     | Pointer |
-| 0x1E      | nPtr2  | 0x0   | 4B      | Stack     | Pointer |
-| 0x22      | nPtr3  | 0x0   | 4B      | Stack     | Pointer |
-| 0x64      |        | 0     | 4B      | Heap      | int     |
-| 0x68      |        | ''    | 1B      | Heap      | char    |
-| 0x69      |        | 0     | 8B      | Heap      | double  |
-| 0x72      |        | 0     | 20B     | Heap      | MyClass |
-| 0x92      |        | 0     | 100B    | Heap      | ?       |
+| 0xC       | myptr  | 0x72  | 4B      | Stack     | Pointer |
+| 0x10      | vptr   | 0x92  | 4B      | Stack     | Pointer |
+| 0x14      | nPtr   | 0x0   | 4B      | Stack     | Pointer |
+| 0x18      | nPtr2  | 0x0   | 4B      | Stack     | Pointer |
+| 0x1C      | nPtr3  | 0x0   | 4B      | Stack     | Pointer |
+| 0x64      |        | ?     | 4B      | Heap      | int     |
+| 0x68      |        | ?     | 1B      | Heap      | char    |
+| 0x69      |        | ?     | 8B      | Heap      | double  |
+| 0x72      |        | ?     | 20B     | Heap      | MyClass |
+| 0x92      |        | ?     | 100B    | Heap      | ?       |
 
-> Las direcciones de la tabla son ficticias y no corresponden a direcciones reales de memoria. Asumimos que el heap empieza en la dirección hexadecimal 64. Asumimos que cada dirección es de 32 bits, es decir 4 bytes. Asumimos que la clase `MyClass` tiene un tamaño de 20 bytes.
+> Las direcciones de la tabla son ficticias y no corresponden a direcciones reales de memoria. Asumimos que el heap empieza en la dirección hexadecimal 64. Asumimos que cada dirección es de 32 bits, es decir 4 bytes. Asumimos que la clase `MyClass` tiene un tamaño de 20 bytes. El símbolo `?` indica contenido indeterminado: `malloc` no inicializa la memoria que reserva (el bloque contiene basura; `calloc` sí la deja en cero) y, tras `new MyClass()`, el valor depende del constructor de la clase.
 
 Como se puede notar, para acceder a la memoria, se necesitan dos componentes: la llamada al API (en este caso malloc) y un puntero para poder acceder a la memoria creada por el API. El puntero siempre estará en el stack, y es una variable automática como cualquier otra. Sin embargo, al liberarse junto con el frame, la memoria en el Heap no se libera.
 
@@ -291,7 +291,7 @@ Resulta en una tabla de memoria como:
 
 | Dirección | Alias  | Valor | Tamaño  | Ubicación | Tipo    |
 | --------- | ------ | ----- | ------- | --------- | ------- |
-| 0x64      |        | 0     | 4B      | Heap      | int     |
+| 0x64      |        | ?     | 4B      | Heap      | int     |
 
 Pero al no haber ningún pointer en el stack que almacene la dirección `0x64`, dicha memoria es inaccesible y se produce una fuga de memoria.
 
@@ -507,7 +507,7 @@ cout << *(ptr + 1); // Imprime 20
 cout << *(ptr + 2); // Imprime 30
 
 ```
-En este caso, `ptr` apunta al primer elemento del array `arr`. Al sumar 1 a `ptr`, se mueve al siguiente **elemento** del array. Al sumar 2 a `ptr`, se mueve dos elementos hacia adelante. Nótese que la aritmética de punteros es en términos de elementos, no de bytes. Dado que el pointer tiene un tipo, el compilador sabe cuántos bytes sumar o restar al hacer aritmética de punteros. El array `arr` ocupa 50 bytes contiguos en memoria y cada elemento ocupa 4 bytes. Por lo tanto, `ptr + 1` salta de 4 en 4 bytes.
+En este caso, `ptr` apunta al primer elemento del array `arr`. Al sumar 1 a `ptr`, se mueve al siguiente **elemento** del array. Al sumar 2 a `ptr`, se mueve dos elementos hacia adelante. Nótese que la aritmética de punteros es en términos de elementos, no de bytes. Dado que el pointer tiene un tipo, el compilador sabe cuántos bytes sumar o restar al hacer aritmética de punteros. El array `arr` ocupa 20 bytes contiguos en memoria y cada elemento ocupa 4 bytes. Por lo tanto, `ptr + 1` salta de 4 en 4 bytes.
 
 Para efectos de arrays en C/C++, `arr[i]` es equivalente a `*(arr + i)`. Por ejemplo, el siguiente código:
 

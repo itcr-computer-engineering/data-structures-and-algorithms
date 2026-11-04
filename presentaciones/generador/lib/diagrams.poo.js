@@ -1,5 +1,7 @@
 // Diagramas específicos de la lección CE-1103 · 01 · Programación Orientada a Objetos.
 // Todos los `kind` llevan el prefijo `poo-`. Solo usan colores semánticos del tema.
+// Campos de `poo-relaciones`: panels[2]{title,tone,text,from{name,attrs,methods},to{…},link{kind:'inherit'|'compose',label},code}, vs, callout.
+// Los bloques de `poo-code` aceptan `plain: true` (texto sin resaltar, p. ej. la salida de un programa).
 const C = require('./components');
 
 const { text, paragraphs, box, chip, circleLabel, arrow, callout, surface, card } = C;
@@ -27,7 +29,7 @@ function csLine(line, ctx) {
     line = line.slice(0, ci);
   }
   const out = [];
-  const re = /("[^"]*")|(\b\d+\b)|([A-Za-z_]\w*)|(\s+)|(.)/g;
+  const re = /("[^"]*")|(\b\d+\b)|([\p{L}_][\p{L}\p{N}_]*)|(\s+)|(.)/gu;
   let m;
   let prevWord = '';
   let prevChar = '';
@@ -39,9 +41,9 @@ function csLine(line, ctx) {
       let color = colors.codeText;
       if (CS_KW.has(tok)) color = colors.codeKw;
       else if (CS_TYPES.has(tok)) color = colors.codeType;
-      else if (/^[A-Z]/.test(tok)) {
-        // Nombre de tipo: tras class/interface/new/«:» o en una declaración «Tipo variable»
-        const declared = /^\s+[A-Za-z_]/.test(line.slice(m.index + tok.length));
+      else if (/^\p{Lu}/u.test(tok)) {
+        // Nombre de tipo: tras class/interface/new/«:» o en una declaración «Tipo variable» o «Tipo[] variable»
+        const declared = /^(\[\])?\s+[\p{L}_]/u.test(line.slice(m.index + tok.length));
         if (['class', 'interface', 'new'].includes(prevWord) || prevChar === ':' || declared) color = colors.codeType;
       }
       out.push(mk(tok, color));
@@ -56,14 +58,15 @@ function csLine(line, ctx) {
   return out.length ? out : [mk(' ', colors.codeText)];
 }
 
-function csBlock(ctx, { x, y, w, code, fontSize = 15 }) {
+// `plain: true` muestra el texto sin resaltar (p. ej. la salida de un programa).
+function csBlock(ctx, { x, y, w, code, fontSize = 15, plain = false }) {
   const { colors, fonts } = ctx.theme;
   const lines = code.split('\n');
   const h = lines.length * ((fontSize * 1.3) / 72) + 0.4;
   box(ctx, { x, y, w, h, fill: colors.codeBg, line: colors.codeBorder, radius: 0.1 });
   const runs = [];
   lines.forEach((ln, i) => {
-    const rs = csLine(ln, ctx);
+    const rs = plain ? [{ text: ln || ' ', options: { color: colors.codeText, fontFace: fonts.code } }] : csLine(ln, ctx);
     rs[rs.length - 1].options.breakLine = i < lines.length - 1;
     runs.push(...rs);
   });
@@ -89,7 +92,7 @@ function pooCode(ctx, s) {
         text(ctx, b.label, { x, y, w: cw, h: 0.35, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
         y += 0.4;
       }
-      y += csBlock(ctx, { x, y, w: cw, code: b.code, fontSize: b.size || s.codeSize || 15 }) + 0.35;
+      y += csBlock(ctx, { x, y, w: cw, code: b.code, fontSize: b.size || s.codeSize || 15, plain: !!b.plain }) + 0.35;
     });
     (col.cards || []).forEach((c) => {
       const ch = c.h || 1.45;
@@ -348,10 +351,67 @@ function imagenLado(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: top + ih + 0.25, w: w - 2 * mx, h: 0.8, ...s.callout });
 }
 
+// ------------------------------------------------------------------ herencia vs. composición
+// Dos paneles, cada uno con un minidiagrama horizontal (clase `from` -> clase `to`), una línea de texto y un bloque de código.
+// `link.kind`: 'inherit' (triángulo hueco en `to`, la superclase) o 'compose' (rombo relleno en `from`, el contenedor).
+function miniLink(ctx, A, B, link, tone) {
+  const { colors } = ctx.theme;
+  const t = ctx.T[tone];
+  const cy = A.y + A.h / 2;
+  const x1 = A.x + A.w;
+  const x2 = B.x;
+  const opts = { color: t.accent, width: 2.25 };
+  if (link.kind === 'compose') {
+    const dw = 0.42, dh = 0.28;
+    seg(ctx, x1 + dw, cy, x2, cy, opts);
+    ctx.slide.addShape(ctx.pptx.ShapeType.diamond, {
+      x: x1, y: cy - dh / 2, w: dw, h: dh, fill: { color: t.accent }, line: { color: t.accent, width: 1.5 },
+    });
+  } else {
+    const tw = 0.3, th = 0.26;
+    seg(ctx, x1, cy, x2 - th, cy, opts);
+    ctx.slide.addShape(ctx.pptx.ShapeType.triangle, {
+      x: x2 - th / 2 - tw / 2, y: cy - th / 2, w: tw, h: th, fill: { color: t.soft }, line: { color: t.accent, width: 2 }, rotate: 90,
+    });
+  }
+  if (link.label) {
+    text(ctx, link.label, {
+      x: x1, y: cy - 0.4, w: x2 - x1, h: 0.32, fontSize: 15, italic: true, color: colors.slate, align: 'center', valign: 'middle',
+    });
+  }
+}
+
+function relaciones(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const gap = 0.6, pw = (w - 2 * mx - gap) / 2, top = 1.85, ph = s.panelHeight || 4.05;
+  s.panels.forEach((p, i) => {
+    const x = mx + i * (pw + gap);
+    const t = ctx.T[p.tone || 'teal'];
+    surface(ctx, p.tone, { x, y: top, w: pw, h: ph });
+    text(ctx, p.title, {
+      x: x + 0.35, y: top + 0.2, w: pw - 0.7, h: 0.5, fontSize: 24, bold: true, color: t.text, fontFace: fonts.heading, valign: 'middle',
+    });
+    text(ctx, p.text, { x: x + 0.35, y: top + 0.75, w: pw - 0.7, h: 0.4, fontSize: 17, color: colors.slate, valign: 'middle' });
+    const cw = p.classW || 1.9;
+    const A = measure({ ...p.from, tone: p.tone, x: x + 0.35, y: top + 1.3, w: cw });
+    const B = measure({ ...p.to, tone: p.tone, x: x + pw - 0.35 - cw, y: top + 1.3, w: cw });
+    drawClass(ctx, A);
+    drawClass(ctx, B);
+    miniLink(ctx, A, B, p.link, p.tone || 'teal');
+    csBlock(ctx, { x: x + 0.35, y: top + 2.45, w: pw - 0.7, code: p.code, fontSize: p.codeSize || 14 });
+  });
+  if (s.vs) {
+    circleLabel(ctx, { x: w / 2 - 0.3, y: top + ph / 2 - 0.3, d: 0.6, label: 'vs', fill: colors.navy, color: colors.white, size: 16 });
+  }
+  if (s.callout) callout(ctx, { x: mx, y: top + ph + 0.2, w: w - 2 * mx, h: s.calloutH || 0.75, ...s.callout });
+}
+
 module.exports = {
   'poo-code': pooCode,
   'poo-uml': uml,
   'poo-memoria': memoria,
   'poo-ecuacion': ecuacion,
   'poo-imagen-lado': imagenLado,
+  'poo-relaciones': relaciones,
 };

@@ -163,10 +163,72 @@ function costosPush(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: 6.0, w: w - 2 * mx, h: 0.8, ...s.callout });
 }
 
+// ------------------------------------------------------------------ tabla numérica: ¿qué término domina el crecimiento?
+// Campos: lead, formula, table{columns, colW, rows}, highlightCols[], callout
+function tablaTerminos(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const t = ctx.T.teal;
+  text(ctx, [
+    { text: s.lead + '  ', options: { fontSize: 20, color: colors.slate } },
+    { text: s.formula, options: { fontSize: 24, bold: true, fontFace: fonts.code, color: t.text } },
+  ], { x: mx, y: 1.8, w: w - 2 * mx, h: 0.6, align: 'center', valign: 'middle' });
+  const hl = new Set(s.highlightCols || []);
+  const colW = s.table.colW;
+  const tw = colW.reduce((a, b) => a + b, 0);
+  const ty = 2.6;
+  const tb = table(ctx, {
+    x: (w - tw) / 2, y: ty, colW, header: s.table.columns, rows: s.table.rows, rowH: 0.5, fontSize: 17, align: 'center',
+    cellStyle: (r, c) => (c === 0 ? { bold: true, color: colors.heading } : hl.has(c) ? { bold: true, color: t.text, fill: colors.tealLight } : {}),
+  });
+  if (s.callout) callout(ctx, { x: mx, y: ty + tb.h + 0.3, w: w - 2 * mx, h: 0.85, ...s.callout });
+}
+
+// ------------------------------------------------------------------ traza de loops: valor de i en cada iteración
+// Campos: rows[{label, count, code, codeLang, values[], exit, note, tone}], exitLabel, callout
+function trazaLoops(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const rowH = 1.9, gap = 0.12, y0 = 1.85, codeW = 3.1;
+  const red = ctx.T.red;
+  s.rows.forEach((r, i) => {
+    const y = y0 + i * (rowH + gap);
+    const tone = r.tone || 'teal';
+    const t = ctx.T[tone];
+    C.surface(ctx, tone, { x: mx, y, w: w - 2 * mx, h: rowH });
+    codeBlock(ctx, { x: mx + 0.25, y: y + 0.12, w: codeW, code: r.code, lang: r.codeLang, fontSize: 14 });
+    const sx = mx + 0.25 + codeW + 0.35;
+    const sw = w - mx - 0.25 - sx;
+    text(ctx, r.label, { x: sx, y: y + 0.1, w: sw - 2.0, h: 0.4, fontSize: 18, bold: true, color: t.text, fontFace: fonts.heading, valign: 'middle' });
+    chip(ctx, { x: sx + sw - 1.8, y: y + 0.12, w: 1.8, h: 0.38, label: r.count, tone, size: 15 });
+    const slot = sw / (r.values.length + 1);
+    const cw = slot - 0.07;
+    const all = [...r.values, r.exit];
+    all.forEach((v, k) => {
+      const x = sx + k * slot;
+      const isExit = k === r.values.length;
+      text(ctx, isExit ? s.exitLabel : String(k + 1), {
+        x, y: y + 0.58, w: cw, h: 0.26, fontSize: 14, bold: isExit, color: isExit ? red.text : colors.slate, align: 'center', valign: 'middle',
+      });
+      ctx.slide.addText(v, {
+        shape: ctx.pptx.ShapeType.roundRect, rectRadius: 0.08, x, y: y + 0.86, w: cw, h: 0.55,
+        fill: { color: colors.bg },
+        line: isExit ? { color: red.accent, width: 2, dashType: 'dash' } : { color: t.accent, width: 1.5 },
+        color: isExit ? red.text : t.text, bold: true, fontSize: 16, fontFace: fonts.code,
+        align: 'center', valign: 'middle', margin: 0,
+      });
+    });
+    text(ctx, r.note, { x: sx, y: y + 1.47, w: sw, h: 0.35, fontSize: 16, color: colors.slate, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: y0 + 2 * (rowH + gap) + 0.12, w: w - 2 * mx, h: 0.85, ...s.callout });
+}
+
 module.exports = {
   'analisis-casos-busqueda': casosBusqueda,
   'analisis-codigo-grafica': codigoGrafica,
   'analisis-imagen-tabla': imagenTabla,
   'analisis-arbol-niveles': arbolNiveles,
   'analisis-costos-push': costosPush,
+  'analisis-tabla-terminos': tablaTerminos,
+  'analisis-traza-loops': trazaLoops,
 };

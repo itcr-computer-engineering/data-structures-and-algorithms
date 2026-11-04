@@ -32,11 +32,12 @@
       "items": [
         "Distinguir tipos **simples**, **compuestos**, de **valor** y de **referencia**",
         "Explicar qué es un **tipo de dato abstracto (TDA)** y su relación con las **clases**",
-        "Diferenciar **clase** y **objeto**",
+        "Ubicar la POO entre los **paradigmas** de programación",
+        "Diferenciar **clase** y **objeto**: atributos y comportamiento",
         "Aplicar los cuatro principios: **abstracción**, **encapsulamiento**, **herencia** y **polimorfismo**",
         "Reconocer el polimorfismo en **tiempo de ejecución** y en **tiempo de compilación**"
       ],
-      "notes": "Un objetivo por bloque de la lección. Los bloques son: conceptos esenciales (tipos de datos y TDA), conceptos de POO (objeto y clase) y los cuatro principios."
+      "notes": "Un objetivo por bloque de la lección. Los bloques son: conceptos esenciales (tipos de datos y TDA), conceptos de POO (paradigma, objeto y clase) y los cuatro principios. Dentro de la herencia se contrasta con la composición («tiene un/a»)."
     },
     {
       "type": "cards",
@@ -170,6 +171,22 @@
     {
       "type": "cards",
       "section": "Objetos y clases",
+      "title": "¿Qué es un paradigma?",
+      "intro": "Paradigma: el estilo fundamental de programar; cómo un lenguaje «ve» el mundo.",
+      "columns": 4,
+      "cardHeight": 2.6,
+      "cards": [
+        { "title": "Funcional", "text": "El mundo como **matemáticas** y **funciones**.", "footer": "Scheme, Lisp, F#" },
+        { "title": "Imperativo", "text": "El mundo como **pasos**, **comandos** y estructuras.", "footer": "C, Pascal" },
+        { "title": "Lógico", "text": "El mundo como **axiomas**, **reglas de inferencia** y consultas.", "footer": "Prolog" },
+        { "title": "Objetos", "text": "El mundo como **objetos** con atributos y comportamiento.", "footer": "Java, C#, Smalltalk", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Ciudadano de primera clase:", "text": "entidad que admite todas las operaciones disponibles para las demás (p. ej. las variables): asignarse, pasarse como argumento y devolverse." },
+      "notes": "Un paradigma de programación es un estilo fundamental de programar: sirve para estructurar los programas y es la forma en que el lenguaje «ve» el mundo. Los cuatro clásicos se distinguen por cómo modelan el mundo: funcional (matemáticas y teoría de funciones), imperativo (pasos, comandos y estructuras), lógico (axiomas, reglas de inferencia y consultas) y orientado a objetos (objetos).\n\nCiudadano de primera clase: una entidad que admite todas las operaciones disponibles para las demás entidades, como las variables: se puede asignar, pasar como argumento y devolver como resultado. En los lenguajes funcionales lo son las funciones; en POO, los objetos. Es una simplificación didáctica: no existe una taxonomía formal de «ciudadanos de primera clase» por paradigma.\n\nAclaración: la mayoría de los lenguajes son multiparadigma. C#, Python y C++ permiten programar de forma imperativa, orientada a objetos y con elementos funcionales; en este curso se usa C# para el paradigma orientado a objetos. Los lenguajes de ejemplo de la tarjeta «Imperativo» (C, Pascal) son orientativos.\n\nPregunta para la clase (sin respuesta única): ¿por qué ha tenido tanto éxito el paradigma orientado a objetos? Más sobre paradigmas: https://es.wikipedia.org/wiki/Paradigma_de_programaci%C3%B3n"
+    },
+    {
+      "type": "cards",
+      "section": "Objetos y clases",
       "title": "¿Qué es la programación orientada a objetos?",
       "columns": 3,
       "cardHeight": 3.2,
@@ -179,7 +196,51 @@
         { "badge": "3", "title": "Primera clase", "text": "Se pueden manipular y **pasar como argumentos** a funciones.", "tone": "teal" }
       ],
       "callout": { "tone": "teal", "text": "Construir software orientado a objetos: **definir clases** y crear **instancias** (objetos) que interactúan entre sí." },
-      "notes": "POO es un paradigma de programación. Los objetos son «ciudadanos de primera clase»: pueden ser manipulados y pasados como argumentos a funciones. Hay otros paradigmas de programación: https://es.wikipedia.org/wiki/Paradigma_de_programaci%C3%B3n"
+      "notes": "POO es un paradigma de programación (ver la diapositiva anterior). Los objetos son «ciudadanos de primera clase»: pueden ser manipulados, asignados, pasados como argumentos a funciones y devueltos. Hay otros paradigmas de programación: https://es.wikipedia.org/wiki/Paradigma_de_programaci%C3%B3n"
+    },
+    {
+      "type": "compare",
+      "section": "Objetos y clases",
+      "title": "Todo objeto tiene atributos y comportamiento",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Atributos",
+          "tone": "teal",
+          "textSize": 18,
+          "text": "Lo que el objeto **es** o **tiene**:",
+          "chips": ["color: negro", "marca: Lamborghini", "material: metal", "peso: alto"],
+          "note": "En una clase: los **atributos** (datos)."
+        },
+        {
+          "title": "Comportamiento",
+          "tone": "amber",
+          "textSize": 18,
+          "text": "Lo que el objeto **puede hacer**:",
+          "chips": ["acelerar", "frenar", "girar", "reproducir música"],
+          "note": "En una clase: los **métodos** (funciones)."
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Describir solo los atributos es incompleto: un objeto se conoce por sus **atributos** y por su **comportamiento**." },
+      "notes": "Intuición previa a la definición formal: pensamos en términos de objetos (un auto, una planta, una casa). Pida a la clase que describa un auto: casi siempre empezará por atributos (es negro, es de la marca X, es de metal, es pesado, es costoso). Esa descripción es correcta pero incompleta: falta lo que el auto puede hacer (acelerar, frenar, girar, reproducir música, conectarse a Internet). Todo objeto de la vida real se describe con atributos y comportamiento.\n\nPuente con lo que sigue: los atributos serán los datos de la clase y el comportamiento serán sus métodos (se verá con la clase Televisor). Un método puede cambiar el estado del objeto, pero también puede solo leerlo o calcular algo (p. ej. GetBalance() en BankAccount)."
+    },
+    {
+      "type": "cards",
+      "section": "Objetos y clases",
+      "title": "Ejercicio: hornear un pastel",
+      "intro": "Analice la receta como un conjunto de objetos:",
+      "columns": 4,
+      "cardHeight": 2.9,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Objetos", "text": "¿Qué objetos participan al hornear un pastel?", "tone": "teal" },
+        { "badge": "2", "title": "Relaciones", "text": "¿Cómo se relacionan entre sí esos objetos?", "tone": "teal" },
+        { "badge": "3", "title": "Atributos", "text": "¿Qué atributos tiene cada uno? ¿Qué **tipo** de huevo?", "tone": "teal" },
+        { "badge": "4", "title": "Comportamiento", "text": "¿Qué puede hacer cada uno? El huevo solo puede romperse.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Usted ya sabe hacerlo: en la vida real no lo pensamos de forma explícita, pero todo objeto tiene **atributos** y **comportamiento**." },
+      "notes": "Actividad de análisis orientado a objetos (opcional, 5 a 10 minutos en parejas). Pida las respuestas de cada pregunta en orden.\n\nEjemplo de respuesta (el profesor puede definir otra receta): 1) Objetos: huevo, harina, azúcar, mantequilla, batidora, molde, horno y el pastel resultante. 2) Relaciones: el pastel se prepara con los ingredientes; la batidora mezcla los ingredientes; el horno hornea la mezcla dentro del molde. 3) Atributos: del huevo, su tamaño y su tipo (de gallina, de codorniz); del horno, su temperatura; del molde, su forma y su tamaño. 4) Comportamiento: la batidora puede mezclar; el horno puede calentar; el huevo no «hace» nada, lo único que puede hacer es romperse, y eso ya es comportamiento.\n\nMensaje: este es un ejemplo sencillo de cómo resolvemos un problema en la vida real; normalmente no pensamos de forma explícita en atributos y comportamiento, pero los objetos los tienen. Programar con objetos es igual de natural: «usted ya sabe hacerlo»."
     },
     {
       "type": "cards",
@@ -216,7 +277,7 @@
           "blocks": [
             {
               "label": "Objetos: instancias de la clase",
-              "code": "Televisor samsung = new Televisor();\nTelevisor lg = new Televisor();\nlg.Encender();\nConsole.WriteLine(samsung.encendido);\n// Imprime false"
+              "code": "Televisor samsung = new Televisor();\nsamsung.marca = \"Samsung\";\nsamsung.pulgadas = 55;\n\nTelevisor lg = new Televisor();\nlg.marca = \"LG\";\nlg.pulgadas = 43;\nlg.Encender();\n\nConsole.WriteLine(samsung.encendido);\n// Imprime false"
             }
           ]
         }
@@ -225,7 +286,9 @@
         { "tone": "teal", "label": "Clase vs. objeto:", "text": "la clase es un **plano o molde**; con `new` se **crean** (instancian) objetos a partir de ella." },
         { "tone": "amber", "label": "Recuerde:", "text": "definir clases es **extender el lenguaje** con nuevos tipos de datos compuestos." }
       ],
-      "notes": "Ejemplo del capítulo (clase Televisor). Se condensaron los métodos en una línea y se agregó el modificador `public` a los atributos: en C#, un miembro sin modificador es `private`, y el ejemplo imprime `samsung.encendido` desde fuera de la clase, así que debe ser público para compilar. El capítulo lo omite por simplicidad; la visibilidad se estudia con el encapsulamiento.\n\nLas clases son plantillas que definen la estructura y el comportamiento de los objetos. Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos."
+      "calloutsY": 5.95,
+      "calloutsH": 0.85,
+      "notes": "Ejemplo del capítulo (clase Televisor). Se condensaron los métodos en una línea y se agregó el modificador `public` a los atributos: en C#, un miembro sin modificador es `private`, y el ejemplo imprime `samsung.encendido` desde fuera de la clase, así que debe ser público para compilar. El capítulo lo omite por simplicidad; la visibilidad se estudia con el encapsulamiento.\n\nLas clases son plantillas que definen la estructura y el comportamiento de los objetos. Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos.\n\nAnalogía del molde de cupcakes: el molde define cómo se verá el cupcake, pero no es el cupcake (no se puede comer el molde); con el mismo molde se hornean cupcakes de chocolate o de vainilla. Del mismo modo, de la clase Televisor se crean muchos objetos con valores distintos en sus atributos (samsung y lg). En el ejemplo se agregaron las asignaciones de marca y pulgadas (no están en el capítulo) para que los objetos tengan estado propio.\n\nLlamar un método es enviar un mensaje a un objeto específico: lg.Encender() actúa sobre lg y no sobre samsung."
     },
     {
       "type": "diagram",
@@ -240,11 +303,11 @@
         },
         {
           "id": "samsung", "name": "samsung : Televisor", "underline": true, "tone": "amber", "x": 7.4, "y": 1.95, "w": 3.9,
-          "attrs": ["marca = null", "pulgadas = 0", "encendido = false"]
+          "attrs": ["marca = \"Samsung\"", "pulgadas = 55", "encendido = false"]
         },
         {
           "id": "lg", "name": "lg : Televisor", "underline": true, "tone": "amber", "x": 7.4, "y": 3.9, "w": 3.9,
-          "attrs": ["marca = null", "pulgadas = 0", { "t": "encendido = true", "tone": "green" }]
+          "attrs": ["marca = \"LG\"", "pulgadas = 43", { "t": "encendido = true", "tone": "green" }]
         }
       ],
       "links": [
@@ -254,7 +317,7 @@
       "callout": { "tone": "teal", "text": "Cada objeto es un **bloque de memoria independiente**: `lg.Encender()` no cambia el estado de `samsung`." },
       "calloutY": 5.85,
       "calloutH": 0.85,
-      "notes": "Diagrama de clases UML: la clase Televisor (nombre, atributos y métodos) y los dos objetos creados en el ejemplo anterior. El signo + indica visibilidad pública. Los valores iniciales (null y 0) son los valores por defecto de C# para campos no inicializados; es un detalle agregado para completar el diagrama. Después de `lg.Encender()`, solo el atributo encendido de lg cambia."
+      "notes": "Diagrama de clases UML: la clase Televisor (nombre, atributos y métodos) y los dos objetos creados en el ejemplo anterior. El signo + indica visibilidad pública. Los valores de marca y pulgadas son los que se asignan en el ejemplo anterior (agregados al capítulo); encendido empieza en false, el valor por defecto de un bool en C#. Misma clase, distinto estado: cada objeto guarda sus propios valores, como cupcakes de chocolate y de vainilla hechos con el mismo molde. Después de `lg.Encender()`, solo el atributo encendido de lg cambia."
     },
     {
       "type": "cards",
@@ -286,6 +349,18 @@
       ],
       "callout": { "tone": "amber", "label": "Ojo:", "text": "la palabra reservada `abstract` de algunos lenguajes **no** tiene relación con la abstracción como principio de POO." },
       "notes": "La abstracción es la principal característica de la POO. Se logra mediante la creación de clases y objetos que representan entidades del mundo real. Por ejemplo, una clase Persona puede representar a una persona, con atributos como nombre y edad, y métodos que permiten interactuar con ella."
+    },
+    {
+      "type": "flow",
+      "section": "Abstracción",
+      "title": "Abstracción: quedarse con lo relevante",
+      "steps": [
+        { "title": "La realidad", "text": "Una casa real: paredes, ventanas, **tuberías**, **cableado**…" },
+        { "title": "Se omite", "text": "Los detalles que **no son relevantes** para el propósito del dibujo." },
+        { "title": "La abstracción", "text": "Un dibujo de la casa: solo lo **relevante**, más fácil de manejar." }
+      ],
+      "callout": { "tone": "teal", "text": "En POO, `Televisor` modela `marca`, `pulgadas` y `encendido`, no sus circuitos. La abstracción decide **qué modelar**; el encapsulamiento, **qué ocultar y qué exponer**." },
+      "notes": "Una abstracción es una representación de la realidad que omite detalles. Un dibujo de una casa no muestra las tuberías ni el cableado: no hacen falta para su propósito. Omitir lo no relevante nos permite manejar la complejidad de los problemas y concentrarnos en lo importante.\n\nEn POO: al modelar un Televisor para una clase, nos quedamos con marca, pulgadas y encendido; los circuitos internos no forman parte del modelo. Pregunta para la clase: ¿qué atributos de un Televisor serían relevantes para una tienda de electrodomésticos y cuáles para un técnico de reparación? (problemas distintos llevan a abstracciones distintas).\n\nCuidado con dos confusiones frecuentes: (1) una abstracción no es una representación «inexacta» de la realidad sino una versión simplificada que conserva lo esencial y omite lo irrelevante; (2) abstracción y encapsulamiento no son lo mismo: la abstracción decide qué modelar; el encapsulamiento decide qué detalles ocultar y qué exponer como interfaz. La casa, el Televisor y la separación entre qué modelar y qué exponer son un complemento agregado al capítulo."
     },
     {
       "type": "compare",
@@ -355,7 +430,7 @@
       },
       "callout": { "tone": "teal", "text": "Se **ocultan** los detalles de implementación y se expone **solo la interfaz** necesaria." },
       "calloutY": 5.95,
-      "notes": "Ningún objeto externo a BankAccount puede acceder directamente a los atributos accountNumber y balance; solo puede usar los métodos públicos. Los símbolos UML: + público, - privado. Las flechas verdes son accesos permitidos; las rojas con X son accesos que el compilador rechaza.\n\nLos objetos son módulos autocontenidos que asocian código con sus datos; los datos pueden o no exponerse según lo decida el programador."
+      "notes": "Ningún objeto externo a BankAccount puede acceder directamente a los atributos accountNumber y balance; solo puede usar los métodos públicos. Los símbolos UML: + público, - privado. Las flechas verdes son accesos permitidos; las rojas con X son accesos que el compilador rechaza.\n\nLos objetos son módulos autocontenidos que asocian código con sus datos; los datos pueden o no exponerse según lo decida el programador.\n\nAnalogías cotidianas: un microondas (los botones son la interfaz pública; el interior queda oculto) o un auto (los pedales son la interfaz; nunca interactuamos con el motor para acelerar o frenar). La palabra «encapsulamiento» sugiere una cápsula: lo de adentro queda protegido y solo se interactúa con lo de afuera. Pregunta para la clase: ¿qué sería público y qué privado en un microondas?"
     },
     {
       "type": "diagram",
@@ -406,7 +481,7 @@
         ["private", "Solo la misma clase", "-"],
         ["protected", "La misma clase y sus clases derivadas", "#"]
       ],
-      "callout": { "tone": "teal", "text": "El programador decide **qué se expone** y qué se oculta de cada clase." },
+      "callout": { "tone": "teal", "text": "El programador decide **qué se expone** y qué se oculta, como en un microondas: **botones** públicos, **interior** privado." },
       "notes": "C# soporta muchos modificadores de acceso; estos son los tres básicos del capítulo. La columna «Símbolo UML» se agregó: en los diagramas de clases, + es público, - es privado y # es protegido. Más información: https://learn.microsoft.com/es-es/dotnet/csharp/language-reference/keywords/access-modifiers"
     },
     {
@@ -447,12 +522,12 @@
         },
         { "id": "perro", "name": "Perro", "tone": "amber", "x": 1.6, "y": 4.4, "w": 3.6, "attrs": [], "methods": ["+ Ladrar()"] }
       ],
-      "links": [{ "from": "perro", "to": "animal", "kind": "inherit", "label": "es un" }],
+      "links": [{ "from": "perro", "to": "animal", "kind": "inherit", "label": "es un/a" }],
       "panel": {
         "x": 6.2, "y": 1.95, "w": 6.43, "h": 3.9, "tone": "navy", "title": "Superclase y subclase", "size": 18,
         "items": [
-          "**Superclase** (`Animal`): comportamiento general",
-          "**Subclase** (`Perro`): comportamiento especializado",
+          "**Superclase** o clase base (`Animal`): comportamiento general",
+          "**Subclase** o clase derivada (`Perro`): comportamiento especializado",
           "Cada clase tiene **máximo una** clase padre",
           "Relación «es un/a»: un perro **es un** animal"
         ]
@@ -460,7 +535,7 @@
       "callout": { "tone": "teal", "text": "Se hereda para **reutilizar código**: `Perro` obtiene `Nombre`, `Edad` y `Comer()` de `Animal`." },
       "calloutY": 6.05,
       "calloutH": 0.75,
-      "notes": "La herencia define jerarquías de objetos con el objetivo de reutilizar código. La flecha con triángulo hueco apunta de la subclase a la superclase. Otro ejemplo del capítulo: si tenemos una clase Vehículo y una clase Automóvil, podemos decir que un automóvil es un vehículo."
+      "notes": "La herencia define jerarquías de objetos con el objetivo de reutilizar código. La flecha con triángulo hueco apunta de la subclase a la superclase. Otro ejemplo del capítulo: si tenemos una clase Vehículo y una clase Automóvil, podemos decir que un automóvil es un vehículo.\n\nTerminología: clase padre = superclase = clase base; clase hija = subclase = clase derivada (son sinónimos; en el código se verán las etiquetas «base» y «derivada»). Use la herencia solo cuando se cumple la relación «es un/a»: es la herramienta correcta para el problema correcto (la composición, «tiene un/a», se contrasta con la herencia más adelante en esta sección).\n\nPregunta para la clase (jerarquía animal): en la vida real los objetos forman jerarquías (Animales, Aves y Mamíferos, Pingüino y Loro, Perro, Ballena y Humano). ¿Qué atributos y comportamiento comparten una gallina y un águila con otras aves? ¿Cuáles son distintos entre sí? Aquí Perro hereda directamente de Animal; con un nivel intermedio sería Animal, Mamífero, Perro."
     },
     {
       "type": "diagram",
@@ -521,6 +596,35 @@
       "calloutsY": 5.1,
       "calloutsH": 0.9,
       "notes": "En el programa principal del capítulo se crea primero una instancia de la clase base (Animal) y luego una de la subclase (Perro). Nótese que Perro hereda de Animal las propiedades Nombre y Edad y el método Comer, además de tener su propio método Ladrar."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-relaciones",
+      "section": "Herencia",
+      "title": "Herencia vs. composición",
+      "vs": true,
+      "panels": [
+        {
+          "title": "Herencia: «es un/a»",
+          "tone": "teal",
+          "text": "Una clase **se define a partir de otra**.",
+          "from": { "name": "Perro", "methods": ["+ Ladrar()"] },
+          "to": { "name": "Animal", "methods": ["+ Comer()"] },
+          "link": { "kind": "inherit", "label": "es un/a" },
+          "code": "public class Perro : Animal\n{\n    // hereda Nombre, Edad y Comer()\n}"
+        },
+        {
+          "title": "Composición: «tiene un/a»",
+          "tone": "amber",
+          "text": "Un objeto **contiene** a otro como atributo.",
+          "from": { "name": "Automóvil", "attrs": ["- motor: Motor"] },
+          "to": { "name": "Motor", "methods": ["+ Arrancar()"] },
+          "link": { "kind": "compose", "label": "tiene un/a" },
+          "code": "public class Automóvil\n{\n    private Motor motor = new Motor();\n}"
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Antes de heredar, pregunte:", "text": "¿la relación es «**es un/a**» o «**tiene un/a**»? Un `Automóvil` no es un `Motor`: lo tiene." },
+      "notes": "Hay dos formas de reutilizar código entre clases. Herencia: relación «es un/a» (un perro es un animal); define una clase en términos de otra. Composición: relación «tiene un/a» (un automóvil tiene un motor); se reutiliza ensamblando objetos, con instancias de una clase como atributos de otra.\n\nEn UML la composición se dibuja con un rombo relleno junto al contenedor (Automóvil): la parte (Motor) depende del todo. La agregación (rombo vacío) es la versión más débil, en la que la parte puede existir sin el contenedor. La herencia se dibuja con triángulo hueco hacia la superclase.\n\nEl ejemplo Automóvil–Motor es un complemento agregado (no está en el capítulo). Compila así: public class Motor { public void Arrancar() { Console.WriteLine(\"Motor en marcha\"); } } y en Automóvil, public void Encender() { motor.Arrancar(); }: el automóvil delega en su motor.\n\nCon esta comparación se evita el error de «heredar siempre para reutilizar código»: si la relación no es «es un/a», use composición. Pregunta para la clase: ¿un Estudiante es una Persona o tiene una Persona? ¿una CuentaBancaria es un Cliente o tiene un titular (Cliente)? (lo primero es herencia; lo segundo, composición)."
     },
     {
       "type": "compare",
@@ -640,6 +744,40 @@
       "notes": "Cuando el código cliente llama el método, este se «resuelve» en ese momento invocando el método correcto. Para encontrarlo, se busca en la clase real del objeto en tiempo de ejecución y, en caso de no estar, se sigue subiendo por la jerarquía de clases."
     },
     {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "Polimorfismo en acción: una lista de figuras",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.45,
+          "blocks": [
+            {
+              "label": "Código cliente",
+              "code": "Shape[] figuras =\n    { new Circle(), new Square(), new Circle() };\n\nforeach (Shape figura in figuras)\n{\n    figura.Draw();\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Salida", "plain": true, "code": "Drawing a circle\nDrawing a square\nDrawing a circle" }
+          ],
+          "cards": [
+            { "title": "Sin condicionales", "text": "El ciclo no pregunta si el objeto es un `Circle` o un `Square`.", "tone": "navy", "h": 1.5 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "El código cliente trata todos los objetos como `Shape`; cada uno ejecuta **su** `Draw()`." },
+        { "tone": "green", "label": "Beneficio:", "text": "agregar otra subclase de `Shape` **no obliga a cambiar** el ciclo." }
+      ],
+      "calloutsY": 5.65,
+      "calloutsH": 0.95,
+      "notes": "Este es el «para qué» del polimorfismo: el código cliente trabaja con el tipo base (Shape) y cada objeto responde a su manera, sin necesidad de un if o un switch por tipo. Es una adaptación propia (no está en el capítulo) con las clases Shape, Circle y Square de las diapositivas anteriores; el código compila y produce exactamente la salida mostrada.\n\nPara la clase: si agregamos una clase Triangle que herede de Shape y anule Draw(), ¿qué hay que cambiar en el ciclo foreach? Nada; solo se agrega el nuevo objeto al arreglo. En la práctica se suele usar List<Shape> en vez de un arreglo (requiere using System.Collections.Generic;); aquí se usa un arreglo para no introducir más conceptos."
+    },
+    {
       "type": "compare",
       "section": "Polimorfismo",
       "title": "Tratar a la hija como si fuera la padre",
@@ -719,10 +857,13 @@
           ]
         }
       ],
-      "callouts": [{ "tone": "teal", "text": "Un método `abstract` **no tiene cuerpo** y obliga a cada clase hija a implementarlo." }],
+      "callouts": [
+        { "tone": "teal", "text": "Un método `abstract` **no tiene cuerpo**: obliga a cada hija a implementarlo." },
+        { "tone": "amber", "label": "Instanciación:", "text": "una clase `abstract` **no se puede instanciar**: `new Animal()` no compila; `new Perro()` sí." }
+      ],
       "calloutsY": 5.9,
       "calloutsH": 0.85,
-      "notes": "Se corrigió el código del capítulo para que sea C# válido: se agregaron los modificadores public, el tipo de retorno void y el punto y coma, y el método de la hija usa override (en C# la implementación de un método abstracto se marca con override). La clase Perro del capítulo también define Comer(); se omite aquí por brevedad."
+      "notes": "Se corrigió el código del capítulo para que sea C# válido: se agregaron los modificadores public, el tipo de retorno void y el punto y coma, y el método de la hija usa override (en C# la implementación de un método abstracto se marca con override). La clase Perro del capítulo también define Comer(); se omite aquí por brevedad.\n\nUna clase abstracta no se puede instanciar: new Animal() produce el error de compilación CS0144 («Cannot create an instance of the abstract type or interface 'Animal'»); solo se pueden crear objetos de sus subclases concretas, como new Perro(). Aun así, una variable de tipo Animal puede referirse a un Perro (Animal a = new Perro();)."
     },
     {
       "type": "diagram",
@@ -740,7 +881,7 @@
             }
           ],
           "cards": [
-            { "title": "Sin jerarquía", "text": "`Persona` no hereda de nadie y aun así es `Alimentable`.", "tone": "teal", "h": 1.7 }
+            { "title": "Sin jerarquía", "text": "`Persona` no hereda de nadie y aun así es `Alimentable`.", "tone": "teal", "h": 1.55 }
           ]
         },
         {
@@ -753,10 +894,13 @@
           ]
         }
       ],
-      "callouts": [{ "tone": "teal", "text": "Una **interfaz** da polimorfismo **sin formar parte de una jerarquía** de clases." }],
+      "callouts": [
+        { "tone": "teal", "text": "Una **interfaz** da polimorfismo **sin formar parte de una jerarquía** de clases." },
+        { "tone": "green", "label": "Buena práctica:", "text": "declare `Alimentable a`, no `Persona a`: menos **acoplamiento** con la clase concreta." }
+      ],
       "calloutsY": 5.95,
       "calloutsH": 0.8,
-      "notes": "Las interfaces proveen polimorfismo sin formar parte de una jerarquía: cualquier clase (Persona, Perro, Robot…) puede implementar Alimentable y tratarse como tal. Se agregó el modificador public al método implementado, necesario en C#. El nombre `alimentar` en minúscula es el del capítulo (la convención de C# usaría Alimentar)."
+      "notes": "Las interfaces proveen polimorfismo sin formar parte de una jerarquía: cualquier clase (Persona, Perro, Robot…) puede implementar Alimentable y tratarse como tal. Se agregó el modificador public al método implementado, necesario en C#. El nombre `alimentar` en minúscula es el del capítulo (la convención de C# usaría Alimentar).\n\nBuena práctica: programar contra una interfaz reduce el acoplamiento (el grado de dependencia entre clases). Con Alimentable a = new Persona(); el código que usa «a» solo conoce la interfaz: puede cambiar Persona por otra clase que implemente Alimentable sin modificar el resto. El acoplamiento es un concepto de diseño que se retoma más adelante en el curso."
     },
     {
       "type": "diagram",
@@ -814,12 +958,12 @@
       "items": [
         "**Tipos de datos:** simples o compuestos; de valor o de referencia. Los objetos son compuestos y de referencia.",
         "**TDA:** una interfaz sin implementación. TDA + implementación = **clase**.",
-        "**Clase y objeto:** la clase es la plantilla; cada objeto es una instancia con sus propios datos.",
-        "**Abstracción y encapsulamiento:** ocultar los detalles y exponer solo la interfaz (`public` / `private`).",
-        "**Herencia y polimorfismo:** relación «es un/a»; `override` en ejecución y sobrecarga en compilación."
+        "**Objeto y clase:** la POO modela el mundo con objetos (atributos y comportamiento); la clase es su plantilla.",
+        "**Abstracción y encapsulamiento:** modelar solo lo relevante, ocultar los detalles y exponer la interfaz (`public` / `private`).",
+        "**Herencia y polimorfismo:** «es un/a» (la composición es «tiene un/a»); `override` en ejecución y sobrecarga en compilación."
       ],
       "footnote": "Referencias: Paradigma de programación (es.wikipedia.org/wiki/Paradigma_de_programación) · Microsoft Learn: tipos de valor, modificadores de acceso y propiedades en C# (learn.microsoft.com).",
-      "notes": "Cierre de la lección. Siguiente tema: estructuras de datos lineales, donde se aplicarán estos conceptos para implementar TDA como la Lista mediante clases."
+      "notes": "Cierre de la lección. Siguiente tema: estructuras de datos lineales, donde se aplicarán estos conceptos para implementar TDA como la Lista mediante clases.\n\nConcepto adicional (no es uno de los cuatro principios): la modularidad. Consiste en agrupar abstracciones relacionadas en módulos reutilizables que se pueden usar desde otros módulos y clases; evita copiar y pegar código y aplica la idea de «divide y vencerás». Cada lenguaje tiene su propio término para ella: en C#, por ejemplo, los espacios de nombres (namespace) agrupan tipos relacionados y los ensamblados (.dll) los empaquetan para reutilizarlos. Se menciona solo como idea complementaria."
     }
   ]
 }

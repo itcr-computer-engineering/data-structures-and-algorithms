@@ -94,7 +94,7 @@ function memImagen(ctx, s) {
 }
 
 // ------------------------------------------------------------------ código + tabla(s) de memoria
-// blocks[{label,code,lang,size}], codeW, tables[{label,rows[[dir,alias,valor,tam,ubic,tipo]],hl[],hlCells[[r,c]]}], callout
+// blocks[{label,code,lang,size}], codeW, tables[{label,rows[[dir,alias,valor,tam,ubic,tipo]],hl[],hlCells[[r,c]]}], columns, colW, valueCols (columnas en negrita; [2]), callout
 function memTabla(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
@@ -128,7 +128,7 @@ function memTabla(ctx, s) {
       rowH: [0.45, ...t.rows.map(() => rowH)], fontSize: fs, cellMargin: [0, 0.08, 0, 0.08],
       cellStyle: (r, c) => {
         const st = {};
-        if (c === 2) Object.assign(st, { bold: true, color: colors.heading });
+        if ((s.valueCols || [2]).includes(c)) Object.assign(st, { bold: true, color: colors.heading });
         if (c === 4 && t.rows[r][4] === 'Stack') Object.assign(st, { bold: true, color: colors.tealDark });
         if (c === 4 && t.rows[r][4] === 'Heap') Object.assign(st, { bold: true, color: colors.amber });
         if (hl.has(r)) st.fill = colors.amberLight;
@@ -227,13 +227,13 @@ function memTrace(ctx, s) {
 }
 
 // ------------------------------------------------------------------ el stack paso a paso (crece y decrece)
-// tones{nombre:tono}, steps[{event:"push|pop|start",eventLabel,caption,frames[]}], callout
+// tones{nombre:tono}, steps[{event:"push|pop|start",eventLabel,caption,frames[]}], boxH, callout | callouts[] (lado a lado), calloutY, calloutH
 function memPilaPasos(ctx, s) {
   const { colors, fonts } = ctx.theme;
   const { mx, w } = ctx.theme.page;
   const n = s.steps.length, gap = 0.32;
   const cw = (w - 2 * mx - (n - 1) * gap) / n;
-  const top = 1.85, boxTop = top + 0.48, boxH = 2.4;
+  const top = 1.85, boxTop = top + 0.48, boxH = s.boxH || 2.4;
   const evTone = { push: 'teal', pop: 'red', start: 'slate' };
   s.steps.forEach((st, i) => {
     const x = mx + i * (cw + gap);
@@ -251,7 +251,11 @@ function memPilaPasos(ctx, s) {
     text(ctx, st.caption, { x: x + 0.05, y: boxTop + boxH + 0.56, w: cw - 0.1, h: 0.85, fontSize: 15, color: colors.ink, align: 'center' });
     if (i < n - 1) arrow(ctx, { x1: x + cw + 0.05, y1: boxTop + boxH / 2, x2: x + cw + gap - 0.05, y2: boxTop + boxH / 2, color: colors.teal, width: 2.5 });
   });
-  if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.15, w: w - 2 * mx, h: 0.7, ...s.callout });
+  const list = s.callouts || (s.callout ? [s.callout] : []);
+  if (list.length) {
+    const cg = 0.3, cwid = (w - 2 * mx - (list.length - 1) * cg) / list.length;
+    list.forEach((c, i) => callout(ctx, { x: mx + i * (cwid + cg), y: s.calloutY || 6.15, w: cwid, h: s.calloutH || 0.7, ...(list.length > 1 ? { size: 16 } : {}), ...c }));
+  }
 }
 
 // ------------------------------------------------------------------ espacios de direcciones virtuales -> memoria física
@@ -388,7 +392,79 @@ function memCopias(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: top + ph + 0.2, w: w - 2 * mx, h: 0.85, size: 16, ...s.callout });
 }
 
+// ------------------------------------------------------------------ fragmentación: franjas de celdas ocupadas / libres
+// legend:true, between{label}, rows[{label,cells[],caption,tag{label,tone}}], cellH, callout | callouts[] (lado a lado), calloutY, calloutH
+// cells: "." = libre, "+X" = bloque recién atendido (verde), cualquier otra cadena = bloque ocupado con esa etiqueta.
+function memFragmentos(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const aw = w - 2 * mx;
+  const n = Math.max(...s.rows.map((r) => r.cells.length));
+  const g = 0.08;
+  const cw = Math.min(1.0, (aw - (n - 1) * g) / n);
+  const ch = s.cellH || 0.7;
+  const kinds = {
+    used: { fill: ctx.T.amber.soft, line: ctx.T.amber.accent, color: ctx.T.amber.text, dash: 'solid' },
+    free: { fill: colors.panel, line: colors.slate, color: colors.slate, dash: 'dash' },
+    done: { fill: ctx.T.green.soft, line: ctx.T.green.accent, color: ctx.T.green.text, dash: 'solid' },
+  };
+  const cell = (k, x, y, cwid, chei, label, size) =>
+    ctx.slide.addText(label, {
+      shape: ctx.pptx.ShapeType.rect, x, y, w: cwid, h: chei, fill: { color: kinds[k].fill },
+      line: { color: kinds[k].line, width: 1.5, dashType: kinds[k].dash }, color: kinds[k].color, bold: k !== 'free',
+      fontSize: size, fontFace: fonts.heading, align: 'center', valign: 'middle', margin: 0,
+    });
+  let y = 1.85;
+  let betweenY = 0;
+  s.rows.forEach((r, ri) => {
+    label(ctx, r.label, { x: mx, y, w: aw * 0.55, h: 0.4, fontSize: 17 });
+    if (r.tag) {
+      const tw = r.tag.label.length * 0.115 + 0.6;
+      chip(ctx, { x: mx + aw - tw, y: y + 0.01, w: tw, h: 0.38, label: r.tag.label, tone: r.tag.tone || 'slate', size: 15 });
+    }
+    y += 0.45;
+    r.cells.forEach((c, i) => {
+      const x = mx + i * (cw + g);
+      if (c === '.') cell('free', x, y, cw, ch, 'libre', 14);
+      else if (c[0] === '+') cell('done', x, y, cw, ch, c.slice(1), 22);
+      else cell('used', x, y, cw, ch, c, 22);
+    });
+    y += ch + 0.05;
+    if (r.caption) text(ctx, r.caption, { x: mx, y, w: aw, h: 0.38, fontSize: 16, color: colors.ink, valign: 'middle' });
+    y += 0.4;
+    if (ri < s.rows.length - 1) {
+      betweenY = y;
+      y += s.betweenH || 0.8;
+    }
+  });
+  if (s.between) {
+    arrow(ctx, { x1: mx + 0.5, y1: betweenY + 0.08, x2: mx + 0.5, y2: betweenY + (s.betweenH || 0.8) - 0.08, color: colors.teal, width: 3 });
+    text(ctx, s.between.label, { x: mx + 0.85, y: betweenY, w: Math.min(aw * 0.6, aw - 0.85 - 5.4), h: s.betweenH || 0.8, fontSize: 17, color: colors.ink, valign: 'middle' });
+  }
+  if (s.legend) {
+    const items = [
+      { k: 'used', t: 'Ocupado' },
+      { k: 'free', t: 'Libre' },
+      { k: 'done', t: 'Pedido atendido' },
+    ];
+    const widths = items.map((it) => 0.4 + it.t.length * 0.11 + 0.35);
+    let lx = mx + aw - widths.reduce((a, b) => a + b, 0);
+    const ly = betweenY + ((s.betweenH || 0.8) - 0.3) / 2;
+    items.forEach((it, i) => {
+      cell(it.k, lx, ly, 0.3, 0.3, '', 12);
+      text(ctx, it.t, { x: lx + 0.4, y: ly - 0.05, w: widths[i] - 0.4, h: 0.4, fontSize: 15, color: colors.slate, valign: 'middle' });
+      lx += widths[i];
+    });
+  }
+  const list = s.callouts || (s.callout ? [s.callout] : []);
+  if (list.length) {
+    const cg = 0.3, cwid = (aw - (list.length - 1) * cg) / list.length;
+    list.forEach((c, i) => callout(ctx, { x: mx + i * (cwid + cg), y: s.calloutY || 5.8, w: cwid, h: s.calloutH || 0.95, size: 16, ...c }));
+  }
+}
+
 module.exports = {
+  'memoria-fragmentos': memFragmentos,
   'memoria-imagen': memImagen,
   'memoria-tabla': memTabla,
   'memoria-layout': memLayout,

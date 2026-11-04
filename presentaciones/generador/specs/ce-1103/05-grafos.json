@@ -29,13 +29,31 @@
       "section": "Introducción",
       "title": "¿Qué aprenderemos hoy?",
       "items": [
-        "Describir un grafo y sus **conceptos**: grado, ruta, ciclo y conexidad",
+        "Describir un grafo y sus **conceptos**: ponderado, grado, ruta, ciclo y conexidad",
         "**Representar** un grafo con matriz y con lista de adyacencia",
         "**Recorrer** un grafo con Breadth-First (cola) y Depth-First (pila)",
         "Calcular **caminos más cortos** (Dijkstra, Floyd) y el **cierre transitivo** (Warshall)",
         "Obtener un **árbol de expansión mínimo** con Prim y Kruskal"
       ],
       "notes": "Cinco objetivos, uno por bloque de la lección. Cada algoritmo se explica paso a paso sobre un grafo de ejemplo que se reutiliza dentro de su sección."
+    },
+    {
+      "type": "cards",
+      "section": "Introducción",
+      "title": "¿Dónde se usan los grafos?",
+      "intro": "Siempre que haya **entidades** y **relaciones** entre ellas:",
+      "columns": 3,
+      "titleSize": 20,
+      "textSize": 17,
+      "cards": [
+        { "title": "Sociología", "text": "Personas y sus relaciones; por ejemplo, identificar redes criminales.", "tone": "teal" },
+        { "title": "Química", "text": "Átomos y enlaces que forman una molécula.", "tone": "teal" },
+        { "title": "Geografía", "text": "Ciudades y carreteras; rutas entre lugares.", "tone": "teal" },
+        { "title": "Ingeniería eléctrica", "text": "Componentes y conexiones de un circuito.", "tone": "teal" },
+        { "title": "Ingeniería industrial", "text": "Tareas de un proceso y sus dependencias.", "tone": "teal" },
+        { "title": "Computación", "text": "Páginas web y enlaces; computadoras y cables de red.", "tone": "teal" }
+      ],
+      "notes": "Los grafos son estructuras de datos de propósito general con aplicaciones en muchas disciplinas. La presentación original lista cinco: sociología (por ejemplo, identificar redes criminales), química, geografía, ingeniería eléctrica e ingeniería industrial; la tarjeta de computación y los ejemplos concretos de cada tarjeta (moléculas, mapas, circuitos, procesos) son ejemplos añadidos para esta lección. En todos los casos la idea es la misma: los vértices son las entidades y las aristas son las relaciones. Pregunta para la clase: ¿qué serían los vértices y qué las aristas en cada caso? Más adelante veremos algoritmos que responden preguntas típicas: ¿cuál es el camino más corto entre dos ciudades? (Dijkstra, Floyd) ¿cómo conecto todos los puntos con el menor cable? (Prim, Kruskal)."
     },
     {
       "type": "diagram",
@@ -48,19 +66,27 @@
         { "type": "code", "lang": "plain", "size": 16, "code": "G = { V, A }\nV = { 1, 4, 5, 7, 9 }\nA = { (1,4), (4,1), (1,5), (5,1),\n      (4,9), (9,4), (5,7), (7,5),\n      (7,9), (9,7) }" }
       ],
       "callout": { "tone": "teal", "text": "Un grafo agrupa **entidades** físicas o conceptuales (vértices) y las **relaciones** entre ellas (aristas)." },
-      "notes": "Los grafos son estructuras no lineales formadas por vértices (nodos) y aristas (bordes). Un grafo se denota G = {V, A}. Aquí V = {1, 4, 5, 7, 9}. Como el grafo no es dirigido, cada arista aparece en los dos sentidos en el conjunto A: (1,4) y (4,1), (1,5) y (5,1), etc. Pregunta para la clase: ¿qué entidades de la vida real se pueden modelar con un grafo? (Ejemplos: ciudades y carreteras, personas y amistades, páginas web y enlaces, computadoras y cables de red)."
+      "notes": "Los grafos son estructuras no lineales formadas por vértices (nodos) y aristas (bordes). Un grafo se denota G = {V, A}. Aquí V = {1, 4, 5, 7, 9}. Como el grafo no es dirigido, cada arista aparece en los dos sentidos en el conjunto A: (1,4) y (4,1), (1,5) y (5,1), etc. Pregunta para la clase: ¿qué entidades de la vida real se pueden modelar con un grafo? (Retome las aplicaciones de la diapositiva anterior; otros ejemplos: ciudades y carreteras, personas y amistades, páginas web y enlaces, computadoras y cables de red)."
     },
     {
       "type": "diagram",
       "kind": "grafos-panels",
       "section": "Conceptos",
-      "title": "Grafos no dirigidos y dirigidos",
+      "title": "No dirigidos, dirigidos y ponderados",
+      "graphHeight": 2.5,
       "graphs": [
-        { "preset": "basico", "tone": "teal", "title": "No dirigido", "text": "Las aristas no tienen dirección: los nodos conectados son **adyacentes**." },
-        { "preset": "dirigido", "tone": "amber", "title": "Dirigido", "text": "La flecha indica la **dirección** de la relación entre los nodos." }
+        { "preset": "basico", "tone": "teal", "title": "No dirigido", "text": "Sin dirección: los nodos conectados son **adyacentes**." },
+        { "preset": "dirigido", "tone": "amber", "title": "Dirigido", "text": "La flecha indica la **dirección** de la relación." },
+        {
+          "preset": "basico",
+          "edges": [["1", "4", 3], ["1", "5", 5], ["5", "7", 2], ["7", "9", 4], ["4", "9", 6]],
+          "tone": "green",
+          "title": "Ponderado",
+          "text": "Cada arista tiene un **peso**: la magnitud de la relación."
+        }
       ],
-      "callout": { "tone": "slate", "text": "En un grafo no dirigido la arista (v, w) es igual que (w, v); en uno dirigido, no." },
-      "notes": "En el grafo no dirigido los nodos conectados son adyacentes. En el dirigido se muestra la dirección de la relación: por ejemplo, se puede ir de E a C pero no de C a E; entre E y H hay flechas en los dos sentidos. Un grafo es ponderado si cada arista tiene un peso asociado que denota la magnitud de la relación (lo usaremos en Dijkstra, Floyd, Prim y Kruskal)."
+      "callout": { "tone": "slate", "text": "En un grafo no dirigido la arista (v, w) es igual que (w, v); en uno dirigido, no. En uno **ponderado**, cada arista lleva un peso." },
+      "notes": "En el grafo no dirigido los nodos conectados son adyacentes. En el dirigido se muestra la dirección de la relación: por ejemplo, se puede ir de E a C pero no de C a E; entre E y H hay flechas en los dos sentidos. Una arista puede tener un peso asociado que denota la magnitud de la relación (una distancia, un costo, un tiempo…); los grafos con pesos en las aristas se llaman grafos ponderados. El tercer panel es un grafo no dirigido y ponderado (los pesos del ejemplo son ilustrativos); un grafo dirigido también puede ser ponderado, como el de Dijkstra. Los pesos se usarán en Dijkstra, Floyd, Prim y Kruskal. En la representación con matriz de adyacencia la celda guarda el peso en lugar de un 1 (ver «Matriz de un grafo ponderado»)."
     },
     {
       "type": "diagram",
@@ -73,7 +99,7 @@
         { "type": "list", "size": 17, "items": ["**No dirigido:** número de aristas que contiene v", "**Dirigido:** entrada (aristas que llegan) y salida (aristas que salen)"] },
         { "type": "table", "columns": ["Vértice", "Entrada", "Salida"], "rows": [["A", 1, 1], ["B", 1, 1], ["C", 0, 1], ["D", 1, 0], ["E", 1, 2], ["F", 2, 1]], "rowH": 0.4, "fontSize": 16, "rowTone": [null, null, null, null, "amber", null] }
       ],
-      "notes": "El grado de v es una cualidad del nodo. En un grafo no dirigido es el número de aristas que contiene v. En un grafo dirigido se distingue el grado de entrada (aristas que llegan a v) y el de salida (aristas que salen de v); el capítulo lo expresa con «extremos de cola y de cabeza adyacentes a v». Ejemplo con el vértice E: recibe A → E (entrada 1) y emite E → B y E → D (salida 2). Verificación para la clase: la suma de los grados de entrada es igual a la suma de los grados de salida y al número de aristas (6). El grafo A–F es el mismo de la diapositiva siguiente."
+      "notes": "El grado de v es una cualidad del nodo. En un grafo no dirigido es el número de aristas que contiene v. En un grafo dirigido se distingue el grado de entrada (aristas que llegan a v) y el de salida (aristas que salen de v). Si se define con extremos de flecha, en un arco u → v el vértice u es la cola y v es la cabeza: el grado de entrada de v cuenta los extremos de cabeza en v y el de salida cuenta los extremos de cola. Atención: la frase del capítulo y de la presentación original («entrada = extremos de cola adyacentes a v; salida = extremos de cabeza») estaba invertida; es un error y el capítulo ya se corrigió. Ejemplo con el vértice E: recibe A → E (entrada 1) y emite E → B y E → D (salida 2). Verificación para la clase: la suma de los grados de entrada es igual a la suma de los grados de salida y al número de aristas (6). El grafo A–F es el mismo de la diapositiva siguiente."
     },
     {
       "type": "diagram",
@@ -109,7 +135,7 @@
         { "preset": "anillo", "tone": "amber", "title": "Fuertemente conexo", "text": "Dirigido y conexo: de cualquier nodo se llega a cualquier otro siguiendo las flechas." }
       ],
       "callout": { "tone": "teal", "text": "Comprobar si un grafo es **conexo** es una tarea común: ¿hay camino entre cualquier par de vértices?" },
-      "notes": "Un grafo es conexo si existe un camino entre cualquier par de nodos. El capítulo dice que es fuertemente conexo si es conexo y dirigido; la precisión que conviene señalar es que, respetando el sentido de las flechas, debe existir un camino de cualquier nodo a cualquier otro (en el ejemplo de la derecha cada par de vecinos tiene flechas en ambos sentidos). Más adelante, solo un grafo conexo tiene árbol de expansión."
+      "notes": "Un grafo es conexo si existe un camino entre cualquier par de nodos. Un grafo dirigido es fuertemente conexo si, respetando el sentido de las flechas, existe un camino de cualquier nodo a cualquier otro; no basta con que sea conexo y dirigido (A → B es conexo y dirigido, pero no se puede volver de B a A). La definición «conexo y dirigido» aparecía en el capítulo y en la presentación original; es imprecisa y el capítulo ya se corrigió. En el ejemplo de la derecha cada par de vecinos tiene flechas en ambos sentidos. Más adelante, solo un grafo conexo tiene árbol de expansión."
     },
     {
       "type": "compare",
@@ -351,7 +377,7 @@
         }
       ],
       "callout": { "tone": "teal", "label": "Ejemplo:", "text": "ir de **A** a **E** con el menor costo total." },
-      "notes": "Uno de los problemas más comunes es determinar el camino más corto entre un par de nodos. Para ello se considera un grafo dirigido y ponderado: cada arista tiene un peso, que denota la magnitud asociada a la relación (en la figura del capítulo son costos en $). La longitud del camino más corto es la suma de los pesos de sus aristas. El algoritmo de Dijkstra encuentra el camino más corto desde un nodo de origen a todos los demás en un grafo con pesos positivos. Edsger Dijkstra (1930-2002) fue un informático holandés que dio forma a la programación informática como una ciencia reconocida. Método del capítulo: 1) una tabla con el vértice, el peso temporal y el peso final; 2) escoger un punto de salida y uno de llegada (A → E); 3) empezar por los adyacentes del origen y anotar su peso en la columna temporal; 4) escoger el de menor magnitud y pasarlo a peso final; desde él, analizar sus adyacentes sumando su peso final más el peso de la arista; 5) escoger el menor y seguir analizando."
+      "notes": "Uno de los problemas más comunes es determinar el camino más corto entre un par de nodos. Para ello se considera un grafo dirigido y ponderado: cada arista tiene un peso, que denota la magnitud asociada a la relación (en la figura del capítulo son costos en $). La longitud del camino más corto es la suma de los pesos de sus aristas. El algoritmo de Dijkstra encuentra el camino más corto desde un nodo de origen a todos los demás en un grafo con pesos positivos. Edsger Dijkstra (1930-2002) fue un informático holandés que dio forma a la programación informática como una ciencia reconocida. Método del capítulo: 1) una tabla con el vértice, el peso temporal y el peso final; 2) escoger un punto de salida y uno de llegada (A → E); 3) empezar por los adyacentes del origen y anotar su peso en la columna temporal; 4) escoger el de menor magnitud y pasarlo a peso final; desde él, analizar sus adyacentes sumando su peso final más el peso de la arista; 5) escoger el menor y seguir analizando. Dijkstra es un algoritmo voraz (greedy): en cada paso fija de forma definitiva el mejor nodo que ve, el de menor distancia temporal, y no lo vuelve a revisar. Pregunta de enganche antes de empezar: ¿cuál cree que es el camino más barato de A a E? Anote las respuestas de la clase para compararlas con el resultado."
     },
     {
       "type": "diagram",
@@ -381,8 +407,8 @@
         },
         { "type": "note", "tone": "slate", "text": "Se parte de A (0). Sus adyacentes reciben su peso: **B\u00a0=\u00a050** y **D\u00a0=\u00a080**." }
       ],
-      "callout": { "tone": "teal", "label": "Regla:", "text": "en cada paso se fija el nodo no fijado con el **menor** valor temporal." },
-      "notes": "Se usa una tabla donde la primera columna es el vértice, la segunda es el peso temporal que se le da a un camino y la tercera es el peso final (la columna «Previo» se añade para poder reconstruir el camino; corresponde al predecessor del pseudocódigo). Inicialmente todos los nodos tienen distancia infinita, salvo el origen A, que vale 0. Se analizan los nodos adyacentes al de salida y su peso se coloca en la columna temporal."
+      "callout": { "tone": "teal", "label": "Algoritmo voraz (greedy):", "text": "en cada paso se fija el nodo pendiente con el **menor** valor temporal." },
+      "notes": "Se usa una tabla donde la primera columna es el vértice, la segunda es el peso temporal que se le da a un camino y la tercera es el peso final (la columna «Previo» se añade para poder reconstruir el camino; corresponde al predecessor del pseudocódigo). Inicialmente todos los nodos tienen distancia infinita, salvo el origen A, que vale 0. Se analizan los nodos adyacentes al de salida y su peso se coloca en la columna temporal. La regla del recuadro es la esencia de un algoritmo voraz: se elige siempre lo mejor que se ve en ese momento."
     },
     {
       "type": "diagram",
@@ -450,7 +476,7 @@
         { "type": "note", "tone": "slate", "text": "Se fija D (80). **C\u00a0=\u00a080\u00a0+\u00a020\u00a0=\u00a0100** mejora los 110; E\u00a0=\u00a080\u00a0+\u00a070\u00a0=\u00a0150." }
       ],
       "callout": { "tone": "amber", "text": "Mejora: A → D → C cuesta 100, menos que A → B → C (110)." },
-      "notes": "El siguiente menor temporal es D (80). Sus adyacentes son C (80 + 20 = 100, que mejora el 110 anterior, y el predecesor de C pasa a ser D) y E (80 + 70 = 150). Este es el momento clave del algoritmo: un camino que parecía el mejor (110) se reemplaza por otro más corto (100)."
+      "notes": "El siguiente menor temporal es D (80). Sus adyacentes son C (80 + 20 = 100, que mejora el 110 anterior, y el predecesor de C pasa a ser D) y E (80 + 70 = 150). Este es el momento clave del algoritmo: un camino que parecía el mejor (110) se reemplaza por otro más corto (100). Pregunta para la clase antes de avanzar: a esta altura, E vale 150 (A → D → E); A → B → C → E también cuesta 50 + 60 + 40 = 150. ¿Habrá un camino más barato de A a E? (Sí: al fijar C = 100, A → D → C → E cuesta 80 + 20 + 40 = 140.)"
     },
     {
       "type": "diagram",
@@ -487,7 +513,7 @@
         { "type": "note", "tone": "slate", "text": "Se fija C (100): **E\u00a0=\u00a0100\u00a0+\u00a040\u00a0=\u00a0140** mejora los 150. Luego se fija E." }
       ],
       "callout": { "tone": "green", "label": "Camino más corto de A a E:", "text": "**A → D → C → E**, con costo **140**." },
-      "notes": "Se fija C (100): E = 100 + 40 = 140 mejora el 150 anterior y su predecesor pasa a ser C. Al fijar E (140), la arista E → B (140 + 50 = 190) no mejora el 50 de B y el algoritmo termina. Para reconstruir el camino se sigue la columna «Previo» desde E hacia atrás: E ← C ← D ← A. Observación sobre el capítulo: su tabla muestra C = 110 y E = 150 y concluye que el camino más corto es A → D → E. Esos valores son temporales de pasos intermedios (A → B → C = 110 y A → D → E = 150); al terminar el método, A → D → C → E cuesta 80 + 20 + 40 = 140, que es menor que 150. Por eso aquí el resultado final es C = 100 y E = 140."
+      "notes": "Se fija C (100): E = 100 + 40 = 140 mejora el 150 anterior y su predecesor pasa a ser C. Al fijar E (140), la arista E → B (140 + 50 = 190) no mejora el 50 de B y el algoritmo termina. Para reconstruir el camino se sigue la columna «Previo» desde E hacia atrás: E ← C ← D ← A. Error común: detenerse en los valores temporales (C = 110 y E = 150) y concluir que el camino más corto es A → D → E. Esos valores son de pasos intermedios (A → B → C = 110 y A → D → E = 150); al terminar el método, A → D → C → E cuesta 80 + 20 + 40 = 140, que es menor que 150. Así lo daba la versión anterior del capítulo (C = 110, E = 150), un error que ya se corrigió. Compare el resultado con las respuestas que dio la clase al empezar. Por eso aquí el resultado final es C = 100 y E = 140."
     },
     {
       "type": "code",
@@ -539,7 +565,7 @@
       ],
       "calloutsY": 5.45,
       "calloutsH": 1.0,
-      "notes": "En el capítulo la línea de predecesor aparece como «evaluation.predecessor = evaluationNode»; aquí se escribe predecessor[destinationNode] = evaluationNode, que es lo que significa. Este fragmento es exactamente lo que hicimos en las tablas: para cada vecino no fijado se calcula la nueva distancia y, si mejora la actual, se actualiza."
+      "notes": "La línea predecessor[destinationNode] = evaluationNode guarda por dónde se llegó al vecino (en la versión anterior del capítulo aparecía como «evaluation.predecessor», una errata ya corregida). Este fragmento es exactamente lo que hicimos en las tablas: para cada vecino no fijado se calcula la nueva distancia y, si mejora la actual, se actualiza."
     },
     {
       "type": "code",
@@ -565,22 +591,86 @@
         {
           "weight": 1,
           "cards": [
-            { "title": "¿Qué calcula?", "text": "El camino más corto entre **cada par** de nodos, no solo desde un origen.", "tone": "teal", "h": 2.0, "textSize": 15 },
+            { "title": "¿Y todos los pares?", "text": "¿Dijkstra desde cada nodo? Sirve, pero hay algo más directo: **Floyd**.", "tone": "teal", "h": 2.0, "textSize": 15 },
             { "title": "Idea", "text": "Programación dinámica: en el paso k se prueba si pasar por vk acorta el camino.", "tone": "amber", "h": 2.0, "textSize": 15 }
           ]
         }
       ],
-      "notes": "Para calcular el camino más corto de cada nodo a cada nodo existe una solución más directa que usar Dijkstra nodo por nodo: el algoritmo de Floyd, que lo calcula mediante programación dinámica. Representa el grafo como una matriz ponderada: cada arco (vi, vj) tiene un peso cij; si el arco no existe el valor es infinito, y la diagonal vale cero. Se genera una matriz D de n × n donde cada Dij es el camino mínimo de vi a vj. Desde D0 se generan D1, D2, …, Dn; en cada paso se incluye un nuevo vértice para determinar si ese vértice mejora los caminos. Otra matriz Q (la matriz predecesora) se genera en cada paso desde Q0. En el capítulo la fórmula de Q se escribe con el índice n; aquí se generaliza al paso k."
+      "notes": "Pregunta de enganche: ¿cómo calcular el camino más corto de cada nodo a cada nodo? Una respuesta posible es ejecutar Dijkstra desde cada nodo, y funciona; pero para calcular el camino más corto entre todos los pares existe una solución más directa: el algoritmo de Floyd, que lo calcula mediante programación dinámica. Representa el grafo como una matriz ponderada: cada arco (vi, vj) tiene un peso cij; si el arco no existe el valor es infinito, y la diagonal vale cero. Se genera una matriz D de n × n donde cada Dij es el camino mínimo de vi a vj. Desde D0 se generan D1, D2, …, Dn; en cada paso se incluye un nuevo vértice para determinar si ese vértice mejora los caminos. Otra matriz Q (la matriz predecesora) se genera en cada paso desde Q0. En el capítulo la fórmula de Q se escribe con el índice n; aquí se generaliza al paso k."
     },
     {
       "type": "image",
       "section": "Floyd y Warshall",
       "title": "Floyd: ejemplo con cinco vértices",
+      "step": 1,
+      "stepTotal": 3,
       "image": "image-13.png",
       "alt": "Grafo dirigido y ponderado de cinco vértices con las matrices de distancias D0 y D1 y las matrices de predecesores Q0 y Q1",
       "caption": "D1[4,2] = mín(∞, D0[4,1] + D0[1,2]) = 6 + 1 = 7, y Q1[4,2] = 1",
-      "notes": "Ejemplo del capítulo: D0 contiene los pesos de los arcos (∞ si no hay arco, 0 en la diagonal) y Q0 los predecesores iniciales. En D1 se prueba si pasar por V1 mejora algún camino. Caso destacado: de V4 a V2 no había arco (∞), pero V4 → V1 cuesta 6 y V1 → V2 cuesta 1, así que D1[4,2] = 7; como el camino pasa por V1, el predecesor Q1[4,2] pasa a ser 1. Pida a la clase que verifique otra celda, por ejemplo D1[4,3]: sigue en ∞ porque V1 no llega a V3."
+      "notes": "Ejemplo del capítulo: D0 contiene los pesos de los arcos (∞ si no hay arco, 0 en la diagonal) y Q0 los predecesores iniciales. En D1 se prueba si pasar por V1 mejora algún camino. Caso destacado: de V4 a V2 no había arco (∞), pero V4 → V1 cuesta 6 y V1 → V2 cuesta 1, así que D1[4,2] = 7; como el camino pasa por V1, el predecesor Q1[4,2] pasa a ser 1.       Pida a la clase que verifique otra celda, por ejemplo D1[4,3]: sigue en ∞ porque V1 no llega a V3. Otra pregunta: ¿es más barato ir de V3 a V2 directo o pasando por V1? Directo cuesta 2; por V1 cuesta D0[3,1] + D0[1,2] = 3 + 1 = 4, así que D1[3,2] se queda en 2 y Q1[3,2] sigue siendo 3. Las siguientes diapositivas continúan este mismo ejemplo: los pasos k = 2 a 5 y el resultado final."
     },
+          {
+            "type": "table",
+            "section": "Floyd y Warshall",
+            "title": "Floyd: qué cambia en cada paso k",
+            "step": 2,
+            "stepTotal": 3,
+            "columns": ["Paso", "Celdas de D que mejoran (antes → después)", "Q nuevo (mismo orden)"],
+            "colWeights": [0.95, 8.4, 3.0],
+            "rows": [
+              ["k = 1", "[4,2]: ∞ → 7", "1"],
+              ["k = 2", "[1,4]: ∞ → 5 · [1,5]: ∞ → 8 · [3,4]: ∞ → 6", "2 · 2 · 2"],
+              ["k = 3", "Ninguna", "—"],
+              ["k = 4", "[1,5]: 8 → 7 · [2,1]: ∞ → 10 · [2,5]: 7 → 6 · [5,1]: ∞ → 9 · [5,2]: ∞ → 10", "4 · 4 · 4 · 4 · 1"],
+              ["k = 5", "Ninguna", "—"]
+            ],
+            "fontSize": 16,
+            "rowHeight": 0.56,
+            "callouts": [
+              { "tone": "teal", "label": "Regla:", "text": "si `D[i][k] + D[k][j] < D[i][j]`, la celda mejora y `Q[i][j] = Q[k][j]`." },
+              { "tone": "amber", "label": "Con k = 3 no cambia nada:", "text": "a v3 no llega ningún arco, así que pasar por v3 no acorta nada." }
+            ],
+            "calloutY": 5.75,
+            "calloutH": 1.0,
+            "notes": "Cada fila es un paso de Floyd sobre el grafo de la diapositiva anterior; [i,j] es la celda de la fila i y la columna j de D. En el paso k se prueba, para cada par (i, j), si pasar por vk acorta el camino: D[i][k] + D[k][j] < D[i][j]. Si mejora, se actualiza D y el predecesor Q[i][j] pasa a ser Q[k][j] (el predecesor de vj en el camino que sale de vk). k = 1: V4 → V1 → V2 cuesta 6 + 1 = 7 y antes no había camino; Q[4,2] = Q[1,2] = 1. k = 2: por V2 se llega a V4 y V5 desde V1 y desde V3: D[1,4] = 1 + 4 = 5, D[1,5] = 1 + 7 = 8, D[3,4] = 2 + 4 = 6; Q = Q[2,4] = 2 y Q[2,5] = 2. k = 3: nada cambia, porque la columna 3 de D es ∞ salvo la diagonal (ningún arco llega a v3), de modo que D[i][3] + D[3][j] = ∞ para i ≠ 3. k = 4: por V4 mejoran cinco celdas: D[1,5] baja de 8 a 7 (1 + 4 + 2), D[2,1] = 4 + 6 = 10, D[2,5] baja de 7 a 6 (4 + 2), D[5,1] = 3 + 6 = 9 y D[5,2] = 3 + 7 = 10; los predecesores son Q[4,5] = 4, Q[4,1] = 4, Q[4,5] = 4, Q[4,1] = 4 y Q[4,2] = 1. k = 5: nada mejora; ya están todos los caminos mínimos. Pida a la clase que verifique una celda por su cuenta, por ejemplo D[5,2] en k = 4. Las matrices completas D2, D3, D4 y D5 se pueden reconstruir aplicando estos cambios a D1."
+          },
+          {
+            "type": "diagram",
+            "kind": "grafos-matrices",
+            "section": "Floyd y Warshall",
+            "title": "Floyd: resultado y cómo leer el camino",
+            "step": 3,
+            "stepTotal": 3,
+            "graph": {
+              "preset": "floyd5",
+              "width": 4.5,
+              "nodeSize": 0.56,
+              "weightSize": 14,
+              "states": { "v1": "done", "v2": "done", "v4": "done" },
+              "edgeStates": { "v1>v2": "path", "v2>v4": "path" }
+            },
+            "matrices": [
+              {
+                "label": "D5: distancias mínimas",
+                "tone": "teal",
+                "rows": [[0, 1, "∞", 5, 7], [10, 0, "∞", 4, 6], [3, 2, 0, 6, 4], [6, 7, "∞", 0, 2], [9, 10, "∞", 3, 0]],
+                "hl": [[0, 3]]
+              },
+              {
+                "label": "Q5: predecesores",
+                "tone": "teal",
+                "rows": [[0, 1, 0, 2, 4], [4, 0, 0, 2, 4], [3, 3, 0, 2, 3], [4, 1, 0, 0, 4], [4, 1, 0, 5, 0]],
+                "hl": [[0, 3], [0, 1]]
+              }
+            ],
+            "callouts": [
+              { "tone": "teal", "label": "Cómo leer Q:", "text": "`Q[i][j]` es el vértice anterior a vj en el camino de vi a vj; retroceda hasta llegar a vi." },
+              { "tone": "green", "label": "v1 → v4:", "text": "`Q[1][4] = 2` y `Q[1][2] = 1`, así que el camino es **v1 → v2 → v4**, con costo `D5[1][4] = 5`." }
+            ],
+            "calloutY": 5.7,
+            "calloutH": 1.05,
+            "notes": "D5 contiene los caminos mínimos entre todos los pares; Q5 permite reconstruirlos. Q[i][j] = 0 significa «sin predecesor»: i = j o no hay camino (la columna 3 es toda 0 porque ningún arco llega a v3). Para leer un camino de vi a vj: se mira Q[i][j] = p (p es el vértice anterior a vj); luego Q[i][p], y así hasta llegar a vi; se escribe el camino en orden inverso. Ejemplo v1 → v4: Q5[1,4] = 2; Q5[1,2] = 1 (llegamos al origen); el camino es v1 → v2 → v4 y su costo es D5[1,4] = 1 + 4 = 5. Pregunta para la clase: ¿camino más barato de v5 a v2? Q5[5,2] = 1; Q5[5,1] = 4; Q5[5,4] = 5; el camino es v5 → v4 → v1 → v2 y cuesta D5[5,2] = 3 + 6 + 1 = 10. Otros: v2 → v1 es v2 → v4 → v1 (10); v1 → v5 es v1 → v2 → v4 → v5 (7). De v1, v2, v4 y v5 no se llega a v3 (D5 = ∞). Las celdas con fondo en las matrices son las que se usaron para leer el camino v1 → v4. Las matrices D5 y Q5 se calcularon aplicando los cinco pasos de Floyd (verificadas con un programa); la Q5 de la presentación original tenía varias celdas erróneas y no debe usarse."
+          },
     {
       "type": "cards",
       "section": "Floyd y Warshall",
@@ -594,7 +684,7 @@
         { "title": "Parecido a Floyd", "text": "Misma estructura de pasos, pero con 1 (hay camino) y 0 (no hay) en lugar de distancias.", "tone": "amber" }
       ],
       "callout": { "tone": "teal", "label": "Regla del paso k:", "text": "`P[i][j] = P[i][j] OR (P[i][k] AND P[k][j])`" },
-      "notes": "El algoritmo de Warshall es similar al de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A. Define una secuencia de matrices n × n: P0, P1, P2, …, Pn. P0[i,j] = 1 si hay un arco de vi a vj; P1[i,j] = 1 si hay un arco de vi a vj que no pasa por otro vértice distinto de v1; y así hasta Pn, que considera todos los vértices. La regla de la diapositiva (hay camino de vi a vj en el paso k si ya lo había, o si había de vi a vk y de vk a vj) es la forma habitual de calcular cada matriz a partir de la anterior; se añade como complemento."
+      "notes": "El algoritmo de Warshall es similar al de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A. Define una secuencia de matrices n × n: P0, P1, P2, …, Pn. P0[i,j] = 1 si hay un arco de vi a vj; P1[i,j] = 1 si hay un camino de vi a vj cuyo único vértice intermedio posible es v1 (el arco directo, o vi → v1 → vj); P2 permite v1 y v2 como intermedios, y así hasta Pn, que permite todos los vértices. Cuidado: la presentación original y el capítulo dicen «arco de vi a vj que no pasa por otro vértice»; lo correcto es hablar de camino con vértices intermedios en {v1, …, vk}. Por ejemplo, en el grafo de la diapositiva «Warshall: el mismo grafo de Floyd», P2[1,4] = 1 por v1 → v2 → v4, que no es un arco. La regla de la diapositiva (hay camino de vi a vj en el paso k si ya lo había, o si había de vi a vk y de vk a vj) es la forma habitual de calcular cada matriz a partir de la anterior; se añade como complemento."
     },
     {
       "type": "image",
@@ -605,6 +695,40 @@
       "caption": "T(0): arcos directos (1 en la diagonal) · T(4): cierre transitivo",
       "notes": "T(0) es la matriz de adyacencia con unos en la diagonal. Con cada paso k se incorporan los caminos que pasan por el vértice k. Por ejemplo, en T(4) la fila 2 es «1 1 1 1»: desde el vértice 2 se llega a todos (2 → 4 → 1 llega al 1). La fila 1 solo tiene un 1 en la diagonal porque el vértice 1 no tiene arcos de salida."
     },
+          {
+            "type": "diagram",
+            "kind": "grafos-matrices",
+            "section": "Floyd y Warshall",
+            "title": "Warshall: el mismo grafo de Floyd",
+            "matrices": [
+              {
+                "label": "P0: arcos y diagonal",
+                "tone": "teal",
+                "rows": [[1, 1, 0, 0, 0], [0, 1, 0, 1, 1], [1, 1, 1, 0, 1], [1, 0, 0, 1, 1], [0, 0, 0, 1, 1]]
+              },
+              {
+                "label": "P5: cierre transitivo",
+                "tone": "teal",
+                "rows": [[1, 1, 0, 1, 1], [1, 1, 0, 1, 1], [1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 1, 0, 1, 1]],
+                "hl": [[3, 1, "amber"], [0, 3, "amber"], [0, 4, "amber"], [2, 3, "amber"], [1, 0, "amber"], [4, 0, "amber"], [4, 1, "amber"]]
+              }
+            ],
+            "side": [
+              {
+                "type": "table",
+                "label": "Celdas que pasan de 0 a 1 (ámbar en P5)",
+                "columns": ["Paso", "Celdas nuevas"],
+                "colWeights": [0.9, 2.6],
+                "rows": [["k = 1", "[4,2]"], ["k = 2", "[1,4] · [1,5] · [3,4]"], ["k = 3", "Ninguna"], ["k = 4", "[2,1] · [5,1] · [5,2]"], ["k = 5", "Ninguna"]],
+                "rowH": 0.46,
+                "fontSize": 16
+              }
+            ],
+            "callout": { "tone": "teal", "label": "Con D5 de Floyd:", "text": "`P5[i][j] = 1` si y solo si `D5[i][j] < ∞`. Warshall dice **si** hay camino; Floyd, **cuánto** cuesta." },
+            "calloutY": 5.85,
+            "calloutH": 0.8,
+            "notes": "Es el grafo de cinco vértices de la diapositiva «Floyd: ejemplo con cinco vértices» (su matriz D0). P0 es la matriz de adyacencia con unos en la diagonal, como T(0) en el ejemplo anterior (un vértice siempre «llega» a sí mismo con un camino de longitud cero): P0[i,j] = 1 si hay un arco de vi a vj o si i = j. En cada paso k se aplica P[i][j] = P[i][j] OR (P[i][k] AND P[k][j]). Celdas que pasan de 0 a 1: k = 1: [4,2] (v4 → v1 → v2). k = 2: [1,4] (v1 → v2 → v4), [1,5] (v1 → v2 → v5) y [3,4] (v3 → v2 → v4). k = 3: ninguna, porque ningún arco llega a v3. k = 4: [2,1] (v2 → v4 → v1), [5,1] (v5 → v4 → v1) y [5,2] (v5 → v4 → v1 → v2, usando [4,2] del paso 1). k = 5: ninguna. P5 es el cierre transitivo: la fila 3 es toda 1 (v3 llega a todos) y la columna 3 solo tiene un 1 (a v3 no llega nadie). Observación añadida (verificada con un programa para este grafo): P5[i][j] = 1 exactamente cuando D5[i][j] < ∞, es decir, cuando Floyd encuentra algún camino; los ∞ de D5 son los ceros de P5. Warshall solo guarda si existe un camino (un bit por celda); Floyd además guarda su costo. Pregunta para la clase: ¿qué celdas de P5 serían 1 si se agregara el arco v1 → v3? (Todas: v3 ya llegaba a todos y ahora v1, v2, v4 y v5 llegan a v3.)"
+          },
     {
       "type": "cards",
       "section": "Árbol de expansión mínimo",
@@ -884,7 +1008,7 @@
         "**Grafo** `G = {V, A}`: dirigido o no, ponderado o no",
         "**Representación:** matriz (denso) o lista de adyacencia (disperso)",
         "**Recorridos:** Breadth-First con cola y Depth-First con pila",
-        "**Caminos más cortos:** Dijkstra (un origen) y Floyd (todos los pares)",
+        "**Caminos más cortos:** Dijkstra (voraz, un origen) y Floyd (todos los pares)",
         "**Warshall:** cierre transitivo, ¿existe camino entre cada par?",
         "**Expansión mínima:** Prim (crece un árbol) y Kruskal (une un bosque)"
       ],
@@ -905,6 +1029,27 @@
         { "badge": "C", "title": "Árbol de expansión", "text": "Un grafo conexo tiene 8 vértices. ¿Cuántas aristas tiene su árbol de expansión mínimo?", "tone": "teal" }
       ],
       "notes": "Ejercicios añadidos (el capítulo no trae ejercicios). Respuestas: A) filas de la matriz: 1 → 0 1 0 0; 2 → 0 0 1 0; 3 → 1 0 0 1; 4 → 0 0 0 0. B) Orden de visita: B, H, A, D, T, C, R (se procesa B → encola H; H → encola A, D, T; A no tiene salidas; D → encola C (B ya marcado); T no tiene salidas; C → encola R; R → H ya marcado). C) 7 aristas, porque un árbol con n vértices tiene n − 1 aristas."
-    }
+          },
+          {
+            "type": "diagram",
+            "kind": "grafos-graph",
+            "section": "Práctica",
+            "title": "Ahora usted: Dijkstra",
+            "graph": { "preset": "dijkstra7", "width": 6.8, "height": 4.0 },
+            "side": [
+              {
+                "type": "list",
+                "size": 19,
+                "items": [
+                  "Calcule la distancia mínima de **a** a cada vértice.",
+                  "Escriba el camino más corto de **a** a **g**.",
+                  "Lleve una tabla con vértice, temporal, final y previo."
+                ]
+              },
+              { "type": "note", "tone": "slate", "size": 17, "text": "El grafo es no dirigido: cada arista se puede recorrer en los dos sentidos." }
+            ],
+            "callout": { "tone": "teal", "label": "Pista:", "text": "en cada paso fije el vértice pendiente con el menor valor temporal." },
+            "notes": "Ejercicio añadido (basado en el ejemplo de la presentación original; el capítulo no trae ejercicios). Dijkstra también sirve con grafos no dirigidos: cada arista equivale a dos arcos, uno en cada sentido. Solución paso a paso (valor temporal con su vértice previo): 1) se fija a = 0 y sus vecinos reciben b = 3, c = 5 y d = 6. 2) Se fija b (3): d baja de 6 a 5 (3 + 2, previo b). 3) Se fija c (5): e = 11 (5 + 6), f = 8 (5 + 3) y g = 12 (5 + 7). Hay un empate: c y d valen 5 y da igual cuál se fija primero. 4) Se fija d (5): nada mejora (d → f daría 5 + 9 = 14 > 8). 5) Se fija f (8): g baja de 12 a 9 (8 + 1, previo f); e no mejora (8 + 5 = 13 > 11). 6) Se fija g (9): e = 9 + 2 = 11, empata con el valor que ya tenía. 7) Se fija e (11). Resultado: a = 0, b = 3 (previo a), c = 5 (a), d = 5 (b), e = 11 (c), f = 8 (c), g = 9 (f). Camino más corto de a a g: a → c → f → g, con costo 5 + 3 + 1 = 9 (siguiendo la columna previo: g ← f ← c ← a). Para e el camino no es único: a → c → e y a → c → f → g → e cuestan 11 los dos. Pregunta extra: ¿por qué d vale 5 y no 6? (Porque a → b → d cuesta 3 + 2 = 5, menos que la arista directa a → d.)"
+          }
   ]
 }

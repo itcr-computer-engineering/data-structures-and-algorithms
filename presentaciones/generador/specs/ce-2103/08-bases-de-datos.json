@@ -37,6 +37,22 @@
       "notes": "Seis objetivos, uno por bloque de la lección. Conectar con la lección de almacenamiento externo: los índices de bases de datos son árboles B+."
     },
     {
+      "type": "cards",
+      "section": "Introducción",
+      "title": "Bases de datos en la vida diaria",
+      "intro": "Usted usa bases de datos todos los días, casi sin notarlo:",
+      "columns": 4,
+      "cardHeight": 2.9,
+      "cards": [
+        { "title": "Banco", "text": "Depositar o retirar fondos y consultar el saldo.", "footer": "Cuentas · saldos", "tone": "teal" },
+        { "title": "Reservas", "text": "Reservar un hotel o un vuelo y ver la disponibilidad.", "footer": "Habitaciones · vuelos", "tone": "teal" },
+        { "title": "Biblioteca", "text": "Buscar un libro en el catálogo computarizado.", "footer": "Libros · préstamos", "tone": "teal" },
+        { "title": "Compra en línea", "text": "Elegir productos y pagar. Es el caso que seguiremos en la lección.", "footer": "Clientes · pedidos", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Propósito:", "text": "toda base de datos se **diseña, construye y puebla con datos** para un fin concreto, pensando en sus **usuarios y aplicaciones previstas**." },
+      "notes": "Gancho de motivación (un par de minutos). Pregunta para la clase: «¿cuántas bases de datos usó hoy?» (mensajería, banco, redes sociales, matrícula de cursos, mapas…). Cada ejemplo tiene usuarios y aplicaciones previstas: en el banco, clientes y cajeros que depositan, retiran y consultan; en la reserva, viajeros y agencias; en la biblioteca, lectores y bibliotecarios; en la tienda, compradores y administradores. La compra en línea es el caso que usaremos de principio a fin en la sección de diseño relacional (CLIENTE, PEDIDO, PRODUCTO). El catálogo de la biblioteca nos sirve además para la siguiente diapositiva: una base de datos no tiene que ser electrónica."
+    },
+    {
       "type": "flow",
       "section": "Fundamentos",
       "title": "De un dato a un DBMS",
@@ -121,7 +137,7 @@
         { "badge": "3", "title": "NoSQL", "text": "Alternativa flexible y escalable para datos no estructurados o semiestructurados.", "tone": "teal" }
       ],
       "callout": { "tone": "slate", "text": "Un DBMS puede soportar más de un enfoque (p. ej., Oracle: relacional y objetos). Por eso decimos que la **base de datos** sigue un enfoque, no el DBMS." },
-      "notes": "Hay otros tipos que se usaron en el pasado (jerárquicas, de red); se estudian en el curso de bases de datos. Nos concentramos en relacional y NoSQL."
+      "notes": "Hay otros tipos que se usaron en el pasado (jerárquicas, de red); se estudian en el curso de bases de datos. Nos concentramos en relacional y NoSQL. Aclaración sobre las bases de datos distribuidas (datos repartidos en varios servidores o sitios): no son un cuarto enfoque, porque describen dónde se guardan los datos y no cómo se modelan. Una base distribuida puede ser relacional (p. ej., CockroachDB, que aparece entre los logotipos) o NoSQL (p. ej., Cassandra). Por eso no aparecen en esta clasificación."
     },
     {
       "type": "diagram",
@@ -329,7 +345,7 @@
       "callouts": [
         { "tone": "teal", "text": "La diferencia es despreciable en tablas pequeñas, pero determinante cuando n es grande." }
       ],
-      "notes": "El plan de ejecución de la consulta cambia: en lugar de recorrer toda la tabla, el DBMS busca en el árbol B+ y localiza directamente las filas con NOMBRE = 'María'."
+      "notes": "El plan de ejecución de la consulta cambia: en lugar de recorrer toda la tabla, el DBMS busca en el árbol B+ y localiza directamente las filas con NOMBRE = 'María'. Crear un índice no cambia las tablas ni sus columnas (el diseño lógico), solo cómo el DBMS guarda y busca los datos: es una decisión de diseño físico, que depende del DBMS y de las consultas reales. Lo retomamos en las fases del diseño de una base de datos."
     },
     {
       "type": "compare",
@@ -384,7 +400,7 @@
       "callouts": [
         { "tone": "slate", "text": "Los tipos de datos varían según el DBMS. Las restricciones también pueden agregarse después con `ALTER TABLE`." }
       ],
-      "notes": "Hay que crear primero ESTUDIANTE y CURSO, porque MATRICULA las referencia con claves foráneas. Los tipos de datos de SQL son distintos a los de los lenguajes de programación."
+      "notes": "Hay que crear primero ESTUDIANTE y CURSO, porque MATRICULA las referencia con claves foráneas. Los tipos de datos de SQL son distintos a los de los lenguajes de programación. Esquema de referencia para las diapositivas SQL siguientes (conviene dejarlo a la vista, en la pizarra o en una esquina de la pantalla): ESTUDIANTE(ID, NOMBRE, EDAD, CARRERA) · CURSO(ID, NOMBRE) · MATRICULA(ESTUDIANTE_ID, CURSO_ID). Las herramientas gráficas (MySQL Workbench, DBeaver, pgAdmin) dibujan este esquema como un diagrama entre las tablas; según la herramienta, el lado «muchos» se marca con una pata de gallo o con el símbolo ∞ (Access usa 1 y ∞)."
     },
     {
       "type": "code",
@@ -418,7 +434,7 @@
         { "tone": "amber", "label": "Cuidado:", "size": 18, "text": "sin `WHERE`, `UPDATE` y `DELETE` afectan **todas** las filas de la tabla." },
         { "tone": "teal", "label": "Integridad:", "size": 18, "text": "al borrar en una tabla «padre», los registros «hijos» se eliminan o actualizan (acción en cascada)." }
       ],
-      "notes": "Los nuevos valores siempre se validan contra las restricciones de integridad de la tabla. La acción en cascada se define con restricciones de integridad en la base de datos."
+      "notes": "Los nuevos valores siempre se validan contra las restricciones de integridad de la tabla. La acción en cascada se define con restricciones de integridad en la base de datos. Demo en vivo con el esquema de referencia (ESTUDIANTE, CURSO, MATRICULA): 1) UPDATE de varias columnas, separadas por comas: UPDATE ESTUDIANTE SET EDAD = 21, CARRERA = 'Ingeniería Civil' WHERE ID = 1; solo cambia la fila 1. Sin WHERE, los tres estudiantes quedan con edad 21 y la misma carrera. 2) DELETE con y sin WHERE: DELETE FROM CURSO WHERE ID = 3; borra solo un curso; DELETE FROM CURSO; intenta borrarlos todos. 3) Pregunta para la clase: ¿qué pasa con DELETE FROM CURSO; si MATRICULA tiene filas? Respuesta: con el CREATE TABLE de la diapositiva anterior (sin ON DELETE), el DBMS rechaza el borrado y no elimina nada; lo mismo ocurre con WHERE ID = 1 mientras ese curso tenga matrículas (solo el curso 3, sin matrículas, se puede borrar). Si la clave foránea se declara con ON DELETE CASCADE, el borrado procede y elimina también las filas de MATRICULA. Si usa SQLite, active PRAGMA foreign_keys = ON; por defecto no revisa las claves foráneas. 4) INSERT con un subconjunto de columnas, en cualquier orden: INSERT INTO ESTUDIANTE (NOMBRE, ID) VALUES ('Luis', 4); el orden lo fija la lista de columnas y las omitidas (EDAD, CARRERA) quedan en NULL, salvo que tengan valor por defecto o sean NOT NULL."
     },
     {
       "type": "code",
@@ -515,7 +531,8 @@
         { "title": "5 · Normalizar", "text": "Elimine la redundancia con las formas normales.", "tone": "teal" },
         { "title": "6 · Crear y probar", "text": "Escriba el SQL, cargue datos y pruebe consultas.", "tone": "teal" }
       ],
-      "notes": "Este proceso es iterativo: al probar (paso 6) es normal volver a los pasos anteriores. Cada diapositiva siguiente muestra en la esquina superior derecha en qué paso estamos."
+      "callout": { "tone": "teal", "label": "Del mini-mundo al disco:", "text": "diseño **conceptual** (pasos 2-3, no depende del DBMS) → **lógico** (4-5, modelo de datos del DBMS) → **físico** (6, estructuras concretas, p. ej. índices).", "size": 17, "y": 5.95, "h": 0.85 },
+      "notes": "Este proceso es iterativo: al probar (paso 6) es normal volver a los pasos anteriores. Cada diapositiva siguiente muestra en la esquina superior derecha en qué paso estamos. Fases formales del diseño: se parte del «mini-mundo», la parte de la realidad que la base de datos describe (el universo de discurso); los requisitos del paso 1 lo describen. Diseño conceptual (pasos 2 y 3): entidades y relaciones en un esquema de alto nivel, independiente de cualquier DBMS. Diseño lógico (pasos 4 y 5): ese esquema se traduce al modelo de datos del DBMS elegido (aquí, el relacional: tablas, claves y normalización). Diseño físico o implementación (paso 6 y en adelante): estructuras de almacenamiento y acceso de un DBMS concreto, como los índices. Es una simplificación: según el enfoque o el libro, la normalización se ubica en el diseño lógico (como aquí) o ya al refinar el modelo conceptual. Pregunta para la clase: ¿en qué fase decidiría crear un índice sobre NOMBRE? Respuesta: en la fase física, porque depende del DBMS y de las consultas reales, no del modelo de entidades. Referencia sobre estas fases: Elmasri, R. y Navathe, S., Fundamentals of Database Systems."
     },
     {
       "type": "compare",
@@ -776,7 +793,7 @@
         ["Ecosistema", "Muy maduro", "En crecimiento, menos maduro"]
       ],
       "callout": { "tone": "teal", "label": "Casos de uso NoSQL:", "text": "aplicaciones web escalables y análisis de datos en tiempo real (p. ej., Elasticsearch)." },
-      "notes": "No es una competencia: se elige según el problema. Kafka suele integrarse en escenarios de análisis en tiempo real para la ingesta de datos, pero es una plataforma de streaming y cola de mensajes, no una base de datos NoSQL."
+      "notes": "No es una competencia: se elige según el problema. Kafka suele integrarse en escenarios de análisis en tiempo real para la ingesta de datos, pero es una plataforma de streaming y cola de mensajes, no una base de datos NoSQL. Sobre la fila «Escalabilidad»: «normalmente vertical» es una tendencia, no una regla. Un DBMS relacional también puede escalar hacia afuera (replicación, particionamiento o bases distribuidas como CockroachDB); lo que distingue a muchas bases NoSQL es que nacieron pensadas para crecer agregando nodos. «Distribuida» no es sinónimo de NoSQL: es otra dimensión (dónde se guardan los datos), independiente del modelo de datos."
     },
     {
       "type": "summary",
@@ -790,10 +807,10 @@
         "El **modelo relacional** organiza los datos en tablas unidas por claves primarias y foráneas.",
         "Los **índices** (árboles B+) aceleran las lecturas de `O(n)` a `O(log n)`, a costa de escrituras y espacio.",
         "**SQL** define (DDL) y manipula (DML) los datos; `JOIN` combina tablas.",
-        "**Diseñar** es un proceso: requisitos, entidades, relaciones, tablas, normalización y pruebas.",
+        "**Diseñar** es un proceso por fases: conceptual (entidades y relaciones), lógico (tablas y normalización) y físico (SQL e índices).",
         "**NoSQL** ofrece esquemas flexibles y escalabilidad horizontal."
       ],
-      "footnote": "Referencias: Gillenson, M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons. · Sullivan, M. (2019). NoSQL for Mere Mortals. Addison-Wesley.",
+      "footnote": "Referencias: Gillenson, M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons. · Sullivan, M. (2019). NoSQL for Mere Mortals. Addison-Wesley. · Elmasri, R. y Navathe, S. (2016). Fundamentals of Database Systems (7.ª ed.). Pearson.",
       "notes": "Cierre: los DBMS relacionales y NoSQL no se excluyen; el curso de bases de datos profundiza en modelado, normalización y diseño."
     }
   ]

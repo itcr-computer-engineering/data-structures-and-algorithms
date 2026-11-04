@@ -354,7 +354,7 @@ Usando un enfoque sencillo, podemos definir los gaps (o incrementos) de la sigui
 size / 2, size / 4, size / 8, ..., 1
 ```
 
-Redondeando hacia el entero más cercano hacia arriba. Entonces, dado un array de 9 elementos, los gaps serían:
+Redondeando hacia el entero más cercano hacia arriba, con un array de 9 elementos saldrían los gaps 5, 3, 2, 1. Sin embargo, no existe una secuencia estándar: sirve cualquiera que sea decreciente y termine en 1. En el siguiente ejemplo, con un array de 9 elementos, se usan los gaps:
 
 ```
 5, 3, 1
@@ -435,21 +435,22 @@ Luego en la fase de unión,
 void mergeSort(int[] a, int low, int high) {
    int mid;
    if (low < high) {
-       mid = (low + high) / 2;
-       mergesort(a, low, mid);
-       mergesort(a, mid + 1, high);
+       mid = low + (high - low) / 2;
+       mergeSort(a, low, mid);
+       mergeSort(a, mid + 1, high);
        merge(a, low, high, mid);
    }
    return;
 }
 
 void merge(int[] a, int low, int high, int mid) {
-   int i, j, k, c[50];
+   int i, j, k;
+   int[] c = new int[high - low + 1];
    i = low;
-   k = low;
+   k = 0;
    j = mid + 1;
    while (i <= mid && j <= high) {
-       if (a[i] < a[j]) {
+       if (a[i] <= a[j]) {
            c[k] = a[i];
            k++;
            i++;
@@ -469,8 +470,8 @@ void merge(int[] a, int low, int high, int mid) {
         k++;
         j++;
     }
-    for (i = low; i < k; i++) {
-        a[i] = c[i];
+    for (i = 0; i < k; i++) {
+        a[low + i] = c[i];
     }
 }
 ```

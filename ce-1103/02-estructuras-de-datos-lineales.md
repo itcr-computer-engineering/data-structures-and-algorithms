@@ -191,7 +191,7 @@ public class ArrayList implements List {
     }
 
     public boolean add(int element) {
-        if (this.currentSize > this.maxSize) {
+        if (this.currentSize >= this.maxSize) {
             return false;
         }
         this.storage[currentSize++] = element;
@@ -199,19 +199,16 @@ public class ArrayList implements List {
     }
 
     public int remove(int element) {
-        int i;
-        for (i = 0; i < this.currentSize; i++) {
+        for (int i = 0; i < this.currentSize; i++) {
             if (this.storage[i] == element) {
-                indexToRemove = i;
+                for (int j = i; j < this.currentSize - 1; j++) {
+                    this.storage[j] = this.storage[j + 1];
+                }
+                this.currentSize--;
+                return element;
             }
         }
-        if (i == this.maxSize) {
-            throw new NoSuchElementException();
-        }
-        for (int j = i; j < this.currentSize - 1; j++) {
-            this.storage[j] = this.storage[j + 1];
-        }
-        this.currentSize--;
+        throw new NoSuchElementException();
     }
 }
 ```
@@ -554,7 +551,7 @@ Una pila es una estructura de datos lineal que sigue el principio de LIFO (del i
 
 ### Tipo de dato abstracto Pila
 
-La pila tiene dos operaciones básicas:
+La pila tiene tres operaciones básicas:
 
 - **Apilar (push)**: añade un elemento a la pila.
 - **Desapilar (pop)**: elimina el último elemento apilado.
@@ -769,7 +766,7 @@ public class ArrayQueue implements IQueue {
 }
 ```
 
-Esta implementación tiene un problema conocido como "drifting" que ocurre cuando se hacen muchas operaciones de inserción y eliminación. La cola se desplaza hacia la izquierda y se desperdicia espacio. Para solucionar este problema se puede implementar una cola circular.
+Esta implementación tiene un problema conocido como "drifting" que ocurre cuando se hacen muchas operaciones de inserción y eliminación. La cola se desplaza hacia el final del arreglo y se desperdicia el espacio del inicio. Para solucionar este problema se puede implementar una cola circular.
 
 ```java
 public class CircularArrayQueue implements IQueue {
@@ -897,7 +894,7 @@ public interface IPriorityQueue {
 }
 ```
 
-- **Encolar (enqueue)**: Cuando un elemento se añade a la cosa, se mantiene el orden de acuerdo a su prioridad, reorganizando los elementos si es necesario.
+- **Encolar (enqueue)**: Cuando un elemento se añade a la cola, se mantiene el orden de acuerdo a su prioridad, reorganizando los elementos si es necesario.
 - **Desencolar (dequeue)**: Se elimina el elemento con mayor prioridad primero.
 - **Tope (front)**: Permite ver el elemento con mayor prioridad sin desencolarlo.
 
@@ -908,7 +905,7 @@ public interface IPriorityQueue {
 
 ### Implementación de colas de prioridad con listas enlazadas
 
-Las colas de proridad se pueden implementar de muchas maneras:
+Las colas de prioridad se pueden implementar de muchas maneras:
 
 - Con arreglos
 - Con listas enlazadas

@@ -144,7 +144,7 @@ Es una partición inicializada con un _sistema de archivos_. Es la interfaz lóg
 ## Sistemas de archivos
 El sistema de archivos se puede entender como la abstracción que provee el Sistema Operativo para acceder a los datos almacenados en el disco (interfaz lógica entre usuario y la capa física de almacenamiento). Determina la forma en que los archivos son nombrados, organizados y almacenados en el disco. Almacena metadata/atributos de los archivos. Por ejemplo, el nombre, tamaño, fecha de creación, etc.
 
-Hay distintos sistemas de archivos conocidos y usualmente se asocian con uno u otro Sistema Operativo.  Por ejemplo, Windows utiliza _NTFS_, Linux utiliza _ext3_ o _ext4_, MacOS utiliza _HFS+_, y así por el estilo.
+Hay distintos sistemas de archivos conocidos y usualmente se asocian con uno u otro Sistema Operativo.  Por ejemplo, Windows utiliza _NTFS_, Linux utiliza _ext3_ o _ext4_, MacOS utiliza _APFS_ (antes _HFS+_), y así por el estilo.
 
 El sistema de archivos requiere espacio en disco para almacenar la metadata. Por ejemplo, si se tiene un archivo de 1 KB, el sistema de archivos necesita espacio adicional para almacenar la metadata del archivo (nombre, tamaño, fecha de creación, etc.). Por tal motivo, posterior a formatear un disco, el espacio disponible es menor al espacio total del disco.
 
@@ -210,7 +210,7 @@ Similar al caso anterior, pero en lugar de almacenar los registros de forma secu
 - **Sockets**: Archivos que permiten la comunicación entre procesos.
 - **Pipes**: Archivos que permiten la comunicación entre procesos.
 - **Symbolic links**: Archivos que apuntan a otros archivos.
-- **Binary files**: Archivos que contienen datos binarios, como imágenes, videos, etc.
+- **Binary files**: Archivos que contienen datos binarios, como ejecutables, imágenes, videos, etc.
 
 ## Cache
 

@@ -207,7 +207,7 @@ La complejidad espacial de este algoritmo es `O(n)` dado que se requiere almacen
 int foo(int n) {
     int sum = 0;
     for (int i = 0; i < n; i++) {
-        sum += bar(i);
+        sum += bar(i, 1);
     }
     return sum;
 }
@@ -391,7 +391,7 @@ Se realizan `(N-1) + (N-2) + ... + 1 = N(N-1)/2` operaciones. La complejidad es 
 El siguiente código:
 ```c
 void printUnorderedPairs(int[] arrayA, int[] arrayB) { 
-    for (inti= 0; i < arrayA.length; i++) { 
+    for (int i = 0; i < arrayA.length; i++) { 
         for (int j = 0; j < arrayB.length; j++) { 
             if (arrayA[i] < arrayB[j]) { 
                 System.out.println(arrayA[i] + "," + arrayB[j]); 
@@ -447,7 +447,7 @@ Dado que se recorren todos los nodos del árbol, la complejidad es `O(n)`.
 ```c
 boolean isPrime(int n) { 
     for (int x = 2; x <= sqrt(n); x++) { 
-        if (n % X == 0) { 
+        if (n % x == 0) { 
             return false; 
         } 
     } 

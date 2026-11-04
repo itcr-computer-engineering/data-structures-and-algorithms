@@ -8,7 +8,7 @@ Del grafo anterior, podemos decir que:
 
 - `V = { 1, 4, 5, 7, 9 }`
 
-- `A = { (1,4), (4,1), (1,5), (5,1), (4,9), (9,4), (5,7),(7,5) (7,9),(9,7) }`
+- `A = { (1,4), (4,1), (1,5), (5,1), (4,9), (9,4), (5,7),(7,5), (7,9),(9,7) }`
 
 Un grafo puede  dirigido y no dirigido:
 
@@ -23,7 +23,7 @@ Un grafo puede  dirigido y no dirigido:
 
 - El grado de v es una cualidad de un nodo de un grafo. En un grafo no dirigido es el número de aristas que contiene v.
 
-- En un grafo dirigido, el grado de entrada es el número de extremos de cola adyacentes a v. El grado de salida es el número de extremos de cabeza adyacentes a v.
+- En un grafo dirigido, el grado de entrada es el número de extremos de cabeza adyacentes a v (aristas que llegan a v). El grado de salida es el número de extremos de cola adyacentes a v (aristas que salen de v).
 
 - La ruta P = (v~0~, v~1~, v~2~, … , v~n~) es una serie de vertices que forman la ruta desde v~0~ hasta v~n~. v~n~ y v~0~ pueden ser iguales. Si los vértices entre v~0~ y v~n~ son diferentes, la ruta se llama ruta simple.
 
@@ -33,7 +33,7 @@ Un grafo puede  dirigido y no dirigido:
 
 - Un DAG es un grafo acíclico dirigido, o sea que no existen ciclos.
 
-- Un grafo es conexo si existe un camino entre cualquier par de nodos que lo componen. Un grafo es fuertemente conexo si el grafo es conexo y es dirigido.
+- Un grafo es conexo si existe un camino entre cualquier par de nodos que lo componen. Un grafo dirigido es fuertemente conexo si existe un camino de cualquier nodo a cualquier otro siguiendo el sentido de las flechas.
 
 ![grafo conexo y fuertemente conexo](images/image-3.png)
 
@@ -45,7 +45,7 @@ Los grafos se pueden representar utilizando dos enfoques diferentes:
 
 - Usando una representación dinámica conocida como lista de adyacencia
 
-Elegir entre una representación u otra depende del tipo de array y de las operaciones que se realizarán:
+Elegir entre una representación u otra depende del tipo de grafo y de las operaciones que se realizarán:
 
 - Si el grafo es denso (muchas aristas), lo mejor es escoger la matriz.
 
@@ -90,7 +90,7 @@ Algoritmo de recorrido básico:
 
 - Sea Y el conjunto de nodos visitados.
 
-- En cada paso del algoritmo, se elimina un nodo w del conjunto W, se procesa y para cada nodo adyacente de w, si no se ha visitado, se agregará a w. El nodo w se agrega a Y.
+- En cada paso del algoritmo, se elimina un nodo w del conjunto W, se procesa y para cada nodo adyacente de w, si no se ha visitado, se agregará a W. El nodo w se agrega a Y.
 
 - El algoritmo termina cuando W está vacío
 
@@ -148,9 +148,9 @@ Edsger Dijkstra (1930 - 2002) fue un informático holandés que dio forma a la p
 |---------|----------|-------|
 |   A     |    0     |   0   |
 |   B     |   50     |  50   |
-|   C     |  110     | 110   |
+|   C     |  100     | 100   |
 |   D     |   80     |  80   |
-|   E     |  150     | 150   |
+|   E     |  140     | 140   |
 
 
 
@@ -158,21 +158,22 @@ Edsger Dijkstra (1930 - 2002) fue un informático holandés que dio forma a la p
 3. Empezar por los nodos adyacentes al de salida y analizando su peso, este se coloca en la columna temporal.
 4. Se debe escoger el de magnitud más corta y se coloca este número en peso final. A partir de este nodo se le analizan sus adyacentes pero la magnitud es la suma del peso final + el peso que exista en las aristas.
 5. Se analiza cual es el menor y a partir de ahí se sigue analizando.
-*En este caso la distancia mas corta es A -> D -> E*
+*En este caso la distancia más corta es A -> D -> C -> E (costo 140)*
 
 ### Estructura general 
 
 ```
-Foreach node set distance [node] = HIGH
+Foreach node set distance[node] = HIGH
 SettledNodes = empty
 UnSettledNodes = empty
 
-Add sourceNode to UnsettledNodes
+Add sourceNode to UnSettledNodes
 distance[sourceNode] = 0
 while (UnSettledNodes is not empty) {
     evaluationNode = getNodeWithLowestDistance(UnSettledNodes)
-    remove evaluationNode from UnsettledNodes
-        add evaluationNode to SettledNodes    evaluatedNeighbors(evaluationNode)
+    remove evaluationNode from UnSettledNodes
+    add evaluationNode to SettledNodes
+    evaluatedNeighbors(evaluationNode)
 }
 getNodeWithLowestDistance(UnSettledNodes){  
     find the node with the lowest distance in UnSettledNodes and return it 
@@ -183,7 +184,7 @@ evaluatedNeighbors(evaluationNode){
         newDistance = distance[evaluationNode] + edgeDistance    
         if (distance[destinationNode]  > newDistance) {      
             distance[destinationNode]  = newDistance 
-        evaluation.predecessor = evaluationNode      
+            predecessor[destinationNode] = evaluationNode      
             add destinationNode to UnSettledNodes    
         }  
     }
@@ -193,7 +194,7 @@ evaluatedNeighbors(evaluationNode){
 ## Camino más corto: Floyd
 
 ¿Cómo calcular el camino más corto de cada nodo a cada nodo?
-Existe una solución más directa que usar dijsktra de nodo en nodo.
+Existe una solución más directa que usar Dijkstra de nodo en nodo.
 
 El algoritmo de Floyd calcula mediante programación dinámica el camino más corto de cada nodo a cada nodo.
 
@@ -237,7 +238,7 @@ Un *árbol de expansión mínimo* es un subconjunto del grafo que cubre todos lo
 Un **árbol** es un subconjunto del grafo que está conexo y no tiene ciclos.
 - Si tiene n vértices, entonces tiene n-1 aristas.
 - Existe un camino único entre dos vértices cualesquiera de un árbol.
-- Si se agrega una ventaja, se produce un ciclo.
+- Si se agrega una arista, se produce un ciclo.
 
 Si todos los vértices están en el árbol, entonces es un grafo conexo.
 

@@ -1,5 +1,6 @@
 // Diagramas del tema «Grafos» (CE-1103): grafos con estados de algoritmo y paneles con estructuras auxiliares.
-// kinds: grafos-graph (grafo a la izquierda + bloques a la derecha) y grafos-panels (2-3 grafos en paneles).
+// kinds: grafos-graph (grafo a la izquierda + bloques a la derecha), grafos-panels (2-3 grafos en paneles)
+// y grafos-matrices (grafo opcional + matrices n × n con celdas resaltadas + bloques a la derecha + avisos abajo).
 const C = require('./components');
 
 const { text, chip, callout, codeBlock, table, paragraphs, surface } = C;
@@ -72,6 +73,25 @@ const PRESETS = {
     edges: [
       ['v1', 'v2', 2], ['v1', 'v3', 4], ['v1', 'v4', 1], ['v2', 'v4', 3], ['v2', 'v5', 10], ['v3', 'v4', 2],
       ['v3', 'v6', 5], ['v4', 'v5', 7], ['v4', 'v6', 8], ['v4', 'v7', 4], ['v5', 'v7', 6], ['v6', 'v7', 1],
+    ],
+  },
+  // Floyd y Warshall: grafo dirigido y ponderado de cinco vértices (matriz D0 del capítulo). Entre v4 y v5 hay dos arcos opuestos
+  // con pesos distintos (v4→v5 = 2, v5→v4 = 3): se dibujan paralelos con `shift`.
+  floyd5: {
+    directed: true,
+    nodes: [['v1', 0.0, 0.47], ['v2', 0.37, 1.0], ['v3', 0.37, 0.0], ['v4', 0.93, 1.0], ['v5', 0.93, 0.0]],
+    edges: [
+      ['v1', 'v2', 1], ['v2', 'v4', 4], ['v2', 'v5', 7], ['v3', 'v1', 3], ['v3', 'v2', 2, { t: 0.4 }], ['v3', 'v5', 4],
+      ['v4', 'v1', 6, { t: 0.3 }], ['v4', 'v5', 2, { shift: 0.1, off: 0.3 }], ['v5', 'v4', 3, { shift: 0.1, off: 0.3 }],
+    ],
+  },
+  // Dijkstra (ejercicio): grafo no dirigido y ponderado de siete vértices a-g
+  dijkstra7: {
+    directed: false,
+    nodes: [['a', 0.0, 0.4], ['b', 0.0, 1.0], ['c', 0.5, 0.5], ['d', 0.3, 1.0], ['e', 1.0, 0.0], ['f', 1.0, 1.0], ['g', 0.82, 0.5]],
+    edges: [
+      ['a', 'b', 3], ['a', 'c', 5], ['a', 'd', 6], ['b', 'd', 2], ['c', 'd', 2], ['c', 'e', 6],
+      ['c', 'f', 3], ['c', 'g', 7], ['d', 'f', 9], ['e', 'f', 5], ['e', 'g', 2], ['f', 'g', 1],
     ],
   },
   // Siete vértices a-g: varios árboles de expansión del mismo grafo
@@ -179,16 +199,21 @@ function drawGraph(ctx, g, rect, { panel = true } = {}) {
     const ux = dx / len;
     const uy = dy / len;
     const st = edgeStyle(ctx, e.state, g.directed);
-    let x1 = A.x, y1 = A.y, x2 = B.x, y2 = B.y;
+    // `shift`: desplazamiento perpendicular (pulgadas) para dibujar dos arcos opuestos en paralelo
+    const sh = e.shift || 0;
+    const nx = -uy;
+    const ny = ux;
+    const inset = Math.sqrt(Math.max(0.01, r * r - sh * sh)) + 0.03;
+    let x1 = A.x + nx * sh, y1 = A.y + ny * sh, x2 = B.x + nx * sh, y2 = B.y + ny * sh;
     const line = { color: st.color, width: st.width };
     if (st.dash) line.dashType = st.dash;
     if (g.directed) {
-      x2 = B.x - ux * (r + 0.03);
-      y2 = B.y - uy * (r + 0.03);
+      x2 -= ux * inset;
+      y2 -= uy * inset;
       line.endArrowType = 'triangle';
       if (e.bi) {
-        x1 = A.x + ux * (r + 0.03);
-        y1 = A.y + uy * (r + 0.03);
+        x1 += ux * inset;
+        y1 += uy * inset;
         line.beginArrowType = 'triangle';
       }
     }
@@ -197,10 +222,10 @@ function drawGraph(ctx, g, rect, { panel = true } = {}) {
     });
     if (e.w !== undefined && e.w !== null) {
       const t = e.t !== undefined ? e.t : 0.5;
-      const off = e.off || 0;
+      const off = (e.off || 0) + sh;
       const s = String(e.w);
       labels.push({
-        cx: A.x + dx * t - uy * off, cy: A.y + dy * t + ux * off, w: Math.max(0.42, s.length * wSize * 0.0072 + 0.22), s, color: st.text,
+        cx: A.x + dx * t + nx * off, cy: A.y + dy * t + ny * off, w: Math.max(0.42, s.length * wSize * 0.0072 + 0.22), s, color: st.text,
       });
     }
   });
@@ -407,7 +432,73 @@ function graphPanels(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.2, w: w - 2 * mx, h: s.calloutH || 0.65, size: 16, ...s.callout });
 }
 
+// ------------------------------------------------------------------ avisos bajo el contenido (uno o varios lado a lado)
+function bottomCallouts(ctx, s) {
+  const { mx, w } = ctx.theme.page;
+  const list = s.callouts || (s.callout ? [s.callout] : []);
+  const k = list.length;
+  if (!k) return;
+  const gap = 0.3;
+  const cw = (w - 2 * mx - (k - 1) * gap) / k;
+  list.forEach((c, i) => {
+    callout(ctx, { x: mx + i * (cw + gap), y: s.calloutY || 6.2, w: cw, h: s.calloutH || 0.65, size: 16, ...c });
+  });
+}
+
+// ------------------------------------------------------------------ matriz n × n con encabezados vi / vj y celdas resaltadas
+// m: { label, tone, rows[[...]], labels[] (por defecto v1…vn), cellW, headW, rowH, hl: [[fila, columna, tono?]] }
+function matrixBlock(ctx, m, x, y) {
+  const { colors } = ctx.theme;
+  const T = ctx.T;
+  const nCols = m.rows[0].length;
+  const cw = m.cellW || 0.5;
+  const hw = m.headW || 0.6;
+  const rh = m.rowH || 0.52;
+  const labels = m.labels || Array.from({ length: nCols }, (_, i) => `v${i + 1}`);
+  const tw = hw + nCols * cw;
+  const lt = T[m.tone || 'teal'];
+  text(ctx, m.label, { x, y, w: tw + 0.3, h: 0.35, fontSize: 17, bold: true, color: lt.text, valign: 'middle' });
+  const marks = new Map((m.hl || []).map(([r, c, tone]) => [`${r}:${c}`, tone || 'teal']));
+  const rows = m.rows.map((r, i) => [labels[i] || '', ...r]);
+  const tb = table(ctx, {
+    x, y: y + 0.42, colW: [hw, ...Array.from({ length: nCols }, () => cw)], header: ['', ...labels], rows,
+    rowH: Array.from({ length: rows.length + 1 }, () => rh), fontSize: m.fontSize || 18,
+    align: Array.from({ length: nCols + 1 }, () => 'center'),
+    cellStyle: (r, c) => {
+      if (c === 0) return { bold: true, color: colors.heading, fill: colors.tealLight };
+      const tone = marks.get(`${r}:${c - 1}`);
+      return tone ? { fill: T[tone].soft, color: T[tone].text, bold: true } : {};
+    },
+  });
+  return { w: tw, h: 0.42 + tb.h };
+}
+
+// ------------------------------------------------------------------ grafo opcional + matrices + bloques a la derecha
+function matricesSlide(ctx, s) {
+  const { mx, w } = ctx.theme.page;
+  const top = s.top || 1.85;
+  let x = mx;
+  if (s.graph) {
+    const g = resolveGraph(s.graph);
+    const gw = s.graph.width || 4.4;
+    const gh = s.graph.height || 3.12;
+    drawGraph(ctx, g, { x, y: top + 0.42, w: gw, h: gh });
+    if (s.graphLabel) text(ctx, s.graphLabel, { x, y: top, w: gw, h: 0.35, fontSize: 17, bold: true, color: ctx.T.slate.text, valign: 'middle' });
+    x += gw + 0.3;
+  }
+  s.matrices.forEach((m) => {
+    const b = matrixBlock(ctx, m, x, top);
+    x += b.w + 0.25;
+  });
+  if (s.side) {
+    const sx = x + 0.15;
+    drawSide(ctx, s.side, sx, top, w - mx - sx);
+  }
+  bottomCallouts(ctx, s);
+}
+
 module.exports = {
   'grafos-graph': graphSide,
   'grafos-panels': graphPanels,
+  'grafos-matrices': matricesSlide,
 };

@@ -54,11 +54,15 @@ Para buscar el número 9:
 
 - Como 9 es mayor que 5, la búsqueda continúa en la mitad derecha del arreglo.
 
-- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha del arreglo, que es 8.
+- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha del arreglo, que es 7.
 
-- Como 9 es mayor que 8, la búsqueda continúa en la mitad derecha de la mitad derecha del arreglo.
+- Como 9 es mayor que 7, la búsqueda continúa en la mitad derecha de la mitad derecha del arreglo.
 
-- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha de la mitad derecha del arreglo, que es 9.
+- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha de la mitad derecha del arreglo, que es 8.
+
+- Como 9 es mayor que 8, la búsqueda continúa en la mitad derecha de la mitad derecha de la mitad derecha del arreglo.
+
+- Ahora comparamos el número 9 con el elemento en el medio de la mitad derecha de la mitad derecha de la mitad derecha del arreglo, que es 9.
 
 - Como 9 es igual a 9, hemos encontrado el número que buscábamos.
 
