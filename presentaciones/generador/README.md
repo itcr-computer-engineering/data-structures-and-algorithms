@@ -49,13 +49,35 @@ La skill `.github\skills\generar-presentacion\` guía a Copilot para crear una p
 | `cards` | Rejilla de tarjetas | `cards[{title,text,badge,tone,footer}]`, `columns`, `intro`, `callout` |
 | `compare` | Dos paneles | `panels[{title,tone,text,items,chips,code,note}]`, `vs`, `callout` |
 | `table` | Tabla comparativa | `columns`, `rows`, `colWeights`, `callout` |
-| `code` | Bloques de código en columnas | `columns[{weight,blocks[{label,code,lang}],cards}]`, `callouts`; lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `python`, `pseudo`, `plain` (por defecto `meta.codeLang`) |
-| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema`, `tree`, `merge-steps`, `bitstream`, `strips` |
+| `code` | Bloques de código en columnas | `columns[{weight,blocks[{label,code,lang}],cards}]`, `callouts`; lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `rust`, `python`, `pseudo`, `plain` (por defecto `meta.codeLang`) |
+| `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema`, `tree`, `merge-steps`, `bitstream`, `strips`, más los de las extensiones por tema (abajo) |
 
-Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagramas nuevos se agregan en `lib\diagrams.js`; los tipos de diapositiva, en `lib\layouts.js`.
+Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagramas comunes están en `lib\diagrams.js`; los tipos de diapositiva, en `lib\layouts.js`; los diagramas propios de un tema, en `lib\diagrams.<tema>.js`, que se cargan solos (cada `kind` lleva el prefijo del tema).
+
+### Extensiones por tema
+
+| Archivo | Presentación | `kind` |
+|---------|--------------|--------|
+| `diagrams.memoria.js` | CE-2103 · Administración de memoria | `memoria-imagen`, `memoria-tabla`, `memoria-layout`, `memoria-trace`, `memoria-pila-pasos`, `memoria-espacios`, `memoria-base-limite`, `memoria-celdas`, `memoria-copias` |
+| `diagrams.analisis.js` | CE-2103 · Análisis de algoritmos | `analisis-casos-busqueda`, `analisis-codigo-grafica`, `analisis-imagen-tabla`, `analisis-arbol-niveles`, `analisis-costos-push` |
+| `diagrams.diseno.js` | CE-2103 · Diseño de algoritmos | `diseno-matriz`, `diseno-tablero`, `diseno-arbol`, `diseno-bloom`, `diseno-ciclo` |
+| `diagrams.busqueda.js` | CE-2103 · Algoritmos de búsqueda | `busqueda-array-steps`, `busqueda-formula`, `busqueda-paneles` |
+| `diagrams.externo.js` | CE-2103 · Almacenamiento externo | `externo-image-side`, `externo-images`, `externo-timebar`, `externo-bars`, `externo-partitions`, `externo-cache-flow`, `externo-cache-trace`, `externo-runs`, `externo-btree` |
+| `diagrams.poo.js` | CE-1103 · POO | `poo-code`, `poo-uml`, `poo-memoria`, `poo-ecuacion`, `poo-imagen-lado` |
+| `diagrams.lineales.js` | CE-1103 · Estructuras lineales | `lineales-array`, `lineales-nodes`, `lineales-stack`, `lineales-ring`, `lineales-matrix-refs` |
+| `diagrams.ordenamiento.js` | CE-1103 · Ordenamiento y búsqueda | `ordenamiento-array`, `ordenamiento-hash` |
+| `diagrams.jerarquicas.js` | CE-1103 · Estructuras jerárquicas | `jerarquicas-trees`, `jerarquicas-imagegrid` |
+| `diagrams.grafos.js` | CE-1103 · Grafos | `grafos-graph`, `grafos-panels` |
+
+Antes de crear un diagrama nuevo, mire estos: varios (arreglos con estados, nodos enlazados, árboles, grafos, trazas) se pueden reutilizar en otros temas. Sus campos están en la cabecera de cada archivo y en los specs que los usan.
+
+### Notas técnicas
+
+- `lib\postprocess.js` separa las letras griegas (Θ, Ω, ε…) en corridas con `Segoe UI Symbol`: sin eso, PowerPoint falla al exportar a imagen/PDF cuando una fuente normal las contiene.
+- Las celdas de tabla interpretan `**negrita**` y `` `código` ``; no hay cursiva.
 
 ## Crear otra presentación
 
-1. Copie `specs\ce-2103\08-bases-de-datos.json` y ajuste `meta`, `assetsDir` y `slides`.
+1. Copie un spec parecido (`specs\ce-2103\08-bases-de-datos.json`, `...\06-algoritmos-de-compresion.json`, o los de `specs\ce-1103\`) y ajuste `meta`, `assetsDir` y `slides`.
 2. Ejecute `node build.js <spec>`.
 3. Revise con `render.ps1` y `contact-sheet.ps1`: sin textos desbordados, máximo ~5 ideas por diapositiva y texto de al menos 14 pt.

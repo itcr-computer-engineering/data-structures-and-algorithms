@@ -1,0 +1,1076 @@
+{
+  "meta": {
+    "title": "Administración de Memoria",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 01 · Administración de Memoria",
+    "footer": "CE-2103 · Administración de Memoria",
+    "theme": "dark",
+    "codeLang": "c",
+    "assetsDir": "../../../../ce-2103/images/01-administracion-de-memoria",
+    "output": "../../../ce-2103/Lección 01 - Administración de Memoria.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 01",
+      "title": "Administración de Memoria",
+      "subtitle": "Cómo se organiza y se usa la memoria de un programa",
+      "terminal": {
+        "file": "main.c",
+        "lang": "c",
+        "code": "int x = 3899;\nint* price = &x;\n*price = 1000;\n// x ahora vale 1000"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "La administración de memoria significa cosas distintas según el contexto. Para un sistema operativo es la gestión de la memoria principal de la computadora; para el desarrollo de software es la gestión de la memoria de un programa en ejecución. Para lograr la segunda hay que comprender la primera: por eso la lección va del sistema operativo hacia el proceso y, al final, a los punteros."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Explicar el papel del **sistema operativo** en la administración de memoria",
+        "Describir cómo evolucionó la memoria: **espacios de direcciones** y **memoria virtual**",
+        "Reconocer las secciones del **memory layout** de un programa en C",
+        "Diferenciar el **stack** del **heap** y sus riesgos",
+        "Usar **punteros**: `&`, `*`, sharing, copias y aritmética",
+        "Comparar punteros con las **referencias** de lenguajes manejados y de Rust"
+      ],
+      "notes": "Seis objetivos, uno por bloque de la lección. Los dos primeros corresponden a la memoria vista desde el sistema operativo; los demás, a la memoria vista desde el programa."
+    },
+    {
+      "type": "code",
+      "section": "Sistema operativo",
+      "title": "El sistema operativo como API",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.2,
+          "blocks": [
+            {
+              "label": "Ejemplo: abrir un archivo con la API del SO",
+              "code": "FILE* fptr = fopen(\"archivo.txt\", \"r\");",
+              "lang": "c",
+              "note": "`fopen` retorna un pointer (handler) al archivo sin que usted conozca cómo el SO lo implementa."
+            }
+          ],
+          "cards": [
+            {
+              "title": "Sistema operativo",
+              "text": "Capa de software que interactúa directamente con el hardware. Es el intermediario entre el hardware y las aplicaciones.",
+              "tone": "teal",
+              "textSize": 17,
+              "h": 2.75
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            {
+              "title": "API",
+              "text": "Application Programming Interface: una capa de abstracción para usar un sistema sin conocer su implementación.",
+              "textSize": 17,
+              "h": 2.3
+            },
+            {
+              "title": "POSIX",
+              "text": "Portable Operating System Interface: estándar del IEEE para las API del sistema operativo.",
+              "textSize": 17,
+              "h": 2.3
+            }
+          ]
+        }
+      ],
+      "notes": "API aplica a muchos contextos (web, del sistema operativo, librerías de clases); aquí interesa la API del sistema operativo. Sea cual sea el contexto, la idea es la misma: una capa de abstracción para que los desarrolladores interactúen con un sistema sin conocer los detalles de su implementación. Nota: el capítulo escribe `fopen(\"archivo.txt\")`; en C real la función recibe además el modo de apertura (\"r\" para lectura), por eso se muestra completa."
+    },
+    {
+      "type": "cards",
+      "section": "Sistema operativo",
+      "title": "El SO administra los recursos de la máquina",
+      "intro": "El hardware es complejo; el SO se encarga de él. Recursos que administra:",
+      "columns": 4,
+      "cardHeight": 2.4,
+      "cards": [
+        { "title": "CPU", "text": "Ejecuta las instrucciones de los procesos." },
+        { "title": "Memoria principal", "text": "Aloja los programas y datos en ejecución.", "tone": "teal", "titleSize": 20 },
+        { "title": "Discos", "text": "Almacenan los archivos de forma permanente." },
+        { "title": "I/O", "text": "Entrada y salida: dispositivos y periféricos." }
+      ],
+      "callout": { "tone": "teal", "text": "El sistema operativo **hace transparentes** los recursos de la máquina: los desarrolladores no lidian con el hardware directamente." },
+      "notes": "Si no hubiera un ente especializado en administrar los recursos, los desarrolladores tendrían que lidiar con la complejidad del hardware. Esta lección se centra en la memoria principal. Las descripciones breves de cada recurso son un apoyo del profesor; el capítulo solo lista los cuatro recursos."
+    },
+    {
+      "type": "cards",
+      "section": "Sistema operativo",
+      "title": "Programa, proceso y thread",
+      "intro": "Tres conceptos que no deben confundirse:",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "textSize": 17,
+      "cards": [
+        { "title": "Programa", "text": "Archivo ejecutable en disco con el código: el conjunto de instrucciones del procesador." },
+        { "title": "Proceso", "text": "Programa cargado en memoria, con los recursos del SO que necesita: registros, contador de programa, punteros de pila, páginas.", "tone": "teal" },
+        { "title": "Thread (hilo)", "text": "Flujo de control dentro de un proceso, con su propia pila de llamadas, registros y estado. Comparte la memoria del proceso." }
+      ],
+      "callout": { "tone": "slate", "text": "Los threads de un proceso comparten el **espacio de direcciones** y los archivos abiertos." },
+      "notes": "Cuando un programa se ejecuta, se carga en memoria y se convierte en un proceso. Cada hilo tiene su propia pila de llamadas, registros de procesador y estado de ejecución, pero múltiples hilos comparten el mismo espacio de direcciones de memoria, archivos abiertos, etc. Pregunta para la clase: ¿qué implica que dos hilos compartan memoria?"
+    },
+    {
+      "type": "cards",
+      "section": "Administración de memoria",
+      "title": "Responsabilidades del sistema operativo",
+      "intro": "La administración de memoria es el conjunto de tareas con que el SO gestiona la memoria principal:",
+      "columns": 4,
+      "cardHeight": 2.8,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Asignar", "text": "Asignar y liberar memoria al inicio y al fin de un proceso." },
+        { "badge": "2", "title": "Controlar", "text": "Controlar la memoria asignada a cada proceso." },
+        { "badge": "3", "title": "Fragmentación", "text": "Minimizar la fragmentación." },
+        { "badge": "4", "title": "Integridad", "text": "Mantener la integridad de los datos." }
+      ],
+      "callout": { "tone": "amber", "label": "Límite y aislamiento:", "text": "controlar la memoria de cada proceso evita que afecte a otros procesos en ejecución." },
+      "notes": "La administración de memoria permite a los programas ejecutarse sin preocuparse por la gestión de la memoria física. Sobre la fragmentación (explicación adicional del profesor): ocurre cuando la memoria libre queda repartida en pedazos pequeños y separados que no sirven para atender una solicitud grande."
+    },
+    {
+      "type": "table",
+      "section": "Direcciones de memoria",
+      "title": "Analogía: el edificio de apartamentos",
+      "columns": ["Edificio de apartamentos", "Memoria de la computadora"],
+      "colWeights": [1, 1],
+      "fontSize": 19,
+      "rowHeight": 0.62,
+      "rows": [
+        ["Apartamentos numerados consecutivamente", "Direcciones de memoria consecutivas"],
+        ["Cada apartamento aloja a una persona", "Cada dirección aloja 1 byte"],
+        ["Una familia ocupa apartamentos contiguos", "Una variable ocupa 1 o más bytes contiguos"],
+        ["La recepción lleva la correspondencia", "El sistema operativo genera las direcciones"],
+        ["La constructora agrega pisos", "El usuario instala más RAM"]
+      ],
+      "callout": { "tone": "teal", "text": "Cada dirección identifica **un byte**; una variable ocupa uno o más bytes **contiguos**." },
+      "notes": "Todos los apartamentos son del mismo tamaño y están numerados. El edificio puede crecer, pero la constructora tiene un máximo de apartamentos que puede construir. Del mismo modo, si el usuario instala más RAM, el SO puede acceder a ella solo hasta el máximo que sus direcciones permitan."
+    },
+    {
+      "type": "table",
+      "section": "Direcciones de memoria",
+      "title": "Direcciones de n bits y memoria accesible",
+      "columns": ["Bits", "Cantidad de direcciones", "Rango", "Memoria accesible"],
+      "colWeights": [0.8, 1.6, 1.7, 1.45],
+      "fontSize": 22,
+      "rowHeight": 0.85,
+      "rows": [
+        ["16 bits", "65 536", "0 a 65 535", "64 KB"],
+        ["32 bits", "4 294 967 296", "0 a 4 294 967 295", "4 GB"],
+        ["n bits", "2^n", "0 a 2^n − 1", "2^n bytes"]
+      ],
+      "calloutY": 5.35,
+      "calloutH": 1.25,
+      "callouts": [
+        { "tone": "amber", "label": "Ojo:", "text": "con direcciones de 32 bits y 8 GB de RAM, el SO solo accede a 4 GB: no tiene direcciones para más." },
+        { "tone": "teal", "label": "Típico:", "text": "los sistemas operativos usan direcciones de 32 o 64 bits." }
+      ],
+      "notes": "Con direcciones de 16 bits hay 2^16 = 65 536 direcciones (de 0 a 65535), es decir, 64 KB. Con 32 bits, 2^32 direcciones (de 0 a 2^32 − 1), es decir, 4 GB. Si el usuario instala 8 GB de RAM en un sistema de 32 bits, el sistema solo puede acceder a 4 GB."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-imagen",
+      "section": "Evolución de la memoria",
+      "title": "Sin abstracción de memoria",
+      "image": "image.png",
+      "alt": "Tres organizaciones posibles de la memoria sin abstracción: (a) sistema operativo en RAM, (b) sistema operativo en ROM, (c) drivers de dispositivos en ROM; en todas el programa de usuario ocupa el resto de la memoria",
+      "caption": "(a) SO en RAM · (b) SO en ROM · (c) drivers en ROM",
+      "leftW": 5.3,
+      "left": {
+        "code": "MOV REGISTER1, 1000",
+        "codeLang": "plain",
+        "codeSize": 18,
+        "cards": [
+                    { "title": "Memoria física", "text": "Mainframes (años 60), minicomputadoras (70) y PC (80): el programa accede directo a la memoria **física**. La dirección 1000 es la 1000 real.", "tone": "teal", "h": 1.95 },
+                    { "title": "Sin multiprogramación", "text": "Dos programas cargados a la vez podían afectarse entre sí y causar errores.", "tone": "red", "h": 1.65 }
+        ]
+      },
+      "notes": "La abstracción más simple es no tener ninguna. Había cierta organización de la memoria (la figura muestra tres variantes). Usar threads era posible porque comparten la misma memoria, pero de poco valor. Pregunta: ¿qué pasa si dos programas escriben en la dirección 1000 al mismo tiempo?"
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-imagen",
+      "section": "Evolución de la memoria",
+      "title": "El problema de la re-ubicación",
+      "image": "image-01.png",
+      "alt": "(a) Programa de 16 KB con JMP 24; (b) otro programa con JMP 28; (c) ambos cargados en memoria, el segundo a partir de la dirección 16384, donde su JMP 28 salta a una dirección del primer programa",
+      "leftW": 5.3,
+      "left": {
+        "cards": [
+          { "title": "El problema", "tone": "red", "text": "En (c) el segundo programa se carga en 16 384, pero su `JMP 28` salta a una dirección del primer programa." },
+          { "title": "La causa", "tone": "amber", "text": "Las direcciones del programa asumen que empieza en 0; al cargarlo en otra posición dejan de ser válidas." }
+        ]
+      },
+      "notes": "Lectura de la figura (explicación del profesor): (a) y (b) son dos programas independientes que asumen empezar en la dirección 0. En (c) ambos están en memoria; el segundo comienza en 16 384, pero su instrucción JMP 28 salta a la dirección 28, que pertenece al primer programa, en lugar de a 16 412 (28 + 16 384). Hace falta algún mecanismo de re-ubicación."
+    },
+    {
+      "type": "flow",
+      "section": "Evolución de la memoria",
+      "title": "Swapping: pausar un programa y cargar otro",
+      "steps": [
+        { "title": "Pausar", "text": "Se pausa la ejecución del programa actual." },
+        { "title": "Guardar", "text": "Su estado se guarda en el disco." },
+        { "title": "Cargar otro", "text": "Se carga otro programa en memoria y se ejecuta." }
+      ],
+      "callout": { "tone": "amber", "label": "A cierto grado:", "text": "solo un programa está en memoria a la vez; mientras uno espera una operación de I/O, otro puede ejecutarse." },
+      "notes": "El swapping permitió la multiprogramación solo «a cierto grado»: no hay dos programas en memoria al mismo tiempo."
+    },
+    {
+      "type": "compare",
+      "section": "Evolución de la memoria",
+      "title": "Static relocation (IBM 360)",
+      "panelHeight": 3.6,
+      "panels": [
+        {
+          "title": "Programa en disco",
+          "tone": "slate",
+          "text": "Las referencias asumen que el programa empieza en 0:",
+          "textSize": 19,
+          "code": "JMP 28",
+          "codeLang": "plain",
+          "codeSize": 20,
+          "note": "Valores ilustrativos tomados de la figura anterior."
+        },
+        {
+          "title": "Al cargarlo con base 16 384",
+          "tone": "teal",
+          "text": "Se suma la dirección base a cada referencia:",
+          "textSize": 19,
+          "code": "JMP 16412   // 28 + 16 384",
+          "codeLang": "plain",
+          "codeSize": 20
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Limitación:", "text": "no es eficiente; entre más grande el programa, más tarda en cargarse." },
+      "notes": "La IBM 360 introdujo esta técnica para tener dos programas en memoria: al cargar un programa se le asigna una dirección base (la inicial) y se modifican todas las referencias a memoria sumándoles esa base. Funcionaba, pero había que recorrer y modificar todo el programa en cada carga."
+    },
+    {
+      "type": "compare",
+      "section": "Evolución de la memoria",
+      "title": "Monoprogramación vs. multiprogramación",
+      "vs": true,
+      "panelHeight": 3.4,
+      "panels": [
+        {
+          "title": "Monoprogramación",
+          "tone": "amber",
+          "itemSize": 21,
+          "items": [
+            "Un proceso a la vez",
+            "Si espera una operación de E/S, la CPU queda **ociosa**"
+          ]
+        },
+        {
+          "title": "Multiprogramación",
+          "tone": "teal",
+          "itemSize": 21,
+          "items": [
+            "Dos o más procesos en memoria principal",
+            "Se ejecutan de forma **concurrente**, solapados en el tiempo",
+            "Dan la impresión de ejecución en paralelo"
+          ]
+        }
+      ],
+      "callout": { "tone": "slate", "label": "Concurrencia vs. paralelismo:", "text": "concurrente = tareas traslapadas (basta un núcleo); paralelo = al mismo tiempo (varios núcleos).", "size": 16 },
+      "notes": "Definición tomada de Wikipedia: la multiprogramación es la técnica por la que dos o más procesos pueden alojarse en la memoria principal y ser ejecutados concurrentemente por el procesador. La ejecución se solapa en el tiempo a tal velocidad que parece simultánea. La concurrencia puede lograrse con un solo núcleo bajo multiprogramación; el paralelismo implica múltiples núcleos de procesamiento."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-espacios",
+      "section": "Evolución de la memoria",
+      "title": "Espacios de direcciones",
+      "virtualLabel": "Espacios virtuales",
+      "physicalLabel": "Memoria física",
+      "virtual": [
+        { "title": "Programa A: de 0 a un máximo", "tone": "teal", "marker": "28", "target": 1 },
+        { "title": "Programa B: de 0 a un máximo", "tone": "amber", "marker": "28", "target": 2 }
+      ],
+      "physical": [
+        { "label": "Sistema operativo", "tone": "slate", "pct": 24, "size": 15 },
+        { "label": "Memoria de A", "tone": "teal", "pct": 38 },
+        { "label": "Memoria de B", "tone": "amber", "pct": 38 }
+      ],
+      "callout": { "tone": "teal", "text": "Dos programas pueden ver la dirección `28`, pero esta se refiere a direcciones **físicas diferentes**." },
+      "notes": "Un espacio de direcciones es una abstracción de la memoria física: cada programa tiene el suyo, que va de 0 a un valor máximo, y el sistema operativo mapea las direcciones virtuales a físicas. Las posiciones de la memoria física en el dibujo son ilustrativas."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-base-limite",
+      "section": "Evolución de la memoria",
+      "title": "Registros base y límite",
+      "registersLabel": "El SO los carga al ejecutar el programa:",
+      "registers": [
+        { "label": "base = 16 384", "tone": "teal" },
+        { "label": "límite = 16 384", "tone": "navy" }
+      ],
+      "boxes": [
+        { "title": "Dirección virtual", "value": "28", "tone": "slate" },
+        { "title": "¿Dentro del límite?", "value": "28 < 16 384", "tone": "amber", "size": 22 },
+        { "title": "Se suma la base", "value": "28 + 16 384", "tone": "teal", "size": 22 },
+        { "title": "Dirección física", "value": "16 412", "tone": "green" }
+      ],
+      "fail": { "from": 1, "label": "No: la dirección es inválida" },
+      "calloutY": 5.85,
+      "callout": { "tone": "amber", "label": "Limitante:", "text": "el programa completo debe caber en la memoria, poco práctico para programas modernos." },
+      "notes": "Cuando un programa se ejecuta, el SO carga los registros base y límite del hardware con los valores de su espacio de direcciones. En cada acceso a memoria, el hardware verifica que la dirección esté dentro del rango permitido y genera la dirección física correspondiente. Los valores numéricos del dibujo (base y límite de 16 384, dirección 28) son un ejemplo del profesor, coherente con la figura de re-ubicación. La limitante (todo el programa debe caber en memoria) motiva la memoria virtual."
+    },
+    {
+      "type": "cards",
+      "section": "Evolución de la memoria",
+      "title": "Memoria virtual: páginas y frames",
+      "intro": "Solución para ejecutar programas que no caben en la memoria física:",
+      "columns": 3,
+      "cardHeight": 2.9,
+      "cards": [
+        { "badge": "1", "title": "Páginas", "text": "Bloques contiguos en que se divide el espacio de direcciones de un programa.", "tone": "teal" },
+        { "badge": "2", "title": "Frames", "text": "Bloques de memoria física a los que se mapean las páginas.", "tone": "teal" },
+        { "badge": "3", "title": "No todas cargadas", "text": "Solo algunas están en memoria; las demás se cargan del disco al necesitarlas.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "En `MOV REGISTER1, 1000`, la dirección 1000 es una dirección **virtual** de su espacio de direcciones virtuales." },
+      "notes": "La idea básica: cada programa tiene su propio espacio de direcciones dividido en páginas; cada página es un rango contiguo de direcciones. Las páginas se mapean a frames, pero no todas necesitan estar cargadas."
+    },
+    {
+      "type": "compare",
+      "section": "Evolución de la memoria",
+      "title": "Page-hit vs. page-fault",
+      "vs": true,
+      "panelHeight": 3.4,
+      "panels": [
+        {
+          "title": "Page-hit",
+          "tone": "green",
+          "itemSize": 20,
+          "items": [
+            "La página referenciada **está cargada** en un frame",
+            "El hardware mapea la dirección virtual a la dirección física correspondiente"
+          ]
+        },
+        {
+          "title": "Page-fault",
+          "tone": "amber",
+          "itemSize": 20,
+          "items": [
+            "La página **no está cargada**",
+            "El SO la carga desde el disco a un frame libre",
+            "Se re-ejecuta la instrucción que causó el fallo"
+          ]
+        }
+      ],
+      "callout": { "tone": "slate", "text": "Si no hay frames libres, un **algoritmo de reemplazo de páginas** decide cuál página sacar." },
+      "notes": "Pregunta para la clase: ¿por qué hay que re-ejecutar la instrucción que causó el page-fault? Porque no pudo completarse: el dato aún no estaba en memoria."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-imagen",
+      "section": "Evolución de la memoria",
+      "title": "El MMU: de virtual a física",
+      "image": "image-02.png",
+      "alt": "La CPU, dentro del paquete de CPU junto al MMU, envía direcciones virtuales al MMU; el MMU envía direcciones físicas a la memoria a través del bus, al que también se conecta el controlador de disco",
+      "leftW": 5.2,
+      "left": {
+        "cards": [
+          { "title": "MMU", "tone": "teal", "textSize": 18, "text": "Memory Management Unit: hardware especializado que mapea las direcciones virtuales a direcciones físicas." },
+          { "title": "El flujo", "textSize": 18, "text": "La CPU envía direcciones virtuales al MMU; el MMU envía direcciones físicas a la memoria." }
+        ]
+      },
+      "notes": "El MMU tiene una tabla de páginas que mapea direcciones virtuales a físicas. La tabla de páginas se mantiene en memoria y el MMU la consulta cada vez que necesita traducir una dirección."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-imagen",
+      "section": "Evolución de la memoria",
+      "title": "Tabla de páginas y reemplazo de páginas",
+      "image": "image-03.png",
+      "alt": "Páginas virtuales de 4 KB, de 0K a 64K, mapeadas con flechas a los frames de la memoria física; las páginas marcadas con X no están cargadas",
+      "caption": "",
+      "leftW": 5.2,
+      "left": {
+        "cards": [
+          { "title": "Tabla de páginas", "tone": "teal", "textSize": 18, "text": "Lleva el inventario de páginas cargadas y su frame, con estadísticas como la frecuencia de uso. «X» = página no cargada." },
+          { "title": "Reemplazo de páginas", "tone": "amber", "textSize": 18, "text": "Como los frames son limitados, un algoritmo decide qué página sacar para cargar otra." }
+        ]
+      },
+      "notes": "Las estadísticas de la tabla de páginas (por ejemplo, la frecuencia de uso) permiten decidir qué páginas mantener en memoria y cuáles sacar. Los algoritmos de reemplazo de páginas se estudian a fondo en el curso de sistemas operativos."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-layout",
+      "section": "Memoria de un proceso",
+      "title": "Memory layout de un programa en C",
+      "segH": 0.65,
+      "segments": [
+        { "name": "Command-line args y environment variables", "note": "Argumentos del programa y variables de entorno", "tone": "slate" },
+        { "name": "Stack", "note": "Variables locales y stack frames · crece hacia abajo", "tone": "teal" },
+        { "gap": true, "note": "Espacio libre entre ambos" },
+        { "name": "Heap", "note": "Memoria dinámica (malloc, new) · crece hacia arriba", "tone": "amber" },
+        { "name": "Uninitialized data (bss)", "note": "Globales y estáticas sin inicializar", "tone": "navy" },
+        { "name": "Initialized data", "note": "Globales y estáticas inicializadas", "tone": "navy" },
+        { "name": "Text", "note": "Código ejecutable (solo lectura)", "tone": "slate" }
+      ],
+      "notes": "Para un proceso, la administración de memoria es la gestión de la memoria asignada. La abstracción del SO es transparente para el proceso, que solo usa los mecanismos disponibles. Dependiendo del lenguaje y del compilador, el layout puede variar; este es el típico de un programa en C. Lectura recomendada: https://www.geeksforgeeks.org/memory-layout-of-c-program/"
+    },
+    {
+      "type": "table",
+      "section": "Memoria de un proceso",
+      "title": "Secciones del memory layout",
+      "columns": ["Sección", "Qué contiene", "Acceso o gestión"],
+      "colWeights": [1.25, 2.7, 1.3],
+      "fontSize": 16,
+      "rowHeight": 0.66,
+      "rowPad": 0.2,
+      "rows": [
+        ["Text", "Código ejecutable; compartido entre procesos del mismo programa", "Solo lectura"],
+        ["Initialized data", "Variables globales y estáticas inicializadas", "Lectura y escritura"],
+        ["Uninitialized data (bss)", "Globales y estáticas sin inicializar; el compilador las pone en cero", "Lectura y escritura"],
+        ["Command-line args y env", "Argumentos de la línea de comandos y variables de entorno", "Se cargan al ejecutar"],
+        ["Stack", "Variables locales, argumentos y return address de cada llamada", "Automática (LIFO)"],
+        ["Heap", "Datos de tamaño desconocido al compilar, de vida controlada por el programador", "Manual (malloc y free)"]
+      ],
+      "notes": "Text es el código ejecutable, usualmente compartido entre procesos del mismo programa. El segmento de datos tiene dos áreas: una para variables read-only y otra para read-write. El bss (block started by symbol) se inicializa en cero antes de que el programa empiece a ejecutarse."
+    },
+    {
+      "type": "code",
+      "section": "Memoria de un proceso",
+      "title": "Initialized data: globales y estáticas",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.25,
+          "blocks": [
+            {
+              "label": "Segmento de datos (variables globales)",
+              "code": "int x = 10;          // read-write\nconst int y = 20;    // read-only\nchar s[] = \"hola\";   // read-write\n\nint main() {\n  // Código principal\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Dos áreas", "tone": "teal", "text": "Una para variables read-only y otra para read-write.", "textSize": 17, "h": 1.45 },
+            { "title": "¿static en C?", "tone": "amber", "text": "En una función, el valor persiste entre llamadas. En ámbito global, el elemento solo existe en su unidad de compilación.", "textSize": 16, "h": 2.0 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "slate", "text": "`x`, `y` y `s` son variables **globales**: viven en el segmento de datos, no en el stack." }],
+      "calloutsY": 5.75,
+      "calloutsH": 0.85,
+      "notes": "Se llama también segmento de datos. Contiene las variables globales y/o estáticas inicializadas; es de lectura y escritura. Sobre static (fuente citada en el capítulo: es.stackoverflow.com/questions/297656): al usarlo sobre variables dentro de una función permite que el valor persista entre llamadas; al usarlo sobre funciones o variables de ámbito global, garantiza que el elemento solo exista en la unidad de compilación donde se declara."
+    },
+    {
+      "type": "code",
+      "section": "Memoria de un proceso",
+      "title": "Uninitialized data (bss)",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.25,
+          "blocks": [
+            {
+              "label": "Variables sin inicializar",
+              "code": "int x;  // uninitialized\nint y;  // uninitialized\n\nint main() {\n  // Código principal\n\n  static int z; // uninitialized\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "bss", "tone": "teal", "text": "Block started by symbol: segmento de datos sin inicializar.", "textSize": 17, "h": 1.7 },
+            { "title": "En cero", "tone": "teal", "text": "El compilador las inicializa en cero antes de que el programa empiece a ejecutarse.", "textSize": 17, "h": 2.0 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "slate", "text": "Incluso `static int z;`, declarada dentro de `main`, vive en este segmento." }],
+      "calloutsY": 5.9,
+      "calloutsH": 0.8,
+      "notes": "Contiene las variables globales y/o estáticas no inicializadas; es de lectura y escritura."
+    },
+    {
+      "type": "code",
+      "section": "Memoria de un proceso",
+      "title": "Argumentos y variables de entorno",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Se ejecuta con argumentos", "code": "$ ./programa -a -b -c", "lang": "plain" },
+            {
+              "label": "Se accede con argc y argv",
+              "code": "int main(int argc, char* argv[]) {\n  // argc: número de argumentos\n  // argv[0]: nombre del programa\n  // argv[1]: primer argumento\n  printf(\"Arg 1: %s\\n\", argv[1]);\n}",
+              "note": "Aquí `argc` vale 4 y `argv[1]` es `-a`."
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "En bash se define una variable de entorno", "code": "export MYVAR=\"Ejemplo de variable\"", "lang": "plain" },
+            {
+              "label": "Se accede con environ",
+              "code": "extern char** environ;\n\nint main() {\n  for (int i = 0; environ[i] != NULL; i++) {\n    printf(\"%s\\n\", environ[i]);\n  }\n}"
+            }
+          ]
+        }
+      ],
+      "notes": "Esta sección de la memoria se carga con los argumentos de la línea de comandos (los que se pasan al programa al ejecutarlo) y con las variables de entorno (definidas en el sistema operativo y accesibles por los programas). argv[0] es el nombre del programa; por eso, con ./programa -a -b -c, argc es 4 (dato adicional del profesor). Las variables de entorno se acceden mediante la variable global environ."
+    },
+    {
+      "type": "cards",
+      "section": "Memoria de un proceso",
+      "title": "Stack: la memoria automática",
+      "intro": "Almacena las variables locales y los argumentos de las funciones.",
+      "columns": 3,
+      "cardHeight": 2.7,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "LIFO", "text": "Last In, First Out: la última función llamada es la primera en terminar.", "tone": "teal" },
+        { "badge": "2", "title": "Stack frame", "text": "Cada llamada crea un frame con las variables locales, los argumentos y el return address.", "tone": "teal" },
+        { "badge": "3", "title": "Automático", "text": "Al terminar la función su frame se elimina: por eso las variables locales son «automáticas».", "tone": "teal" }
+      ],
+      "callout": { "tone": "amber", "text": "Las variables del stack deben tener **tamaño conocido al compilar**: una lista enlazada no puede almacenarse aquí." },
+      "notes": "El stack tiene un tamaño máximo fijo (reservado), dentro del cual crece y decrece dinámicamente con las llamadas a funciones. Usarlo es transparente (e inevitable) para el programador, por lo que el manejo de la memoria es menos propenso a errores. El return address es la dirección a la que se debe regresar cuando la función termina."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-trace",
+      "section": "Memoria de un proceso",
+      "title": "El stack en acción",
+      "code": "int main(void) {\n  printf(\"hello world\\n\");\n  first_function();\n  printf(\"goodbye goodbye\\n\");\n  return 0;\n}\nvoid first_function(void) {\n  int imidate = 3;\n  char broiled = 'c';\n  void *where_prohibited = NULL;\n  second_function(imidate);\n  imidate = 10;\n}\nvoid second_function(int a) {\n  int b = a;\n}",
+      "highlight": 10,
+      "codeW": 4.9,
+      "panelHeight": 4.65,
+      "panels": [
+        {
+          "title": "Stack al llamar a second_function",
+          "frames": [
+            { "title": "main", "tone": "slate" },
+            { "title": "first_function", "tone": "teal", "items": ["Return address: main", "int imidate", "char broiled", "void* where_prohibited"] },
+            { "title": "second_function", "tone": "amber", "items": ["Return address: first_function", "int a (parámetro)", "int b"] }
+          ]
+        }
+      ],
+      "notes": "Código del capítulo (versión resumida: sin líneas en blanco ni directivas). La flecha marca la llamada a second_function; en ese momento el stack tiene tres frames. Cada frame guarda el return address (a dónde volver), los parámetros y las variables locales. Las cinco figuras del capítulo (image-05 a image-09) muestran esta misma traza paso a paso; en la siguiente diapositiva se resumen."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-pila-pasos",
+      "section": "Memoria de un proceso",
+      "title": "El stack crece y decrece con las llamadas",
+      "tones": { "main": "slate", "first_function": "teal", "second_function": "amber" },
+      "steps": [
+        { "event": "start", "eventLabel": "inicio", "caption": "Se ejecuta main: se crea su frame.", "frames": ["main"] },
+        { "event": "push", "eventLabel": "apila", "caption": "main llama a first_function.", "frames": ["main", "first_function"] },
+        { "event": "push", "eventLabel": "apila", "caption": "first_function llama a second_function.", "frames": ["main", "first_function", "second_function"] },
+        { "event": "pop", "eventLabel": "desapila", "caption": "second_function termina y se elimina.", "frames": ["main", "first_function"] },
+        { "event": "pop", "eventLabel": "desapila", "caption": "first_function termina: se regresa a main.", "frames": ["main"] }
+      ],
+      "callout": { "tone": "teal", "text": "Cada llamada **apila** un frame; cada retorno lo **elimina**. El último en entrar es el primero en salir (LIFO)." },
+      "notes": "Resumen visual de las cinco figuras del capítulo sobre el stack (image-05 a image-09): main, llamada a first_function, llamada a second_function, retorno de second_function y retorno de first_function. Al eliminarse el frame, la memoria se marca como libre."
+    },
+    {
+      "type": "cards",
+      "section": "Memoria de un proceso",
+      "title": "Heap: la memoria dinámica",
+      "intro": "Para datos cuyo tamaño no se conoce al compilar y cuyo tiempo de vida controla el programador:",
+      "columns": 3,
+      "cardHeight": 2.5,
+      "textSize": 17,
+      "cards": [
+        { "title": "Tamaño variable", "text": "Se expande y contrae dinámicamente: listas enlazadas, árboles, etc.", "tone": "amber" },
+        { "title": "Control manual", "text": "El programador asigna, des-asigna y re-dimensiona la memoria.", "tone": "amber" },
+        { "title": "API del heap", "text": "C: `malloc`, `free`, `realloc`, `calloc`. C++: operadores `new` y `delete`.", "tone": "amber" }
+      ],
+      "callout": { "tone": "slate", "label": "¿Se puede evitar el heap?", "text": "Sí, pero solo con variables de tamaño conocido al compilar: menos flexibilidad." },
+      "notes": "En C++, `new` y `delete` son operadores del lenguaje, no funciones. Estos mecanismos conforman el API del heap en C/C++. Si no se evita el heap, el programador es responsable de manipular la memoria en él."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-trace",
+      "section": "Memoria de un proceso",
+      "title": "El heap en acción: malloc y free",
+      "code": "int *age = malloc(sizeof(int));\n*age = 30;\ndouble *salary = malloc(sizeof(double));\n*salary = 12345.67;\ndouble *myList = malloc(3 * sizeof(double));\n// myList[0..2] = 1.2, 2.3, 3.4\ndouble *twiceSalary = multiplyByTwo(salary);\nprintf(\"%.3f\\n\", *twiceSalary);\nfree(age);\nfree(salary);\nfree(myList);\nfree(twiceSalary);",
+      "codeW": 5.5,
+      "panelHeight": 3.9,
+      "panels": [
+        {
+          "title": "Tras los malloc",
+          "blocks": [
+            { "addr": "0x0000", "text": "int (age)" },
+            { "addr": "0x0020", "text": "double (salary)" },
+            { "addr": "0x0040", "text": "3 × double (myList)" },
+            { "addr": "0x0088", "text": "double (twiceSalary)" }
+          ]
+        },
+        { "title": "Tras los free", "blocks": [], "empty": "Todos los bloques fueron liberados" }
+      ],
+      "callout": { "tone": "teal", "text": "Cada `malloc` necesita su `free`: al liberar todos los bloques, el heap queda vacío." },
+      "notes": "Versión resumida del código de las cuatro figuras del capítulo (image-10 a image-13). `multiplyByTwo` reserva en el heap un nuevo double con el doble del salario. Las direcciones son ficticias; el capítulo muestra myList como tres elementos separados, aquí se agrupan en un solo bloque de 24 bytes (3 × 8) para evitar inconsistencias en las direcciones."
+    },
+    {
+      "type": "compare",
+      "section": "Memoria de un proceso",
+      "title": "Sin puntero, la memoria se pierde",
+      "vs": true,
+      "panelHeight": 3.5,
+      "panels": [
+        {
+          "title": "Con puntero",
+          "tone": "green",
+          "text": "El puntero (en el stack) guarda la dirección `0x64`:",
+          "textSize": 18,
+          "code": "int* p = malloc(sizeof(int));",
+          "codeSize": 15,
+          "note": "La memoria es accesible y se puede liberar con `free(p)`."
+        },
+        {
+          "title": "Sin puntero",
+          "tone": "red",
+          "text": "Ningún puntero guarda la dirección `0x64`:",
+          "textSize": 18,
+          "code": "malloc(sizeof(int));",
+          "codeSize": 15,
+          "note": "La memoria es inaccesible: fuga de memoria (memory leak)."
+        }
+      ],
+      "callout": { "tone": "amber", "text": "El puntero vive en el stack y se libera con su frame, pero la memoria del heap **no se libera sola**." },
+      "notes": "Si no se libera la memoria en el heap, se produce una fuga de memoria (memory leak): la memoria asignada al programa no se libera y se pierde; con el tiempo, el programa puede quedarse sin memoria y fallar. Para acceder a la memoria hacen falta dos componentes: la llamada al API (malloc) y un puntero que guarde la dirección."
+    },
+    {
+      "type": "table",
+      "section": "Memoria de un proceso",
+      "title": "Heap vs. stack",
+      "columns": ["", "Heap", "Stack"],
+      "colWeights": [1.1, 2, 2],
+      "fontSize": 18,
+      "rowHeight": 0.62,
+      "rows": [
+        ["Tipo", "Memoria dinámica", "Memoria automática"],
+        ["Tamaño", "Variable", "Fijo"],
+        ["Responsable", "El programador", "El programador no es responsable"],
+        ["Transparencia", "No es transparente", "Transparente"],
+        ["Errores", "Propenso a bugs del programador", "Menos propenso (gestión automática)"]
+      ],
+      "callout": { "tone": "teal", "text": "Heap: flexibilidad y control, con riesgo de errores. Stack: simple y seguro, pero de tamaño fijo y conocido." },
+      "notes": "Pregunta para la clase: ¿qué tipo de datos pondría en cada uno? Estructuras de tamaño variable (listas, árboles) van al heap; variables locales simples, al stack."
+    },
+    {
+      "type": "cards",
+      "section": "Punteros",
+      "title": "Punteros: un tipo de dato especial",
+      "intro": "Parte del API del heap. Como todo tipo de datos, define sus valores y sus operaciones:",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "textSize": 19,
+      "cards": [
+        { "title": "Valores", "text": "Su rango de valores son direcciones de memoria.", "tone": "teal" },
+        { "title": "Operaciones", "text": "Asignación, des-asignación, aritmética de punteros y acceso a memoria.", "tone": "teal" },
+        { "title": "¿Por qué con tipo?", "text": "El compilador verifica tipos y sabe cuántos bytes leer, escribir o sumar.", "tone": "teal" }
+      ],
+      "callout": { "tone": "slate", "text": "No hay nada «mágico»: un puntero es un dato cuyo valor es una **dirección de memoria**." },
+      "notes": "Si todos los punteros ocupan el mismo espacio, ¿para qué declararlos con tipo? Type check: el compilador no permite asignar a un puntero a int la dirección de un char. Read/Write size: sabe cuántos bytes leer o escribir al acceder a la memoria. Aritmética de punteros: sabe cuántos bytes sumar o restar."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-tabla",
+      "section": "Punteros",
+      "title": "Declarar punteros y reservar memoria",
+      "codeW": 5.5,
+      "blocks": [
+        {
+          "label": "Código",
+          "code": "int* ptr = malloc(sizeof(int));\nchar* cptr = malloc(sizeof(char));\ndouble* dptr = malloc(sizeof(double));"
+        }
+      ],
+      "tables": [
+        {
+          "label": "Tabla de memoria",
+          "rows": [
+            ["0x0", "ptr", "0x64", "4B", "Stack", "Pointer"],
+            ["0x4", "cptr", "0x68", "4B", "Stack", "Pointer"],
+            ["0x8", "dptr", "0x69", "4B", "Stack", "Pointer"],
+            ["0x64", "", "0", "4B", "Heap", "int"],
+            ["0x68", "", "''", "1B", "Heap", "char"],
+            ["0x69", "", "0", "8B", "Heap", "double"]
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "El puntero vive en el **stack**; la memoria que reserva `malloc`, en el **heap**. Direcciones ficticias." },
+      "notes": "Las direcciones de la tabla son ficticias: se asume que el heap empieza en la dirección hexadecimal 64, que cada dirección es de 32 bits (4 bytes). El capítulo declara además `MyClass* myptr = new MyClass();` (en C++, 20 bytes), `void* vptr = malloc(100);` y punteros nulos: `int* nPtr = NULL;`, `int* nPtr2 = 0;` (0 es el único literal que se puede asignar a un puntero en C) e `int* nPtr3 = nullptr;` (C++11)."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-tabla",
+      "section": "Punteros",
+      "title": "Operador address-of (&)",
+      "codeW": 5.2,
+      "codeSize": 17,
+      "tableSize": 16,
+      "rowH": 0.5,
+      "blocks": [
+        {
+          "label": "Código",
+          "code": "int x = 10;\nint* ptr = &x;\n\ncout << ptr;\n// imprime, p. ej., 0x7fffbf7b3b7c",
+          "lang": "cpp"
+        }
+      ],
+      "tables": [
+        {
+          "label": "Tabla de memoria",
+          "rows": [
+            ["0x0", "x", "10", "4B", "Stack", "int"],
+            ["0x4", "ptr", "0x0", "4B", "Stack", "Pointer"]
+          ],
+          "hlCells": [[1, 2]]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "`&x` obtiene la **dirección** de `x` (no confundir con el AND de bits `&`). Sirve para memoria del stack o del heap." },
+      "notes": "El operador unario address-of se designa con &. En el ejemplo del capítulo, la salida (con un espacio de direcciones de 48 bits) fue: The address of the variable x is: 0x7fffbf7b3b7c. Observe que el valor de ptr es la dirección de x."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-tabla",
+      "section": "Punteros",
+      "title": "Operador de indirección (*)",
+      "codeW": 4.8,
+      "tableSize": 16,
+      "rowH": 0.44,
+      "blocks": [
+        {
+          "label": "Código",
+          "code": "int x = 3899;\nint* price = &x;\n\ncout << *price; // 3899\n*price = 1000;\ncout << x;      // 1000",
+          "lang": "cpp",
+          "size": 15
+        }
+      ],
+      "tables": [
+        {
+          "label": "Antes de *price = 1000;",
+          "rows": [
+            ["0x0", "x", "3899", "4B", "Stack", "int"],
+            ["0x4", "price", "0x0", "4B", "Stack", "Pointer"]
+          ]
+        },
+        {
+          "label": "Después de *price = 1000;",
+          "rows": [
+            ["0x0", "x", "1000", "4B", "Stack", "int"],
+            ["0x4", "price", "0x0", "4B", "Stack", "Pointer"]
+          ],
+          "hlCells": [[0, 2]]
+        }
+      ],
+      "calloutY": 5.95,
+      "callout": { "tone": "teal", "text": "`*price` accede al valor apuntado, y también permite **modificarlo**." },
+      "notes": "El operador unario de-referencia (*) accede al valor almacenado en la dirección apuntada por el puntero (no confundir con el operador binario de multiplicación). El ejemplo completo del capítulo imprime «The value of x is: 3899», «The value of price is: 3899», y después de `*price = 1000`, ambos valores son 1000."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-tabla",
+      "section": "Punteros",
+      "title": "Sharing: dos punteros, una dirección",
+      "codeW": 5.2,
+      "codeSize": 17,
+      "tableSize": 16,
+      "rowH": 0.5,
+      "blocks": [
+        {
+          "label": "Código",
+          "code": "int x = 20;\nint* ptr = &x;\nint* ptr2 = ptr;\n\n*ptr = 30;\n// x, *ptr y *ptr2 valen 30",
+          "lang": "cpp"
+        }
+      ],
+      "tables": [
+        {
+          "label": "Antes de *ptr = 30;",
+          "rows": [
+            ["0x0", "x", "20", "4B", "Stack", "int"],
+            ["0x4", "ptr", "0x0", "4B", "Stack", "Pointer"],
+            ["0x8", "ptr2", "0x0", "4B", "Stack", "Pointer"]
+          ],
+          "hlCells": [[1, 2], [2, 2]]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Con **cualquiera** de los punteros se lee o modifica `x`: ambos apuntan a la misma dirección." },
+      "notes": "Sharing es tener dos o más punteros que apunten a la misma dirección de memoria. En el capítulo la tabla muestra x = 10, pero el código asigna 20; aquí se usa 20 para que coincidan. Tras `*ptr = 30`, `cout << x`, `cout << *ptr2` y `cout << *ptr` imprimen 30."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-copias",
+      "section": "Punteros",
+      "title": "Shallow-copy vs. deep-copy",
+      "panelHeight": 3.95,
+      "panels": [
+        {
+          "title": "Shallow-copy",
+          "tone": "amber",
+          "code": "int* counterPtr = malloc(sizeof(int));\n*counterPtr = 5;\nint* counterPtr_2 = counterPtr;",
+          "image": "image-14.png",
+          "alt": "counterPtr y counterPtr_2 guardan la misma dirección 0x000A y apuntan a una sola celda con el valor 5",
+          "text": "Se copia el puntero: un solo valor"
+        },
+        {
+          "title": "Deep-copy",
+          "tone": "teal",
+          "code": "int* counterPtr_2 = malloc(sizeof(int));\n*counterPtr_2 = *counterPtr;\n",
+          "image": "image-15.png",
+          "alt": "counterPtr guarda 0x000A y counterPtr_2 guarda 0x000B; cada uno apunta a su propia celda con el valor 5",
+          "text": "Se copia el valor: dos espacios"
+        }
+      ],
+      "callout": { "tone": "amber", "text": "Si una estructura tiene campos puntero, la deep-copy debe copiar el valor al que apunta cada puntero, no el puntero." },
+      "notes": "Shallow-copy: se copia el puntero, no el valor al que apunta; se pueden crear n copias de punteros pero solo hay un espacio de memoria al que todos apuntan. Deep-copy: se copia el valor al que apunta el puntero; puede implicar más trabajo que un simple malloc. Los nombres counterPtr y counterPtr_2 se tomaron de las figuras del capítulo (image-14 e image-15); el capítulo usa ptr y ptr2 en el código. Tabla de memoria de la deep-copy: x = 20 en 0x0, ptr = 0x0 en 0x4, ptr2 = 0x64 en 0x8 y, en el heap, 20 en 0x64."
+    },
+    {
+      "type": "diagram",
+      "kind": "memoria-celdas",
+      "section": "Punteros",
+      "title": "Aritmética de punteros",
+      "codeW": 5.2,
+      "codeSize": 17,
+      "top": 2.6,
+      "cellH": 1.0,
+      "calloutY": 5.45,
+      "code": "int arr[5] = {10, 20, 30, 40, 50};\nint* ptr = arr;\n\ncout << *ptr;       // 10\ncout << *(ptr + 1); // 20\ncout << *(ptr + 2); // 30",
+      "codeLang": "cpp",
+      "cells": [
+        { "top": "ptr", "v": "10", "addr": "0x0", "tone": "teal" },
+        { "top": "ptr + 1", "v": "20", "addr": "0x4", "tone": "teal" },
+        { "top": "ptr + 2", "v": "30", "addr": "0x8", "tone": "teal" },
+        { "top": "ptr + 3", "v": "40", "addr": "0xC" },
+        { "top": "ptr + 4", "v": "50", "addr": "0x10" }
+      ],
+      "groups": [{ "from": 0, "to": 4, "label": "arr: 5 × 4 bytes = 20 bytes contiguos" }],
+      "callout": { "tone": "teal", "text": "`ptr + 1` avanza **un elemento** (4 bytes para `int`), no un byte. Además `arr[i]` equivale a `*(arr + i)`: acceso **O(1)**." },
+      "notes": "La aritmética de punteros permite sumar o restar un entero a un puntero; es útil para recorrer arreglos. Es en términos de elementos, no de bytes: como el puntero tiene tipo, el compilador sabe cuántos bytes sumar. Nota: el capítulo dice que arr ocupa 50 bytes; en realidad son 5 elementos de 4 bytes = 20 bytes. Las direcciones son relativas e ilustrativas."
+    },
+    {
+      "type": "compare",
+      "section": "Punteros",
+      "title": "Paso de parámetros: valor vs. referencia",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Por valor",
+          "tone": "slate",
+          "text": "Se pasa una **copia**: la variable original no cambia.",
+          "textSize": 18,
+          "code": "void foo(int x) {\n  x = 20;\n}\n// con x = 10, foo(x) la deja en 10",
+          "codeLang": "cpp",
+          "codeSize": 15
+        },
+        {
+          "title": "Por referencia",
+          "tone": "teal",
+          "text": "Se pasa la **dirección**: la variable original sí cambia.",
+          "textSize": 18,
+          "code": "void foo(int& x) {\n  x = 20;\n}\n// con x = 10, foo(x) la deja en 20",
+          "codeLang": "cpp",
+          "codeSize": 15
+        }
+      ],
+      "callout": { "tone": "teal", "label": "En C:", "text": "`void foo(int* x) { *x = 20; }` y se llama con `foo(&x)`. En C++, `int&` es un alias: no puede ser nulo ni reasignarse." },
+      "notes": "En C++ una referencia (&) es similar a un puntero, pero más segura y fácil de usar: debe inicializarse al declararse y siempre refiere a la misma variable; es simplemente un alias. Ejemplo: `int x = 10; int& ref = x;` imprime 10 tanto con x como con ref. En el capítulo, el ejemplo en C usa `cout`, que es de C++; en C se usaría printf."
+    },
+    {
+      "type": "list",
+      "section": "Punteros",
+      "title": "Buenas prácticas con punteros",
+      "titleSize": 21,
+      "marker": "dot",
+      "items": [
+        { "title": "**Inicialice** y **verifique** los punteros", "text": "Un puntero sin inicializar tiene un valor aleatorio: compárelo con `NULL` antes de usarlo." },
+        { "title": "**Libere** la memoria dinámica", "text": "Cuando ya no la necesite, para evitar fugas de memoria." },
+        { "title": "Evite los **punteros colgantes**", "text": "Después de `free`, asigne `NULL` al puntero." },
+        { "title": "Use **const** cuando sea posible", "text": "Si el puntero no debe modificar los datos a los que apunta." },
+        { "title": "Evite la **aritmética compleja**", "text": "Es propensa a errores: úsela con cuidado." },
+        { "title": "**No retorne** punteros al stack", "text": "La variable se libera al terminar la función." }
+      ],
+      "notes": "Siete recomendaciones del capítulo, agrupadas en seis. Las siguientes dos diapositivas muestran el código."
+    },
+    {
+      "type": "code",
+      "section": "Punteros",
+      "title": "Inicializar, verificar y liberar",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Inicializar", "code": "int* ptr = NULL; // Correcto\nint* ptr;        // Incorrecto" },
+            { "label": "Verificar antes de usar", "code": "if (ptr != NULL) {\n  // Usar el puntero\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Liberar y evitar punteros colgantes", "code": "free(ptr);\nptr = NULL;" },
+            { "label": "const y aritmética sencilla", "code": "const int* ptr = &x;\n\nint arr[10];\nint* p = arr;\np += 2; // tercer elemento" }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "amber", "text": "Un puntero sin inicializar puede causar errores difíciles de depurar o un **segmentation fault** al de-referenciarlo." }],
+      "calloutsY": 5.95,
+      "calloutsH": 0.8,
+      "notes": "Inicializar: un puntero no inicializado puede contener cualquier valor (random value). Liberar: siempre libere la memoria asignada dinámicamente cuando ya no la necesite. Puntero colgante (dangling pointer): después de liberar, ponerlo en NULL evita su uso accidental. const: declarar `const int*` impide modificar el dato apuntado. Aritmética: evítela o úsela con cuidado."
+    },
+    {
+      "type": "code",
+      "section": "Punteros",
+      "title": "No retornar punteros a variables del stack",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1.2,
+          "blocks": [
+            {
+              "label": "Comportamiento indefinido",
+              "code": "int* foo() {\n  int temp = 50;\n  return &temp;\n}\nvoid bar() {\n  int temp = 66;\n  return;\n}\nint main() {\n  int* r = foo();\n  cout << *r; // ¿?\n  bar();\n  cout << *r; // ¿?\n}",
+              "lang": "cpp"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Puntero colgante", "tone": "red", "text": "`temp` vive en el frame de `foo`, que se libera al retornar. `r` apunta a memoria ya liberada.", "textSize": 16, "h": 2.15 },
+            { "title": "Salida no confiable", "tone": "amber", "text": "La memoria pudo reutilizarse (por `bar`), pero no está garantizado: puede imprimir cualquier valor o fallar.", "textSize": 16, "h": 2.15 }
+          ]
+        }
+      ],
+      "notes": "Advertencia del capítulo: este ejemplo incurre en comportamiento indefinido (undefined behavior), ya que r apunta a temp, una variable local cuyo stack frame ya fue liberado al retornar foo. La memoria puede haber sido reutilizada (por ejemplo, por la llamada a bar), pero esto NO está garantizado por el estándar. La salida no es confiable: podría imprimir cualquier valor, variar entre ejecuciones o compiladores, o incluso provocar una falla del programa."
+    },
+    {
+      "type": "code",
+      "section": "Lenguajes manejados",
+      "title": "Referencias en lenguajes manejados",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.25,
+          "blocks": [
+            {
+              "label": "Java",
+              "code": "MyClass obj = new MyClass();\nobj.x = 10;\n\nMyClass obj2 = obj; // Shallow-Copy\nSystem.out.println(obj.x); // 10",
+              "lang": "java"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Referencia", "tone": "teal", "text": "En Java, C# y Python no hay punteros: un identificador apunta a un objeto.", "textSize": 16, "h": 1.55 },
+            { "title": "Distinta de C++", "tone": "amber", "text": "Puede ser nula (`null`, `None`) y reasignarse a otro objeto.", "textSize": 16, "h": 1.55 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "`obj2 = obj` copia la **referencia**, no el objeto: ambas variables apuntan al mismo objeto (shallow-copy)." }],
+      "calloutsY": 5.4,
+      "calloutsH": 0.95,
+      "notes": "En los lenguajes manejados los punteros no son accesibles directamente; se usan referencias. A diferencia de las referencias de C++, estas sí pueden ser nulas y sí pueden reasignarse. En el ejemplo, obj2 = obj copia la referencia (shallow-copy): ambas variables apuntan al mismo objeto. El capítulo muestra el código dentro de una clase Main con el método main; aquí se resume."
+    },
+    {
+      "type": "diagram",
+      "kind": "tree",
+      "section": "Lenguajes manejados",
+      "title": "Recolección de basura: marcado y barrido",
+      "treeWidth": 6.6,
+      "treeHeight": 3.7,
+      "arrows": true,
+      "nodes": [
+        { "id": "ref", "label": "ref", "shape": "square", "tone": "navy", "x": 0.08, "y": 0.28 },
+        { "id": "A", "label": "A", "tone": "teal", "x": 0.4, "y": 0.28 },
+        { "id": "B", "label": "B", "tone": "teal", "x": 0.75, "y": 0.05 },
+        { "id": "C", "label": "C", "tone": "teal", "x": 0.75, "y": 0.5 },
+        { "id": "D", "label": "D", "tone": "red", "x": 0.4, "y": 0.95 },
+        { "id": "E", "label": "E", "tone": "red", "x": 0.75, "y": 0.95 }
+      ],
+      "edges": [
+        { "from": "ref", "to": "A" },
+        { "from": "A", "to": "B" },
+        { "from": "A", "to": "C" },
+        { "from": "D", "to": "E" }
+      ],
+      "table": {
+        "columns": ["Objetos", "Resultado"],
+        "colW": [1.45, 3.3],
+        "rowH": 0.7,
+        "fontSize": 16,
+        "rows": [
+          ["A, B, C", "Accesibles desde la referencia: se conservan"],
+          ["D, E", "Inaccesibles: se marcan para liberar"]
+        ]
+      },
+      "callout": { "tone": "teal", "text": "El recolector **sigue las referencias** entre objetos; la memoria de lo que no alcanza se libera automáticamente." },
+      "notes": "La mayoría de los lenguajes manejados tienen recolección de basura, por lo que no es necesario liberar la memoria manualmente. El recolector usa un algoritmo de marcado y barrido para determinar qué objetos son accesibles; los inaccesibles se marcan para ser liberados, y para saberlo sigue las referencias a través de los objetos. El grafo (ref, A–E) es un ejemplo del profesor, no del capítulo."
+    },
+    {
+      "type": "compare",
+      "section": "Lenguajes manejados",
+      "title": "Rust: ownership y borrowing",
+      "vs": true,
+      "panelHeight": 3.9,
+      "panels": [
+        {
+          "title": "Sí compila",
+          "tone": "green",
+          "text": "Varias referencias **inmutables** a la vez: válido.",
+          "textSize": 18,
+          "code": "fn main() {\n    let mut x = 10;\n    let y = &x;\n    let z = &x;\n    println!(\"{}\", x);\n}",
+          "codeSize": 14
+        },
+        {
+          "title": "No compila",
+          "tone": "red",
+          "text": "Una referencia **mutable** con otra coexistiendo.",
+          "textSize": 18,
+          "code": "fn main() {\n    let mut x = 10;\n    let y = &mut x;\n    let z = &x; // error\n    println!(\"{} {}\", y, z);\n}",
+          "codeSize": 14
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Regla: a lo sumo **una** referencia mutable, **o** cualquier número de inmutables; nunca ambas a la vez." },
+      "notes": "Rust garantiza la seguridad de la memoria sin necesidad de un recolector de basura, con un sistema de tipos basado en los conceptos de ownership y borrowing. Esta regla evita condiciones de carrera y errores de memoria. Rust permite múltiples referencias inmutables simultáneas a un mismo valor; lo que prohíbe es que una referencia mutable (&mut) coexista con cualquier otra referencia al mismo valor."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted",
+      "intro": "Resuelva cada caso (las respuestas están en las notas):",
+      "columns": 2,
+      "cardHeight": 2.0,
+      "textSize": 17,
+      "titleSize": 20,
+      "cards": [
+        { "title": "A · Punteros", "text": "Con `int a = 5; int* p = &a; *p = *p + 1;`, ¿cuánto vale `a`?", "tone": "teal" },
+        { "title": "B · Layout", "text": "¿En qué sección vive una variable local, un bloque de `malloc`, una global inicializada y una global sin inicializar?", "tone": "teal" },
+        { "title": "C · Encuentre el error", "text": "¿Qué falla en `int* f() { int t = 7; return &t; }`?", "tone": "teal" },
+        { "title": "D · Direcciones", "text": "Un SO de 32 bits con 8 GB de RAM instalada: ¿cuánta memoria puede acceder?", "tone": "teal" }
+      ],
+      "notes": "Ejercicios propuestos por el profesor (no están en el capítulo). Respuestas: A) 6, porque `*p = *p + 1` modifica a mediante el puntero. B) Local: stack; bloque de malloc: heap; global inicializada: initialized data; global sin inicializar: bss. C) Retorna un puntero a una variable local del stack, que se libera al terminar f: puntero colgante y comportamiento indefinido. D) 4 GB (2^32 bytes): no tiene direcciones para más."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Sistema operativo:** hace transparentes los recursos y administra la memoria principal.",
+        "**Evolución:** sin abstracción, espacios de direcciones y memoria virtual (páginas, frames, MMU).",
+        "**Memory layout:** text, initialized data, bss, args y env, stack y heap.",
+        "**Stack vs. heap:** automático y de tamaño fijo, o dinámico y manual (riesgo de fugas).",
+        "**Punteros:** direcciones; `&`, `*`, sharing, shallow y deep copy, aritmética y buenas prácticas.",
+        "**Lenguajes manejados:** referencias y recolección de basura; Rust: ownership y borrowing."
+      ],
+      "footnote": "Referencias: Tanenbaum, A. S. y Bos, H. (2014). Modern Operating Systems. Pearson · geeksforgeeks.org (memory-layout-of-c-program, cpp-pointer-operators)",
+      "notes": "Cierre de la lección. Referencias del capítulo: Modern Operating Systems (Tanenbaum y Bos, Pearson, 2014); https://www.geeksforgeeks.org/memory-layout-of-c-program/ y https://www.geeksforgeeks.org/cpp-pointer-operators/"
+    }
+  ]
+}

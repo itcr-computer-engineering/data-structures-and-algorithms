@@ -69,7 +69,7 @@ Medidas en pulgadas; diapositiva 16:9 de 13.333 × 7.5. Márgenes laterales 0.7.
 ### `code`
 `columns[{ weight, blocks[{ label, code, lang, size, note }], cards[{…, h}] }]`, `codeSize` (15), `top` (1.85), `callouts[]`, `calloutsY` (5.85), `calloutsH` (0.95). Cada columna apila sus `blocks` y luego sus `cards`. Alto de un bloque ≈ `líneas × 1.3 × tamaño/72 + 0.4`.
 
-Lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `python`, `pseudo`, `plain`. Por defecto `meta.codeLang` o `sql`.
+Lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `rust`, `python`, `pseudo`, `plain`. Por defecto `meta.codeLang` o `sql`.
 
 ## `diagram`: campo `kind`
 

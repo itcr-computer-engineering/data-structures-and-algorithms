@@ -7,6 +7,7 @@ const PptxGenJS = require('pptxgenjs');
 const { getTheme, merge, tones } = require('./lib/theme');
 const { layouts } = require('./lib/layouts');
 const { footer } = require('./lib/components');
+const { fixGreek } = require('./lib/postprocess');
 
 async function main() {
   const specPath = process.argv[2];
@@ -42,6 +43,7 @@ async function main() {
       throw new Error(`Diapositiva ${i + 1} (${s.title || s.type}): ${e.message}`);
     }
     if (s.type !== 'title') footer(ctx);
+    fixGreek(slide);
     if (s.notes) slide.addNotes(s.notes);
   });
 

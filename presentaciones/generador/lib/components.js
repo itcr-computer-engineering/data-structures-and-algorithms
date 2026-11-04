@@ -22,6 +22,8 @@ function rich(content, ctx, base = {}) {
 function text(ctx, content, o = {}) {
   const { colors, fonts } = ctx.theme;
   const runs = typeof content === 'string' ? rich(content, ctx) : content;
+  // Un alto negativo o nulo produce un archivo que PowerPoint no puede abrir
+  if (o.h !== undefined && o.h < 0.05) o = { ...o, h: 0.05 };
   ctx.slide.addText(runs, {
     fontFace: fonts.body,
     fontSize: 18,
@@ -258,8 +260,13 @@ const LANGS = {
   },
   csharp: {
     comment: '//',
-    kw: words(`${C_FLOW} class interface public private protected static readonly new this base null true false throw try catch finally using namespace var foreach in`),
-    types: words('int char float double long short byte void bool string List Dictionary'),
+    kw: words(`${C_FLOW} class interface struct enum public private protected internal static readonly const new this base null true false throw try catch finally using namespace var foreach in abstract virtual override sealed get set value is as out ref async await`),
+    types: words('int char float double decimal long short byte void bool string object List Dictionary'),
+  },
+  rust: {
+    comment: '//',
+    kw: words('if else for while loop in match return fn let mut const struct enum impl trait use pub mod self Self as ref move where unsafe break continue true false'),
+    types: words('i8 i16 i32 i64 u8 u16 u32 u64 usize isize f32 f64 bool char str String Vec Option Result Box'),
   },
   python: {
     comment: '#',
@@ -339,13 +346,18 @@ function codeBlock(ctx, { x, y, w, code, lang, fontSize = 15 }) {
 function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellStyle, headerFill, headerColor, headerSize, align, cellMargin }) {
   const { colors, fonts } = ctx.theme;
   const border = { type: 'solid', pt: 1, color: colors.border };
-  const cell = (txt, o) => ({
-    text: String(txt),
-    options: {
+  const cell = (txt, o) => {
+    const options = {
       fontFace: fonts.body, fontSize, color: colors.ink, valign: 'middle', border,
       margin: cellMargin || [0, 0.12, 0, 0.12], align: align || 'left', ...o,
-    },
-  });
+    };
+    const s = String(txt);
+    // **negrita** y `código` dentro de la celda: se pasan como corridas con las opciones de texto explícitas
+    const content = /\*\*|`/.test(s)
+      ? rich(s, ctx, { fontFace: options.fontFace, fontSize: options.fontSize, color: options.color, bold: options.bold })
+      : s;
+    return { text: content, options };
+  };
   const data = [];
   if (header) {
     data.push(
@@ -382,7 +394,18 @@ function table(ctx, { x, y, colW, header, rows, rowH = 0.5, fontSize = 16, cellS
 function imageSize(file) {
   const buf = fs.readFileSync(file);
   if (buf.slice(1, 4).toString() === 'PNG') return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
-  throw new Error('Solo se admiten PNG para calcular proporciones: ' + file);
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    // JPEG: buscar un marcador SOFn (0xC0–0xCF salvo 0xC4, 0xC8 y 0xCC) que trae el alto y el ancho
+    let i = 2;
+    while (i < buf.length) {
+      if (buf[i] !== 0xff) { i++; continue; }
+      const m = buf[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+      i += 2 + buf.readUInt16BE(i + 2);
+    }
+  }
+  if (buf.slice(0, 3).toString() === 'GIF') return { w: buf.readUInt16LE(6), h: buf.readUInt16LE(8) };
+  throw new Error('Formato de imagen no admitido (use PNG, JPEG o GIF): ' + file);
 }
 
 function image(ctx, file, box_, altText) {

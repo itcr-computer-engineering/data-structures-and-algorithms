@@ -1,0 +1,893 @@
+{
+  "meta": {
+    "title": "Estructuras de Almacenamiento Externo",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 06 · Estructuras de Almacenamiento Externo",
+    "footer": "CE-2103 · Almacenamiento Externo",
+    "theme": "dark",
+    "codeLang": "cpp",
+    "assetsDir": "../../../../ce-2103/images",
+    "output": "../../../ce-2103/Lección 06 - Estructuras de Almacenamiento Externo.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 06",
+      "title": "Almacenamiento Externo",
+      "subtitle": "Estructuras de datos para el disco",
+      "terminal": {
+        "file": "busqueda.log",
+        "lang": "plain",
+        "code": "$ buscar(42)\nraíz      -> lectura 1\ninterno   -> lectura 2\nhoja      -> lectura 3\n3 accesos a disco"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Hasta ahora los algoritmos asumían que los datos caben en memoria. Esta lección sigue el camino de un dato hacia el disco: la jerarquía de memoria, cómo funcionan los HDD y los SSD, las particiones, los sistemas de archivos y los archivos, el cache, el ordenamiento externo y, al final, las estructuras que permiten buscar con pocos accesos a disco: los árboles B y B+."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "bold": false,
+      "items": [
+        "Describir la **jerarquía de memoria** y comparar **HDD** y **SSD**",
+        "Explicar **particiones**, **sistemas de archivos** y **archivos**",
+        "Aplicar el **cache** y sus políticas de reemplazo (LRU, FIFO…)",
+        "Ordenar datos que no caben en memoria: **external merge** y **merge-sort**",
+        "Explicar por qué los **árboles B y B+** minimizan los accesos a disco",
+        "Insertar claves en un árbol B (**split**) y comparar B con B+"
+      ],
+      "notes": "Seis objetivos, uno por bloque de la lección. Los dos últimos son los más importantes para el curso de algoritmos: ordenamiento externo y árboles B/B+."
+    },
+    {
+      "type": "image",
+      "section": "Jerarquía de memoria",
+      "title": "La jerarquía de memoria",
+      "image": "estructuras-almacenamiento-externo-01.png",
+      "alt": "Pirámide de la jerarquía de memoria: registros de la CPU, cache (SRAM), memoria principal (DRAM), disco magnético, disco óptico y cinta magnética",
+      "caption": "Arriba: poca capacidad, muy rápida y cara. Abajo: gran capacidad, más lenta y barata.",
+      "notes": "Conforme se «sube» en la jerarquía, la cantidad de memoria disminuye pero el costo y la velocidad aumentan. Conforme se desciende, el costo y la velocidad disminuyen pero la capacidad aumenta. Por eso el cache es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es lento pero de gran capacidad. Las etiquetas de la imagen están en inglés (Level 0 a Level 4). Esta lección se concentra en los niveles de abajo: el almacenamiento externo."
+    },
+    {
+      "type": "cards",
+      "section": "Conceptos esenciales",
+      "title": "Dato, información y almacenamiento",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "callout": { "tone": "teal", "text": "Para un sistema de almacenamiento todo son **bloques crudos de bits**: el significado lo dan las capas superiores." },
+      "cards": [
+        { "title": "Dato", "text": "Sucesión de símbolos (números o letras) que representa un hecho. Por sí solo no informa.", "footer": "$10 · 20 años · 3 kg", "tone": "teal" },
+        { "title": "Información", "text": "Interpretación significativa de los datos. Requiere organizarlos y procesarlos.", "footer": "Datos + interpretación", "tone": "teal" },
+        { "title": "Almacenamiento", "text": "Sistemas que guardan datos en formato binario, sin importar qué información contengan.", "footer": "Solo ven bloques de bits", "tone": "teal" }
+      ],
+      "notes": "Un dato es una sucesión de símbolos que representa un hecho, con un significado dado por una unidad y su magnitud (por ejemplo $10, 20 años, 3 kg, 10 metros, 22 km). La información es la interpretación significativa de esos datos. Los sistemas de almacenamiento guardan datos en binario sin importar la información que se pueda extraer de ellos: solo ven bloques crudos de bits."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-image-side",
+      "section": "Discos duros (HDD)",
+      "title": "Componentes de un disco duro",
+      "image": "estructuras-almacenamiento-externo-03.jpeg",
+      "alt": "Interior de un disco duro: platos, brazo, actuador de cabezales, cabezal de lectura y escritura y chasis",
+      "imageW": 5.9,
+      "textSize": 16,
+      "items": [
+        { "title": "Platos", "text": "Discos con material magnético en ambas caras." },
+        { "title": "Eje", "text": "Sostiene los platos y los gira a RPM constante." },
+        { "title": "Brazo actuador", "text": "Mueve los cabezales a lo largo de los platos." },
+        { "title": "Cabezales", "text": "Leen y escriben los datos en los platos." }
+      ],
+      "callout": { "tone": "teal", "size": 16, "text": "Giro: 5400 / 7200 RPM (consumidor) y 10 000 / 15 000 RPM (servidores). **Más RPM** → más velocidad de E/S, pero más consumo y costo." },
+      "notes": "Un disco duro (HDD, hard-disk drive) es almacenamiento persistente: conserva la información sin electricidad. Los datos se guardan magnetizando partículas del material magnético de los platos, y el disco lee detectando esos patrones de magnetización. No debe confundirse con un SSD. La combinación de platos, eje, brazo actuador y cabezales se llama hard disk assembly. La velocidad de giro influye directamente en la velocidad de I/O. La imagen está en inglés (head actuator, head arm, disk platters, read/write head). Hay otra ilustración más detallada del disco en el capítulo (estructuras-almacenamiento-externo-02.png) con el pivote, el carro (E-block) y el motor del eje."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-image-side",
+      "section": "Discos duros (HDD)",
+      "title": "Pistas y sectores",
+      "image": "estructuras-almacenamiento-externo-04.jpg",
+      "alt": "Plato de un disco duro con pistas concéntricas, sectores, un cluster, el cabezal y el brazo actuador",
+      "imageW": 5.9,
+      "items": [
+        { "title": "Pistas", "text": "Círculos concéntricos en los que se escriben los datos." },
+        { "title": "Sectores", "text": "Cada pista se divide en sectores." },
+        { "title": "Unidad mínima", "text": "Un sector (generalmente 512 bytes) es la unidad mínima de almacenamiento." }
+      ],
+      "callout": { "tone": "amber", "text": "El disco no lee ni escribe bytes sueltos: trabaja con **sectores completos**." },
+      "notes": "Los datos se escriben en pistas (círculos concéntricos) y estas se dividen en sectores. En la imagen (en inglés) se distinguen la pista (track), el sector de pista (track sector), el sector de disco (disk sector), el cluster, el cabezal (head) y el brazo actuador (actuator arm). Un cluster es un grupo de sectores que usa el sistema de archivos."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-timebar",
+      "section": "Discos duros (HDD)",
+      "title": "Tiempos de acceso y transferencia",
+      "segments": [
+        { "label": "Seek time", "ms": 9, "range": "8–10 ms (7200 RPM)", "tone": "teal", "text": "Tiempo que tarda el brazo actuador en moverse a la pista deseada." },
+        { "label": "Latencia", "ms": 4.5, "range": "4–5 ms (7200 RPM)", "tone": "amber", "text": "Tiempo que tarda el sector deseado en pasar bajo el cabezal." },
+        { "label": "Transferencia", "ms": 0.5, "range": "≈ 0.5 ms (ejemplo)", "tone": "green", "text": "Tiempo de leer o escribir el bloque, según su tamaño y la tasa de transferencia." }
+      ],
+      "bracket": { "from": 0, "to": 1, "label": "Tiempo de acceso total = seek + latencia (≈ 12–15 ms)" },
+      "callout": { "tone": "teal", "text": "**Transferencia = tamaño del bloque / tasa de transferencia.** Con un external data rate de 300 MB/s se transfieren 300 MB por segundo." },
+      "notes": "El tiempo de acceso total es la suma del tiempo de búsqueda (seek time) y el de latencia. La transferencia no es fija por RPM: depende del tamaño del bloque y de la tasa de transferencia, y la velocidad de rotación y la densidad de los datos influyen sobre esa tasa. Los anchos de la barra son proporcionales a los tiempos (se usaron los puntos medios de los rangos). Cálculo añadido: 8–10 ms de seek + 4–5 ms de latencia da 12–15 ms por acceso aleatorio. Ejemplo añadido de transferencia: un bloque de 150 KB a 300 MB/s tarda 150 KB / 300 000 KB/s = 0.5 ms. Idea clave para después: una comparación en CPU toma nanosegundos, un acceso a disco toma milisegundos."
+    },
+    {
+      "type": "table",
+      "section": "Discos duros (HDD)",
+      "title": "Interfaces de un disco duro",
+      "columns": ["Interfaz", "Velocidad", "Hot-swappable", "Uso"],
+      "colWeights": [1.1, 2.0, 1.5, 3.6],
+      "fontSize": 18,
+      "rowHeight": 0.7,
+      "rows": [
+        ["PATA", "133 MB/s", "No", "Solo discos internos; ya no se usa"],
+        ["SATA", "600 MB/s", "Sí", "Estándar actual; bajo consumo"],
+        ["SCSI", "Alta velocidad", "Sí", "Servidores y estaciones de trabajo"],
+        ["SAS", "12 Gb/s (≈ 1.5 GB/s)", "Sí", "Servidores y estaciones de trabajo"]
+      ],
+      "callout": { "tone": "teal", "text": "**SATA** evolucionó de **PATA**; **SAS** (Serial Attached SCSI) evolucionó de **SCSI**." },
+      "notes": "El HDD se conecta al resto de la computadora mediante una interfaz. PATA (Parallel Advanced Technology Attachment): interfaz de 40 pines que se conecta a la placa madre. SATA (Serial Advanced Technology Attachment): evolución de PATA, estándar moderno. SCSI (Small Computer System Interface): interfaz de alta velocidad. SAS: evolución de SCSI. Hot-swappable significa que el disco se puede conectar o desconectar con el equipo encendido (aclaración añadida)."
+    },
+    {
+      "type": "compare",
+      "section": "Discos de estado sólido (SSD)",
+      "title": "HDD vs. SSD",
+      "vs": true,
+      "panelHeight": 3.9,
+      "callout": { "tone": "amber", "text": "Un SSD **no** es un disco duro: no tiene partes móviles, por eso es más rápido y menos propenso a fallas." },
+      "panels": [
+        {
+          "title": "Disco duro (HDD)",
+          "tone": "slate",
+          "itemSize": 19,
+          "items": [
+            "Platos magnéticos con partes móviles",
+            "Paga seek time y latencia",
+            "Acceso aleatorio lento",
+            "Menor precio"
+          ]
+        },
+        {
+          "title": "Estado sólido (SSD)",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Memoria flash, sin partes móviles",
+            "Sin latencia de búsqueda",
+            "Acceso aleatorio mucho más rápido",
+            "Writes limitados: menor vida útil",
+            "Precio más alto"
+          ]
+        }
+      ],
+      "notes": "Los discos de estado sólido utilizan memoria flash para almacenar datos. No tienen partes móviles, lo que los hace más rápidos y menos propensos a fallas. Tienen menor latencia de acceso aleatorio y no tienen latencia de búsqueda, pero los writes son limitados (menor tiempo de vida útil) y el precio es más alto que el de los discos duros."
+    },
+    {
+      "type": "cards",
+      "section": "Discos de estado sólido (SSD)",
+      "title": "Componentes de un SSD",
+      "columns": 3,
+      "textSize": 17,
+      "titleSize": 21,
+      "cards": [
+        { "title": "Controlador", "text": "Procesador que ejecuta el firmware: gestiona la memoria y corrige errores." },
+        { "title": "Memoria NAND", "text": "Memoria flash que guarda los datos, en celdas SLC, MLC, TLC o QLC." },
+        { "title": "DRAM", "text": "Memoria volátil para datos temporales y para mejorar el rendimiento." },
+        { "title": "Firmware", "text": "Software que controla el funcionamiento del SSD." },
+        { "title": "Conector", "text": "Une el SSD a la placa madre: SATA o PCIe (protocolo NVMe)." },
+        { "title": "Form factor", "text": "Tamaño y forma: 2.5\", M.2, U.2 o tarjeta de expansión PCIe." }
+      ],
+      "notes": "El controlador es responsable de la gestión de la memoria, la corrección de errores y la interfaz con el sistema operativo. La memoria NAND se divide en celdas de tipo SLC, MLC, TLC o QLC. La DRAM es memoria volátil. Los conectores más comunes son SATA y PCIe (con el protocolo NVMe). Los form factors más comunes son 2.5\", M.2 y U.2; también existen SSD en formato de tarjeta de expansión PCIe."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-bars",
+      "section": "Discos de estado sólido (SSD)",
+      "title": "Desempeño: velocidades máximas",
+      "top": 2.1,
+      "barH": 0.55,
+      "gap": 0.3,
+      "labelW": 4.6,
+      "bars": [
+        { "label": "SSD SATA · lectura", "value": 550, "text": "550 MB/s", "tone": "teal" },
+        { "label": "SSD SATA · escritura", "value": 520, "text": "520 MB/s", "tone": "teal" },
+        { "label": "SSD PCIe NVMe · lectura", "value": 3500, "text": "3500 MB/s", "tone": "amber" },
+        { "label": "SSD PCIe NVMe · escritura", "value": 3300, "text": "3300 MB/s", "tone": "amber" }
+      ],
+      "callout": { "tone": "teal", "text": "La transferencia de un SSD es mucho más rápida que la de un disco duro; con **NVMe** la lectura es ≈ 6 veces mayor que con SATA." },
+      "notes": "Valores máximos que pueden alcanzar los SSD modernos según el capítulo: hasta 550 MB/s de lectura y 520 MB/s de escritura con SATA, y hasta 3500 MB/s de lectura y 3300 MB/s de escritura con PCIe NVMe. La relación 3500 / 550 ≈ 6.4 es un cálculo añadido."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-partitions",
+      "section": "Particiones y sistemas de archivos",
+      "title": "Particiones y volúmenes",
+      "diskLabel": "Un solo disco físico",
+      "segments": [
+        { "label": "Tabla de particiones", "sub": "MBR / GPT", "w": 2.5, "tone": "amber" },
+        { "label": "Partición 1", "sub": "Volumen NTFS", "w": 3.0, "tone": "teal" },
+        { "label": "Partición 2", "sub": "Volumen ext4", "w": 3.0, "tone": "teal" },
+        { "label": "Partición 3", "sub": "Sin inicializar", "w": 2.2, "tone": "slate", "dashed": true }
+      ],
+      "cards": [
+        { "title": "Tabla de particiones", "text": "Metadata con el tamaño, la ubicación y el tipo de sistema de archivos de cada partición.", "tone": "amber" },
+        { "title": "Partición", "text": "Se comporta como un disco lógico independiente. Puede existir sin inicializarse.", "tone": "teal" },
+        { "title": "Volumen", "text": "Partición inicializada con un sistema de archivos: la interfaz lógica que usa el SO.", "tone": "teal" }
+      ],
+      "callout": { "tone": "slate", "text": "**MBR**: la tabla está en el primer sector del disco. **GPT** (GUID Partition Table): esquema moderno, con copias redundantes y sin las limitaciones de MBR." },
+      "notes": "Un disco físico se puede dividir en varias particiones que se formatean con distintos sistemas de archivos y se montan en distintos puntos de montaje. El enlace entre lo físico y lo lógico es la metadata de la tabla de particiones. En MBR la tabla está en el primer sector y la lee el sistema operativo al arrancar; los discos modernos suelen usar GPT. Los nombres NTFS y ext4 en el dibujo son un ejemplo (añadido) de dos sistemas de archivos conviviendo en el mismo disco."
+    },
+    {
+      "type": "cards",
+      "section": "Particiones y sistemas de archivos",
+      "title": "Sistema de archivos",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "callout": { "tone": "amber", "text": "Tras **formatear** un disco, el espacio disponible es menor al total: el sistema de archivos necesita espacio para su metadata." },
+      "cards": [
+        { "title": "Abstracción", "text": "Interfaz lógica del SO entre el usuario y la capa física de almacenamiento.", "footer": "Nombra y organiza", "tone": "teal" },
+        { "title": "Metadata", "text": "Guarda atributos de cada archivo: nombre, tamaño, fecha de creación…", "footer": "Ocupa espacio en disco", "tone": "teal" },
+        { "title": "Según el SO", "text": "Windows usa NTFS; Linux, ext3 o ext4; macOS, HFS+.", "footer": "NTFS · ext4 · HFS+", "tone": "teal" }
+      ],
+      "notes": "El sistema de archivos es la abstracción que provee el sistema operativo para acceder a los datos del disco: determina cómo se nombran, organizan y almacenan los archivos, y guarda sus atributos. Ejemplo del capítulo: un archivo de 1 KB necesita espacio adicional para su metadata; por eso, después de formatear, el espacio disponible es menor al total."
+    },
+    {
+      "type": "list",
+      "section": "Particiones y sistemas de archivos",
+      "title": "¿Para qué sirve un sistema de archivos?",
+      "marker": "dot",
+      "titleSize": 22,
+      "bold": false,
+      "items": [
+        "**Nombrar y organizar** los archivos",
+        "Ofrecer un **API de acceso**: crear, leer, escribir, eliminar…",
+        "Mantener un **índice** de archivos y directorios",
+        "Gestionar **permisos y restricciones** para la integridad y la seguridad",
+        "**Funciones avanzadas**: compresión, cifrado, cuotas de disco"
+      ],
+      "notes": "Funcionalidades principales del sistema de archivos según el capítulo. Pregunta para la clase: ¿qué pasaría si dos programas intentan escribir el mismo archivo al mismo tiempo? (discusión abierta, añadida)."
+    },
+    {
+      "type": "diagram",
+      "kind": "dbms-architecture",
+      "section": "Archivos",
+      "title": "El archivo: una abstracción del disco",
+      "left": { "title": "Programa", "text": "Usa bytes sin conocer el disco" },
+      "dbms": { "title": "Archivo", "components": ["Leer bytes", "Escribir bytes", "Desplazarse a una posición"] },
+      "right": { "title": "Disco", "text": "Pistas, sectores y bloques" },
+      "callout": { "tone": "teal", "text": "Un archivo es un «canal de comunicación» que oculta al usuario los detalles complejos del disco." },
+      "notes": "Un archivo es el mecanismo de abstracción para hacer transparente al usuario los detalles complejos del disco. Provee un canal de comunicación para leer bytes, escribir bytes y desplazarse a una posición específica."
+    },
+    {
+      "type": "cards",
+      "section": "Archivos",
+      "title": "Formas de acceder a un archivo",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "callout": { "tone": "teal", "text": "El acceso secuencial es más rápido; el aleatorio es más flexible. El indexado depende de la estructura y el propósito del archivo." },
+      "cards": [
+        { "title": "Secuencial", "text": "Byte por byte, desde el principio hasta el final, en el orden en que se escribieron.", "footer": "Más rápido", "tone": "teal" },
+        { "title": "Aleatorio", "text": "Acceso directo a cualquier parte del archivo, sin importar el orden de escritura.", "footer": "Más flexible", "tone": "teal" },
+        { "title": "Indexado", "text": "Un índice guarda la ubicación de los datos, p. ej. id de cliente → posición del registro.", "footer": "Precursor de las BD", "tone": "teal" }
+      ],
+      "notes": "Acceso directo es otro nombre del acceso aleatorio. Ejemplo del capítulo para el acceso indexado: en un archivo de registros de clientes, un índice puede mapear el identificador de cada cliente a la posición de su registro en el archivo. Es el precursor de las bases de datos (y, como veremos, de los árboles B+)."
+    },
+    {
+      "type": "cards",
+      "section": "Archivos",
+      "title": "Estructura interna de un archivo",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "titleSize": 20,
+      "callout": { "tone": "teal", "text": "Cuanta más estructura conoce el sistema, más operaciones puede ofrecer: buscar, ordenar e indexar." },
+      "cards": [
+        { "title": "Secuencia de bytes", "text": "Archivo plano sin estructura interna: el SO no conoce su contenido. Máxima flexibilidad.", "footer": "Windows · Linux · macOS", "tone": "teal" },
+        { "title": "Registros de tamaño fijo", "text": "Campos de tamaño fijo definidos al crear el archivo. Permite buscar y ordenar.", "footer": "Mainframes y BD", "tone": "teal" },
+        { "title": "Árboles de registros", "text": "Cada nodo guarda un registro y apunta a otros nodos. Búsqueda y orden eficientes.", "footer": "Idea de los árboles B/B+", "tone": "teal" }
+      ],
+      "notes": "Secuencia de bytes: los archivos son «cubetas» de bytes; el SO no puede hacer búsqueda ni indexación. Registros de tamaño fijo: por ejemplo, un archivo de empleados con nombre, apellido, edad y salario; se pueden leer o escribir de forma secuencial o aleatoria. Árboles de registros: en lugar de guardar los registros de forma secuencial, se almacenan en una estructura de árbol. Este concepto reaparece al final de la lección con los árboles B y B+."
+    },
+    {
+      "type": "cards",
+      "section": "Archivos",
+      "title": "Tipos de archivos",
+      "columns": 4,
+      "cardHeight": 2.3,
+      "titleSize": 17,
+      "textSize": 15,
+      "cards": [
+        { "title": "Regulares", "text": "Datos de usuario; de texto o binarios." },
+        { "title": "Directorios", "text": "Contienen la lista de archivos y directorios." },
+        { "title": "Character special", "text": "Dispositivos de caracteres: terminales y puertos serie." },
+        { "title": "Block special", "text": "Dispositivos de bloques: discos duros y unidades flash." },
+        { "title": "Sockets", "text": "Permiten la comunicación entre procesos." },
+        { "title": "Pipes", "text": "Permiten la comunicación entre procesos." },
+        { "title": "Symbolic links", "text": "Archivos que apuntan a otros archivos." },
+        { "title": "Binary files", "text": "Datos binarios: imágenes, videos, etc." }
+      ],
+      "notes": "Los directorios son partes esenciales del sistema de archivos. Los nombres en inglés (character special files, block special files, sockets, pipes, symbolic links, binary files) son los que se usan en la práctica."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-cache-flow",
+      "section": "Cache",
+      "title": "Cómo funciona un cache",
+      "request": { "title": "Se solicita un dato" },
+      "search": { "title": "Se busca en el cache" },
+      "hit": { "title": "Cache hit", "text": "El dato está en el cache: se devuelve al usuario." },
+      "miss": { "title": "Cache miss", "text": "No está: se busca en la fuente original y se guarda en el cache." },
+      "callout": { "tone": "teal", "text": "**Principio de localidad:** los programas acceden a un conjunto reducido de direcciones en un periodo corto; conviene tenerlas cerca." },
+      "notes": "El cache puede aplicarse en cualquier capa de la computación (CPU, disco, red) y en distintas capas de la arquitectura de un sistema de información. Busca mantener los datos usados con frecuencia en una ubicación óptima: cerca del usuario, cerca de la aplicación, en una memoria más rápida. Como su capacidad es limitada, usarlo bien es crucial: cada miss obliga a decidir qué entrada se elimina para hacer espacio."
+    },
+    {
+      "type": "cards",
+      "section": "Cache",
+      "title": "Políticas de reemplazo",
+      "intro": "Cuando el cache está lleno, cada miss obliga a elegir qué entrada sacar:",
+      "columns": 4,
+      "cardHeight": 3.0,
+      "titleSize": 24,
+      "textSize": 17,
+      "callout": { "tone": "teal", "text": "Todas responden la misma pregunta: **¿qué entrada sacamos?** LRU es la política más común." },
+      "cards": [
+        { "title": "LRU", "text": "Reemplaza la entrada que no se ha usado por más tiempo.", "footer": "Least Recently Used", "footerSize": 14, "tone": "teal" },
+        { "title": "FIFO", "text": "Reemplaza la entrada que lleva más tiempo en el cache. La más simple.", "footer": "First In First Out", "footerSize": 14, "tone": "teal" },
+        { "title": "LFU", "text": "Reemplaza la entrada que se ha usado menos veces.", "footer": "Least Frequently Used", "footerSize": 14, "tone": "teal" },
+        { "title": "MRU", "text": "Reemplaza la entrada que se ha usado más recientemente.", "footer": "Most Recently Used", "footerSize": 14, "tone": "teal" }
+      ],
+      "notes": "LRU se basa en que si un elemento no se ha usado recientemente, es menos probable que se use en el futuro. FIFO se basa en que los elementos que llevan más tiempo en el cache son menos probables de usarse. LFU se basa en que los menos usados son menos probables de usarse. Observación añadida sobre MRU: es útil, por ejemplo, en recorridos secuenciales cíclicos más grandes que el cache, donde lo último que se usó será lo último en volver a necesitarse; el capítulo justifica MRU de otra forma, que conviene discutir en clase."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-cache-trace",
+      "section": "Cache",
+      "title": "Ejemplo: LRU vs. FIFO con 3 entradas",
+      "accesses": ["A", "B", "C", "A", "D", "A"],
+      "rows": [
+        {
+          "label": "LRU",
+          "sub": "orden: menos → más reciente",
+          "steps": [
+            { "cache": ["A"], "hit": false },
+            { "cache": ["A", "B"], "hit": false },
+            { "cache": ["A", "B", "C"], "hit": false },
+            { "cache": ["B", "C", "A"], "hit": true },
+            { "cache": ["C", "A", "D"], "hit": false, "out": "B" },
+            { "cache": ["C", "D", "A"], "hit": true }
+          ]
+        },
+        {
+          "label": "FIFO",
+          "sub": "orden: más antiguo → más nuevo",
+          "steps": [
+            { "cache": ["A"], "hit": false },
+            { "cache": ["A", "B"], "hit": false },
+            { "cache": ["A", "B", "C"], "hit": false },
+            { "cache": ["A", "B", "C"], "hit": true },
+            { "cache": ["B", "C", "D"], "hit": false, "out": "A" },
+            { "cache": ["C", "D", "A"], "hit": false, "out": "B" }
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "LRU logra **2 hits** y FIFO solo **1**: FIFO expulsa a **A** por ser la más antigua, aunque se acaba de usar." },
+      "notes": "Ejemplo añadido (no está en el capítulo). Secuencia de accesos: A, B, C, A, D, A con un cache de 3 entradas. LRU: A, B, C son miss; A es hit (pasa a ser la más reciente: B, C, A); D es miss y expulsa a B, la menos recientemente usada (C, A, D); A es hit. FIFO: A, B, C son miss; A es hit pero no cambia su orden de llegada; D es miss y expulsa a A, la más antigua (B, C, D); A vuelve a ser miss y expulsa a B. Resultado: LRU 2 hits y 4 misses; FIFO 1 hit y 5 misses. Pregunta: ¿existe una secuencia donde FIFO gane a LRU? (Sí: A, B, C, A, D, B con 3 entradas: FIFO obtiene 2 hits y LRU solo 1)."
+    },
+    {
+      "type": "table",
+      "section": "Cache",
+      "title": "Tipos de cache",
+      "columns": ["Tipo", "Dónde se almacena", "Se usa para…"],
+      "colWeights": [1.9, 2.3, 4.0],
+      "fontSize": 17,
+      "rowHeight": 0.6,
+      "rows": [
+        ["En memoria", "RAM", "Datos frecuentes del proceso"],
+        ["De disco", "Disco duro", "Datos frecuentes de un archivo o del disco"],
+        ["Distribuido", "Varios servidores", "Datos frecuentes en la red (un sitio web)"],
+        ["Application server cache", "RAM del servidor de aplicaciones", "Datos frecuentes de la aplicación"],
+        ["Global", "Varios servidores", "Datos frecuentes a nivel global"]
+      ],
+      "callout": { "tone": "slate", "text": "**Generales:** en memoria, de disco y distribuido. **Específicos:** application server cache (una especialización del cache en memoria) y global." },
+      "notes": "Ejemplos del capítulo: el cache de disco guarda, por ejemplo, los datos de un archivo que se accede con frecuencia; el cache distribuido, los datos de un sitio web que se accede con frecuencia; el cache global, los datos de un sitio web que se accede con frecuencia en todo el mundo."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-image-side",
+      "section": "Ordenamiento externo",
+      "title": "External merge: unir dos archivos ordenados",
+      "image": "05-estructuras-almacenamiento-externo/image-05.png",
+      "alt": "Esquema con dos listas ordenadas en disco (1,5 / 8,13 / 18,20 y 3,19 / 21,22 / 24,25), una lista de salida vacía y tres frames de buffer en memoria",
+      "imageW": 6.9,
+      "items": [
+        { "title": "Dos archivos ordenados", "text": "No caben en memoria: se procesan por bloques de tamaño n." },
+        { "title": "Tres frames en memoria", "text": "Uno por archivo de entrada y uno temporal de salida." }
+      ],
+      "callout": { "tone": "teal", "text": "Los algoritmos de **ordenamiento externo** usan un enfoque híbrido: memoria principal y memoria secundaria." },
+      "notes": "Los algoritmos de ordenamiento externo sirven para ordenar grandes conjuntos de datos que no caben en la memoria principal; usualmente combinan memoria principal y secundaria. Hay dos: external merge y external merge-sort. En external merge se dividen los archivos en bloques que caben en memoria; si cada bloque es de tamaño n, en memoria se mantienen tres frames de tamaño n (B = 3 frames en la imagen). Las etiquetas de la imagen están en inglés: disk, buffer, list 1, list 2, merged list, read, write."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-images",
+      "section": "Ordenamiento externo",
+      "title": "External merge: leer y mezclar",
+      "images": [
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-06.png",
+          "alt": "Se lee la primera página de cada lista a los frames de entrada: 1,5 y 3,19",
+          "caption": "1. Se lee la primera página de cada lista en un frame de entrada."
+        },
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-07.png",
+          "alt": "Se mezclan las dos páginas en el frame de salida, que contiene 1,3",
+          "caption": "2. Se mezclan en el frame temporal hasta que se llena (aquí: 1, 3)."
+        }
+      ],
+      "notes": "Se leen los primeros bloques de ambos archivos en memoria. Usando el frame temporal se van comparando los elementos de ambos bloques y se ordenan en dicho frame. Cuando el frame temporal se llena, se escribe en el archivo de salida. Ejemplo: list 1 = [1,5] [8,13] [18,20]; list 2 = [3,19] [21,22] [24,25]. Primero salen 1 y 3 (los menores de cada frame). Textos de las imágenes: «read 1 page from each list» y «merge from the 2 pages until a new page is filled»."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-images",
+      "section": "Ordenamiento externo",
+      "title": "External merge: escribir y continuar",
+      "images": [
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-08.png",
+          "alt": "La página llena [1,3] se escribe en la lista de salida en disco",
+          "caption": "3. La página llena se escribe en el archivo de salida."
+        },
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-10.png",
+          "alt": "Se sigue mezclando: el frame de salida contiene 5,8 y la lista de salida ya tiene 1,3",
+          "caption": "4. Se sigue mezclando; cuando un frame de entrada se vacía, se lee otra página."
+        }
+      ],
+      "notes": "Al escribir la página llena en disco el frame temporal queda libre. Se sigue mezclando hasta que un frame de entrada se vacía; entonces se lee la siguiente página de esa lista (en el visualizador: «keep merging until one frame becomes empty» y «continue merging»). El proceso se repite («and so on…») hasta agotar ambas listas. El capítulo incluye más capturas de estos pasos (image-09 y image-11)."
+    },
+    {
+      "type": "cards",
+      "section": "Ordenamiento externo",
+      "title": "External merge-sort: runs y etapas",
+      "columns": 3,
+      "cardHeight": 3.2,
+      "callout": { "tone": "teal", "text": "En memoria solo hay **3 frames**: el archivo se ordena con pasadas sucesivas sobre el disco." },
+      "cards": [
+        { "title": "Run", "text": "Archivo temporal ordenado en disco que hace de «subarray». Un run de tamaño 1 es una página.", "footer": "Subarray en disco", "tone": "teal" },
+        { "title": "Etapa de división", "text": "Se lee página por página; cada una se ordena y se escribe como un run de tamaño 1.", "footer": "n páginas → n runs", "tone": "amber" },
+        { "title": "Etapa de mezcla", "text": "Se mezclan dos runs de tamaño i con external merge y se obtiene un run de tamaño 2·i.", "footer": "i + i → 2·i", "tone": "green" }
+      ],
+      "notes": "En merge-sort en memoria el array se divide en subarrays en memoria. En el external merge-sort, en vez de crear subarrays en memoria se crean archivos temporales en disco de tamaño incremental; cada archivo temporal se llama run. Un run de tamaño 1 es el bloque mínimo de datos (page) que se puede tener en memoria; la cantidad de elementos depende de la naturaleza de los datos. Etapa de división: una pasada inicial lee página por página; se ordena cada página y se escribe en un archivo temporal, generando n runs, con n = cantidad de páginas. Etapa de mezcla: se carga una página de cada run, se mezclan en un nuevo frame y este se escribe en un nuevo run de tamaño 2·i; se repite por cada par de runs."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-runs",
+      "section": "Ordenamiento externo",
+      "title": "Ejemplo: 18 elementos en 4 páginas",
+      "rows": [
+        {
+          "label": "Archivo original",
+          "sub": "4 páginas · 18 elementos",
+          "runs": [{ "tone": "slate", "pages": [["15", "8", "13", "11", "12"], ["6", "16", "10", "18", "14"], ["7", "1", "2", "17", "5"], ["3", "9", "4"]] }]
+        },
+        {
+          "label": "División",
+          "sub": "4 runs de 1 página",
+          "runs": [
+            { "tone": "teal", "pages": [["8", "11", "12", "13", "15"]] },
+            { "tone": "teal", "pages": [["6", "10", "14", "16", "18"]] },
+            { "tone": "amber", "pages": [["1", "2", "5", "7", "17"]] },
+            { "tone": "amber", "pages": [["3", "4", "9"]] }
+          ]
+        },
+        {
+          "label": "Mezcla 1",
+          "sub": "2 runs de 2 páginas",
+          "runs": [
+            { "tone": "teal", "pages": [["6", "8", "10", "11", "12"], ["13", "14", "15", "16", "18"]] },
+            { "tone": "amber", "pages": [["1", "2", "3", "4", "5"], ["7", "9", "17"]] }
+          ]
+        },
+        {
+          "label": "Mezcla 2",
+          "sub": "1 run de 4 páginas: ordenado",
+          "runs": [{ "tone": "green", "pages": [["1", "2", "3", "4", "5"], ["6", "7", "8", "9", "10"], ["11", "12", "13", "14", "15"], ["16", "17", "18"]] }]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Cada mezcla duplica el tamaño de los runs (4 → 2 → 1). Con **multiway merge** se reduce el número de pasadas." },
+      "notes": "Los datos son los del visualizador del capítulo (archivo R con 18 elementos; páginas P1 a P4; la última página tiene solo 3). Cada fila es una pasada completa sobre el archivo. Los colores indican de dónde viene cada run. Cálculo añadido: con n páginas y mezclas de dos en dos hay 1 pasada de división y ⌈log2 n⌉ de mezcla (aquí 1 + 2 = 3 pasadas). Cada pasada lee y escribe todas las páginas, es decir 2n operaciones de E/S por pasada (aquí 2 × 4 = 8 por pasada, 24 en total). La mejora que menciona el capítulo, multiway merge, mezcla más de dos runs a la vez para reducir el número de pasadas."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-images",
+      "section": "Ordenamiento externo",
+      "title": "En el visualizador: división y mezcla",
+      "images": [
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-13.png",
+          "alt": "Captura del visualizador: cuatro runs de tamaño 1 en almacenamiento secundario y el buffer vacío en memoria principal",
+          "caption": "Tras la división: 4 runs de tamaño 1 en disco y 3 frames vacíos en memoria."
+        },
+        {
+          "file": "05-estructuras-almacenamiento-externo/image-14.png",
+          "alt": "Captura del visualizador: F1 y F2 contienen páginas de los dos primeros runs y F3 (OUT) acumula 6, 8, 10, 11, 12",
+          "caption": "Mezcla de los dos primeros runs: F1 y F2 alimentan a F3 (OUT)."
+        }
+      ],
+      "notes": "Capturas del visualizador https://valeriodiste.github.io/ExternalMergeSortVisualizer (en inglés: main memory, secondary storage, buffer, run, file for R). Cada vez que el buffer de salida se llena, se escribe en un nuevo run de tamaño 2. Se repite el proceso con los runs de tamaño 2 y así sucesivamente hasta ordenar todo el archivo. El capítulo incluye también el estado inicial (image-12) y un nivel de mezcla posterior (image-16); image-15 es idéntica a image-14."
+    },
+    {
+      "type": "compare",
+      "section": "Árboles B",
+      "title": "Buscar: en memoria vs. en disco",
+      "vs": true,
+      "panelHeight": 3.6,
+      "callout": { "tone": "red", "label": "Un BST en disco:", "text": "con 1 000 000 de elementos, log₂(1 000 000) ≈ **20 accesos** por búsqueda. Inaceptable." },
+      "panels": [
+        {
+          "title": "En memoria",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Costo dominante: las **comparaciones**",
+            "Una comparación toma **nanosegundos**",
+            "BST balanceado: búsqueda en O(log n)"
+          ]
+        },
+        {
+          "title": "En disco",
+          "tone": "amber",
+          "itemSize": 19,
+          "items": [
+            "Costo dominante: la **E/S** (I/O)",
+            "Cada acceso: seek + latencia, en **milisegundos**",
+            "Una lectura puede costar millones de comparaciones"
+          ]
+        }
+      ],
+      "notes": "Para datos en memoria, un BST balanceado (AVL, rojo-negro) ofrece búsqueda, inserción y eliminación en O(log n). Cuando los datos viven en memoria secundaria el análisis cambia por completo. Un BST balanceado con n nodos tiene altura O(log2 n); si cada nodo vive en una posición arbitraria del disco, cada paso del descenso es un acceso a disco distinto. Para un millón de elementos son log2(1 000 000) ≈ 20 accesos."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Árboles B",
+      "title": "Idea clave: nodos «gordos»",
+      "panelWeights": [1, 1.8],
+      "panels": [
+        {
+          "title": "BST: 1 clave y 2 hijos",
+          "nodes": [
+            { "id": "a", "keys": ["50"], "x": 0.5, "y": 0, "tone": "slate" },
+            { "id": "b", "keys": ["20"], "x": 0, "y": 1, "tone": "slate" },
+            { "id": "c", "keys": ["70"], "x": 1, "y": 1, "tone": "slate" }
+          ],
+          "edges": [{ "from": "a", "to": "b" }, { "from": "a", "to": "c" }]
+        },
+        {
+          "title": "Árbol B: muchas claves y muchos hijos",
+          "nodes": [
+            { "id": "r", "keys": ["10", "20", "30"], "x": 0.5, "y": 0 },
+            { "id": "h0", "keys": ["h0"], "x": 0, "y": 1, "tone": "slate", "sub": "claves < 10" },
+            { "id": "h1", "keys": ["h1"], "x": 0.34, "y": 1, "tone": "slate", "sub": "entre 10 y 20" },
+            { "id": "h2", "keys": ["h2"], "x": 0.67, "y": 1, "tone": "slate", "sub": "entre 20 y 30" },
+            { "id": "h3", "keys": ["h3"], "x": 1, "y": 1, "tone": "slate", "sub": "claves > 30" }
+          ],
+          "edges": [{ "from": "r", "to": "h0" }, { "from": "r", "to": "h1" }, { "from": "r", "to": "h2" }, { "from": "r", "to": "h3" }]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "**Regla de diseño: un nodo = una página de disco.** Una lectura trae un nodo completo y cada acceso decide entre muchos hijos, no solo entre dos." },
+      "notes": "La idea clave es minimizar la cantidad de accesos a disco maximizando el factor de ramificación (branching factor). En lugar de nodos con 1 clave y 2 hijos, se usan nodos «gordos» con cientos o miles de claves. La unidad natural de transferencia entre disco y memoria es la página (o bloque); por eso se diseña cada nodo para que ocupe exactamente una página. Un nodo interno con k claves c1 < c2 < … < ck tiene k + 1 hijos h0, …, hk: las claves de h0 son menores que c1, las de hi están entre ci y ci+1, y las de hk son mayores que ck. Los números del dibujo son ilustrativos."
+    },
+    {
+      "type": "list",
+      "section": "Árboles B",
+      "title": "Árbol B de grado mínimo t (t ≥ 2)",
+      "marker": "dot",
+      "titleSize": 22,
+      "bold": false,
+      "items": [
+        "Todo nodo, salvo la raíz, tiene **al menos t − 1 claves** (y al menos t hijos)",
+        "Todo nodo tiene **a lo sumo 2t − 1 claves** (2t hijos); con 2t − 1 está **lleno**",
+        "La **raíz** tiene al menos 1 clave",
+        "Las claves de cada nodo están **ordenadas**",
+        "**Todas las hojas** están a la misma profundidad"
+      ],
+      "notes": "Un árbol B es un árbol de búsqueda balanceado, ordenado y multi-vía, diseñado para minimizar accesos a disco. Existen dos formas de parametrizarlo: por orden (máximo de hijos) o por grado mínimo t; aquí se usa el grado mínimo porque es más limpio para razonar sobre los splits. Entre dos claves consecutivas hay un puntero al subárbol cuyas claves están entre ambas. El árbol está perfectamente balanceado por construcción."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-bars",
+      "section": "Árboles B",
+      "title": "Altura y costo de una búsqueda",
+      "top": 2.3,
+      "barH": 0.85,
+      "gap": 0.6,
+      "labelW": 4.3,
+      "labelSize": 20,
+      "bars": [
+        { "label": "BST balanceado · log₂ n", "value": 20, "text": "≈ 20 accesos", "tone": "red" },
+        { "label": "Árbol B · t = 500", "value": 3, "text": "3 lecturas", "tone": "green" }
+      ],
+      "note": "n = 1 000 000 · log₂ n ≈ 20 · log₅₀₀ n ≈ 2.2",
+      "callout": { "tone": "teal", "text": "Altura: **O(log_t n)**, con t de cientos o miles: de **2 a 4 niveles** incluso con millones de registros." },
+      "notes": "Como cada nodo tiene al menos t hijos (salvo la raíz), un árbol B con n claves tiene altura O(log_t n). Dentro de cada nodo se busca (lineal o binaria): O(log n) comparaciones en total. Pero lo que realmente cuenta es que solo se visitan O(log_t n) nodos, es decir O(log_t n) accesos a disco: esa es la métrica que importa. Para n = 1 000 000 y t = 500, la altura es log_500(1 000 000) ≈ 2.2: tres lecturas de disco bastan para encontrar cualquier clave, frente a las ~20 de un BST."
+    },
+    {
+      "type": "flow",
+      "section": "Árboles B",
+      "title": "Inserción y split",
+      "steps": [
+        { "title": "Nodo lleno", "text": "La inserción ocurre en una hoja. Con 2t − 1 claves, no cabe otra." },
+        { "title": "Mediana sube", "text": "La clave mediana sube al nodo padre." },
+        { "title": "Dos nodos", "text": "Las t − 1 claves de cada lado forman un nodo propio." }
+      ],
+      "callout": { "tone": "amber", "label": "Split proactivo:", "text": "se divide todo hijo lleno **antes de bajar** a él. Si la raíz está llena, se crea una nueva raíz: **es la única forma en que el árbol crece en altura.**" },
+      "notes": "La inserción siempre ocurre en una hoja: se desciende desde la raíz buscando la hoja correcta y se inserta la clave en orden. Para evitar tener que retroceder, la mayoría de implementaciones hacen el split de forma proactiva durante el descenso: cada vez que se va a bajar a un hijo lleno, primero se hace split de ese hijo. El árbol crece por la raíz, no por las hojas."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Ejemplo de inserción",
+      "title": "t = 2: insertar 10, 20, 30 y 40",
+      "step": 1,
+      "stepTotal": 3,
+      "cap": 3,
+      "panels": [
+        {
+          "title": "Tras insertar 10, 20 y 30",
+          "nodes": [{ "id": "r", "keys": ["10", "20", "30"], "x": 0.5, "y": 0, "label": "raíz llena (2t − 1 = 3)" }],
+          "note": "Ahora se inserta **40**: la raíz está llena, hay que hacer **split**."
+        },
+        {
+          "title": "Tras insertar 40",
+          "nodes": [
+            { "id": "r", "keys": ["20"], "x": 0.5, "y": 0, "hl": [0], "label": "nueva raíz" },
+            { "id": "a", "keys": ["10"], "x": 0, "y": 1 },
+            { "id": "b", "keys": ["30", "40"], "x": 1, "y": 1, "hl": [1] }
+          ],
+          "edges": [{ "from": "r", "to": "a" }, { "from": "r", "to": "b" }]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "La mediana **20** sube a una nueva raíz y el nodo se parte en [10] y [30]; luego **40** baja al hijo derecho." },
+      "notes": "Con t = 2 (árbol 2-3-4) cada nodo tiene entre 1 y 3 claves y entre 2 y 4 hijos; un nodo lleno tiene 2t − 1 = 3 claves. Secuencia: 10, 20, 30, 40, 50, 25. Insertar 10, 20 y 30 en la raíz: aún cabe (máximo 3 claves). Al insertar 40, la raíz está llena, así que primero se hace split: la mediana (20) sube a una nueva raíz y el nodo se parte en [10] y [30]; luego 40 baja al hijo derecho. En los dibujos, las celdas punteadas son espacio libre del nodo y las celdas ámbar son la clave recién insertada o la mediana que subió."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Ejemplo de inserción",
+      "title": "t = 2: insertar 50 y 25",
+      "step": 2,
+      "stepTotal": 3,
+      "cap": 3,
+      "panels": [
+        {
+          "title": "Tras insertar 50",
+          "nodes": [
+            { "id": "r", "keys": ["20"], "x": 0.5, "y": 0 },
+            { "id": "a", "keys": ["10"], "x": 0, "y": 1 },
+            { "id": "b", "keys": ["30", "40", "50"], "x": 1, "y": 1, "hl": [2], "sub": "hijo lleno" }
+          ],
+          "edges": [{ "from": "r", "to": "a" }, { "from": "r", "to": "b" }]
+        },
+        {
+          "title": "Tras insertar 25",
+          "nodes": [
+            { "id": "r", "keys": ["20", "40"], "x": 0.5, "y": 0, "hl": [1] },
+            { "id": "a", "keys": ["10"], "x": 0, "y": 1 },
+            { "id": "b", "keys": ["25", "30"], "x": 0.5, "y": 1, "hl": [0] },
+            { "id": "c", "keys": ["50"], "x": 1, "y": 1 }
+          ],
+          "edges": [{ "from": "r", "to": "a" }, { "from": "r", "to": "b" }, { "from": "r", "to": "c" }]
+        }
+      ],
+      "callout": { "tone": "amber", "text": "**25** debe bajar al hijo derecho, que está lleno: **split** proactivo, la mediana **40** sube y 25 entra en [30] porque 20 < 25 < 40." },
+      "notes": "Insertar 50: se desciende al hijo derecho [30 | 40], que aún tiene espacio, y queda [30 | 40 | 50] (lleno). Insertar 25: hay que bajar al hijo derecho, pero está lleno, así que se hace split proactivo: la mediana (40) sube a la raíz y el nodo se parte en [30] y [50]. Luego 25 baja al hijo correcto ([30], porque 20 < 25 < 40) y se inserta en orden."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Ejemplo de inserción",
+      "title": "Resultado y búsqueda de la clave 30",
+      "step": 3,
+      "stepTotal": 3,
+      "cap": 3,
+      "panelWeights": [1],
+      "sideW": 4.4,
+      "nodes": [
+        { "id": "r", "keys": ["20", "40"], "x": 0.5, "y": 0, "hlNode": true, "label": "raíz" },
+        { "id": "a", "keys": ["10"], "x": 0, "y": 1 },
+        { "id": "b", "keys": ["25", "30"], "x": 0.5, "y": 1, "hlNode": true, "hl": [1] },
+        { "id": "c", "keys": ["50"], "x": 1, "y": 1 }
+      ],
+      "edges": [
+        { "from": "r", "to": "a" },
+        { "from": "r", "to": "b", "hl": true },
+        { "from": "r", "to": "c" }
+      ],
+      "side": [
+        { "title": "Búsqueda de 30", "text": "En la raíz, 20 < 30 < 40: se baja al hijo central, donde está. 2 lecturas.", "tone": "amber", "h": 1.85 },
+        { "title": "Balanceado", "text": "Todas las hojas están al mismo nivel; el árbol solo creció por la raíz.", "tone": "green", "h": 1.7 }
+      ],
+      "notes": "El árbol permanece perfectamente balanceado (todas las hojas al mismo nivel) y creció en altura únicamente por la raíz, cuando esta se llenó. La búsqueda de 30 (ejemplo añadido sobre el árbol resultante): se lee la raíz, se compara con 20 y 40, se baja al hijo central [25 | 30] y se encuentra la clave: 2 lecturas de disco."
+    },
+    {
+      "type": "cards",
+      "section": "Árboles B",
+      "title": "Eliminación: conservar el balanceo",
+      "intro": "Invariante: todo nodo (salvo la raíz) debe conservar al menos t − 1 claves.",
+      "columns": 2,
+      "cardHeight": 2.0,
+      "textSize": 17,
+      "cards": [
+        { "title": "Hoja con claves de sobra", "text": "Si tiene más de t − 1 claves, basta quitar la clave.", "tone": "teal" },
+        { "title": "Nodo interno", "text": "Se reemplaza por su predecesor o sucesor y se elimina esa clave de la hoja.", "tone": "teal" },
+        { "title": "Préstamo (borrow)", "text": "Con underflow: se toma una clave de un hermano con claves de sobra, pasando por el padre.", "tone": "amber" },
+        { "title": "Fusión (merge)", "text": "Si ningún hermano puede prestar: se unen dos hermanos con la clave separadora del padre.", "tone": "amber" }
+      ],
+      "notes": "La eliminación es la operación más delicada porque debe preservar el invariante. Si la clave está en un nodo interno, se reemplaza por su predecesor (la clave más a la derecha del subárbol izquierdo) o su sucesor (la más a la izquierda del derecho) y se elimina recursivamente esa clave de la hoja. Si un nodo quedaría con muy pocas claves (underflow) se recurre al préstamo (rotación) o a la fusión. La fusión puede propagar el underflow hacia arriba y, en el caso límite, reducir la altura del árbol. No se desarrolla el pseudocódigo completo; lo importante es que la eliminación mantiene el balanceo mediante préstamo o fusión."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Árbol B+",
+      "title": "Árbol B+: datos solo en las hojas",
+      "cellW": 0.55,
+      "treeW": 7.2,
+      "nodes": [
+        { "id": "r", "keys": ["20", "40"], "x": 0.5, "y": 0 },
+        { "id": "l1", "keys": ["10", "15"], "x": 0, "y": 1, "tone": "navy", "solid": true },
+        { "id": "l2", "keys": ["20", "30"], "x": 0.5, "y": 1, "tone": "navy", "solid": true },
+        { "id": "l3", "keys": ["40", "50", "60"], "x": 1, "y": 1, "tone": "navy", "solid": true }
+      ],
+      "edges": [{ "from": "r", "to": "l1" }, { "from": "r", "to": "l2" }, { "from": "r", "to": "l3" }],
+      "links": [{ "from": "l1", "to": "l2" }, { "from": "l2", "to": "l3" }],
+      "rowLabels": [
+        { "y": 0, "text": "Nodos internos: solo claves de ruteo (copias)" },
+        { "y": 1, "text": "Hojas: los datos, enlazadas entre sí" }
+      ],
+      "callout": { "tone": "teal", "text": "La clave **20** aparece dos veces: como copia de ruteo en el nodo interno y como dato real en la hoja." },
+      "notes": "El árbol B+ es la variante que usan casi todos los DBMS y muchos sistemas de archivos. Conserva las propiedades de balanceo del árbol B, con dos diferencias: (1) todos los datos viven en las hojas; los nodos internos solo guardan claves de ruteo, que son copias usadas únicamente para dirigir la búsqueda; (2) las hojas están enlazadas formando una lista (normalmente doblemente enlazada), así que recorrer los datos en orden es recorrer la lista de hojas sin volver a subir por el árbol."
+    },
+    {
+      "type": "diagram",
+      "kind": "externo-btree",
+      "section": "Árbol B+",
+      "title": "Consulta por rango: claves de 20 a 50",
+      "cellW": 0.55,
+      "treeW": 7.0,
+      "sideW": 4.4,
+      "nodes": [
+        { "id": "r", "keys": ["20", "40"], "x": 0.5, "y": 0, "hlNode": true },
+        { "id": "l1", "keys": ["10", "15"], "x": 0, "y": 1, "tone": "navy", "solid": true },
+        { "id": "l2", "keys": ["20", "30"], "x": 0.5, "y": 1, "tone": "navy", "solid": true, "hl": [0, 1], "hlNode": true },
+        { "id": "l3", "keys": ["40", "50", "60"], "x": 1, "y": 1, "tone": "navy", "solid": true, "hl": [0, 1], "hlNode": true }
+      ],
+      "edges": [{ "from": "r", "to": "l1" }, { "from": "r", "to": "l2", "hl": true }, { "from": "r", "to": "l3" }],
+      "links": [{ "from": "l1", "to": "l2" }, { "from": "l2", "to": "l3", "hl": true }],
+      "side": [
+        { "title": "1. Descender", "text": "Se busca el límite inferior (20): O(log_t n) accesos hasta su hoja.", "tone": "teal", "h": 1.75 },
+        { "title": "2. Recorrer hojas", "text": "Se sigue la lista enlazada hasta superar el límite superior (50).", "tone": "amber", "h": 1.75 }
+      ],
+      "notes": "Ejemplo del capítulo: «todos los clientes con id entre 100 y 500». Se busca el límite inferior en O(log_t n) accesos de disco hasta llegar a la hoja y luego se sigue la lista enlazada de hojas leyendo registros consecutivos hasta el límite superior. Es muy eficiente porque las hojas tienden a estar contiguas en disco. En el dibujo se usó el rango 20 a 50 (adaptación añadida): se llega a la hoja [20 | 30], se sigue el enlace a [40 | 50 | 60] y se detiene al ver 60 > 50."
+    },
+    {
+      "type": "cards",
+      "section": "Árbol B+",
+      "title": "Ventajas del árbol B+",
+      "columns": 2,
+      "cardHeight": 2.45,
+      "textSize": 17,
+      "cards": [
+        { "title": "Consultas por rango", "text": "Se llega a la hoja inicial y se siguen las hojas enlazadas.", "tone": "teal" },
+        { "title": "Escaneo secuencial", "text": "Recorrer todo en orden es recorrer la lista de hojas; no se vuelve a tocar un nodo interno.", "tone": "teal" },
+        { "title": "Nodos internos delgados", "text": "Solo guardan claves de ruteo: caben más por página, hay más ramificación y menos altura.", "tone": "teal" },
+        { "title": "Tiempo más uniforme", "text": "Los datos siempre están en las hojas: toda búsqueda recorre exactamente la altura del árbol.", "tone": "teal" }
+      ],
+      "notes": "Por estas razones, los DBMS (índices de tablas) y muchos sistemas de archivos modernos prefieren el árbol B+ sobre el árbol B clásico. En el árbol B, en cambio, una clave podría encontrarse antes, en un nodo interno."
+    },
+    {
+      "type": "table",
+      "section": "Árbol B+",
+      "title": "Árbol B vs. árbol B+",
+      "columns": ["Aspecto", "Árbol B", "Árbol B+"],
+      "colWeights": [1.6, 2, 2],
+      "fontSize": 16,
+      "rowHeight": 0.55,
+      "rowPad": 0.2,
+      "rows": [
+        ["Ubicación de los datos", "Nodos internos y hojas", "Solo en las hojas"],
+        ["Claves en nodos internos", "Datos reales", "Solo claves de ruteo (copias)"],
+        ["Hojas enlazadas", "No", "Sí (lista enlazada)"],
+        ["Rangos y escaneo", "Menos eficientes (hay que subir)", "Muy eficientes (lista de hojas)"],
+        ["Factor de ramificación", "Menor (los nodos guardan datos)", "Mayor (solo claves)"],
+        ["Búsqueda exitosa", "Puede terminar en un nodo interno", "Siempre llega a una hoja"]
+      ],
+      "callout": { "tone": "teal", "text": "**Uso típico.** B: propósito general y algunos índices. **B+**: DBMS y sistemas de archivos." },
+      "notes": "El capítulo agrega dos filas más: duplicación de claves (B: no; B+: sí, clave de ruteo más dato en la hoja) y uso típico. Relación con el resto de la lección: cada nodo es una página de disco, por lo que su tamaño se ajusta al de la página y leer un nodo cuesta una sola operación de E/S. El cache mantiene en memoria los nodos superiores, en especial la raíz, que se accede en toda búsqueda. Los datos de las hojas suelen ser registros de tamaño fijo o secuencias de bytes. El árbol B/B+ es la materialización de los árboles de registros y del acceso indexado vistos antes."
+    },
+    {
+      "type": "code",
+      "section": "Implementación",
+      "title": "Esbozo en C++: el nodo de un árbol B",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "Nodo con grado mínimo T",
+              "code": "template <typename Key, int T>\nstruct BTreeNode {\n    // entre T-1 y 2T-1 claves, ordenadas\n    std::vector<Key> keys;\n    // k claves y no es hoja -> k+1 hijos\n    std::vector<std::unique_ptr<BTreeNode>> children;\n    bool isLeaf = true;\n    bool isFull() const {\n        return keys.size() == 2 * T - 1;\n    }\n};"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "En el disco real", "text": "Cada nodo sería una página; aquí hay punteros en memoria.", "tone": "teal", "h": 1.75 },
+            { "title": "Nodo lleno", "text": "2T − 1 claves: el próximo paso es un split.", "tone": "amber", "h": 1.55 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "slate", "text": "Es un esbozo conceptualmente compilable (C++17); no incluye la inserción ni la eliminación." }],
+      "notes": "El código está recortado del capítulo (se quitaron los #include y varios comentarios). En un sistema real cada nodo correspondería a una página de disco; el esbozo usa punteros en memoria solo para ilustrar la idea. Para una hoja, children queda vacío."
+    },
+    {
+      "type": "code",
+      "section": "Implementación",
+      "title": "Esbozo en C++: búsqueda en un árbol B",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1.75,
+          "blocks": [
+            {
+              "label": "Busca la clave k a partir de un nodo",
+              "code": "template <typename Key, int T>\nconst BTreeNode<Key, T>* search(\n        const BTreeNode<Key, T>* node, const Key& k) {\n    if (node == nullptr) return nullptr;\n    std::size_t i = 0;\n    while (i < node->keys.size() && k > node->keys[i]) ++i;\n    if (i < node->keys.size() && k == node->keys[i])\n        return node;                       // encontrada\n    if (node->isLeaf) return nullptr;      // no existe\n    return search(node->children[i].get(), k);  // 1 lectura\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Costo", "text": "O(log n) comparaciones y **O(log_t n)** accesos a disco.", "tone": "amber", "h": 1.7 },
+            { "title": "En un B+", "text": "Siempre desciende hasta una hoja.", "tone": "teal", "h": 1.5 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Cada descenso al hijo `i` es **una lectura de página de disco**. Para nodos grandes, una búsqueda binaria sería preferible al `while`." }],
+      "notes": "Se avanza dentro del nodo mientras k sea mayor que la clave actual; si se encuentra la clave, se devuelve el nodo; si es hoja y no se encontró, la clave no existe; si no, se desciende al hijo i. En un árbol B+ la búsqueda siempre descendería hasta una hoja, y las hojas mantendrían además punteros a la hoja siguiente para soportar consultas por rango."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted",
+      "intro": "Resuelva en parejas (las respuestas están en las notas):",
+      "columns": 3,
+      "cardHeight": 3.8,
+      "titleSize": 22,
+      "textSize": 19,
+      "cards": [
+        { "badge": "A", "title": "External merge-sort", "text": "Un archivo de 8 páginas, runs de 1 página y mezclas de dos en dos: ¿cuántas pasadas y cuántas E/S?", "tone": "teal" },
+        { "badge": "B", "title": "Árbol B con t = 2", "text": "Al árbol del ejemplo agréguele 60, 70 y 80. Dibuje el árbol resultante.", "tone": "teal" },
+        { "badge": "C", "title": "Accesos a disco", "text": "Con t = 500 y mil millones de claves, ¿cuántas lecturas necesita una búsqueda? ¿Y en un BST?", "tone": "teal" }
+      ],
+      "notes": "Ejercicios añadidos (no están en el capítulo). A: 1 pasada de división + 3 de mezcla (8 → 4 → 2 → 1 runs) = 4 pasadas; cada una lee y escribe las 8 páginas (16 E/S), así que son 64 E/S en total. B: 60 baja al hijo [50] y queda [50 | 60]; 70 queda [50 | 60 | 70] (lleno); al insertar 80 se hace split proactivo de [50 | 60 | 70]: la mediana 60 sube a la raíz, que queda [20 | 40 | 60], con hijos [10], [25 | 30], [50] y [70 | 80]. C: log_500(10^9) = 9 / log10(500) ≈ 9 / 2.7 ≈ 3.3, es decir 4 lecturas; un BST necesitaría log2(10^9) ≈ 30 accesos."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Jerarquía de memoria:** más arriba es más rápida, más cara y de menor capacidad",
+        "**HDD vs. SSD:** el disco paga seek + latencia; el SSD no tiene partes móviles",
+        "**Archivos:** abstracción sobre particiones, volúmenes y sistemas de archivos",
+        "**Cache:** hit y miss; políticas de reemplazo LRU, FIFO, LFU y MRU",
+        "**Ordenamiento externo:** external merge y merge-sort con runs en disco",
+        "**Árboles B y B+:** un nodo = una página; el B+ guarda los datos en hojas enlazadas"
+      ],
+      "footnote": "Referencias: GeeksforGeeks (External Sorting; Introduction of B-Tree; B+ Tree) · Koutris, P. CS 564 (Spring 2018), Lecture 16 · Cormen, T. H. et al. Introduction to Algorithms (CLRS), «B-Trees» · valeriodiste.github.io/ExternalMergeSortVisualizer",
+      "notes": "Referencias completas del capítulo: https://www.geeksforgeeks.org/external-sorting/ ; Koutris, P. CS 564 [Spring 2018], https://pages.cs.wisc.edu/~paris/cs564-s18/lectures/lecture-16.pdf ; https://valeriodiste.github.io/ExternalMergeSortVisualizer/External%20Merge%20Sort%20Visualizer/index.html ; Cormen, T. H. et al., Introduction to Algorithms (CLRS), capítulo «B-Trees» ; https://www.geeksforgeeks.org/introduction-of-b-tree/ ; https://www.geeksforgeeks.org/introduction-of-b-tree-2/ (árboles B+). Cierre: la jerarquía de memoria explica por qué el disco es el cuello de botella; el cache, el ordenamiento externo y los árboles B/B+ son tres formas de reducir los accesos a disco."
+    }
+  ]
+}

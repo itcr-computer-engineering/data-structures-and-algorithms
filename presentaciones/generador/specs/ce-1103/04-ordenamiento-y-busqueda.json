@@ -1,0 +1,723 @@
+{
+  "meta": {
+    "title": "Ordenamiento y Búsqueda",
+    "author": "CE-1103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-1103 · Lección 04 · Ordenamiento y Búsqueda",
+    "footer": "CE-1103 · Ordenamiento y Búsqueda",
+    "theme": "dark",
+    "codeLang": "java",
+    "assetsDir": "../../../../ce-1103/images",
+    "output": "../../../ce-1103/Lección 04 - Ordenamiento y Búsqueda.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-1103 · Lección 04",
+      "title": "Ordenamiento y Búsqueda",
+      "subtitle": "Encontrar y ordenar datos de forma eficiente",
+      "terminal": {
+        "file": "Busqueda.java",
+        "lang": "java",
+        "code": "int[] a = {5, 3, 8, 6, 2};\nselectionSort(a);\n// a: 2, 3, 5, 6, 8\nint i = binarySearch(a, 6);\n// i == 3"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Capítulo «Algoritmos de búsqueda y ordenamiento». Primero veremos cómo encontrar un elemento en un arreglo (búsqueda lineal, binaria y hash) y luego cómo ordenar un arreglo con siete algoritmos distintos. Los ejemplos de código están en Java. Idea para abrir: ¿cómo encuentra usted un nombre en una lista de 10 000 personas? ¿Cambia la estrategia si la lista está ordenada alfabéticamente?"
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "items": [
+        "Buscar con **búsqueda lineal**, **binaria** y **hash**",
+        "Ordenar con **selección**, **burbuja** e **inserción**",
+        "Ordenar con **quick sort**, **Shellsort** y **merge sort**",
+        "Ordenar con **radix sort**, dígito por dígito",
+        "**Comparar** los algoritmos según su rendimiento"
+      ],
+      "notes": "Cinco objetivos, uno por bloque de la lección. El capítulo recomienda un video introductorio sobre búsqueda: https://www.youtube.com/watch?v=WaNLJf8xzC4. Recuerde que en este curso las colecciones son arreglos (las listas enlazadas también se pueden buscar y ordenar, pero no se tratan aquí)."
+    },
+    {
+      "type": "cards",
+      "section": "Búsqueda",
+      "title": "Tres formas de buscar",
+      "intro": "Buscar un elemento dentro de una colección; en el curso, un arreglo:",
+      "columns": 3,
+      "cardHeight": 3.7,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Búsqueda lineal", "text": "Recorre el arreglo de principio a fin, comparando cada elemento con el valor buscado.", "footer": "Cualquier arreglo", "tone": "teal" },
+        { "badge": "2", "title": "Búsqueda binaria", "text": "Compara con el elemento del medio y descarta la mitad donde el valor no puede estar.", "footer": "Arreglo ordenado", "tone": "teal" },
+        { "badge": "3", "title": "Búsqueda hash", "text": "Una función de hash convierte la llave en el índice donde se guarda el valor.", "footer": "Sin recorrer el arreglo", "tone": "teal" }
+      ],
+      "notes": "La búsqueda lineal es el método más sencillo y es la única opción cuando el arreglo no está ordenado. Si el arreglo está ordenado hay algoritmos más eficientes, como la búsqueda binaria. Para colecciones grandes, no necesariamente ordenadas, hashing ofrece un mejor rendimiento promedio que los otros algoritmos de búsqueda."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Búsqueda lineal",
+      "title": "Búsqueda lineal: buscar el 7",
+      "legend": [["Comparando", "teal"], ["Ya descartado", "dim"], ["Encontrado", "green"]],
+      "indices": true,
+      "cellHeight": 0.5,
+      "rowPad": 0.06,
+      "cellWidth": 0.66,
+      "labelW": 1.3,
+      "rows": [
+        { "label": "i = 0", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "t . . . . . . . .", "note": "5 ≠ 7: siga" },
+        { "label": "i = 1", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "d t . . . . . . .", "note": "3 ≠ 7: siga" },
+        { "label": "i = 2", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "d d t . . . . . .", "note": "8 ≠ 7: siga" },
+        { "label": "i = 3", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "d d d t . . . . .", "note": "6 ≠ 7: siga" },
+        { "label": "i = 4", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "d d d d t . . . .", "note": "2 ≠ 7: siga" },
+        { "label": "i = 5", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": "d d d d d g . . .", "note": "7 = 7: encontrado en la posición 5", "noteTone": "green" }
+      ],
+      "notes": "Se recorre el arreglo desde el primer elemento hasta el último, comparando cada elemento con el valor buscado (el capítulo muestra exactamente estas seis comparaciones). Si el 7 no estuviera, habría que llegar hasta el final y devolver -1. Pregunta para la clase: ¿cuántas comparaciones haría en el peor caso un arreglo de n elementos? (n)."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Búsqueda binaria",
+      "title": "Búsqueda binaria: buscar el 9",
+      "legend": [["Elemento del medio", "teal"], ["Descartado", "dim"], ["Encontrado", "green"]],
+      "indices": true,
+      "cellHeight": 0.5,
+      "rowPad": 0.06,
+      "cellWidth": 0.7,
+      "labelW": 1.3,
+      "rows": [
+        { "label": "Paso 1", "cells": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "states": ". . . . t . . . .", "marks": { "0": "left", "4": "mid", "8": "right" }, "note": "5 < 9: siga en la mitad derecha" },
+        { "label": "Paso 2", "cells": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "states": "d d d d d . t . .", "marks": { "5": "left", "6": "mid", "8": "right" }, "note": "7 < 9: derecha otra vez" },
+        { "label": "Paso 3", "cells": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "states": "d d d d d d d t .", "marks": { "7": "left·mid", "8": "right" }, "note": "8 < 9: derecha otra vez" },
+        { "label": "Paso 4", "cells": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "states": "d d d d d d d d g", "marks": { "8": "mid" }, "note": "9 = 9: encontrado en la posición 8", "noteTone": "green" }
+      ],
+      "notes": "El arreglo debe estar ordenado. En cada paso se compara el valor buscado con el elemento del medio: si es menor, se continúa en la mitad izquierda; si es mayor, en la derecha. El proceso se repite hasta encontrar el valor o hasta que el subarreglo de búsqueda quede vacío. Aquí: mid = left + (right - left) / 2 → 4, 6, 7 y 8; los valores comparados son 5, 7, 8 y 9 (los mismos del capítulo). En el último paso left = mid = right = 8. Con 9 elementos bastaron 4 comparaciones; la lineal habría necesitado 9."
+    },
+    {
+      "type": "code",
+      "section": "Búsqueda binaria",
+      "title": "Búsqueda lineal y binaria en Java",
+      "codeSize": 14,
+      "top": 1.85,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Lineal · O(n)", "code": "static int linearSearch(int[] arr, int target) {\n    for (int i = 0; i < arr.length; i++) {\n        if (arr[i] == target) {\n            return i;\n        }\n    }\n    return -1;\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Binaria (iterativa) · O(log n)", "code": "static int binarySearch(int[] arr, int target) {\n    int left = 0, right = arr.length - 1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}" }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Ambas devuelven la **posición** del valor o **-1** si no está. La binaria solo funciona con el arreglo **ordenado**." }],
+      "calloutsY": 5.7,
+      "calloutsH": 0.9,
+      "notes": "Código del capítulo, abreviado (se quitaron `public` y las líneas en blanco). Versión completa de la binaria: int left = 0; int right = arr.length - 1; while (left <= right) { int mid = left + (right - left) / 2; if (arr[mid] == target) { return mid; } if (arr[mid] < target) { left = mid + 1; } else { right = mid - 1; } } return -1; La binaria también puede escribirse de forma recursiva. Se calcula mid como left + (right - left) / 2 en lugar de (left + right) / 2 para evitar un desbordamiento de int con arreglos muy grandes. Los costos O(n) y O(log n) se justifican así: la lineal recorre hasta n elementos; la binaria descarta la mitad en cada paso."
+    },
+    {
+      "type": "image",
+      "section": "Búsqueda hash",
+      "title": "Tabla hash: de la llave al índice",
+      "image": "hashing-1.png",
+      "alt": "Diagrama: el universo de llaves contiene las llaves k1 a k5; la función h lleva cada llave a una posición de la tabla T, y h(k3) = h(k4) es una colisión.",
+      "caption": "La llave k entra a la función h(k), que produce el índice i donde se guarda el valor.",
+      "notes": "Una tabla hash almacena pares llave-valor. La llave es única y identifica a un valor; el valor es el dato asociado. La función de hash h(k) transforma una o más características del elemento en un número que corresponde a un índice del arreglo T. En la imagen (en inglés: «Universe» = universo de llaves posibles, «keys» = llaves usadas) las llaves k3 y k4 producen el mismo índice: h(k3) = h(k4). Eso es una colisión; la veremos en un momento. Por eso el reto de una función de hash es generar un índice único para cada llave."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-hash",
+      "section": "Búsqueda hash",
+      "title": "Ejemplo: cédulas con h(k) = k % 10",
+      "formula": "h(cédula) = cédula % 10",
+      "buckets": 10,
+      "entries": [
+        { "key": "987654321", "name": "María", "index": 1 },
+        { "key": "456789123", "name": "Carlos", "index": 3 },
+        { "key": "123456789", "name": "Juan", "index": 9 }
+      ],
+      "callout": { "tone": "teal", "text": "Para buscar una cédula se calcula `h(cédula)` y se va **directo** al índice: no hay que recorrer el arreglo." },
+      "calloutY": 5.3,
+      "notes": "Datos del capítulo: 123456789 Juan Pérez, San José; 987654321 María Rodríguez, Heredia; 456789123 Carlos Sánchez, Alajuela. Con h(cédula) = cédula % 10 se obtienen los índices 9, 1 y 3. La función de hash seleccionada determina la cantidad de buckets (espacios de almacenamiento): al usar módulo 10 hay 10 buckets (0 a 9). Los buckets 0, 2, 4, 5, 6, 7 y 8 quedan vacíos. Ejercicio rápido: ¿en qué bucket buscaría la cédula 456789123? (en el 3, porque 456789123 % 10 = 3)."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-hash",
+      "section": "Búsqueda hash",
+      "title": "Colisión: dos llaves, el mismo índice",
+      "formula": "h(cédula) = cédula % 10",
+      "buckets": 10,
+      "collisionLabel": "Colisión",
+      "entries": [
+        { "key": "987654321", "name": "María", "index": 1 },
+        { "key": "456789123", "name": "Carlos", "index": 3 },
+        { "key": "123456789", "name": "Juan", "index": 9 },
+        { "key": "111111119", "index": 9, "extra": "collision" }
+      ],
+      "callout": { "tone": "red", "label": "Colisión:", "text": "`h(111111119) = 9`, pero el índice 9 ya está ocupado por Juan. ¿Dónde se guarda?" },
+      "notes": "Si dos llaves generan el mismo índice se produce una colisión. La cédula 111111119 es un ejemplo inventado para esta lección (no está en el capítulo): termina en 9, igual que la de Juan. Hay varias formas de resolver colisiones; la siguiente diapositiva presenta la que trae el capítulo: separate chaining."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-hash",
+      "section": "Búsqueda hash",
+      "title": "Separate chaining con las cédulas",
+      "formula": "h(cédula) = cédula % 10",
+      "buckets": 10,
+      "entries": [
+        { "key": "987654321", "name": "María", "index": 1 },
+        { "key": "456789123", "name": "Carlos", "index": 3 },
+        { "key": "123456789", "name": "Juan", "index": 9 },
+        { "key": "111111119", "name": "Ana", "index": 9, "extra": "chain" }
+      ],
+      "callout": { "tone": "green", "text": "Cada índice guarda una **lista enlazada**: para buscar `111111119` se va al índice 9 y se recorre su lista." },
+      "calloutY": 6.1,
+      "notes": "Separate chaining: cada índice de la tabla hash almacena una lista enlazada con los elementos que colisionan. Aquí el índice 9 guarda la lista Juan → Ana. «Ana» y su cédula son un ejemplo inventado para la lección. Para buscar 111111119: h = 9; se recorre la lista del índice 9 comparando cédulas hasta encontrarla. Mientras las listas sean cortas, la búsqueda sigue siendo muy rápida."
+    },
+    {
+      "type": "image",
+      "section": "Búsqueda hash",
+      "title": "Separate chaining: la lista de cada índice",
+      "image": "hashing-2.png",
+      "alt": "Diagrama de una tabla hash con separate chaining: cada posición de la tabla T apunta a una lista enlazada; el índice de h(k3) y h(k4) contiene dos nodos, k3 y k4.",
+      "caption": "Los elementos que colisionan (k3 y k4) se encadenan en una lista enlazada.",
+      "notes": "La imagen del capítulo muestra el mismo caso en general: k3 y k4 comparten índice y por eso quedan encadenados en una lista; los demás índices ocupados tienen un solo nodo, y los marcados con «/» están vacíos."
+    },
+    {
+      "type": "table",
+      "section": "Búsqueda",
+      "title": "Comparando los algoritmos de búsqueda",
+      "columns": ["Algoritmo", "¿Requiere orden?", "Costo promedio", "Peor caso"],
+      "colWeights": [1.3, 1.6, 1.4, 2.6],
+      "rowHeight": 0.78,
+      "rows": [
+        ["Lineal", "No", "O(n)", "O(n)"],
+        ["Binaria", "Sí", "O(log n)", "O(log n)"],
+        ["Hash", "No", "O(1)", "O(n): todas las llaves colisionan"]
+      ],
+      "calloutY": 5.0,
+      "calloutH": 1.2,
+      "callouts": [
+        { "tone": "teal", "text": "Con 1 000 000 de elementos: la lineal necesita hasta 1 000 000 de comparaciones; la binaria, hasta 20." },
+        { "tone": "amber", "label": "Ojo:", "text": "hash tiene el mejor rendimiento promedio, pero depende de la función de hash y de las colisiones." }
+      ],
+      "notes": "El capítulo afirma que la búsqueda con hash tiene un mejor rendimiento promedio que otros algoritmos de búsqueda. Los costos de esta tabla (O(n), O(log n), O(1) promedio) son resultados estándar que se añadieron para comparar: no aparecen en el capítulo. Para 1 000 000 de elementos, log2(1 000 000) ≈ 19,9, es decir, a lo sumo 20 comparaciones de la binaria. Si todas las llaves cayeran en el mismo índice, la tabla degeneraría en una sola lista (O(n))."
+    },
+    {
+      "type": "cards",
+      "section": "Ordenamiento",
+      "title": "Los algoritmos de ordenamiento",
+      "columns": 4,
+      "cardHeight": 3.0,
+      "textSize": 19,
+      "cards": [
+        { "title": "Simples", "text": "Selección, burbuja e inserción. Fáciles de implementar; O(n²) en el peor caso.", "tone": "teal" },
+        { "title": "Recursivos", "text": "Quick sort y merge sort: dividen el arreglo y ordenan cada parte.", "tone": "teal" },
+        { "title": "Incrementos", "text": "Shellsort: inserción sobre sublistas separadas por un gap cada vez menor.", "tone": "teal" },
+        { "title": "Por dígitos", "text": "Radix sort: procesa dígito por dígito, sin comparar elementos completos.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Hay muchos algoritmos porque cada uno tiene **diferentes características de rendimiento**." },
+      "notes": "Un algoritmo de ordenamiento recibe una colección en desorden y la ordena ascendente o descendentemente. Los nombres de las cuatro agrupaciones («simples», «recursivos», «incrementos», «por dígitos») son una organización de esta presentación, no del capítulo. Radix sort, a diferencia de los demás, considera cada elemento como una secuencia de dígitos y no como un todo."
+    },
+    {
+      "type": "image",
+      "section": "Ordenamiento por selección",
+      "title": "Selección: parte ordenada y parte desordenada",
+      "image": "04-ordenamiento-y-busqueda/image-01.png",
+      "alt": "Arreglo values dividido en dos partes lógicas: la parte ordenada, de la posición 0 a current-1, y la parte desordenada, de current a SIZE-1.",
+      "caption": "Cada pasada mueve el menor de la parte desordenada al final de la parte ordenada.",
+      "notes": "Es el algoritmo más sencillo de implementar. Pasos: 1) buscar el elemento más pequeño (o el más grande si el orden es descendente); 2) intercambiarlo con el primer elemento; 3) buscar el segundo más pequeño; 4) intercambiarlo con el segundo elemento; 5) repetir hasta que el arreglo esté ordenado. El arreglo se «divide» en dos arreglos lógicos: en la imagen, values[0]..values[current-1] están ordenados y son menores o iguales que cualquier valor de values[current]..values[SIZE-1]. La imagen del capítulo con un ejemplo de cinco valores (126, 43, 26, 1, 113) está en ce-1103\\images\\04-ordenamiento-y-busqueda\\image-00.png."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Ordenamiento por selección",
+      "title": "Selección: cuatro pasadas",
+      "legend": [["Posición i", "amber"], ["Mínimo", "teal"], ["Ordenado", "green"]],
+      "cellHeight": 0.56,
+      "rowPad": 0.07,
+      "cellWidth": 0.9,
+      "labelW": 1.5,
+      "rows": [
+        { "label": "Pasada 1", "cells": ["5", "3", "8", "6", "2"], "states": "a . . . t", "marks": { "0": "i", "4": "mín" }, "note": "El menor es 2: se intercambia con el 5" },
+        { "label": "Pasada 2", "cells": ["2", "3", "8", "6", "5"], "states": "g a . . .", "marks": { "1": "i=mín" }, "note": "3 ya está en su lugar" },
+        { "label": "Pasada 3", "cells": ["2", "3", "8", "6", "5"], "states": "g g a . t", "marks": { "2": "i", "4": "mín" }, "note": "El menor es 5: se intercambia con el 8" },
+        { "label": "Pasada 4", "cells": ["2", "3", "5", "6", "8"], "states": "g g g a .", "marks": { "3": "i=mín" }, "note": "6 ya está en su lugar: arreglo ordenado", "noteTone": "green" }
+      ],
+      "notes": "Arreglo del ejemplo: [5, 3, 8, 6, 2] (ejemplo de la lección, no del capítulo). En cada pasada i marca la primera posición desordenada y «mín» el menor de la parte desordenada. Pasada 1: mín = 2 (posición 4) → intercambio con la posición 0 → [2, 3, 8, 6, 5]. Pasada 2: el menor de [3, 8, 6, 5] es 3, que ya está en la posición 1 (el algoritmo lo intercambia consigo mismo). Pasada 3: mín = 5 → [2, 3, 5, 6, 8]. Pasada 4: 6 ya está en su lugar. Observe que siempre se hacen las mismas comparaciones, esté o no ordenado el arreglo."
+    },
+    {
+      "type": "code",
+      "section": "Ordenamiento por selección",
+      "title": "Selección en Java",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            { "code": "public static void selectionSort(int[] arr) {\n    for (int i = 0; i < arr.length - 1; i++) {\n        int minIndex = i;\n        for (int j = i + 1; j < arr.length; j++) {\n            if (arr[j] < arr[minIndex]) {\n                minIndex = j;\n            }\n        }\n        int temp = arr[minIndex];\n        arr[minIndex] = arr[i];\n        arr[i] = temp;\n    }\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Ventajas", "text": "Fácil de entender e implementar. No necesita memoria adicional significativa. Funciona bien con listas pequeñas.", "tone": "green", "h": 1.85 },
+            { "title": "Desventajas", "text": "O(n²): ineficiente con muchos datos. Siempre hace las mismas comparaciones, sin importar el orden.", "tone": "red", "h": 1.85 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "El ciclo interno busca el mínimo; el intercambio se hace **una sola vez** por pasada." }],
+      "calloutsY": 6.0,
+      "calloutsH": 0.75,
+      "notes": "El ciclo interno busca el índice del menor (minIndex) en la parte desordenada; luego se intercambia con la posición i. Pregunta: ¿por qué el ciclo externo llega solo hasta arr.length - 1? (el último elemento queda en su lugar automáticamente). Nota: el capítulo etiqueta este código como C#, pero usa arr.length, que es Java; aquí se muestra como Java."
+    },
+    {
+      "type": "image",
+      "section": "Ordenamiento de burbuja",
+      "title": "Burbuja: comparar elementos vecinos",
+      "image": "04-ordenamiento-y-busqueda/image-02.png",
+      "alt": "Dos filas de siluetas de personas de distintas alturas: arriba se intercambian dos vecinos (Swap) porque el primero es más alto; abajo no hay intercambio (No Swap).",
+      "caption": "Si el primero es mayor que el segundo se intercambian (Swap); si no, no se hace nada (No Swap).",
+      "notes": "Algoritmo: 1) comparar el primer elemento con el segundo y, si el primero es mayor, intercambiarlos; 2) comparar el segundo con el tercero e intercambiar si hace falta; 3) repetir hasta que el arreglo esté ordenado. En la imagen del capítulo las personas se ordenan por estatura. Otras imágenes del capítulo: image-03.png (dos intercambios seguidos) e image-04.png (al final de la primera pasada, la persona más alta queda al final)."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Ordenamiento de burbuja",
+      "title": "Burbuja: la primera pasada",
+      "legend": [["Comparación sin cambio", "teal"], ["Intercambio", "amber"], ["En su lugar", "green"]],
+      "cellHeight": 0.52,
+      "rowPad": 0.07,
+      "cellWidth": 0.9,
+      "labelW": 2.1,
+      "rows": [
+        { "label": "Inicio", "cells": ["5", "3", "8", "6", "2"], "states": ". . . . .", "note": "Se compara cada par de vecinos" },
+        { "label": "j = 0", "cells": ["3", "5", "8", "6", "2"], "states": "a a . . .", "note": "5 > 3: intercambio" },
+        { "label": "j = 1", "cells": ["3", "5", "8", "6", "2"], "states": ". t t . .", "note": "5 < 8: no hay cambio" },
+        { "label": "j = 2", "cells": ["3", "5", "6", "8", "2"], "states": ". . a a .", "note": "8 > 6: intercambio" },
+        { "label": "j = 3", "cells": ["3", "5", "6", "2", "8"], "states": ". . . a a", "note": "8 > 2: intercambio" },
+        { "label": "Fin de la pasada 1", "cells": ["3", "5", "6", "2", "8"], "states": ". . . . g", "note": "El mayor (8) quedó al final", "noteTone": "green" }
+      ],
+      "notes": "Arreglo del ejemplo: [5, 3, 8, 6, 2] (ejemplo de la lección). Cada fila muestra el arreglo después de comparar la pareja j, j+1. Al terminar la primera pasada el mayor elemento «burbujea» hasta el final y queda en su posición definitiva; la siguiente pasada ya no necesita llegar hasta ahí (por eso el ciclo interno es j < arr.length - i - 1). Se necesitan más pasadas con [3, 5, 6, 2] hasta ordenar todo."
+    },
+    {
+      "type": "code",
+      "section": "Ordenamiento de burbuja",
+      "title": "Burbuja en Java",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.6,
+          "blocks": [
+            { "code": "public static void bubbleSort(int[] arr) {\n    for (int i = 0; i < arr.length - 1; i++) {\n        for (int j = 0; j < arr.length - i - 1; j++) {\n            if (arr[j] > arr[j + 1]) {\n                int temp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = temp;\n            }\n        }\n    }\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Ventajas", "text": "Fácil de entender e implementar, igual que selección.", "tone": "green", "h": 1.7 },
+            { "title": "Desventajas", "text": "O(n²): ineficiente para grandes conjuntos de datos.", "tone": "red", "h": 1.7 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Tras cada pasada, el mayor de los elementos restantes queda al final y ya no se vuelve a comparar." }],
+      "calloutsY": 5.85,
+      "calloutsH": 0.8,
+      "notes": "Dos ciclos anidados: el externo cuenta las pasadas y el interno compara vecinos. El intercambio usa una variable temporal. Pregunta para la clase: si el arreglo ya está ordenado, ¿cuántas comparaciones hace este código? (las mismas, porque no tiene una bandera que detecte que no hubo intercambios)."
+    },
+    {
+      "type": "image",
+      "section": "Ordenamiento por inserción",
+      "title": "Inserción: insertar en la parte ordenada",
+      "image": "04-ordenamiento-y-busqueda/image-05.png",
+      "alt": "Arreglo 23, 1, 10, 5, 2 ordenado por inserción en cuatro pasadas; en cada una el siguiente elemento se inserta en su posición dentro de la parte ordenada de la izquierda.",
+      "caption": "Cada elemento se inserta, de atrás hacia adelante, en su lugar dentro de la lista ordenada.",
+      "notes": "Funciona así: 1) se empieza con el segundo elemento; el primero se considera la lista lógica de elementos ordenados y el resto, la lista de desordenados; 2) se toma cada elemento de la lista de desordenados y se inserta en la lista de ordenados, en la posición correcta, de atrás hacia adelante; 3) la lista de ordenados crece y la de desordenados disminuye. Imagen en inglés: Initially = inicio; First/Second/Third/Fourth Pass = primera a cuarta pasada. Ejemplo: [23, 1, 10, 5, 2] → [1, 2, 5, 10, 23]."
+    },
+    {
+      "type": "code",
+      "section": "Ordenamiento por inserción",
+      "title": "Inserción en Java",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            { "code": "public static void insertionSort(int[] arr) {\n    for (int i = 1; i < arr.length; i++) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j = j - 1;\n        }\n        arr[j + 1] = key;\n    }\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Mejor caso", "text": "Listas pequeñas o parcialmente ordenadas.", "footer": "O(n)", "footerSize": 22, "tone": "green", "h": 1.85 },
+            { "title": "Peor caso", "text": "Degenera a una complejidad cuadrática.", "footer": "O(n²)", "footerSize": 22, "tone": "red", "h": 1.85 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Cada elemento (`key`) se **inserta** desplazando a la derecha los mayores de la parte ordenada." }],
+      "calloutsY": 5.9,
+      "calloutsH": 0.85,
+      "notes": "key es el elemento que se va a insertar; mientras los elementos de la parte ordenada (a su izquierda) sean mayores que key, se desplazan una posición a la derecha, y al final key se coloca en el hueco. El capítulo presenta el método como sort(int arr[]); aquí se llama insertionSort(int[] arr) para identificarlo. Insertion sort es eficiente en listas pequeñas o parcialmente ordenadas; esa propiedad es la que aprovecha Shellsort."
+    },
+    {
+      "type": "cards",
+      "section": "Quick sort",
+      "title": "Quick sort: la idea",
+      "columns": 4,
+      "cardHeight": 3.3,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Pivote", "text": "Se elige un elemento como pivote; usualmente el central.", "tone": "teal" },
+        { "badge": "2", "title": "Partición", "text": "Los menores quedan a la izquierda del pivote y los mayores a la derecha.", "tone": "teal" },
+        { "badge": "3", "title": "Recursión", "text": "Se repite en los subarreglos izquierdo y derecho del pivote.", "tone": "teal" },
+        { "badge": "4", "title": "Caso base", "text": "Un subarreglo de un solo elemento ya está ordenado.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Quick sort (ordenamiento rápido) es un algoritmo de ordenamiento **eficiente y rápido**." },
+      "notes": "Los cuatro pasos son los del capítulo. Después de la partición el pivote queda en su posición final: nunca más se mueve. Recursos adicionales del capítulo con visualizaciones: http://me.dt.in.th/page/Quicksort/, https://www.geeksforgeeks.org/quick-sort/ y https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Quick sort",
+      "title": "Quick sort: una partición",
+      "legend": [["Pivote", "amber"], ["≤ pivote", "teal"], ["> pivote", "navy"], ["Pivote en su lugar", "green"]],
+      "cellHeight": 0.56,
+      "rowPad": 0.07,
+      "cellWidth": 0.8,
+      "labelW": 1.9,
+      "groupGap": 0.3,
+      "rows": [
+        { "label": "Inicio", "cells": ["8", "3", "1", "7", "0", "10", "2"], "states": ". . . a . . .", "marks": { "3": "pivote" }, "note": "Pivote: el elemento central" },
+        { "label": "Pivote al final", "cells": ["8", "3", "1", "2", "0", "10", "7"], "states": ". . . . . . a", "marks": { "6": "pivote" }, "note": "Se intercambia con el último" },
+        { "label": "Mover menores", "cells": ["3", "1", "2", "0", "8", "10", "7"], "states": "t t t t n n a", "note": "Los ≤ 7 pasan al frente" },
+        { "label": "Pivote a su lugar", "cells": ["3", "1", "2", "0", "7", "10", "8"], "groups": [4, 1, 2], "states": "t t t t g n n", "note": "7 quedó en su posición final", "noteTone": "green" }
+      ],
+      "callout": { "tone": "teal", "text": "Ahora se repite el proceso con `[3, 1, 2, 0]` (izquierda) y con `[10, 8]` (derecha)." },
+      "calloutY": 6.05,
+      "notes": "Arreglo del capítulo: [8, 3, 1, 7, 0, 10, 2]. El pivote es el elemento central: posición left + (right - left) / 2 = 3 → valor 7. 1) Se intercambia con el último elemento. 2) Se recorre el arreglo de izquierda a derecha y cada elemento ≤ pivote se intercambia hacia el frente (partitionIndex). 3) Finalmente el pivote se intercambia con la posición partitionIndex y queda en su lugar definitivo. El orden dentro de cada lado depende del esquema de partición: la traza del capítulo muestra [3, 1, 0, 2] | 7 | [8, 10]; con el código del capítulo se obtiene [3, 1, 2, 0] | 7 | [10, 8], que es lo que muestra esta diapositiva (se verificó ejecutando el algoritmo)."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Quick sort",
+      "title": "Quick sort: la recursión",
+      "legend": [["Subarreglo por ordenar", "teal"], ["En su posición final", "green"]],
+      "cellHeight": 0.56,
+      "rowPad": 0.1,
+      "cellWidth": 0.8,
+      "labelW": 1.9,
+      "groupGap": 0.22,
+      "rows": [
+        { "label": "Nivel 1", "cells": ["3", "1", "2", "0", "7", "10", "8"], "groups": [4, 1, 2], "states": "t t t t g t t", "note": "7 está en su lugar; quedan dos subarreglos" },
+        { "label": "Nivel 2", "cells": ["0", "1", "2", "3", "7", "8", "10"], "groups": [1, 1, 2, 1, 1, 1], "states": "g g t t g g g", "note": "Pivotes 1 y 10 a su lugar" },
+        { "label": "Nivel 3", "cells": ["0", "1", "2", "3", "7", "8", "10"], "groups": [1, 1, 1, 1, 1, 1, 1], "states": "g g g g g g g", "note": "Pivote 2: [2, 3] queda ordenado" },
+        { "label": "Resultado", "cells": ["0", "1", "2", "3", "7", "8", "10"], "states": "g g g g g g g", "note": "Arreglo ordenado", "noteTone": "green" }
+      ],
+      "callout": { "tone": "teal", "label": "Caso base:", "text": "un subarreglo de un solo elemento ya está ordenado, y la recursión termina." },
+      "notes": "Nivel 1: [3, 1, 2, 0] y [10, 8]. En [3, 1, 2, 0] el pivote central es el 1 (posición 1): queda [0 | 1 | 2, 3]. En [10, 8] el pivote central es el 10: queda [8 | 10]. Nivel 3: [2, 3] con pivote 2 → [2 | 3]. Cada elemento termina como pivote o como subarreglo de tamaño 1. Resultado: [0, 1, 2, 3, 7, 8, 10]. La traza del capítulo usa otros pivotes en los subarreglos; el resultado final es el mismo."
+    },
+    {
+      "type": "code",
+      "section": "Quick sort",
+      "title": "Quick sort en Java: la recursión",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.6,
+          "blocks": [
+            { "code": "static void quickSort(int[] array, int left, int right) {\n    if (left < right) {\n        int pivotIndex = partition(array, left, right);\n        quickSort(array, left, pivotIndex - 1);\n        quickSort(array, pivotIndex + 1, right);\n    }\n}" },
+            { "code": "static void swap(int[] array, int a, int b) {\n    int temp = array[a];\n    array[a] = array[b];\n    array[b] = temp;\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Recursión", "text": "Se llama a sí mismo con la parte izquierda y la derecha del pivote.", "tone": "teal", "h": 1.85 },
+            { "title": "Costo promedio", "text": "Eficiente en la práctica.", "footer": "O(n log n)", "footerSize": 22, "tone": "amber", "h": 1.9 }
+          ]
+        }
+      ],
+      "notes": "quickSort solo coordina: partition decide dónde queda el pivote y devuelve su índice. El caso base es implícito: cuando left >= right el subarreglo tiene 0 o 1 elementos y no se hace nada. El capítulo escribe estos métodos en estilo C# (Partition, Swap, llaves en línea nueva); aquí se muestran en Java (partition, swap). La complejidad O(n log n) en promedio (y O(n²) en el peor caso, por ejemplo con pivotes muy desbalanceados) es un dato estándar que se añadió; no aparece en el capítulo."
+    },
+    {
+      "type": "code",
+      "section": "Quick sort",
+      "title": "Quick sort en Java: la partición",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            { "code": "static int partition(int[] array, int left, int right) {\n    int pivotIndex = left + (right - left) / 2;\n    int pivot = array[pivotIndex];\n    swap(array, pivotIndex, right);\n    int partitionIndex = left;\n    for (int i = left; i < right; i++) {\n        if (array[i] <= pivot) {\n            swap(array, i, partitionIndex);\n            partitionIndex++;\n        }\n    }\n    swap(array, partitionIndex, right);\n    return partitionIndex;\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Los tres pasos", "textSize": 18, "text": "**1. Pivote al final:** el central se intercambia con el último.\n**2. Menores al frente:** los ≤ pivote pasan a la izquierda; `partitionIndex` cuenta cuántos hay.\n**3. Pivote a su lugar:** se intercambia con `partitionIndex`.", "tone": "teal", "h": 3.6 }
+          ]
+        }
+      ],
+      "notes": "Se omitieron los comentarios del capítulo («Elegir el pivote como el elemento central», «Mover el pivote al final», «Mover el pivote a su posición final») para que el código quepa; las tres tarjetas los reemplazan. partitionIndex cuenta cuántos elementos ≤ pivote se han movido al frente; al terminar, es la posición definitiva del pivote. Ejercicio: ejecute a mano partition sobre [8, 3, 1, 7, 0, 10, 2] y compare con la diapositiva de la partición."
+    },
+    {
+      "type": "cards",
+      "section": "Shellsort",
+      "title": "Shellsort: inserción con incrementos",
+      "intro": "Propuesto por Donald Shell en 1959:",
+      "columns": 3,
+      "cardHeight": 2.75,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Incrementos (gaps)", "text": "Ordena elementos separados por un gap; el gap se reduce hasta llegar a 1.", "tone": "teal" },
+        { "badge": "2", "title": "Basado en inserción", "text": "Aplica insertion sort a sublistas pequeñas y luego a sublistas cada vez más grandes.", "tone": "teal" },
+        { "badge": "3", "title": "Mejor caso", "text": "Aprovecha que la inserción es rápida con datos casi ordenados.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Gaps sencillos:", "text": "size/2, size/4, …, 1 (redondeando hacia arriba). Con 9 elementos: **5, 3, 1**." },
+      "notes": "Shellsort rompe la lista en subconjuntos disjuntos definidos por un incremento I: cada registro de un subconjunto está separado de los demás por I posiciones. Es una generalización de InsertionSort. Con gap = 4, cada registro del subconjunto está separado por 4 posiciones. Aviso: el capítulo dice «5, 3, 1» para 9 elementos; si se redondea hacia arriba en cada paso saldría 5, 3, 2, 1, pero cualquier secuencia sirve mientras termine en 1. Use los gaps 5, 3, 1 del capítulo en el ejemplo."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Shellsort",
+      "title": "Shellsort: gaps 5, 3 y 1",
+      "legend": [["Cambió de lugar", "amber"], ["Ordenado", "green"]],
+      "indices": true,
+      "cellHeight": 0.56,
+      "rowPad": 0.07,
+      "cellWidth": 0.7,
+      "labelW": 1.5,
+      "rows": [
+        { "label": "Inicio", "cells": ["5", "3", "8", "6", "2", "7", "1", "4", "9"], "states": ". . . . . . . . .", "note": "Arreglo de 9 elementos" },
+        { "label": "gap = 5", "cells": ["5", "1", "4", "6", "2", "7", "3", "8", "9"], "states": ". a a . . . a a .", "note": "Se intercambian 3 con 1 y 8 con 4" },
+        { "label": "gap = 3", "cells": ["3", "1", "4", "5", "2", "7", "6", "8", "9"], "states": "a . . a . . a . .", "note": "La sublista (5, 6, 3) queda (3, 5, 6)" },
+        { "label": "gap = 1", "cells": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "states": "g g g g g g g g g", "note": "Inserción normal: ¡ordenado!", "noteTone": "green" }
+      ],
+      "callout": { "tone": "teal", "text": "Cada pasada deja el arreglo más cerca del orden final; la última (gap = 1) es una inserción normal." },
+      "notes": "Arreglo del capítulo: [5, 3, 8, 6, 2, 7, 1, 4, 9]. gap = 5: se comparan las posiciones (0,5), (1,6), (2,7), (3,8); solo (1,6) y (2,7) están desordenadas → [5, 1, 4, 6, 2, 7, 3, 8, 9]. gap = 3: sublistas de las posiciones {0,3,6}, {1,4,7} y {2,5,8}; la primera (5, 6, 3) se ordena a (3, 5, 6) → [3, 1, 4, 5, 2, 7, 6, 8, 9]. gap = 1: insertion sort sobre un arreglo ya casi ordenado → [1, 2, 3, 4, 5, 6, 7, 8, 9]. Observación para el profesor: en el capítulo, el primer renglón del bloque «gap de 1» no coincide con el resultado del bloque «gap de 3» (parece un error de copia); aquí se usan los arreglos intermedios recalculados."
+    },
+    {
+      "type": "code",
+      "section": "Shellsort",
+      "title": "Shellsort en Java",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            { "code": "static void shellSort(int[] arr) {\n    int[] gaps = {5, 3, 1};\n    for (int gap : gaps) {\n        for (int i = gap; i < arr.length; i++) {\n            int key = arr[i];\n            int j = i;\n            while (j >= gap && arr[j - gap] > key) {\n                arr[j] = arr[j - gap];\n                j -= gap;\n            }\n            arr[j] = key;\n        }\n    }\n}" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Con gap = 1", "text": "Es exactamente el insertion sort de antes.", "tone": "teal", "h": 1.6 },
+            { "title": "Gaps", "text": "El ejemplo usa {5, 3, 1}; el último debe ser 1.", "tone": "amber", "h": 1.6 }
+          ]
+        }
+      ],
+      "notes": "El capítulo no incluye código de Shellsort; este fragmento se añadió para la lección. Es la versión del insertion sort donde, en lugar de comparar con la posición j - 1, se compara con j - gap. Se pueden calcular los gaps en lugar de fijarlos (por ejemplo, empezar con arr.length / 2 y dividir entre 2), lo que da 4, 2, 1 para 9 elementos."
+    },
+    {
+      "type": "flow",
+      "section": "Merge sort",
+      "title": "Merge sort: dividir y conquistar",
+      "steps": [
+        { "title": "Dividir", "text": "Parte el arreglo en dos mitades." },
+        { "title": "Ordenar", "text": "Ordena cada mitad de forma recursiva." },
+        { "title": "Combinar", "text": "Mezcla las dos mitades ya ordenadas en un solo arreglo ordenado." }
+      ],
+      "callout": { "tone": "teal", "text": "Ordenamiento por mezcla (merge sort): sigue el paradigma de **dividir y conquistar**." },
+      "notes": "Es el mismo paradigma de quick sort (dividir, resolver recursivamente), pero aquí el trabajo está en la fase de combinar (mezclar), mientras que en quick sort el trabajo está en la partición."
+    },
+    {
+      "type": "image",
+      "section": "Merge sort",
+      "title": "Merge sort: fase de división",
+      "image": "04-ordenamiento-y-busqueda/image-06.png",
+      "alt": "El arreglo 14, 7, 3, 12, 9, 11, 6, 2 se divide en dos mitades de cuatro, luego en cuatro partes de dos y finalmente en ocho elementos individuales.",
+      "caption": "El arreglo se divide en mitades hasta quedar con elementos individuales.",
+      "notes": "Arreglo del capítulo: [14, 7, 3, 12, 9, 11, 6, 2] → [14, 7, 3, 12] y [9, 11, 6, 2] → [14, 7], [3, 12], [9, 11], [6, 2] → ocho arreglos de un solo elemento, que ya están ordenados (caso base)."
+    },
+    {
+      "type": "image",
+      "section": "Merge sort",
+      "title": "Merge sort: fase de unión",
+      "image": "04-ordenamiento-y-busqueda/image-07.png",
+      "alt": "Los ocho elementos se mezclan por parejas en arreglos ordenados de dos, luego de cuatro (3, 7, 12, 14 y 2, 6, 9, 11) y finalmente en el arreglo completo 2, 3, 6, 7, 9, 11, 12, 14.",
+      "caption": "Las mitades ordenadas se mezclan, de abajo hacia arriba, hasta formar el arreglo ordenado.",
+      "notes": "Al mezclar dos mitades ya ordenadas basta comparar sus primeros elementos y pasar el menor al arreglo resultado, avanzando solo en la mitad de donde salió. Resultado: [2, 3, 6, 7, 9, 11, 12, 14]."
+    },
+    {
+      "type": "code",
+      "section": "Merge sort",
+      "title": "Merge sort en Java",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 0.95,
+          "blocks": [
+            { "code": "void mergeSort(int[] a, int low, int high) {\n    if (low < high) {\n        int mid = (low + high) / 2;\n        mergeSort(a, low, mid);\n        mergeSort(a, mid + 1, high);\n        merge(a, low, high, mid);\n    }\n}" }
+          ],
+          "cards": [
+            { "title": "Costo", "text": "Siempre O(n log n); usa un arreglo auxiliar.", "tone": "amber", "h": 1.75 }
+          ]
+        },
+        {
+          "weight": 1.05,
+          "blocks": [
+            { "code": "void merge(int[] a, int low, int high, int mid) {\n    int[] c = new int[a.length];\n    int i = low, j = mid + 1, k = low;\n    while (i <= mid && j <= high) {\n        if (a[i] <= a[j]) c[k++] = a[i++];\n        else c[k++] = a[j++];\n    }\n    while (i <= mid) c[k++] = a[i++];\n    while (j <= high) c[k++] = a[j++];\n    for (i = low; i < k; i++) a[i] = c[i];\n}" }
+          ]
+        }
+      ],
+      "notes": "mergeSort divide hasta que low >= high; merge combina las dos mitades [low, mid] y [mid + 1, high] usando un arreglo auxiliar c. Cambios respecto al capítulo (que está escrito en estilo C/C++): se declara c como int[] c = new int[a.length] (el capítulo usa int c[50], que no compila en Java y limita el tamaño a 50); se escribe mergeSort con la misma capitalización en las llamadas recursivas (el capítulo llama a «mergesort»); se compactaron los incrementos (c[k++] = a[i++]); y se usa <= al comparar para que los elementos iguales conserven su orden (el capítulo usa <). El costo O(n log n) y la memoria auxiliar son datos estándar añadidos."
+    },
+    {
+      "type": "cards",
+      "section": "Radix sort",
+      "title": "Radix sort: ordenar por dígitos",
+      "columns": 3,
+      "cardHeight": 3.1,
+      "textSize": 17,
+      "cards": [
+        { "badge": "1", "title": "Dígito por dígito", "text": "No compara números completos: ordena por unidades, luego decenas, luego centenas…", "tone": "teal" },
+        { "badge": "2", "title": "Radix = raíz", "text": "Es la base del sistema numérico: 10 en decimal, 2 en binario.", "tone": "teal" },
+        { "badge": "3", "title": "Arreglo de conteo", "text": "Una posición por cada dígito posible (0 a 9); cuenta cuántas veces aparece cada uno.", "tone": "teal" }
+      ],
+      "callout": { "tone": "slate", "label": "Ejemplo:", "text": "`[170, 45, 75, 90, 802, 24, 2, 66]`" },
+      "notes": "Radix sort sirve para enteros, strings o cualquier dato que pueda procesarse en dígitos individuales. Los algoritmos anteriores consideran cada elemento como un todo; radix sort lo considera una secuencia de dígitos. «Radix» significa «raíz» en latín y se refiere a la base del sistema numérico."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Radix sort",
+      "title": "Radix sort: contar los dígitos de las unidades",
+      "noteMin": 2.6,
+      "cellHeight": 0.62,
+      "rowPad": 0.12,
+      "cellWidth": 0.7,
+      "labelW": 1.9,
+      "legendY": 1.85,
+      "rows": [
+        { "label": "Arreglo", "idx": true, "cells": ["17[0]", "4[5]", "7[5]", "9[0]", "80[2]", "2[4]", "[2]", "6[6]"], "states": ". . . . . . . .", "note": "Unidades resaltadas" },
+        { "label": "Conteo (0-9)", "idx": true, "cells": ["2", "0", "2", "0", "1", "2", "1", "0", "0", "0"], "states": "t . t . t t t . . .", "note": "Cuántas veces aparece cada dígito" },
+        { "label": "Acumulado", "idx": true, "cells": ["2", "2", "4", "4", "5", "7", "8", "8", "8", "8"], "states": ". . . . . . . . . .", "note": "Cada posición suma la anterior" }
+      ],
+      "callout": { "tone": "teal", "text": "El arreglo acumulado indica dónde termina cada dígito en el arreglo ordenado." },
+      "notes": "Arreglo del capítulo: [170, 45, 75, 90, 802, 24, 2, 66]. Unidades: 0, 5, 5, 0, 2, 4, 2, 6. El arreglo intermedio tiene 10 posiciones, una por cada dígito posible de la base 10, y cuenta las apariciones: hay dos 0, dos 2, un 4, dos 5 y un 6. Luego se ajusta sumando la posición anterior: 2, 2, 4, 4, 5, 7, 8, 8, 8, 8. Ese arreglo ajustado mapea la posición de cada dígito en el arreglo ordenado: por ejemplo, 66 termina en unidades 6, el acumulado[6] = 8, y al mapear el valor se reduce en 1, así que 66 va a la posición 7. Imágenes del capítulo: image-08.png a image-11.png."
+    },
+    {
+      "type": "diagram",
+      "kind": "ordenamiento-array",
+      "section": "Radix sort",
+      "title": "Radix sort: tres pasadas",
+      "noteMin": 2.6,
+      "cellHeight": 0.62,
+      "rowPad": 0.12,
+      "cellWidth": 0.8,
+      "labelW": 1.9,
+      "rows": [
+        { "label": "Original", "cells": ["170", "045", "075", "090", "802", "024", "002", "066"], "states": ". . . . . . . .", "note": "Con ceros a la izquierda" },
+        { "label": "Por unidades", "cells": ["17[0]", "09[0]", "80[2]", "00[2]", "02[4]", "04[5]", "07[5]", "06[6]"], "states": ". . . . . . . .", "note": "Unidades: 0, 0, 2, 2, 4, 5, 5, 6" },
+        { "label": "Por decenas", "cells": ["8[0]2", "0[0]2", "0[2]4", "0[4]5", "0[6]6", "1[7]0", "0[7]5", "0[9]0"], "states": ". . . . . . . .", "note": "Decenas: 0, 0, 2, 4, 6, 7, 7, 9" },
+        { "label": "Por centenas", "cells": ["[0]02", "[0]24", "[0]45", "[0]66", "[0]75", "[0]90", "[1]70", "[8]02"], "states": "g g g g g g g g", "note": "Centenas: ordenado", "noteTone": "green" }
+      ],
+      "callout": { "tone": "teal", "text": "Cada pasada debe ser **estable**: los dígitos iguales conservan el orden de la pasada anterior." },
+      "calloutH": 0.8,
+      "notes": "Cada fila es el resultado de ordenar por el dígito resaltado (de menos a más significativo). Después de las unidades: [170, 90, 802, 2, 24, 45, 75, 66]. Después de las decenas: [802, 2, 24, 45, 66, 170, 75, 90]. Después de las centenas: [2, 24, 45, 66, 75, 90, 170, 802]. Cada pasada usa el conteo de la diapositiva anterior; el capítulo resume las tres pasadas en image-11.png. Que cada pasada sea estable (un dato estándar que se añadió; no está en el capítulo) es lo que garantiza que el resultado final esté ordenado: por ejemplo, 170 y 75 tienen el mismo dígito de las decenas (7) y mantienen el orden que traían de la pasada de las unidades."
+    },
+    {
+      "type": "table",
+      "section": "Comparación",
+      "title": "Complejidad: simples y Shellsort",
+      "columns": ["Algoritmo", "Mejor", "Promedio", "Peor", "Estable", "Memoria extra"],
+      "colWeights": [1.5, 1.3, 1.6, 1.3, 1.1, 1.5],
+      "rowHeight": 0.62,
+      "rows": [
+        ["Selección", "O(n²)", "O(n²)", "O(n²)", "No", "O(1)"],
+        ["Burbuja", "O(n²)", "O(n²)", "O(n²)", "Sí", "O(1)"],
+        ["Inserción", "O(n)", "O(n²)", "O(n²)", "Sí", "O(1)"],
+        ["Shellsort", "O(n log n)", "según los gaps", "O(n²)", "No", "O(1)"]
+      ],
+      "calloutY": 5.15,
+      "calloutH": 1.2,
+      "callouts": [
+        { "tone": "teal", "label": "Estable:", "text": "los elementos iguales conservan su orden relativo." },
+        { "tone": "amber", "label": "Burbuja:", "text": "con una bandera «sin intercambios», su mejor caso sería O(n)." }
+      ],
+      "notes": "El capítulo da solo algunos de estos datos: selección y burbuja son O(n²); selección siempre hace las mismas comparaciones; inserción es O(n) en el mejor caso y O(n²) en el peor. El resto de la tabla (promedio, estabilidad, memoria extra y Shellsort) son resultados estándar añadidos para comparar. Burbuja es O(n²) incluso en el mejor caso con el código visto porque no tiene la bandera de «no hubo intercambios». El costo de Shellsort depende de la secuencia de gaps: O(n²) en el peor caso con los gaps n/2, n/4, …"
+    },
+    {
+      "type": "table",
+      "section": "Comparación",
+      "title": "Complejidad: quick, merge y radix",
+      "columns": ["Algoritmo", "Mejor", "Promedio", "Peor", "Estable", "Memoria extra"],
+      "colWeights": [1.5, 1.4, 1.4, 1.4, 1.1, 1.4],
+      "rowHeight": 0.72,
+      "rows": [
+        ["Quick sort", "O(n log n)", "O(n log n)", "O(n²)", "No", "O(log n)"],
+        ["Merge sort", "O(n log n)", "O(n log n)", "O(n log n)", "Sí", "O(n)"],
+        ["Radix sort", "O(d·(n+b))", "O(d·(n+b))", "O(d·(n+b))", "Sí", "O(n+b)"]
+      ],
+      "calloutY": 4.85,
+      "calloutH": 1.5,
+      "callouts": [
+        { "tone": "teal", "label": "Radix:", "text": "d = número de dígitos; b = base (10 en decimal)." },
+        { "tone": "amber", "label": "Quick sort:", "text": "el peor caso aparece con pivotes muy desbalanceados." },
+        { "tone": "green", "label": "Merge sort:", "text": "siempre O(n log n), a cambio de memoria extra." }
+      ],
+      "notes": "Ninguno de estos datos aparece en el capítulo; son resultados estándar que se añadieron para comparar los algoritmos. Quick sort: el peor caso ocurre cuando el pivote es siempre el menor o el mayor del subarreglo; la memoria extra es la pila de la recursión (O(log n) en promedio). Merge sort: el arreglo auxiliar usa O(n). Radix sort: con d dígitos y base b, cada pasada cuesta O(n + b). Pregunta para la clase: para ordenar 1 000 000 de números, ¿qué algoritmo de los vistos descartaría de inmediato? (los simples, O(n²))."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted",
+      "intro": "Resuelva cada caso con lo aprendido:",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "textSize": 17,
+      "callout": { "tone": "amber", "label": "Pista:", "text": "en A compare cuánto cuesta cada algoritmo; en C recuerde cómo se resuelven las colisiones." },
+      "cards": [
+        { "badge": "A", "title": "Elegir una búsqueda", "text": "Un arreglo de 1 000 000 de elementos **sin ordenar**: ¿qué algoritmo usaría? ¿Y si estuviera ordenado?", "tone": "teal" },
+        { "badge": "B", "title": "Traza de selección", "text": "Aplique selección a `[4, 2, 7, 1]`. Escriba el arreglo al terminar cada pasada.", "tone": "teal" },
+        { "badge": "C", "title": "Colisión en un hash", "text": "Con `h(k) = k % 10`, ¿en qué índice se guardan las cédulas 111111115 y 222222225? ¿Qué ocurre?", "tone": "teal" }
+      ],
+      "notes": "Estos ejercicios se añadieron para la lección (el capítulo no trae ejercicios). Respuestas sugeridas. A: sin ordenar, la búsqueda lineal (hasta 1 000 000 de comparaciones) o, si se puede construir de antemano, una tabla hash; ordenado, la búsqueda binaria (a lo sumo 20 comparaciones). B: pasada 1: el menor es 1 → [1, 2, 7, 4]; pasada 2: 2 ya está en su lugar → [1, 2, 7, 4]; pasada 3: el menor de [7, 4] es 4 → [1, 2, 4, 7]. C: ambas cédulas terminan en 5, así que h = 5 para las dos: hay una colisión; con separate chaining el índice 5 guarda una lista enlazada con las dos cédulas."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Búsqueda lineal** (cualquier arreglo) y **binaria** (arreglo ordenado, divide a la mitad).",
+        "**Hash:** h(k) da el índice; las colisiones se resuelven con **separate chaining**.",
+        "**Selección, burbuja e inserción:** simples, O(n²).",
+        "**Quick sort** y **merge sort:** dividir y conquistar; O(n log n) en promedio.",
+        "**Shellsort:** inserción con incrementos (gaps) cada vez más pequeños.",
+        "**Radix sort:** ordena dígito por dígito con un arreglo de conteo.",
+        "**Elegir:** según el rendimiento, la memoria extra y la estabilidad."
+      ],
+      "notes": "Cierre: no hay un algoritmo «mejor» para todo; cada uno tiene diferentes características de rendimiento. Pregunta final: ¿cuándo vale la pena ordenar un arreglo antes de buscar en él? (cuando se harán muchas búsquedas, porque la binaria compensa el costo de ordenar)."
+    },
+    {
+      "type": "list",
+      "section": "Cierre",
+      "title": "Recursos adicionales",
+      "marker": "dot",
+      "titleSize": 22,
+      "items": [
+        { "title": "Video introductorio a los algoritmos de búsqueda", "text": "youtube.com/watch?v=WaNLJf8xzC4" },
+        { "title": "Quick sort: visualización interactiva", "text": "me.dt.in.th/page/Quicksort/" },
+        { "title": "Quick sort: explicación y ejemplos", "text": "geeksforgeeks.org/quick-sort/" },
+        { "title": "Visualización de algoritmos de ordenamiento por comparación", "text": "cs.usfca.edu/~galles/visualization/ComparisonSort.html" }
+      ],
+      "footnote": "Fuente: capítulo «Algoritmos de búsqueda y ordenamiento» (CE-1103).",
+      "notes": "Enlaces completos del capítulo: https://www.youtube.com/watch?v=WaNLJf8xzC4, http://me.dt.in.th/page/Quicksort/, https://www.geeksforgeeks.org/quick-sort/ y https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html. La última página permite ver y comparar todos los algoritmos de ordenamiento animados con el mismo arreglo."
+    }
+  ]
+}

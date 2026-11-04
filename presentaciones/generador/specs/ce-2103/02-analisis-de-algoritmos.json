@@ -1,0 +1,878 @@
+{
+  "meta": {
+    "title": "Análisis de Algoritmos",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 03 · Análisis de Algoritmos",
+    "footer": "CE-2103 · Análisis de Algoritmos",
+    "theme": "dark",
+    "codeLang": "java",
+    "assetsDir": "../../../../ce-2103/images",
+    "output": "../../../ce-2103/Lección 03 - Análisis de Algoritmos.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 03",
+      "title": "Análisis de Algoritmos",
+      "subtitle": "Medir la eficiencia en tiempo y espacio",
+      "terminal": {
+        "file": "analisis.java",
+        "lang": "java",
+        "code": "// ¿Cuánto crece el tiempo?\nfor (int i = 0; i < n; i++)\n    foo(v[i]);\n// f(n) = 6nT + T = O(n)"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Capítulo sobre análisis de algoritmos: es esencial para diseñar algoritmos eficientes y tomar decisiones en el desarrollo de software. La industria ha hecho estándar las entrevistas enfocadas en algoritmos y estructuras de datos junto con análisis de complejidad. Recorrido: definición de algoritmo, análisis empírico y teórico, casos, notaciones asintóticas, cómo determinar la complejidad, recurrencias, teorema maestro y análisis amortizado."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Definir **algoritmo** y sus características",
+        "Comparar el análisis **empírico** y el **teórico**",
+        "Distinguir el **mejor**, el **peor** y el **caso promedio**",
+        "Usar las notaciones **Big O**, **Ω (Omega)** y **Θ (Theta)**",
+        "Determinar la **complejidad** de loops y de recursión",
+        "Resolver **recurrencias** y aplicar el análisis **amortizado**"
+      ],
+      "notes": "Seis objetivos, uno por bloque de la lección."
+    },
+    {
+      "type": "flow",
+      "section": "Algoritmos",
+      "title": "Algoritmo: un procedimiento para cumplir una tarea",
+      "steps": [
+        { "title": "Input", "text": "Un problema bien definido. En la receta: los ingredientes." },
+        { "title": "Algoritmo", "text": "Las instrucciones que transforman la entrada. En la receta: los pasos de cocina." },
+        { "title": "Output", "text": "El resultado deseado. En la receta: la comida." }
+      ],
+      "callout": { "tone": "teal", "label": "¿Programa vs. algoritmo?", "text": "un programa es la implementación de un algoritmo en un lenguaje de programación." },
+      "notes": "Un algoritmo es un procedimiento para cumplir una tarea; es la idea detrás de un programa. Opera sobre un problema bien definido: toma un input y lo transforma en un output deseado. Ejemplo cotidiano del capítulo: una receta de cocina (ingredientes = input, comida = output, instrucciones = algoritmo)."
+    },
+    {
+      "type": "list",
+      "section": "Algoritmos",
+      "title": "Características de un algoritmo",
+      "titleSize": 22,
+      "items": [
+        { "title": "No es ambiguo", "text": "Cada paso tiene un solo significado." },
+        { "title": "Entrada bien definida", "text": "Debe ser clara y consistente." },
+        { "title": "Salida bien definida", "text": "Indica qué tipo de output genera." },
+        { "title": "Es finito", "text": "Termina en un tiempo determinado." },
+        { "title": "Es factible", "text": "Se puede ejecutar con los recursos tecnológicos disponibles." }
+      ],
+      "notes": "Pregunta para la clase: ¿qué pasa con un procedimiento que nunca termina? No cumple la característica de finitud, así que no es un algoritmo."
+    },
+    {
+      "type": "image",
+      "section": "Algoritmos",
+      "title": "Representaciones de un algoritmo",
+      "image": "02-analisis-algoritmos/image-00.png",
+      "alt": "Cuatro representaciones del algoritmo del factorial: pseudocódigo, lenguaje natural, definición formal y diagrama de flujo",
+      "caption": "Pseudocódigo, lenguaje natural, definición formal y diagrama de flujo (ejemplo: factorial).",
+      "notes": "Un mismo algoritmo se puede representar de varias formas: pseudocódigo, lenguaje natural, definición formal y diagramas de flujo. El ejemplo de la figura es el factorial de un entero no negativo."
+    },
+    {
+      "type": "cards",
+      "section": "Análisis",
+      "title": "¿Por qué analizar un algoritmo?",
+      "intro": "Analizar es determinar su **eficiencia** en tiempo y espacio. Sirve para:",
+      "columns": 4,
+      "cardHeight": 2.6,
+      "titleSize": 22,
+      "cards": [
+        { "title": "Predecir", "text": "El comportamiento del algoritmo y del programa que lo implementa.", "tone": "teal" },
+        { "title": "Comparar", "text": "Distintos algoritmos que sirven para el mismo propósito.", "tone": "teal" },
+        { "title": "Optimizar", "text": "Conociendo el comportamiento, se puede mejorar.", "tone": "teal" },
+        { "title": "Clasificar", "text": "El algoritmo según su complejidad.", "tone": "teal" }
+      ],
+      "callout": { "tone": "slate", "label": "Muchos factores influyen:", "text": "hardware, sistema operativo, lenguaje, cantidad de datos y hasta la pericia del programador." },
+      "notes": "Esto no es una práctica reciente: se remonta a los inicios de la computación. Charles Babbage observó: «As soon as an Analytic Engine exists, it will necessarily guide the future course of the science. Whenever any result is sought by its aid, the question will arise—By what course of calculation can these results be arrived at by the machine in the shortest time?». Décadas después Turing observó: «It is convenient to have a measure of the amount of work involved in a computing process, even though it be a very crude one. We may count up the number of times that various elementary operations are applied in the whole process». Ambos se referían a la necesidad de determinar la eficiencia de un algoritmo para optimizarlo o compararlo con otros de la misma «familia». En las siguientes secciones veremos dos formas de analizar: empírico y teórico."
+    },
+    {
+      "type": "list",
+      "section": "Análisis empírico",
+      "title": "Análisis empírico: benchmarking",
+      "items": [
+        "Marcar un **tiempo de inicio**",
+        "**Ejecutar** el programa con un input dado",
+        "Marcar el **tiempo final**",
+        "Calcular el **tiempo transcurrido**",
+        "Repetir la prueba varias veces y calcular la **mediana**"
+      ],
+      "notes": "Empírico significa basado en la experiencia y la observación: se evalúa el desempeño del algoritmo ejecutándolo. A esto se le llama benchmarking. Aunque parezca contra-intuitivo, se usa mucho en la práctica profesional porque existen ambientes controlados donde se puede medir el desempeño. Se repite la prueba varias veces y se calcula la mediana para reducir el efecto de variaciones aisladas."
+    },
+    {
+      "type": "cards",
+      "section": "Análisis empírico",
+      "title": "Profiling y el límite del análisis empírico",
+      "columns": 3,
+      "cardHeight": 2.9,
+      "callout": { "tone": "amber", "text": "Necesitamos un análisis que **no dependa de la máquina**: el análisis teórico." },
+      "cards": [
+        { "title": "Profiling", "text": "Es análisis empírico: técnica dinámica para hallar cuellos de botella (tiempo, memoria, CPU).", "tone": "teal" },
+        { "title": "Muy usado", "text": "Es común en la práctica: hay ambientes controlados donde se puede medir.", "tone": "green" },
+        { "title": "Depende de la máquina", "text": "No se puede generalizar: una máquina de hace 10 años no es una moderna.", "tone": "red" }
+      ],
+      "notes": "Profiling es una técnica de análisis dinámico para encontrar cuellos de botella o secciones del código con mal rendimiento. Provee una visión completa: tiempo de ejecución, uso de memoria, uso de CPU, etc. El problema clave del análisis empírico es que depende de la máquina en la que se ejecuta el algoritmo; por eso los resultados no se pueden generalizar."
+    },
+    {
+      "type": "cards",
+      "section": "Análisis teórico",
+      "title": "El modelo computacional del análisis teórico",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "textSize": 17,
+      "callout": { "tone": "teal", "text": "No importan los nanosegundos: importa la **tasa de crecimiento** de las operaciones según el tamaño de la entrada." },
+      "cards": [
+        { "badge": "1", "title": "Operaciones simples", "text": "+, -, *, /, =, == toman tiempo constante: las operaciones elementales de Turing.", "tone": "teal" },
+        { "badge": "2", "title": "Loops y funciones", "text": "No son operaciones simples: son la composición de muchas operaciones simples.", "tone": "teal" },
+        { "badge": "3", "title": "Acceso a memoria", "text": "Cada acceso a memoria toma tiempo constante.", "tone": "teal" }
+      ],
+      "notes": "Si el análisis empírico no da una solución a prueba del tiempo y de la plataforma, la respuesta es el análisis teórico. Este modelo es una abstracción de la realidad, pero es perfecto para determinar el comportamiento de un algoritmo: nos interesa cuál es la tasa de crecimiento de la cantidad de operaciones realizadas conforme crece el tamaño de la entrada."
+    },
+    {
+      "type": "code",
+      "section": "Análisis teórico",
+      "title": "Contar operaciones: el máximo de un arreglo",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Peor caso: el if siempre se cumple (T = costo de una operación simple)",
+              "code": "int max(int[] array) {\n    int max = array[0];                       // 3T\n    for (int i = 1; i < array.length; i++) {  // T + 2nT\n        if (array[i] > max) {                 // 2T(n-1)\n            max = array[i];                   // 2T(n-1)\n        }\n    }\n    return max;                               // T\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Sumando las líneas", "text": "`3T + (T + 2nT) + 2T(n-1) + 2T(n-1) + T`", "footer": "f(n) = 6nT + T", "footerSize": 22, "tone": "teal", "h": 2.5 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "amber", "label": "Ojo:", "text": "este nivel de detalle no es práctico. Más adelante lo simplificamos con el **análisis asintótico**." }],
+      "calloutsY": 5.7,
+      "notes": "Con el modelo computacional encontramos una función f(n) del tamaño de la entrada. Línea por línea: la asignación inicial cuesta 3T; el for cuesta T + 2nT; en el peor caso (arreglo creciente) la condición del if se cumple siempre, así que el if y la asignación interna cuestan 2T(n-1) cada uno; el return cuesta T. Suma: 3T + T + 2nT + 4nT - 4T + T = 6nT + T. Imagínese el trabajo de una función como f(n) = 12754n^2 + 4353n + 834 lg2(n) + 13546: por eso conviene el análisis asintótico."
+    },
+    {
+      "type": "image",
+      "section": "Análisis teórico",
+      "title": "Empírico vs. teórico",
+      "image": "02-analisis-algoritmos/image-01.png",
+      "alt": "Comparación entre análisis empírico y teórico: definición, ventajas y desventajas de cada uno",
+      "caption": "Empírico: depende del hardware · Teórico: independiente de la plataforma.",
+      "notes": "Empírico (benchmark): muy fácil de entender y calcular, pero los resultados varían según el hardware y requiere ejecutar el código. Teórico: independiente de la plataforma y brinda una mejor forma de predecir el desempeño; se calcula con solo mirar el código, aunque es más difícil de calcular y de entender. Es una parte importante de la teoría de complejidad computacional."
+    },
+    {
+      "type": "cards",
+      "section": "Mejor, peor y promedio",
+      "title": "Mejor, peor y caso promedio",
+      "columns": 3,
+      "cardHeight": 2.8,
+      "callout": { "tone": "teal", "text": "El **peor caso** es el más útil: si lo peor que puede pasar es aceptable, el algoritmo es eficiente." },
+      "cards": [
+        { "title": "Mejor caso", "text": "Se realiza la menor cantidad de operaciones. Ej.: el elemento buscado es el primero.", "tone": "green" },
+        { "title": "Peor caso", "text": "Se realiza la mayor cantidad de operaciones. Ej.: el elemento buscado es el último.", "tone": "red" },
+        { "title": "Caso promedio", "text": "Promedio sobre todos los inputs posibles. Ej.: el elemento está en cualquier posición.", "tone": "amber" }
+      ],
+      "notes": "Los ejemplos se refieren al algoritmo de búsqueda secuencial. En el caso promedio se suman todos los valores calculados y se divide entre el total de entradas. El peor caso nos da una idea de la eficiencia del algoritmo en el peor escenario posible: conociendo lo peor que puede llegar, y siendo este aceptable, podemos asumir que el algoritmo es eficiente."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-casos-busqueda",
+      "section": "Mejor, peor y promedio",
+      "title": "Búsqueda secuencial: los tres casos",
+      "intro": "Arreglo de n = 8 posiciones: cada celda revisada es una comparación; la celda sólida es el elemento buscado.",
+      "n": 8,
+      "rows": [
+        { "label": "Mejor caso", "tone": "green", "hit": 1, "count": "1 comparación", "note": "El elemento está primero." },
+        { "label": "Caso promedio", "tone": "amber", "hit": 4, "count": "i comparaciones", "note": "Promedio: (n+1)/2." },
+        { "label": "Peor caso", "tone": "red", "hit": 8, "count": "n comparaciones", "note": "El elemento está al final." }
+      ],
+      "callout": { "tone": "teal", "label": "Promedio:", "text": "`1 + 2 + ... + n = n(n+1)/2`, y al dividir entre n posiciones queda `(n+1)/2`." },
+      "notes": "Si el elemento está en la posición i se ejecutan i operaciones. La suma de comparaciones sobre todas las posiciones es 1 + 2 + 3 + ... + n = n(n+1)/2. El promedio por elemento es n(n+1)/2 / n = (n+1)/2: en promedio se revisa cerca de la mitad del arreglo. En el diagrama se muestra el caso promedio con el elemento en la posición 4 solo como ejemplo de una posición intermedia."
+    },
+    {
+      "type": "image",
+      "section": "Mejor, peor y promedio",
+      "title": "Pasos vs. tamaño del problema",
+      "image": "02-analisis-algoritmos/image-02.png",
+      "alt": "Gráfica de número de pasos contra tamaño del problema con tres curvas: peor caso en azul, caso promedio en verde y mejor caso en rojo",
+      "caption": "Peor caso (azul), caso promedio (verde) y mejor caso (rojo).",
+      "notes": "Para cada tamaño de problema n hay muchas entradas posibles (los puntos negros); cada una requiere una cantidad distinta de pasos. El mejor caso es la curva inferior, el peor caso la superior y el promedio queda entre ambas."
+    },
+    {
+      "type": "image",
+      "section": "Análisis asintótico",
+      "title": "¿Correo/FTP o llevarlo a Guanacaste?",
+      "image": "03-analisis-teorico-1.png",
+      "alt": "Gráfica con una línea horizontal O(3h) para llevar el archivo en persona y una recta ascendente O(T) para enviarlo por red",
+      "caption": "Por red el tiempo crece con el archivo, O(n); en persona siempre son 3 h, O(1).",
+      "notes": "Suponga que debe enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiendo que ir a Guanacaste sin presas siempre tarda 3 horas: no importa qué tan grande sea el archivo, llevarlo físicamente tarda lo mismo, O(1). Por medio electrónico el tiempo depende del tamaño del archivo, O(n), y en algún momento será mayor que las 3 horas. El análisis asintótico busca la función que representa el crecimiento con respecto a n."
+    },
+    {
+      "type": "table",
+      "section": "Análisis asintótico",
+      "title": "Análisis asintótico: descartar lo menos relevante",
+      "columns": ["Función", "Notación asintótica"],
+      "colWeights": [3.4, 1.6],
+      "fontSize": 18,
+      "rows": [
+        ["f(n) = 12754n^2 + 4353n + 834 lg2 n + 13546", "O(n^2)"],
+        ["f(n) = 6nT + T", "O(n)"],
+        ["O(n^2 + n)", "O(n^2)"],
+        ["O(n + log(n))", "O(n)"],
+        ["O(5 * 2^n + 100n^2)", "O(2^n)"]
+      ],
+      "callout": { "tone": "teal", "text": "Se descartan los **términos de menor relevancia** y las **constantes**: lo que importa es la **escalabilidad**." },
+      "notes": "Análisis asintótico: encontrar la función que represente el crecimiento con respecto a n sin entrar en detalles abrumadores, descartando los términos que no son significativos para el crecimiento. Las constantes también se eliminan: f(n) = 6nT + T se expresa como f(n) = O(n)."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-codigo-grafica",
+      "section": "Análisis asintótico",
+      "title": "Un loop lineal: O(n)",
+      "codeLabel": "Recorrido de un vector",
+      "code": "for (int i = 0; i < vector.length(); i++) {\n    foo(vector[i]); // foo: tiempo constante\n}",
+      "codeSize": 14,
+      "cards": [
+        { "title": "Complejidad", "text": "Trabajo constante por cada elemento del vector.", "footer": "O(n)", "footerSize": 22, "tone": "teal", "h": 1.95 }
+      ],
+      "image": "02-analisis-algoritmos/image-03.png",
+      "alt": "Gráfica de la cantidad de operaciones contra el tamaño de la entrada: una recta ascendente",
+      "callout": { "tone": "amber", "text": "Si cambia la constante, cambia la pendiente, pero la **tendencia** sigue siendo lineal." },
+      "calloutY": 5.95,
+      "notes": "La gráfica de la cantidad de operaciones contra el tamaño de la entrada es una recta. En caso de que la constante cambie, la función seguirá siendo lineal: la pendiente cambia, pero la tendencia del algoritmo sigue siendo la misma."
+    },
+    {
+      "type": "cards",
+      "section": "Notaciones",
+      "title": "Big O, Big Omega y Big Theta",
+      "columns": 3,
+      "cardHeight": 2.8,
+      "textSize": 17,
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "el mejor, el peor y el promedio se pueden describir con **cualquiera** de las tres. Big O no es «el peor caso»." },
+      "cards": [
+        { "title": "Big O", "text": "Límite superior: el algoritmo no es más lento que esta cota.", "footer": "Ej.: O(n^2)", "tone": "teal" },
+        { "title": "Big Omega", "text": "Límite inferior: el algoritmo es al menos tan lento como esta cota.", "footer": "Ej.: Ω(n^2)", "tone": "teal" },
+        { "title": "Big Theta", "text": "Comportamiento exacto: el límite ajustado (O y Ω a la vez).", "footer": "Ej.: Θ(n^2)", "tone": "teal" }
+      ],
+      "notes": "Son notaciones para describir la ejecución de un algoritmo en términos de su comportamiento asintótico. Es incorrecto decir que Big O solo se refiere al peor caso, Big Omega al mejor y Big Theta al promedio: el mejor, el peor y el caso promedio se pueden describir con cualquiera de las notaciones de complejidad asintótica."
+    },
+    {
+      "type": "table",
+      "section": "Notaciones",
+      "title": "Big O, Ω y Θ: definición formal",
+      "columns": ["Notación", "Cota", "Definición (para todo n > n0)", "Ejemplo: f(n) = 3n^2 - 100n + 6"],
+      "colWeights": [1.3, 1.2, 3, 3.7],
+      "fontSize": 16,
+      "rowHeight": 0.85,
+      "rows": [
+        ["Big O", "Superior", "f(n) <= c · g(n)", "c = 3 y g(n) = n^2: 3n^2 siempre es mayor → O(n^2)"],
+        ["Big Omega", "Inferior", "f(n) >= c · g(n)", "c = 2: 2n^2 < f(n) si n > 100 → Ω(n^2)"],
+        ["Big Theta", "Ajustada", "c1 · g(n) <= f(n) <= c2 · g(n)", "Aplican O(n^2) y Ω(n^2) → Θ(n^2)"]
+      ],
+      "callout": { "tone": "teal", "text": "`g(n)` es el intento de clasificar a `f(n)`; las constantes `c`, `c1` y `c2` las podemos escoger." },
+      "calloutY": 5.2,
+      "notes": "Big O: f(n) = O(g(n)) significa que existe una constante c tal que f(n) <= c * g(n) para todo n mayor que un n0 dado. Con f(n) = 3n^2 - 100n + 6 y g(n) = n^2 se escoge c = 3: al graficar 3n^2 y f(n), 3n^2 siempre es mayor. Big Omega: existe c tal que f(n) >= c * g(n); con c = 2 se cumple 2n^2 < f(n) cuando n > 100. Big Theta: existen c1 y c2 tales que c1 * g(n) <= f(n) <= c2 * g(n); como O(n^2) y Ω(n^2) aplican, f(n) = Θ(n^2)."
+    },
+    {
+      "type": "image",
+      "section": "Notaciones",
+      "title": "Visualización de O, Ω y Θ",
+      "image": "02-analisis-algoritmos/image-04.png",
+      "alt": "Tres gráficas: (a) f(n) por debajo de c·g(n) a partir de n0; (b) f(n) por encima de c·g(n); (c) f(n) entre c1·g(n) y c2·g(n)",
+      "caption": "(a) f(n) = O(g(n)) · (b) f(n) = Ω(g(n)) · (c) f(n) = Θ(g(n))",
+      "notes": "(a) A partir de n0, c·g(n) queda por encima de f(n): cota superior. (b) A partir de n0, c·g(n) queda por debajo de f(n): cota inferior. (c) f(n) queda atrapada entre c1·g(n) y c2·g(n): cota ajustada. Lo que pasa antes de n0 no importa: solo interesa el comportamiento para n grande."
+    },
+    {
+      "type": "code",
+      "section": "Complejidad espacial",
+      "title": "Complejidad espacial: la memoria que se necesita",
+      "codeSize": 14,
+      "columns": [
+        {
+          "blocks": [
+            { "label": "Recursión", "lang": "c", "code": "int sum(int n) {\n    if (n <= 0) {\n        return 0;\n    }\n    return n + sum(n-1);\n}" }
+          ]
+        },
+        {
+          "blocks": [
+            { "label": "¿Cuál es la complejidad espacial de este?", "lang": "c", "code": "int foo(int n) {\n    int sum = 0;\n    for (int i = 0; i < n; i++) {\n        sum += bar(i, 1);\n    }\n    return sum;\n}\n\nint bar(int a, int b) {\n    return a + b;\n}" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "amber", "label": "O(n):", "text": "se almacenan **n llamadas recursivas** en la pila de llamadas." },
+        { "tone": "green", "label": "O(1):", "text": "no hay llamadas anidadas: la memoria no crece con n." }
+      ],
+      "calloutsY": 5.75,
+      "notes": "Lo visto hasta ahora se enfoca en complejidad en tiempo, pero la cantidad de memoria que un algoritmo requiere también se describe con Big-O, Big-Omega y Big-Theta. En sum(n) cada llamada recursiva queda en la pila hasta que se resuelve la siguiente: n llamadas en la pila, O(n). En foo(n) cada llamada a bar termina antes de la siguiente: no hay llamadas anidadas, O(1). Nota: en el capítulo la función bar se declara con dos parámetros pero se llama con uno; aquí se llama con dos argumentos para que el código sea correcto."
+    },
+    {
+      "type": "image",
+      "section": "Big-O conocidas",
+      "title": "Complejidades comunes (Big-O conocidas)",
+      "image": "03-analisis-teorico-2.png",
+      "alt": "Gráfica de complejidad contra tamaño de la entrada con las curvas O(log n), O(n), O(n log n), O(n^2), O(2^n) y O(n!)",
+      "caption": "De menor a mayor crecimiento: O(log n), O(n), O(n log n), O(n^2), O(2^n), O(n!).",
+      "notes": "Estas son las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos. Además de las que aparecen en la gráfica, O(1) (constante) es la de menor crecimiento. Las curvas se separan más conforme crece el tamaño de la entrada: por eso escalar un algoritmo O(2^n) o O(n!) es inviable."
+    },
+    {
+      "type": "code",
+      "section": "Determinar la complejidad",
+      "title": "Secuencia de instrucciones e If-Then-Else",
+      "codeSize": 18,
+      "top": 1.95,
+      "columns": [
+        {
+          "blocks": [
+            { "label": "Secuencia", "code": "statement 1;\nstatement 2;\n...\nstatement n;" }
+          ]
+        },
+        {
+          "blocks": [
+            { "label": "If-Then-Else", "code": "if (condition) {\n    statement 1;\n} else {\n    statement 2;\n}" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "Se suman:", "text": "`complejidad(1) + complejidad(2) + ... + complejidad(n)`" },
+        { "tone": "teal", "label": "Se toma el máximo:", "text": "`max(complejidad(1), complejidad(2))`" }
+      ],
+      "calloutsY": 4.9,
+      "calloutsH": 1.1,
+      "notes": "Dependiendo del tipo de instrucciones del código, así se determina la complejidad. En una secuencia, el total es la suma de las complejidades de cada instrucción; con análisis asintótico domina el término mayor (por ejemplo, un bloque O(n) seguido de uno O(n^2) da O(n^2)). En un if-then-else, la complejidad es el máximo entre la de la rama then y la de la rama else."
+    },
+    {
+      "type": "code",
+      "section": "Determinar la complejidad",
+      "title": "Loops: simple, secuencial y anidado",
+      "codeSize": 14,
+      "columns": [
+        {
+          "blocks": [{ "label": "Un loop", "code": "for (i = 0; i < n; i++) {\n  statement;\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Loops secuenciales", "code": "for (i = 0; i < n; i++) {\n  statement 1;\n}\nfor (j = 0; j < m; j++) {\n  statement 2;\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Loops anidados", "code": "for (i = 0; i < n; i++) {\n  for (j = 0; j < m; j++) {\n    statement;\n  }\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "`n · complejidad(statement)`: `O(n)` si el cuerpo es `O(1)`." },
+        { "tone": "teal", "text": "Se suman: la complejidad es **O(n+m)**." },
+        { "tone": "teal", "text": "Se multiplican: **O(n^2)** si n = m; con 3 loops, `O(n^3)`." }
+      ],
+      "calloutsY": 4.7,
+      "calloutsH": 1.3,
+      "notes": "Un loop for con n iteraciones cuesta n * complejidad(statement). Dos loops secuenciales con tamaños distintos n y m suman: O(n + m). En loops anidados se multiplican: n * m * complejidad(statement); si ambos son de tamaño n es O(n^2). Conforme se anidan más loops el exponente crece, pero la complejidad sigue siendo polinómica O(n^k) (para k fijo); el crecimiento exponencial correspondería a O(k^n)."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "Determinar la complejidad",
+      "title": "Complejidad logarítmica: O(log n)",
+      "queryLabel": "Código",
+      "query": "int i = n;\nwhile (i > 0) {\n    statement;\n    i = i / 2;\n}",
+      "queryLang": "java",
+      "queryFontSize": 18,
+      "resultLabel": "Valor de i en cada iteración",
+      "result": {
+        "columns": ["Iteración", "Valor de i"],
+        "colW": [1.8, 2.2],
+        "rows": [["1", "n"], ["2", "n/2"], ["3", "n/4"], ["k + 1", "n/2^k"]]
+      },
+      "callout": { "tone": "teal", "text": "El loop termina cuando `n/2^k = 1`, o sea `k = log2(n)`: **cuántas veces se puede dividir n entre 2** hasta llegar a 1." },
+      "notes": "En cada iteración i se divide por 2: en la primera iteración i es n, en la segunda n/2, en la tercera n/4, y en general en la iteración k+1 vale n/2^k (el capítulo lo escribe como n/2^k en la «k-ésima» iteración contando desde k = 0). La complejidad es O(log2 n) porque k es el número de veces que se puede dividir n por 2 hasta llegar a 1."
+    },
+    {
+      "type": "code",
+      "section": "Determinar la complejidad",
+      "title": "Recursión: una llamada vs. dos llamadas",
+      "codeSize": 16,
+      "columns": [
+        {
+          "blocks": [{ "label": "Una llamada recursiva", "code": "int foo(int n) {\n    if (n <= 0) {\n        return 0;\n    }\n    return n + foo(n-1);\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Dos llamadas recursivas", "code": "int foo(int n) {\n    if (n <= 0) {\n        return 0;\n    }\n    return n + foo(n-1) + foo(n-1);\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "O(n):", "text": "la función se llama **n veces**, decrementando n en cada llamada." },
+        { "tone": "red", "label": "O(2^n):", "text": "cada llamada hace **dos** llamadas: la cantidad se **duplica** por nivel." }
+      ],
+      "calloutsY": 4.8,
+      "calloutsH": 1.1,
+      "notes": "Para la recursión no hay una regla general: depende de lo que haga el código. En el primer caso, la función se llama n veces (n, n-1, ..., 1, 0). En el segundo, en cada llamada se hacen dos llamadas recursivas; en la siguiente diapositiva se ve gráficamente cómo se duplica la cantidad de llamadas."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-imagen-tabla",
+      "section": "Determinar la complejidad",
+      "title": "Árbol de llamadas: se duplican por nivel",
+      "image": "02-analisis-algoritmos/image-05.png",
+      "alt": "Árbol de llamadas recursivas f(4) con dos llamadas f(3), cuatro f(2) y ocho f(1)",
+      "imageHeight": 2.3,
+      "table": {
+        "columns": ["Nivel", "0", "1", "2", "3", "4"],
+        "colW": [1.9, 1.5, 1.5, 1.5, 1.5, 1.5],
+        "rows": [["# de nodos", "1", "2", "4", "8", "16"], ["Potencia", "2^0", "2^1", "2^2", "2^3", "2^4"]]
+      },
+      "callout": { "tone": "teal", "text": "Hay `2^(n+1) - 1` nodos: la complejidad es **O(2^n)**. En general: `O(ramas^profundidad)`." },
+      "notes": "La cantidad de llamadas se duplica en cada nivel de la recursión. Sumando 2^0 + 2^1 + ... + 2^n hay 2^(n+1) - 1 nodos, así que la complejidad es O(2^n). En muchos casos la complejidad recursiva se generaliza como O(ramas^profundidad), donde las ramas son el número de llamadas recursivas y la profundidad es la profundidad de la recursión. La figura muestra solo hasta f(1); la tabla incluye el último nivel (las llamadas con n <= 0, el caso base), que también cuenta."
+    },
+    {
+      "type": "code",
+      "section": "Más ejemplos",
+      "title": "Las constantes no cambian la complejidad",
+      "codeSize": 15,
+      "columns": [
+        {
+          "blocks": [{ "label": "Ejemplo 1: dos loops sobre el arreglo", "code": "int sum = 0;\nint product = 1;\nfor (int i = 0; i < array.length; i++) {\n    sum += array[i];\n}\nfor (int i = 0; i < array.length; i++) {\n    product *= array[i];\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Ejemplo 4: un loop interno constante", "code": "for (int i = 0; i < a.length; i++) {\n  for (int j = 0; j < b.length; j++) {\n    for (int k = 0; k < 100000; k++) {\n      print(a[i] + \",\" + b[j]);\n    }\n  }\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "O(2n) = O(n):", "text": "iterar dos veces el arreglo no importa." },
+        { "tone": "teal", "label": "O(ab):", "text": "a y b son los tamaños de los arreglos; el loop interno es `O(100000)`, una constante." }
+      ],
+      "calloutsY": 5.2,
+      "calloutsH": 1.1,
+      "notes": "Ejemplo 1: el método calcula la suma y el producto de los elementos con dos loops secuenciales sobre el mismo arreglo, O(n + n) = O(2n) = O(n). Ejemplo 4 (el capítulo usa arrayA y arrayB y System.out.println; aquí se abrevian los nombres): el loop interno de 100000 iteraciones es O(100000), una constante, así que la complejidad es O(ab), donde a es el tamaño del primer arreglo y b el del segundo."
+    },
+    {
+      "type": "code",
+      "section": "Más ejemplos",
+      "title": "Loops anidados: un arreglo vs. dos arreglos",
+      "codeSize": 15,
+      "columns": [
+        {
+          "blocks": [{ "label": "Ejemplo 2: pares no ordenados", "code": "for (int i = 0; i < array.length; i++) {\n  for (int j = i + 1; j < array.length; j++) {\n    print(array[i] + \",\" + array[j]);\n  }\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Ejemplo 3: dos arreglos", "code": "for (int i = 0; i < arrayA.length; i++) {\n  for (int j = 0; j < arrayB.length; j++) {\n    if (arrayA[i] < arrayB[j]) {\n      print(arrayA[i] + \",\" + arrayB[j]);\n    }\n  }\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "O(n^2):", "text": "`(N-1) + (N-2) + ... + 1 = N(N-1)/2` operaciones." },
+        { "tone": "teal", "label": "O(ab):", "text": "a es el tamaño de `arrayA` y b el de `arrayB`." }
+      ],
+      "calloutsY": 4.9,
+      "calloutsH": 1.1,
+      "notes": "Ejemplo 2: el loop interno empieza en i + 1, así que se hacen (N-1) + (N-2) + ... + 1 = N(N-1)/2 operaciones: O(n^2). Ejemplo 3: el loop externo recorre arrayA (a elementos) y el interno recorre arrayB (b elementos); la comparación del if es constante: O(ab). En el capítulo los ejemplos 2 y 3 usan System.out.println; aquí se abrevia a print."
+    },
+    {
+      "type": "code",
+      "section": "Más ejemplos",
+      "title": "Recorridos parciales: n/2 y raíz de n",
+      "codeSize": 15,
+      "columns": [
+        {
+          "blocks": [{ "label": "Ejemplo 5: invertir un arreglo", "code": "for (int i = 0; i < array.length / 2; i++) {\n  int other = array.length - i - 1;\n  int temp = array[i];\n  array[i] = array[other];\n  array[other] = temp;\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Ejemplo 7: ¿es primo?", "code": "boolean isPrime(int n) {\n  for (int x = 2; x <= sqrt(n); x++) {\n    if (n % x == 0) {\n      return false;\n    }\n  }\n  return true;\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "O(n/2) = O(n):", "text": "solo se recorre la mitad del arreglo." },
+        { "tone": "teal", "label": "O(sqrt(n)):", "text": "el loop llega hasta la raíz cuadrada de n." }
+      ],
+      "calloutsY": 5.2,
+      "calloutsH": 1.0,
+      "notes": "Ejemplo 5: reverse intercambia cada elemento con su simétrico; el loop solo recorre la mitad del arreglo, O(n/2) = O(n). Ejemplo 7: isPrime prueba divisores desde 2 hasta sqrt(n), así que en el peor caso (n primo) hace sqrt(n) iteraciones: O(sqrt(n)). Nota: en el capítulo el código usa n % X (error de mayúscula); aquí se escribe n % x."
+    },
+    {
+      "type": "code",
+      "section": "Más ejemplos",
+      "title": "Recursión: árbol, Fibonacci y factorial",
+      "codeSize": 14,
+      "columns": [
+        {
+          "blocks": [{ "label": "Ejemplo 6: sumar un BST", "code": "int sum(Node node) {\n  if (node == null)\n    return 0;\n  return sum(node.left)\n    + node.value\n    + sum(node.right);\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Ejemplo 8: Fibonacci", "code": "int fib(int n) {\n  if (n <= 0) return 0;\n  if (n == 1) return 1;\n  return fib(n-1) + fib(n-2);\n}" }]
+        },
+        {
+          "blocks": [{ "label": "Ejemplo 9: factorial", "code": "int factorial(int n) {\n  if (n < 0) return -1;\n  if (n == 0) return 1;\n  return n * factorial(n-1);\n}" }]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Se visita **cada nodo** una vez: `O(n)`." },
+        { "tone": "red", "text": "Dos llamadas por nivel: `O(2^n)`." },
+        { "tone": "teal", "text": "Una llamada por nivel: `O(n)`." }
+      ],
+      "calloutsY": 4.9,
+      "calloutsH": 1.1,
+      "notes": "Ejemplo 6: dado que se recorren todos los nodos del árbol, la complejidad es O(n). Ejemplo 8: fib hace dos llamadas recursivas en cada paso, O(2^n) (cota que el capítulo da para este ejemplo). Ejemplo 9: factorial se llama n veces, O(n). Los códigos del capítulo usan if / else if / else; aquí se abrevian con if y return, que es equivalente."
+    },
+    {
+      "type": "cards",
+      "section": "Recurrencias",
+      "title": "Recurrencias: el tiempo de un algoritmo recursivo",
+      "intro": "**Recurrencia:** `T(n)` definida con `T` de entradas menores. Ej.: merge sort, `T(n) = 2T(n/2) + O(n)`.",
+      "columns": 3,
+      "cardHeight": 2.6,
+      "titleSize": 22,
+      "callout": { "tone": "teal", "text": "Resolverla es hallar su **forma cerrada**, con tres métodos: **sustitución**, **árbol de recursión** y **teorema maestro**." },
+      "cards": [
+        { "title": "2 T(n/2)", "text": "Las **dos llamadas recursivas**, cada una sobre un subproblema de tamaño n/2.", "tone": "teal" },
+        { "title": "O(n)", "text": "El **costo de combinar** las soluciones: el merge, en tiempo lineal.", "tone": "teal" },
+        { "title": "T(1) = O(1)", "text": "El **caso base**: ordenar un solo elemento es trivial.", "tone": "teal" }
+      ],
+      "notes": "Para la recursión no existe una regla mecánica para determinar la complejidad: depende de lo que hace cada llamada. La herramienta formal es la relación de recurrencia: una ecuación que define una función en términos de sus propios valores sobre entradas más pequeñas. Se define T(n) como el tiempo (cantidad de operaciones) para resolver un problema de tamaño n, expresado como el costo de las llamadas recursivas más el trabajo fuera de ellas. Merge sort divide el arreglo en dos mitades, ordena cada una recursivamente y las mezcla en tiempo lineal."
+    },
+    {
+      "type": "code",
+      "section": "Recurrencias",
+      "title": "Método de sustitución: adivinar y demostrar",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 0.9,
+          "cards": [
+            { "title": "1. Adivinar", "text": "Una cota: para `T(n) = 2T(n/2) + n`, `O(n log n)`.", "tone": "teal", "h": 1.8 },
+            { "title": "2. Demostrar", "text": "Por **inducción matemática**, hallando las constantes.", "tone": "teal", "h": 1.8 }
+          ]
+        },
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "Paso inductivo (la cota vale para n/2)",
+              "code": "T(n) =  2 T(n/2) + n\n     <= 2 (c * (n/2) * log(n/2)) + n\n     =  c * n * log(n/2) + n\n     =  c * n * (log(n) - 1) + n\n     =  c * n * log(n) - c * n + n\n     <= c * n * log(n)",
+              "lang": "plain",
+              "note": "La segunda línea aplica la **hipótesis inductiva**."
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "Conclusión:", "text": "con `c >= 1`, `T(n) = O(n log n)`." },
+        { "tone": "amber", "label": "Ojo:", "text": "una mala conjetura (muy holgada o muy ajustada) hace fallar la inducción." }
+      ],
+      "calloutsY": 5.9,
+      "calloutsH": 0.9,
+      "notes": "El método de sustitución sirve para probar una cota, pero requiere intuición previa. La intuición para adivinar suele venir de resolver casos pequeños, de la experiencia o de un árbol de recursión. Se busca una constante c tal que T(n) <= c * n * log(n). En la última línea, -c*n + n <= 0 si c >= 1, por lo que T(n) <= c * n * log(n)."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-arbol-niveles",
+      "section": "Recurrencias",
+      "title": "Árbol de recursión: merge sort",
+      "intro": "Cada nodo es el costo no recursivo `cn` de esa llamada; se suma nivel por nivel.",
+      "treeHeader": "Costo de cada nodo",
+      "totalHeader": "Costo del nivel",
+      "levels": [
+        { "label": "Nivel 0", "nodes": ["cn"], "total": "cn" },
+        { "label": "Nivel 1", "nodes": ["cn/2", "cn/2"], "total": "cn/2 + cn/2 = cn" },
+        { "label": "Nivel 2", "nodes": ["cn/4", "cn/4", "cn/4", "cn/4"], "total": "4 · cn/4 = cn" },
+        { "label": "", "dots": true, "total": "…" },
+        { "label": "Nivel log2(n)", "nodes": ["c", "c", "c", "c", "c", "c", "c", "c"], "total": "n · c = cn" }
+      ],
+      "callout": { "tone": "teal", "text": "Hay `log2(n) + 1` niveles: **T(n) = cn · (log2(n) + 1) = O(n log n)**." },
+      "notes": "Un árbol de recursión es una representación visual donde cada nodo corresponde al costo de un subproblema. Pasos: (1) etiquetar cada nodo con el costo del trabajo no recursivo de esa llamada, f(n); (2) los hijos de un nodo son las llamadas recursivas que genera; (3) sumar el costo de cada nivel; (4) multiplicar el costo por nivel por la cantidad de niveles. En cada nivel el costo total es cn: aunque el tamaño de cada subproblema se reduce a la mitad, el número de subproblemas se duplica. El tamaño del subproblema en el nivel k es n/2^k; llega al caso base cuando n/2^k = 1, o sea k = log2(n). Es una herramienta de intuición: para una demostración rigurosa conviene verificar con sustitución o aplicar el teorema maestro."
+    },
+    {
+      "type": "cards",
+      "section": "Teorema maestro",
+      "title": "Teorema maestro: divide y vencerás",
+      "intro": "Resuelve `T(n) = a * T(n/b) + f(n)`, con `a >= 1` y `b > 1` constantes:",
+      "columns": 3,
+      "cardHeight": 2.9,
+      "textSize": 17,
+      "callout": { "tone": "teal", "text": "Idea central: **comparar f(n) con n^(log_b a)**, el costo de las hojas. Según cuál domine, hay tres casos." },
+      "cards": [
+        { "badge": "a", "title": "Subproblemas", "text": "El número de subproblemas en cada paso recursivo.", "tone": "teal" },
+        { "badge": "n/b", "title": "Tamaño", "text": "El tamaño de cada subproblema: una fracción 1/b del original.", "tone": "teal" },
+        { "badge": "f(n)", "title": "Trabajo fuera", "text": "El costo fuera de las llamadas: dividir y combinar.", "tone": "teal" }
+      ],
+      "notes": "El teorema maestro (master theorem) es una receta que resuelve directamente muchas recurrencias de tipo divide y vencerás, sin árboles ni inducción. El exponente log_b a representa el costo de las hojas del árbol de recursión (el trabajo en el caso base)."
+    },
+    {
+      "type": "table",
+      "section": "Teorema maestro",
+      "title": "Los tres casos del teorema maestro",
+      "columns": ["Caso", "f(n) crece…", "Condición (epsilon > 0)", "T(n)", "Domina"],
+      "colWeights": [0.7, 1.5, 3.6, 3.4, 1.6],
+      "fontSize": 17,
+      "rowHeight": 0.8,
+      "rows": [
+        ["1", "más lento", "f(n) = O(n^(log_b a - epsilon))", "Theta(n^(log_b a))", "las hojas"],
+        ["2", "igual", "f(n) = Theta(n^(log_b a))", "Theta(n^(log_b a) · log n)", "equilibrio"],
+        ["3", "más rápido", "f(n) = Omega(n^(log_b a + epsilon))", "Theta(f(n))", "la raíz"]
+      ],
+      "callouts": [
+        { "tone": "amber", "label": "Caso 3:", "text": "exige la **condición de regularidad**: `a · f(n/b) <= k · f(n)`, con `k < 1`." },
+        { "tone": "red", "label": "No cubre todo:", "text": "`f(n) = n log n` frente a `n`, ni subproblemas de distinto tamaño." }
+      ],
+      "calloutY": 5.2,
+      "calloutH": 1.2,
+      "notes": "Caso 1: f(n) crece más lento (polinómicamente) que n^(log_b a); el costo está dominado por el trabajo en las hojas. Caso 2: f(n) crece al mismo ritmo; el costo se reparte por igual entre los log n niveles del árbol, por eso aparece un factor logarítmico. Caso 3: f(n) crece más rápido (polinómicamente); domina el trabajo en la raíz, y debe cumplirse la condición de regularidad a·f(n/b) <= k·f(n) para alguna constante k < 1 y n suficientemente grande (el trabajo decrece geométricamente hacia las hojas). Existen «huecos» entre los casos: por ejemplo, f(n) = n log n frente a n no cumple ninguno de los tres, porque la diferencia no es polinómica; tampoco aplica a T(n) = T(n/3) + T(2n/3) + n. Para esos casos se recurre a sustitución, árbol de recursión o variantes más generales (método de Akra-Bazzi)."
+    },
+    {
+      "type": "code",
+      "section": "Teorema maestro",
+      "title": "Búsqueda binaria: T(n) = T(n/2) + O(1)",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.6,
+          "blocks": [
+            {
+              "label": "Descarta la mitad del arreglo en cada vuelta",
+              "lang": "cpp",
+              "code": "int busquedaBinaria(const vector<int>& v, int objetivo) {\n    int lo = 0, hi = (int)v.size() - 1;\n    while (lo <= hi) {\n        int mid = lo + (hi - lo) / 2;\n        if (v[mid] == objetivo) return mid;\n        else if (v[mid] < objetivo) lo = mid + 1;\n        else hi = mid - 1;\n    }\n    return -1;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "1. Identificar", "text": "`a = 1`, `b = 2`, `f(n) = O(1)`", "footer": "n^(log_2 1) = n^0 = 1", "footerSize": 15, "tone": "teal", "h": 1.9 },
+            { "title": "2. Comparar",             "text": "`f(n) = Theta(n^0)`: **Caso 2**", "footer": "T(n) = Theta(log n)", "footerSize": 20, "tone": "green", "h": 1.9 }
+          ]
+        }
+      ],
+                  "callouts": [{ "tone": "teal", "text": "Cada vuelta descarta la mitad del arreglo: se necesitan unas `log2(n)` vueltas." }],
+                  "calloutsY": 6.0,
+                  "calloutsH": 0.8,
+      "notes": "La versión recursiva descarta la mitad del arreglo y hace una sola llamada recursiva, con trabajo constante por nivel: T(n) = T(n/2) + O(1), con a = 1, b = 2 y f(n) = O(1). Se calcula n^(log_b a) = n^(log_2 1) = n^0 = 1. Como f(n) = O(1) = Θ(1) = Θ(n^0), estamos en el Caso 2 (f(n) crece igual que n^(log_b a)): T(n) = Θ(n^0 · log n) = Θ(log n), es decir O(log n). El código del capítulo usa std::vector y comentarios que aquí se omiten por espacio."
+    },
+    {
+      "type": "compare",
+      "section": "Teorema maestro",
+      "title": "Más ejemplos con el teorema maestro",
+      "vs": true,
+      "panelHeight": 3.6,
+      "panels": [
+        {
+          "title": "Merge sort (Caso 2)",
+          "tone": "teal",
+          "codeLang": "plain",
+          "codeSize": 16,
+          "code": "T(n) = 2T(n/2) + O(n)\na = 2, b = 2, f(n) = O(n)\nn^(log_2 2) = n^1 = n\nf(n) = Theta(n)  →  Caso 2\nT(n) = Theta(n log n)",
+          "note": "Coincide con el árbol y la sustitución."
+        },
+        {
+          "title": "4T(n/2) + O(n) (Caso 1)",
+          "tone": "amber",
+          "codeLang": "plain",
+          "codeSize": 16,
+          "code": "T(n) = 4T(n/2) + O(n)\na = 4, b = 2, f(n) = O(n)\nn^(log_2 4) = n^2\nf(n) = O(n^(2-1))  →  Caso 1\nT(n) = Theta(n^2)",
+          "note": "Aquí epsilon = 1."
+        }
+      ],
+      "callout": { "tone": "teal", "label": "Resumen:", "text": "búsqueda binaria, `O(log n)` · merge sort, `O(n log n)` · `4T(n/2) + O(n)`, `O(n^2)`" },
+      "notes": "Merge sort: a = 2, b = 2, f(n) = O(n); n^(log_2 2) = n; f(n) = Θ(n), Caso 2, T(n) = Θ(n log n); coincide con lo obtenido por el árbol de recursión y por sustitución. Recurrencia con Caso 1: T(n) = 4T(n/2) + O(n); n^(log_2 4) = n^2; como n crece más lento que n^2 (f(n) = O(n^(2-1)), con ε = 1), T(n) = Θ(n^2). Tabla resumen del capítulo: T(n) = T(n/2) + O(1): a=1, b=2, caso 2, O(log n); T(n) = 2T(n/2) + O(n): a=2, b=2, caso 2, O(n log n); T(n) = 4T(n/2) + O(n): a=4, b=2, caso 1, O(n^2)."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted: ¿cuál es la complejidad?",
+      "intro": "Determine la complejidad de cada caso:",
+      "columns": 2,
+      "titleSize": 20,
+      "textSize": 18,
+      "cards": [
+        { "title": "A. Loops anidados", "text": "Tres loops anidados: los dos primeros hasta `n` y el tercero hasta `10`.", "tone": "teal" },
+        { "title": "B. Loop que duplica", "text": "`for (i = 1; i < n; i = i * 2) { ... }`", "tone": "teal" },
+        { "title": "C. Recurrencia", "text": "`T(n) = 2T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" },
+        { "title": "D. Recurrencia", "text": "`T(n) = 8T(n/2) + n^2`: use el teorema maestro.", "tone": "teal" }
+      ],
+      "notes": "Ejercicios añadidos (no están en el capítulo). Respuestas: A) n · n · 10 = 10n^2, O(n^2): el loop constante no cambia la complejidad. B) i vale 1, 2, 4, 8, ...: el loop se ejecuta cerca de log2(n) veces, O(log n). C) a = 2, b = 2, n^(log_2 2) = n; f(n) = n^2 = Ω(n^(1+1)) con ε = 1, Caso 3; regularidad: 2·(n/2)^2 = n^2/2 <= k·n^2 con k = 1/2 < 1; T(n) = Θ(n^2). D) a = 8, b = 2, n^(log_2 8) = n^3; f(n) = n^2 = O(n^(3-1)) con ε = 1, Caso 1; T(n) = Θ(n^3)."
+    },
+    {
+      "type": "cards",
+      "section": "Análisis amortizado",
+      "title": "Análisis amortizado: tres métodos",
+      "intro": "Costo **promedio por operación en el peor caso**, sobre una secuencia de m operaciones:",
+      "columns": 3,
+      "cardHeight": 2.7,
+      "textSize": 17,
+      "callout": { "tone": "amber", "label": "Amortizado ≠ caso promedio:", "text": "no supone ninguna distribución de probabilidad; es una **garantía** de peor caso." },
+      "cards": [
+        { "title": "Agregado", "text": "Costo total `T(m)` de la secuencia en el peor caso; amortizado: `T(m) / m`.", "tone": "teal" },
+        { "title": "Contable", "text": "Se cobra un costo por operación; el sobrante es **crédito** que paga las caras.", "tone": "teal" },
+        { "title": "Potencial", "text": "Una función `Phi` del estado: costo real más el cambio de potencial.", "tone": "teal" }
+      ],
+      "notes": "A veces una operación es ocasionalmente costosa pero barata la mayor parte del tiempo, y mirar solo el peor caso de una operación aislada da una imagen pesimista y poco realista. El análisis amortizado garantiza que cualquier secuencia de m operaciones cueste a lo sumo cierto total, repartido entre las m operaciones; la palabra clave es secuencia. Agregado: el más simple, solo necesita el costo total de la secuencia. Contable: a cada operación se le asigna un costo amortizado; si el cobro excede el costo real, el sobrante se guarda como crédito y el crédito nunca debe ser negativo. Potencial: generalización del contable; el crédito se reemplaza por una función matemática del estado (una especie de «energía almacenada»)."
+    },
+    {
+      "type": "diagram",
+      "kind": "analisis-costos-push",
+      "section": "Análisis amortizado",
+      "title": "Arreglo dinámico: casi siempre barato",
+      "costs": [1, 2, 3, 1, 5, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 17],
+      "avg": 3,
+      "avgLabel": "costo amortizado = 3 unidades",
+      "legendOk": "Inserción simple: costo 1",
+      "legendCopy": "Redimensión: copiar k elementos + 1",
+      "yLabel": "Costo real de cada push_back",
+      "axisLabel": "Número de push_back (capacidad inicial 1; se duplica al llenarse)",
+      "callout": { "tone": "teal", "text": "`push_back` parece `O(n)`, pero la redimensión es rara: es **O(1) amortizado**." },
+      "notes": "El ejemplo canónico es el arreglo dinámico que duplica su capacidad cuando se llena, como std::vector en C++. En el caso común push_back coloca el elemento en el siguiente espacio libre: O(1). Cuando el arreglo está lleno reserva un bloque del doble de tamaño, copia todos los elementos y luego inserta: O(n). Los costos del gráfico (para 17 inserciones con capacidad inicial 1) son 1, 2, 3, 1, 5, 1, 1, 1, 9, ... y 17: son los costos exactos de contar cada copia y cada inserción como una unidad (valores calculados para esta presentación; no aparecen en el capítulo). El total para m = 17 es 48 unidades, unos 2.8 por operación."
+    },
+    {
+      "type": "compare",
+      "section": "Análisis amortizado",
+      "title": "Agregado y contable en el arreglo dinámico",
+      "vs": true,
+      "panelHeight": 3.8,
+      "panels": [
+        {
+          "title": "Método agregado",
+          "tone": "teal",
+          "text": "Costo total de `m` inserciones:",
+          "codeLang": "plain",
+          "codeSize": 16,
+          "code": "copias <= 1 + 2 + ... + 2^k < 2m\nT(m) < m + 2m = 3m = O(m)\nT(m) / m = O(1)"
+        },
+        {
+          "title": "Método contable",
+          "tone": "amber",
+          "itemSize": 18,
+          "items": [
+            "Se **cobran 3 unidades** por `push_back`",
+            "1 paga la **inserción** actual",
+            "1 queda de crédito para copiar **este** elemento",
+            "1 queda de crédito para copiar **uno antiguo**"
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Un costo amortizado constante (3) significa que `push_back` es **O(1) amortizado**." },
+      "notes": "Agregado: las redimensiones ocurren en los tamaños 1, 2, 4, 8, ..., hasta m; el costo de copia en cada una es 1 + 2 + 4 + ... + 2^k, con 2^k <= m, una suma geométrica igual a 2^(k+1) - 1 < 2m. Sumando las m inserciones baratas, T(m) < 3m = O(m) y el costo amortizado por operación es T(m)/m = O(1). Contable: cuando llega una redimensión, cada elemento a copiar tiene crédito suficiente acumulado para pagar su propia copia, sin cobrar nada extra."
+    },
+    {
+      "type": "code",
+      "section": "Análisis amortizado",
+      "title": "Arreglo dinámico en C++: contando el costo",
+      "codeSize": 14,
+      "columns": [
+        {
+          "blocks": [
+            {
+              "label": "Clase ArregloDinamico (extracto): copiar es O(n)",
+              "lang": "cpp",
+              "code": "class ArregloDinamico {\n  int* datos;\n  size_t tam, capacidad;\n  long long costoTotal;\n  void redimensionar(size_t nueva) {\n    int* nuevos = new int[nueva];\n    for (size_t i = 0; i < tam; ++i) {\n      nuevos[i] = datos[i]; ++costoTotal;\n    }\n    delete[] datos; datos = nuevos;\n    capacidad = nueva;\n  }"
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "label": "push_back",
+              "lang": "cpp",
+              "code": "void push_back(int valor) {\n    if (tam == capacidad)\n        redimensionar(capacidad * 2);\n    datos[tam++] = valor; ++costoTotal;\n}"
+            },
+            {
+              "label": "Programa de prueba",
+              "lang": "cpp",
+              "code": "for (int i = 0; i < M; ++i)\n    v.push_back(i);\ncout << v.costo() / (double)M;"
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Con `M = 1 000 000`, el costo por operación converge a una **constante pequeña** (≈ 2; siempre < 3)." },
+        { "tone": "amber", "text": "`std::vector` **duplica** su capacidad: si creciera de uno en uno, cada inserción copiaría todo, `O(n)`." }
+      ],
+      "calloutsY": 5.95,
+      "calloutsH": 0.9,
+      "notes": "El programa del capítulo implementa un arreglo dinámico propio que duplica su capacidad y contabiliza el costo total (inserciones + copias) para mostrar empíricamente el comportamiento amortizado. Aquí se muestra un extracto (se omiten el constructor, el destructor y los métodos size() y costo()). El capítulo indica que el costo amortizado converge a una constante cercana a 3; al ejecutar la simulación con M = 1 000 000 el valor es ≈ 2.05, y se acerca a 3 (sin superarlo) justo después de cada redimensión. En ambos casos es una constante, lo que confirma que push_back es O(1) amortizado. Por esta razón std::vector crece duplicando (o multiplicando por un factor mayor que 1) su capacidad y no de uno en uno: sumando una posición a la vez cada inserción dispararía una copia y el costo amortizado sería O(n), no O(1)."
+    },
+    {
+      "type": "table",
+      "section": "Estructuras de datos",
+      "title": "Peor caso de las estructuras de datos (1/2)",
+      "columns": ["Estructura", "Acceso", "Búsqueda", "Inserción", "Eliminación"],
+      "colWeights": [2.6, 1, 1, 1, 1.2],
+      "fontSize": 18,
+      "rowHeight": 0.65,
+      "rows": [
+        ["Array", "O(1)", "O(n)", "O(n)", "O(n)"],
+        ["Stack", "O(n)", "O(n)", "O(1)", "O(1)"],
+        ["Queue", "O(n)", "O(n)", "O(1)", "O(1)"],
+        ["Singly linked list", "O(n)", "O(n)", "O(n)", "O(n)"],
+        ["Doubly linked list", "O(n)", "O(n)", "O(1)", "O(1)"]
+      ],
+      "callout": { "tone": "teal", "text": "Todos los valores son de **peor caso**. Solo el arreglo accede en `O(1)`." },
+      "notes": "Resumen del capítulo (figura «Resumen de complejidad Big O»): el peor caso de algunas estructuras de datos comunes. Se reconstruyó como tabla; en el capítulo la figura usa N mayúscula."
+    },
+    {
+      "type": "table",
+      "section": "Estructuras de datos",
+      "title": "Peor caso de las estructuras de datos (2/2)",
+      "columns": ["Estructura", "Acceso", "Búsqueda", "Inserción", "Eliminación"],
+      "colWeights": [2.6, 1, 1, 1, 1.2],
+      "fontSize": 18,
+      "rowHeight": 0.65,
+      "highlightRows": [3, 4],
+      "rows": [
+        ["Hash table", "O(n)", "O(n)", "O(n)", "O(n)"],
+        ["Binary search tree", "O(n)", "O(n)", "O(n)", "O(n)"],
+        ["Binary tree", "O(n)", "O(n)", "O(n)", "O(n)"],
+        ["AVL tree", "O(log n)", "O(log n)", "O(log n)", "O(log n)"],
+        ["Red-black tree", "O(log n)", "O(log n)", "O(log n)", "O(log n)"]
+      ],
+      "callout": { "tone": "green", "text": "Los árboles **balanceados** (AVL y rojinegro) tienen `O(log n)` en el peor caso." },
+      "notes": "Continuación de la tabla de peor caso: tabla hash, árbol binario de búsqueda, árbol binario, árbol AVL y árbol rojinegro. Un BST sin balancear puede degenerar en una lista y llegar a O(n); los árboles balanceados lo evitan."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen (1/2): análisis de algoritmos",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Algoritmo:** procedimiento para cumplir una tarea; el programa es su implementación.",
+        "**Empírico vs. teórico:** medir ejecutando (depende de la máquina) o contar operaciones con un modelo computacional.",
+        "**Casos:** mejor, peor y promedio; el **peor caso** es el más útil.",
+        "**Asintótico:** se descartan constantes y términos menores; **O**, **Omega** y **Theta** son cotas superior, inferior y ajustada.",
+        "**Complejidad:** secuencia suma, if toma el máximo, loops multiplican; la recursión se analiza con su árbol de llamadas."
+      ],
+      "notes": "Cierre de la primera mitad. La complejidad espacial también se describe con O, Ω y Θ: la recursión de profundidad n usa O(n) de pila."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen (2/2): recurrencias y amortizado",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Recurrencia:** `T(n)` en términos de entradas menores; se resuelve por sustitución, árbol de recursión o teorema maestro.",
+        "**Teorema maestro:** compare `f(n)` con `n^(log_b a)`; tres casos (hojas, equilibrio, raíz) y algunos huecos.",
+        "**Amortizado:** costo promedio por operación en el peor caso sobre una secuencia (agregado, contable y potencial).",
+        "**Arreglo dinámico:** `push_back` es `O(1)` amortizado si se duplica la capacidad."
+      ],
+      "notes": "Repaso: pregunte a la clase por qué el análisis amortizado no es lo mismo que el caso promedio."
+    },
+    {
+      "type": "list",
+      "section": "Cierre",
+      "title": "Referencias",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        { "title": "Skiena, S. (2020). The Algorithm Design Manual. Springer." },
+        { "title": "Laakmann, G. L. (2020). Cracking the Coding Interview (6th ed.). CareerCup." },
+        { "title": "GeeksforGeeks. What is an algorithm and why analysis of it is important", "text": "https://www.geeksforgeeks.org/what-is-algorithm-and-why-analysis-of-it-is-important/" }
+      ],
+      "notes": "Material complementario: el capítulo ce-2103\\02-analisis-de-algoritmos.md."
+    }
+  ]
+}

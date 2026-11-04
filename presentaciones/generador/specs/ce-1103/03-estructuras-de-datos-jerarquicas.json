@@ -1,0 +1,1474 @@
+{
+  "meta": {
+    "title": "Estructuras de Datos Jerárquicas",
+    "author": "CE-1103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-1103 · Lección 05 · Estructuras de Datos Jerárquicas",
+    "footer": "CE-1103 · Estructuras Jerárquicas",
+    "theme": "dark",
+    "codeLang": "java",
+    "assetsDir": "../../../../ce-1103/images",
+    "output": "../../../ce-1103/Lección 05 - Estructuras de Datos Jerárquicas.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-1103 · Lección 05",
+      "title": "Estructuras de Datos Jerárquicas",
+      "subtitle": "Organizar los datos en forma de árbol",
+      "terminal": {
+        "file": "TreeNode.java",
+        "lang": "java",
+        "code": "class TreeNode {\n    int key;\n    TreeNode left;\n    TreeNode right;\n}"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Lección sobre estructuras jerárquicas: terminología de árboles, árboles binarios de búsqueda (BST), heaps, árboles AVL, árboles de expresión, árboles B y tries. Todos los ejemplos de código están en Java. Esta lección sigue a las estructuras lineales (listas, pilas y colas): los árboles también se implementan con nodos enlazados, salvo el heap, que usa un arreglo."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Identificar la **terminología** de los árboles y sus recorridos",
+        "Implementar un **BST**: búsqueda, inserción y eliminación",
+        "Representar un **heap** con un arreglo",
+        "Mantener el balance con **árboles AVL** y rotaciones",
+        "Construir **árboles de expresión** a partir de una expresión",
+        "Describir los **árboles B** y los **tries**"
+      ],
+      "notes": "Seis bloques: terminología y TDA, BST, heap, AVL, árboles de expresión y, al final, los árboles N-arios (árboles B y tries). La diapositiva final propone cuatro ejercicios cortos."
+    },
+    {
+      "type": "compare",
+      "section": "Introducción",
+      "title": "Familias de árboles",
+      "vs": true,
+      "panelHeight": 3.75,
+      "panels": [
+        {
+          "title": "Árboles binarios",
+          "tone": "teal",
+          "text": "Cada nodo tiene a lo sumo dos hijos.",
+          "itemSize": 17,
+          "items": [
+            "**BST**: búsquedas eficientes",
+            "**AVL** y **rojinegros**: balanceados",
+            "**Splay**: lo más usado, cerca de la raíz",
+            "**Expresiones**: expresiones matemáticas",
+            "**Heap**: colas de prioridad"
+          ]
+        },
+        {
+          "title": "Árboles N-arios",
+          "tone": "navy",
+          "text": "Cada nodo tiene un número variable de hijos.",
+          "itemSize": 17,
+          "items": [
+            "**B** y **B+**: datos en disco, bases de datos",
+            "**Trie**: conjuntos de cadenas de caracteres",
+            "**Sufijos**: todas las subcadenas de una cadena"
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "En esta lección: BST, heap, AVL, expresiones, árboles B y tries. Casi todos se implementan con **nodos enlazados**, como las listas." },
+      "notes": "Los datos se organizan con un nodo raíz y cada nodo tiene cero o más hijos; cada hijo es, a su vez, la raíz de un subárbol. Los árboles splay, rojinegros, B+ y de sufijos solo se mencionan: no se desarrollan en el curso. Con excepción de algunos árboles que pueden implementarse con arreglos (el heap), la mayoría se implementa con nodos enlazados, de forma similar a las listas."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Terminología",
+      "title": "Terminología básica de los árboles",
+      "legend": [
+        { "label": "Raíz", "tone": "teal" },
+        { "label": "Nodo interno", "tone": "navy" },
+        { "label": "Hoja", "tone": "amber" }
+      ],
+      "trees": [
+        {
+          "tree": "A(B(D(,H),E),C(F(I,J),G))",
+          "marks": {
+            "A": { "tone": "teal" },
+            "H": { "tone": "amber" },
+            "E": { "tone": "amber" },
+            "I": { "tone": "amber" },
+            "J": { "tone": "amber" },
+            "G": { "tone": "amber" }
+          }
+        }
+      ],
+      "side": {
+        "w": 5.3,
+        "items": [
+          {
+            "table": {
+              "columns": ["Término", "En el ejemplo"],
+              "colW": [1.5, 3.8],
+              "fontSize": 15,
+              "rowH": [0.45, 0.5, 0.5, 0.5, 0.5, 0.75, 0.5, 0.5],
+              "rows": [
+                ["Raíz", "A, en el nivel 0"],
+                ["Padre e hijo", "B es el padre de D y E"],
+                ["Hijo izquierdo", "D es el hijo izquierdo de B"],
+                ["Hoja", "Nodo sin hijos: H, E, I, J, G"],
+                ["Nivel", "A: 0 · B y C: 1 · D, E, F y G: 2 · H, I y J: 3"],
+                ["Subárbol", "F con sus hijos I y J"],
+                ["Camino", "A → C → F → J"]
+              ]
+            }
+          }
+        ]
+      },
+      "notes": "Árbol de la figura del capítulo (trees-1.png, con rótulos en inglés: root, parent, left child, level, path, subtree). Recorra la tabla señalando cada término en el árbol. Una hoja es un nodo sin hijos (término estándar, no está en el capítulo). La altura se define más adelante, en AVL: número de nodos del camino más largo hasta una hoja, con altura 0 para un subárbol vacío."
+    },
+    {
+      "type": "cards",
+      "section": "Terminología",
+      "title": "Tipo de dato abstracto Árbol",
+      "columns": 4,
+      "cardHeight": 3.0,
+      "titleSize": 18,
+      "cards": [
+        { "title": "Insertar (insert)", "text": "Añade un nodo al árbol.", "tone": "teal", "badge": "1" },
+        { "title": "Eliminar (delete)", "text": "Elimina un nodo del árbol.", "tone": "teal", "badge": "2" },
+        { "title": "Buscar (search)", "text": "Busca un nodo en el árbol.", "tone": "teal", "badge": "3" },
+        { "title": "Recorrer (traverse)", "text": "Visita todos los nodos en un orden definido.", "tone": "amber", "badge": "4" }
+      ],
+      "callout": { "tone": "teal", "text": "Recorrer admite varios órdenes: **preorden**, **inorden**, **postorden** y **por niveles**." },
+      "notes": "Operaciones básicas del TDA Árbol. Los cuatro órdenes de recorrido se desarrollan con un ejemplo más adelante. Cada estructura de la lección ajusta estas operaciones: el heap, por ejemplo, solo elimina la raíz; el trie opera con cadenas completas."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Árbol binario de búsqueda (BST)",
+      "trees": [
+        {
+          "tree": "8(3(1,6(4,7)),10(,14(13,)))",
+          "marks": {
+            "3": { "tone": "teal" },
+            "1": { "tone": "teal" },
+            "6": { "tone": "teal" },
+            "4": { "tone": "teal" },
+            "7": { "tone": "teal" },
+            "10": { "tone": "amber" },
+            "14": { "tone": "amber" },
+            "13": { "tone": "amber" }
+          }
+        }
+      ],
+      "side": {
+        "w": 4.6,
+        "items": [
+          { "card": { "title": "Subárbol izquierdo", "text": "Todos los valores son **menores** que 8.", "tone": "teal", "h": 1.55 } },
+          { "card": { "title": "Subárbol derecho", "text": "Todos los valores son **mayores** que 8.", "tone": "amber", "h": 1.55 } }
+        ]
+      },
+      "callout": { "tone": "teal", "label": "Propiedad:", "text": "para cada nodo, **izquierdo < nodo < derecho**. Si la llave ya existe, no se inserta." },
+      "notes": "Un BST es un árbol binario con una regla que permite buscar eficientemente: para cada nodo, todos los valores del subárbol izquierdo son menores y todos los del derecho son mayores. Los BST pueden implementarse con arreglos o con nodos enlazados; en el curso se ven como nodos enlazados, mientras que el heap se implementará con un arreglo. Este mismo árbol (8, 3, 10, 1, 6, 14, 4, 7, 13) se usa en las siguientes diapositivas."
+    },
+    {
+      "type": "code",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Implementación con nodos enlazados",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Nodo del árbol",
+              "code": "class TreeNode {\n    int key;\n    TreeNode left, right;\n\n    public TreeNode(int item) {\n        key = item;\n        left = right = null;\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "El árbol",
+              "code": "public class BinarySearchTree {\n    TreeNode root;\n\n    public BinarySearchTree() {\n        root = null;\n    }\n}"
+            }
+          ],
+          "cards": [
+            { "title": "Nodos enlazados", "text": "Cada nodo guarda su llave y las referencias a sus hijos; un árbol vacío tiene `root = null`.", "tone": "teal", "h": 1.7 }
+          ]
+        }
+      ],
+      "notes": "Estructura básica de un BST. TreeNode guarda la llave y las referencias al hijo izquierdo y al derecho; la clase BinarySearchTree solo conserva la referencia a la raíz. Un hijo ausente es null."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Búsqueda: encontrar el 7",
+      "trees": [
+        {
+          "tree": "8(3(1,6(4,7)),10(,14(13,)))",
+          "path": ["8", "3", "6", "7"],
+          "marks": { "7": { "tone": "green" } }
+        }
+      ],
+      "side": {
+        "w": 6.6,
+        "items": [
+          {
+            "label": "Búsqueda recursiva",
+            "code": "private boolean searchRecursive(TreeNode root, int key) {\n    if (root == null) return false;\n    if (root.key == key) return true;\n    if (key > root.key)\n        return searchRecursive(root.right, key);\n    return searchRecursive(root.left, key);\n}",
+            "size": 14
+          },
+          {
+            "text": "**Pareja de métodos:** `search` (público) recibe los parámetros iniciales; `searchRecursive` (privado) hace la operación recursiva.",
+            "size": 16,
+            "h": 0.9
+          }
+        ]
+      },
+      "callout": { "tone": "teal", "label": "Recorrido:", "text": "8 → 3 → 6 → 7. En cada nodo se descarta un subárbol completo: 7 < 8 va a la izquierda, 7 > 3 y 7 > 6 van a la derecha." },
+      "notes": "Como los árboles son estructuras jerárquicas, la búsqueda se hace de forma recursiva (se prefiere por simplicidad). La mayoría de los métodos van en parejas: uno público que recibe los parámetros iniciales y otro privado que realiza la operación recursiva.\n\nCódigo del capítulo (equivalente, con if/else explícitos):\npublic boolean search(int key) { return searchRecursive(root, key); }\nprivate boolean searchRecursive(TreeNode root, int key) {\n    if (root == null) { return false; }\n    if (root.key == key) { return true; }\n    else if (key > root.key) { return searchRecursive(root.right, key); }\n    else { return searchRecursive(root.left, key); }\n}\n(En el .md falta el punto y coma de `return false`.)"
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Inserción: agregar el 5",
+      "trees": [
+        {
+          "tree": "8(3(1,6(4(,5),7)),10(,14(13,)))",
+          "path": ["8", "3", "6", "4"],
+          "marks": { "5": { "tone": "green" } }
+        }
+      ],
+      "side": {
+        "w": 6.6,
+        "items": [
+          {
+            "label": "Inserción recursiva",
+            "code": "public void insert(int key) {\n    root = insertRecursive(root, key);\n}\nprivate TreeNode insertRecursive(TreeNode root, int key) {\n    if (root == null) return new TreeNode(key);\n    if (key < root.key)\n        root.left = insertRecursive(root.left, key);\n    else if (key > root.key)\n        root.right = insertRecursive(root.right, key);\n    return root;\n}",
+            "size": 14
+          }
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Se sigue la misma ruta que la búsqueda (8 → 3 → 6 → 4); el nodo nuevo queda como **hoja**, a la derecha del 4." },
+      "notes": "La inserción usa el mismo principio de búsqueda para encontrar el lugar donde va el nuevo nodo. Si el nodo ya existe, no se inserta. Note que insert reasigna root al resultado de insertRecursive: es necesario para que los cambios se reflejen en la raíz (siguiente diapositiva). El capítulo escribe el caso base en tres líneas (root = new TreeNode(key); return root;); aquí se compactó en un solo return equivalente."
+    },
+    {
+      "type": "compare",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Error de principiante al insertar",
+      "vs": true,
+      "panelHeight": 3.75,
+      "panels": [
+        {
+          "title": "Incorrecto",
+          "tone": "red",
+          "code": "// insertRecursive devuelve void\ninsertRecursive(root, key);\n\n// dentro del método:\nroot = new TreeNode(key);\nreturn;",
+          "codeSize": 14,
+          "note": "El cambio se pierde: `root` es una copia de la referencia."
+        },
+        {
+          "title": "Correcto",
+          "tone": "green",
+          "code": "// insertRecursive devuelve TreeNode\nroot = insertRecursive(root, key);\n\n// dentro del método:\nreturn new TreeNode(key);",
+          "codeSize": 14,
+          "note": "Se reasigna el resultado: el árbol sí se modifica."
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "las referencias en Java se pasan **por valor**; asignar `root` dentro del método no cambia el `root` de quien llama." },
+      "notes": "Un error de principiante es creer que este código funciona:\n\npublic void insert(int key) { insertRecursive(root, key); }\nprivate void insertRecursive(TreeNode root, int key) {\n    if (root == null) { root = new TreeNode(key); return; }\n    if (key < root.key) insertRecursive(root.left, key);\n    else if (key > root.key) insertRecursive(root.right, key);\n}\n\nNo funciona porque las referencias en Java se pasan por valor: el valor de root no cambia en insert y el árbol no se modifica. Pregunta para la clase: ¿qué imprimiría un recorrido inorden después de varias inserciones con esta versión? (Nada: el árbol sigue vacío.)"
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Eliminación: nodo hoja",
+      "rows": [
+        {
+          "joiners": ["eliminar 20"],
+          "trees": [
+            { "title": "Antes", "tree": "50(30(20,40),70(60,80))", "marks": { "20": { "tone": "red" } } },
+            { "title": "Después", "tree": "50(30(,40),70(60,80))" }
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "label": "Hoja:", "text": "no tiene hijos, así que **simplemente se elimina**." },
+      "notes": "La eliminación en un BST considera tres casos: el nodo es una hoja, tiene un solo hijo o tiene dos hijos. Cuando es hoja, simplemente se elimina. Los ejemplos usan otro BST (50, 30, 70, 20, 40, 60, 80) y se encadenan: el árbol «después» de este caso es el «antes» del siguiente."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Eliminación: nodo con un solo hijo",
+      "rows": [
+        {
+          "joiners": ["eliminar 30"],
+          "trees": [
+            { "title": "Antes", "tree": "50(30(,40),70(60,80))", "marks": { "30": { "tone": "red" }, "40": { "tone": "amber" } } },
+            { "title": "Después", "tree": "50(40,70(60,80))", "marks": { "40": { "tone": "amber" } } }
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "label": "Un hijo:", "text": "el hijo (40) **reemplaza** al nodo eliminado (30) y queda enlazado a su padre (50)." },
+      "notes": "Cuando el nodo tiene un solo hijo, se reemplaza el nodo por su hijo (con todo el subárbol que cuelgue de él). En el código, es el caso en el que root.left == null (se devuelve root.right) o root.right == null (se devuelve root.left)."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Eliminación: nodo con dos hijos",
+      "rows": [
+        {
+          "joiners": ["eliminar 50"],
+          "trees": [
+            {
+              "title": "Antes",
+              "tree": "50(40,70(60,80))",
+              "marks": { "50": { "tone": "red" }, "60": { "tone": "amber" } }
+            },
+            {
+              "title": "Después",
+              "tree": "60(40,70(,80))",
+              "marks": { "60": { "tone": "amber" } }
+            }
+          ]
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Un solo criterio:", "text": "el 50 se reemplaza por el **menor del subárbol derecho** (60), que luego se elimina de su lugar. También valdría el mayor del izquierdo, pero use solo una estrategia." },
+      "notes": "Cuando el nodo tiene dos hijos, se reemplaza por el nodo más pequeño del subárbol derecho (sucesor) o por el mayor del subárbol izquierdo (predecesor); solo se puede usar una de estas estrategias en toda la implementación. En el ejemplo se usa el sucesor, igual que el código de la siguiente diapositiva: 60 es el menor del subárbol derecho de 50; se copia su llave al nodo y luego se elimina el 60 original (hoja) del subárbol derecho."
+    },
+    {
+      "type": "code",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Código: eliminar un nodo",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1.75,
+          "blocks": [
+            {
+              "label": "deleteRecursive",
+              "code": "private TreeNode deleteRecursive(TreeNode root, int key) {\n    if (root == null) return root;\n\n    if (key < root.key)\n        root.left = deleteRecursive(root.left, key);\n    else if (key > root.key)\n        root.right = deleteRecursive(root.right, key);\n    else {\n        if (root.left == null) return root.right;\n        else if (root.right == null) return root.left;\n\n        root.key = minValue(root.right);\n        root.right = deleteRecursive(root.right, root.key);\n    }\n    return root;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "minValue",
+              "code": "int minValue(TreeNode root) {\n    while (root.left != null)\n        root = root.left;\n    return root.key;\n}"
+            }
+          ],
+          "cards": [
+            { "title": "Dos hijos", "text": "Se copia el menor del subárbol derecho y se elimina ese nodo.", "tone": "amber", "h": 1.75 }
+          ]
+        }
+      ],
+      "notes": "Si falta el hijo izquierdo se devuelve el derecho (cubre la hoja y el caso de un hijo); si falta el derecho se devuelve el izquierdo. Con dos hijos se usa minValue para hallar la llave del sucesor y luego se elimina esa llave del subárbol derecho. Se compactaron algunas líneas respecto al capítulo y minValue recorre el subárbol izquierdo hasta el último nodo (en el capítulo guarda el valor en una variable auxiliar; el resultado es el mismo)."
+    },
+    {
+      "type": "table",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Cuatro recorridos de un mismo árbol",
+      "columns": ["Recorrido", "Orden de visita", "Resultado en el BST de ejemplo"],
+      "colWeights": [1.3, 3, 3],
+      "fontSize": 19,
+      "rowHeight": 0.72,
+      "calloutY": 5.75,
+      "rows": [
+        ["Preorden", "raíz → izquierdo → derecho", "8 3 1 6 4 7 10 14 13"],
+        ["Inorden", "izquierdo → raíz → derecho", "1 3 4 6 7 8 10 13 14"],
+        ["Postorden", "izquierdo → derecho → raíz", "1 4 7 6 3 13 14 10 8"],
+        ["Por niveles", "un nivel completo antes del siguiente", "8 3 10 1 6 14 4 7 13"]
+      ],
+      "callout": { "tone": "teal", "text": "Recorrer un árbol no solo sirve para imprimirlo: permite **operar sobre todos los nodos**." },
+      "notes": "El árbol de ejemplo es 8(3(1,6(4,7)),10(,14(13,))). Los tres primeros recorridos son recursivos y se verán en código en las siguientes diapositivas. El recorrido por niveles visita los nodos nivel por nivel, de izquierda a derecha (el capítulo lo menciona en el TDA pero no muestra código; suele implementarse con una cola)."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Recorrido inorden: izquierda, raíz, derecha",
+      "legend": [{ "label": "Número en el nodo = orden de visita", "tone": "amber", "solid": false }],
+      "trees": [
+        {
+          "tree": "8(3(1,6(4,7)),10(,14(13,)))",
+          "order": ["1", "3", "4", "6", "7", "8", "10", "13", "14"]
+        }
+      ],
+      "side": {
+        "w": 5.7,
+        "items": [
+          {
+            "label": "inOrder",
+            "code": "private void inOrderRecursive(TreeNode root) {\n    if (root != null) {\n        inOrderRecursive(root.left);\n        System.out.print(root.key + \" \");\n        inOrderRecursive(root.right);\n    }\n}",
+            "size": 14
+          }
+        ]
+      },
+      "callout": { "tone": "teal", "label": "Se imprime:", "text": "`1 3 4 6 7 8 10 13 14`. En un BST el inorden da los valores en orden **ascendente**." },
+      "notes": "El recorrido inorden visita primero el subárbol izquierdo, luego la raíz y finalmente el subárbol derecho. Por eso, en un BST imprime los nodos en orden ascendente. Como en las demás operaciones, hay un método público (inOrder) que llama al privado recursivo con la raíz."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Recorrido preorden: raíz, izquierda, derecha",
+      "legend": [{ "label": "Número en el nodo = orden de visita", "tone": "amber", "solid": false }],
+      "trees": [
+        {
+          "tree": "8(3(1,6(4,7)),10(,14(13,)))",
+          "order": ["8", "3", "1", "6", "4", "7", "10", "14", "13"]
+        }
+      ],
+      "side": {
+        "w": 5.7,
+        "items": [
+          {
+            "label": "preOrder",
+            "code": "private void preOrderRecursive(TreeNode root) {\n    if (root != null) {\n        System.out.print(root.key + \" \");\n        preOrderRecursive(root.left);\n        preOrderRecursive(root.right);\n    }\n}",
+            "size": 14
+          }
+        ]
+      },
+      "callout": { "tone": "teal", "label": "Se imprime:", "text": "`8 3 1 6 4 7 10 14 13`. La raíz se visita **antes** que sus subárboles." },
+      "notes": "El recorrido preorden visita primero la raíz, luego el subárbol izquierdo y finalmente el derecho. Pregunta para la clase: ¿qué recorrido usaría para copiar un árbol? (Preorden, porque crea cada padre antes que sus hijos; no está en el capítulo)."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "Recorrido postorden: izquierda, derecha, raíz",
+      "legend": [{ "label": "Número en el nodo = orden de visita", "tone": "amber", "solid": false }],
+      "trees": [
+        {
+          "tree": "8(3(1,6(4,7)),10(,14(13,)))",
+          "order": ["1", "4", "7", "6", "3", "13", "14", "10", "8"]
+        }
+      ],
+      "side": {
+        "w": 5.7,
+        "items": [
+          {
+            "label": "postOrder",
+            "code": "private void postOrderRecursive(TreeNode root) {\n    if (root != null) {\n        postOrderRecursive(root.left);\n        postOrderRecursive(root.right);\n        System.out.print(root.key + \" \");\n    }\n}",
+            "size": 14
+          }
+        ]
+      },
+      "callout": { "tone": "teal", "label": "Se imprime:", "text": "`1 4 7 6 3 13 14 10 8`. La raíz se visita **después** de sus subárboles." },
+      "notes": "El recorrido postorden visita primero el subárbol izquierdo, luego el derecho y finalmente la raíz. Es el recorrido natural cuando un nodo solo puede procesarse después de sus hijos (por ejemplo, liberar un árbol o evaluar una expresión; este último uso aparece en la sección de árboles de expresión)."
+    },
+    {
+      "type": "diagram",
+      "kind": "jerarquicas-trees",
+      "section": "Árboles binarios de búsqueda",
+      "title": "El problema: un BST puede degenerar",
+      "rows": [
+        {
+          "trees": [
+            { "title": "Orden 4, 2, 6, 1, 3, 5, 7 · altura 3", "titleTone": "green", "tree": "4(2(1,3),6(5,7))", "maxD": 0.5 },
+            { "title": "Orden 1, 2, 3, 4, 5, 6, 7 · altura 7", "titleTone": "red", "tree": "1(,2(,3(,4(,5(,6(,7))))))", "maxD": 0.5 }
+          ]
+        }
+      ],
+      "callout": { "tone": "red", "label": "Problema:", "text": "con inserciones en orden el BST se vuelve una **lista enlazada**: buscar, insertar y eliminar pasan a tiempo **lineal**." },
+      "notes": "Los BST pueden degenerar en listas enlazadas si los elementos se insertan en orden ascendente o descendente; entonces la búsqueda, la inserción y la eliminación son operaciones de tiempo lineal. El capítulo muestra una cadena 1-2-…-9; aquí se usan 7 valores y se compara con el mismo conjunto insertado en otro orden (árbol de altura 3, añadido para contrastar). La solución son los árboles balanceados, como el AVL."
+          },
+          {
+            "type": "cards",
+            "section": "Heap",
+            "title": "Heap (montículo)",
+            "columns": 3,
+            "cardHeight": 3.3,
+            "textSize": 19,
+            "cards": [
+              { "badge": "1", "title": "Árbol completo", "text": "Todos los niveles están llenos, salvo quizá el último, que se llena de izquierda a derecha.", "tone": "teal" },
+              { "badge": "2", "title": "Propiedad de heap", "text": "**Heap máximo:** cada nodo ≥ sus hijos. **Heap mínimo:** cada nodo ≤ sus hijos.", "tone": "teal" },
+              { "badge": "3", "title": "Para qué sirve", "text": "Es la opción natural para las colas de prioridad y la base de heap sort.", "tone": "amber" }
+            ],
+            "callout": { "tone": "teal", "text": "A diferencia del BST, el heap se implementa sobre un **arreglo**, no con nodos enlazados." },
+            "notes": "Un heap es un árbol binario completo que cumple la propiedad de heap: el valor de cada nodo es mayor o igual (heap máximo) o menor o igual (heap mínimo) que el de sus hijos. Es una opción natural para implementar colas de prioridad y es la estructura esencial para heap sort, que se verá más adelante en los algoritmos de ordenamiento."
+          },
+          {
+            "type": "image",
+            "section": "Heap",
+            "title": "Heap mínimo y heap máximo",
+            "image": "heap-tree-1.png",
+            "alt": "Dos árboles heap: un min heap con raíz 10 a la izquierda y un max heap con raíz 100 a la derecha",
+            "caption": "Min heap (izquierda): cada nodo ≤ sus hijos · Max heap (derecha): cada nodo ≥ sus hijos",
+            "notes": "Figura del capítulo (los rótulos «Min Heap» y «Max Heap» están en inglés). Note que no hay relación de orden entre hermanos ni entre primos: solo entre cada padre y sus hijos; por eso un heap no es un BST. A partir de aquí se trabaja con el heap máximo."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Heap",
+            "title": "Heap en un arreglo",
+            "trees": [
+              {
+                "array": ["99", "88", "83", "72", "85", "42", "57", "6", "48", "60", "73"],
+                "arrayMarks": { "1": "amber", "3": "green", "4": "green" },
+                "tree": "99(88(72(6,48),85(60,73)),83(42,57))",
+                "marks": { "88": { "tone": "amber" }, "72": { "tone": "green" }, "85": { "tone": "green" } }
+              }
+            ],
+            "side": {
+              "w": 4.4,
+              "items": [
+                {
+                  "table": {
+                    "columns": ["Posición", "Fórmula"],
+                    "colW": [2.3, 1.9],
+                    "fontSize": 16,
+                    "rowH": [0.5, 0.55, 0.55, 0.55, 0.55],
+                    "rows": [
+                      ["Raíz", "posición 0"],
+                      ["Hijo izquierdo de i", "2i + 1"],
+                      ["Hijo derecho de i", "2i + 2"],
+                      ["Padre de i", "(i − 1) / 2"]
+                    ]
+                  }
+                },
+                { "text": "Como el árbol es completo, se guarda sin huecos: cabe en un arreglo.", "size": 16, "h": 0.8 }
+              ]
+            },
+            "callout": { "tone": "teal", "text": "Para `i = 1` (valor 88): los hijos están en `2·1+1 = 3` y `2·1+2 = 4`, es decir, 72 y 85." },
+            "notes": "Normalmente los heaps se implementan sobre un arreglo: la raíz se almacena en la posición 0 y los hijos de un nodo en la posición i se almacenan en las posiciones 2i + 1 y 2i + 2. Para el padre se usa (i − 1) / 2 con división entera, como en el código de heapifyUp. El arreglo y el árbol son los de la figura del capítulo (heap-tree-2.png)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Heap",
+            "title": "Insertar el 95 en un heap máximo",
+            "rows": [
+              {
+                "joiners": ["subir el 95"],
+                "trees": [
+                  {
+                    "title": "1. Se añade al final del arreglo",
+                    "array": ["99", "88", "83", "72", "85", "42", "57", "6", "48", "60", "73", "95"],
+                    "arrayMarks": { "11": "green" },
+                    "tree": "99(88(72(6,48),85(60,73)),83(42(95,),57))",
+                    "marks": { "95": { "tone": "green" } }
+                  },
+                  {
+                    "title": "2. Sube mientras sea mayor que su padre",
+                    "array": ["99", "88", "95", "72", "85", "83", "57", "6", "48", "60", "73", "42"],
+                    "arrayMarks": { "2": "green", "5": "amber", "11": "amber" },
+                    "tree": "99(88(72(6,48),85(60,73)),95(83(42,),57))",
+                    "marks": { "95": { "tone": "green" }, "83": { "tone": "amber" }, "42": { "tone": "amber" } }
+                  }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "95 > 42: se intercambian · 95 > 83: se intercambian · 95 < 99: se detiene. El heap sigue cumpliendo su propiedad." },
+            "notes": "Insertar en un heap: 1) se añade el elemento al final del arreglo; 2) se compara con su padre y, si es mayor, se intercambian; 3) se repite el paso 2 hasta que el elemento sea menor que su padre o llegue a la raíz. Aquí el 95 entra en la posición 11 (su padre está en la posición 5, valor 42); sube a la posición 5 y luego a la 2 (padre 83) y se detiene porque 99 es mayor. El ejemplo parte del heap de la diapositiva anterior."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Heap",
+            "title": "Eliminar la raíz de un heap máximo",
+            "rows": [
+              {
+                "joiners": ["heapifyDown"],
+                "trees": [
+                  {
+                    "title": "1. El último elemento ocupa la raíz",
+                    "array": ["42", "88", "95", "72", "85", "83", "57", "6", "48", "60", "73"],
+                    "arrayMarks": { "0": "amber" },
+                    "tree": "42(88(72(6,48),85(60,73)),95(83,57))",
+                    "marks": { "42": { "tone": "amber" } }
+                  },
+                  {
+                    "title": "2. Baja con el hijo mayor",
+                    "array": ["95", "88", "83", "72", "85", "42", "57", "6", "48", "60", "73"],
+                    "arrayMarks": { "0": "green", "5": "amber" },
+                    "tree": "95(88(72(6,48),85(60,73)),83(42,57))",
+                    "marks": { "95": { "tone": "green" }, "42": { "tone": "amber" } }
+                  }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Sale el 99. El 42 baja: se intercambia con 95 (el hijo mayor) y luego con 83; en una hoja se detiene." },
+            "notes": "Eliminar en un heap quita la raíz: se guarda la raíz, el último elemento del arreglo pasa a la posición 0, se reduce el tamaño y se restaura la propiedad con heapifyDown, intercambiando con el hijo mayor mientras el elemento sea menor que alguno de sus hijos. Continúa el ejemplo de la inserción: el heap tenía 12 elementos con 99 en la raíz. get() solo lee la raíz sin eliminarla."
+          },
+          {
+            "type": "code",
+            "section": "Heap",
+            "title": "HeapTree: insert, delete y get",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1,
+                "blocks": [
+                  {
+                    "label": "Estructura y get()",
+                    "code": "public class HeapTree {\n    private int[] heap;\n    private int size;\n\n    public HeapTree(int capacity) {\n        heap = new int[capacity];\n        size = 0;\n    }\n\n    public int get() {\n        return heap[0];\n    }\n}",
+                    "note": "El código completo lanza `IllegalStateException` si el heap está lleno (insert) o vacío (delete, get)."
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "blocks": [
+                  {
+                    "label": "insert()",
+                    "code": "public void insert(int element) {\n    heap[size++] = element;\n    heapifyUp(size - 1);\n}"
+                  },
+                  {
+                    "label": "delete()",
+                    "code": "public int delete() {\n    int root = heap[0];\n    heap[0] = heap[size - 1];\n    size--;\n    heapifyDown(0);\n    return root;\n}"
+                  }
+                ]
+              }
+            ],
+            "notes": "El heap se implementa con un arreglo heap y un contador size. insert añade al final y sube el elemento; delete devuelve la raíz, mueve el último elemento a la posición 0 y lo baja; get solo mira la raíz. Costo (añadido): insert y delete son O(log n) porque heapifyUp/heapifyDown recorren, como mucho, la altura de un árbol completo; get es O(1).\n\nNota sobre el código del capítulo: allí insert llama heapifyUp(size) después de size++, pero el nuevo elemento está en la posición size - 1; aquí se corrigió. Cada método valida: insert lanza IllegalStateException(\"Heap is full\") si size == heap.length; delete y get lanzan IllegalStateException(\"Heap is empty\") si size == 0."
+          },
+          {
+            "type": "code",
+            "section": "Heap",
+            "title": "Código: heapifyUp",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.55,
+                "blocks": [
+                  {
+                    "label": "Subir un elemento",
+                    "code": "private void heapifyUp(int index) {\n    int parentIndex = (index - 1) / 2;\n\n    while (index > 0 && heap[index] > heap[parentIndex]) {\n        swap(index, parentIndex);\n        index = parentIndex;\n        parentIndex = (index - 1) / 2;\n    }\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Sube", "text": "Mientras el elemento sea mayor que su padre, los intercambia.", "tone": "teal", "h": 1.5 },
+                  { "title": "Se detiene", "text": "Al llegar a la raíz o cuando su padre ya es mayor.", "tone": "amber", "h": 1.5 },
+                  { "title": "Costo: O(log n)", "text": "A lo sumo la altura del árbol.", "h": 1.5 }
+                ]
+              }
+            ],
+            "notes": "heapifyUp restaura la propiedad de heap después de insertar: compara el elemento en index con su padre y, mientras sea mayor, los intercambia con swap y continúa desde la posición del padre. swap es el intercambio clásico con una variable temporal: int temp = heap[index1]; heap[index1] = heap[index2]; heap[index2] = temp;"
+          },
+          {
+            "type": "code",
+            "section": "Heap",
+            "title": "Código: heapifyDown",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.5,
+                "blocks": [
+                  {
+                    "label": "Bajar un elemento",
+                    "code": "private void heapifyDown(int index) {\n    int left = 2 * index + 1;\n    int right = 2 * index + 2;\n    int largest = index;\n\n    if (left < size && heap[left] > heap[largest])\n        largest = left;\n    if (right < size && heap[right] > heap[largest])\n        largest = right;\n\n    if (largest != index) {\n        swap(index, largest);\n        heapifyDown(largest);\n    }\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Elige el mayor", "text": "Compara el nodo con sus dos hijos y se queda con el mayor.", "tone": "teal", "h": 1.55 },
+                  { "title": "Intercambia y baja", "text": "Si el mayor no es el nodo, los intercambia y repite en ese hijo.", "tone": "amber", "h": 1.55 },
+                  { "title": "Costo: O(log n)", "text": "A lo sumo la altura del árbol.", "h": 1.5 }
+                ]
+              }
+            ],
+            "notes": "heapifyDown restaura la propiedad después de eliminar la raíz. Los índices de los hijos son 2i + 1 y 2i + 2; se verifica que existan (< size) antes de leerlos. En el capítulo las variables se llaman leftChildIndex, rightChildIndex y largestIndex, y los if llevan llaves; aquí se acortaron los nombres para que quepa en la diapositiva. Si el mayor es alguno de los hijos, se intercambian y se continúa recursivamente desde esa posición."
+          },
+          {
+            "type": "cards",
+            "section": "Árboles AVL",
+            "title": "Árboles AVL: BST balanceados",
+            "columns": 2,
+            "cardHeight": 1.65,
+            "textSize": 16,
+            "cards": [
+              { "title": "Auto-balanceado", "text": "El primer árbol auto-balanceado (Adelson-Velsky y Landis, 1962).", "tone": "teal" },
+              { "title": "Es un BST", "text": "Un árbol binario de búsqueda balanceado en altura.", "tone": "teal" },
+              { "title": "Factor de balance", "text": "En cada nodo vale −1, 0 o 1.", "tone": "teal" },
+              { "title": "Tiempo garantizado", "text": "Buscar, insertar y eliminar: **O(log n)**.", "tone": "green" }
+            ],
+            "callout": { "tone": "amber", "label": "Se rebalancea", "text": "con **rotaciones** después de insertar o eliminar un nodo." },
+            "notes": "Los árboles AVL fueron introducidos por Adelson-Velsky y Landis en 1962 y fueron los primeros árboles auto-balanceados. Al mantenerse balanceados, las operaciones de búsqueda, inserción y eliminación tienen tiempo garantizado de O(log n) y no sufren la degradación de un BST no balanceado, como el visto antes. Pregunta para la clase: ¿qué le pasaría a un BST si se insertan 1, 2, 3, 4, 5 en orden?"
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Factor de balance de cada nodo",
+            "trees": [
+              {
+                "tree": "10(5(3(2,4),8),15(12,20(17,25)))",
+                "bf": true
+              }
+            ],
+            "callout": { "tone": "teal", "label": "Factor de balance =", "text": "altura del subárbol derecho − altura del izquierdo. Aquí todos valen −1, 0 o 1: es un AVL." },
+            "notes": "El número pequeño dentro de cada nodo es su factor de balance. Para contar alturas se usa la convención del código: un subárbol vacío tiene altura 0 y una hoja tiene altura 1. Ejemplos: el nodo 5 tiene subárbol izquierdo (3 con sus hijos) de altura 2 y derecho (8) de altura 1: 1 − 2 = −1. El nodo 15 tiene izquierdo (12) de altura 1 y derecho (20 con sus hijos) de altura 2: 2 − 1 = +1. La raíz 10 tiene ambos subárboles de altura 3: 0. (La tabla del capítulo llega a los mismos factores con una forma de contar distinta en cada nodo.)"
+          },
+          {
+            "type": "compare",
+            "section": "Árboles AVL",
+            "title": "Ventajas y desventajas del AVL",
+            "vs": true,
+            "panelHeight": 3.7,
+            "panels": [
+              {
+                "title": "Ventajas",
+                "tone": "green",
+                "text": "Al estar balanceado, la altura se mantiene en O(log n).",
+                "itemSize": 20,
+                "items": ["Búsquedas rápidas", "Auto-balanceados"]
+              },
+              {
+                "title": "Desventajas",
+                "tone": "amber",
+                "itemSize": 18,
+                "items": [
+                  "Requieren más memoria que un BST no balanceado",
+                  "Inserción y eliminación más lentas",
+                  "Las rotaciones pueden ser costosas",
+                  "Difíciles de implementar"
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Se paga un costo extra al modificar el árbol a cambio de búsquedas siempre rápidas." },
+            "notes": "Cada nodo AVL guarda además su altura (de ahí la memoria extra) y las modificaciones deben rebalancear con rotaciones. La frase de la barra inferior es una conclusión añadida a partir de la lista del capítulo."
+          },
+          {
+            "type": "compare",
+            "section": "Árboles AVL",
+            "title": "Rebalancear: inserción y eliminación",
+            "vs": false,
+            "panelHeight": 3.9,
+            "panels": [
+              {
+                "title": "Inserción del nodo w",
+                "tone": "teal",
+                "itemSize": 17,
+                "items": [
+                  "Inserción normal de BST para w",
+                  "De w hacia la raíz: **z** = primer nodo desbalanceado",
+                  "**y** = hijo de z en el camino; **x** = nieto de z en el camino",
+                  "Rotaciones simples o dobles en el subárbol de z"
+                ]
+              },
+              {
+                "title": "Eliminación del nodo w",
+                "tone": "amber",
+                "itemSize": 17,
+                "items": [
+                  "Eliminación normal de BST",
+                  "De w hacia arriba: **z** = primer nodo desbalanceado",
+                  "**y** = hijo de z de mayor altura; **x** = hijo de y de mayor altura",
+                  "Rotaciones apropiadas en el subárbol de z"
+                ]
+              }
+            ],
+            "callout": { "tone": "slate", "text": "En ambos casos hay **4 disposiciones** posibles de x, y y z: LL, RR, LR y RL." },
+            "notes": "Para insertar un nodo w: se hace la inserción normal de un BST; iniciando en w se recorre el camino hacia la raíz; z es el primer nodo no balanceado, y el hijo de z en el camino de w a z, y x el nieto de z en ese camino; se rebalancea con rotaciones simples o dobles en el subárbol con raíz en z. Para eliminar el proceso es el mismo, pero y y x son los hijos de mayor altura (no hay camino desde w). Hay cuatro disposiciones posibles de x, y y z, que se ven en las siguientes diapositivas."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Casos simples: una rotación",
+            "rows": [
+              {
+                "label": "**LL** (izquierda-izquierda): y y x son hijos izquierdos → rotación derecha",
+                "joiners": ["derecha en z"],
+                "trees": [
+                  { "tree": "30(20(10,),)", "marks": { "30": { "tag": "z" }, "20": { "tag": "y" }, "10": { "tag": "x" } }, "maxD": 0.6 },
+                  { "tree": "20(10,30)", "maxD": 0.6 }
+                ]
+              },
+              {
+                "label": "**RR** (derecha-derecha): y y x son hijos derechos → rotación izquierda",
+                "joiners": ["izquierda en z"],
+                "trees": [
+                  { "tree": "10(,20(,30))", "marks": { "10": { "tag": "z" }, "20": { "tag": "y" }, "30": { "tag": "x" } }, "maxD": 0.6 },
+                  { "tree": "20(10,30)", "maxD": 0.6 }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "En ambos casos **y** pasa a ser la raíz del subárbol y **z** baja como su hijo." },
+            "notes": "Rotación derecha (LL): y es el hijo izquierdo de z y x es el hijo izquierdo de y. Rotación izquierda (RR): y es el hijo derecho de z y x es el hijo derecho de y. La rotación izquierda es la versión espejo de la rotación derecha. Los árboles de la diapositiva solo muestran z, y y x; en un caso real cada uno puede tener subárboles colgando, que se reacomodan sin perder el orden del BST."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Casos dobles: dos rotaciones",
+            "rows": [
+              {
+                "label": "**LR**: y es hijo izquierdo de z; x es hijo derecho de y",
+                "joiners": ["izquierda en y", "derecha en z"],
+                "trees": [
+                  { "tree": "30(10(,20),)", "marks": { "30": { "tag": "z" }, "10": { "tag": "y" }, "20": { "tag": "x" } }, "maxD": 0.6 },
+                  { "tree": "30(20(10,),)", "maxD": 0.6 },
+                  { "tree": "20(10,30)", "maxD": 0.6 }
+                ]
+              },
+              {
+                "label": "**RL**: y es hijo derecho de z; x es hijo izquierdo de y",
+                "joiners": ["derecha en y", "izquierda en z"],
+                "trees": [
+                  { "tree": "10(,30(20,))", "marks": { "10": { "tag": "z" }, "30": { "tag": "y" }, "20": { "tag": "x" } }, "maxD": 0.6 },
+                  { "tree": "10(,20(,30))", "maxD": 0.6 },
+                  { "tree": "20(10,30)", "maxD": 0.6 }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "La primera rotación convierte el caso en uno simple (LL o RR); la segunda lo resuelve." },
+            "notes": "Rotación izquierda-derecha (LR): se rota a la izquierda el subárbol de y y luego a la derecha el de z. Rotación derecha-izquierda (RL): es la versión espejo; se rota a la derecha en y y a la izquierda en z. En ambos casos el nodo x termina como raíz del subárbol."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Ejemplo: insertar 1 → rotación derecha",
+            "rows": [
+              {
+                "joiners": ["derecha en 5"],
+                "trees": [
+                  {
+                    "title": "Subárbol de z = 5 al insertar el 1",
+                    "tree": "5(3(2(1,),4),8)",
+                    "bf": true,
+                    "marks": { "5": { "tag": "z" }, "3": { "tag": "y" }, "2": { "tag": "x" }, "1": { "tone": "green" } }
+                  },
+                  {
+                    "title": "Después de la rotación",
+                    "tree": "3(2(1,),5(4,8))",
+                    "bf": true
+                  }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Se inserta el 1 en el AVL del ejemplo: el 5 queda con factor **−2**. Como y = 3 y x = 2 son hijos izquierdos: caso **LL**." },
+            "notes": "Se parte del AVL 10(5(3(2,4),8),15(12,20(17,25))) y se inserta el 1 (queda como hijo izquierdo del 2). El camino desde el 1 hacia la raíz: el 2 tiene factor −1, el 3 tiene −1 y el 5 tiene −2: z = 5, y = 3 (hijo de z en el camino), x = 2 (nieto). La diapositiva muestra solo el subárbol con raíz en z. Tras la rotación derecha, el 3 sube, el 5 baja a su derecha y el 4 (antes hijo derecho del 3) pasa a ser hijo izquierdo del 5. El árbol completo queda 10(3(2(1,),5(4,8)),15(12,20(17,25))). La rotación izquierda es la versión espejo."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Ejemplo: insertar 3 → rotación izquierda-derecha",
+            "rows": [
+              {
+                "joiners": [true, true],
+                "trees": [
+                  {
+                    "title": "Insertar 3: z = 4",
+                    "tree": "4(2(,3),)",
+                    "bf": true,
+                    "marks": { "4": { "tag": "z" }, "2": { "tag": "y" }, "3": { "tone": "green", "tag": "x" } }
+                  },
+                  { "title": "1. Izquierda en y = 2", "tree": "4(3(2,),)", "bf": true },
+                  { "title": "2. Derecha en z = 4", "tree": "3(2,4)", "bf": true }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "**x** = 3 es hijo derecho de **y** = 2, e **y** es hijo izquierdo de **z** = 4: caso **LR**, dos rotaciones." },
+            "notes": "Se parte del AVL 10(5(4(2,),8),15(12,20(17,25))) y se inserta el 3 como hijo derecho del 2. Desde el 3 hacia la raíz: el 2 queda con factor +1 y el 4 con −2, así que z = 4 (es el primer nodo desbalanceado; el 5 también queda desbalanceado, pero se arregla al rotar en z). El capítulo escribe que «el factor de balance del nodo 5 es 2», pero los rótulos z, y, x de su figura corresponden a 4, 2 y 3. Primero se rota a la izquierda el subárbol de y = 2 (el 3 sube) y luego a la derecha el de z = 4. Subárbol final: 3(2,4)."
+          },
+          {
+            "type": "code",
+            "section": "Árboles AVL",
+            "title": "Código: rotación a la derecha",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.7,
+                "blocks": [
+                  {
+                    "label": "rightRotate",
+                    "code": "private AVLNode rightRotate(AVLNode y) {\n    AVLNode x = y.left;\n    AVLNode T2 = x.right;\n\n    // Rotación\n    x.right = y;\n    y.left = T2;\n\n    // Actualizar alturas\n    y.height = Math.max(height(y.left), height(y.right)) + 1;\n    x.height = Math.max(height(x.left), height(x.right)) + 1;\n\n    return x;  // nueva raíz del subárbol\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "leftRotate", "text": "Es la versión espejo: sube `x.right` y `x` pasa a ser su hijo izquierdo.",                   "tone": "navy", "h": 1.45 },
+                      { "title": "Alturas", "text": "Primero se recalcula el nodo que bajó y luego el que subió.", "tone": "amber", "h": 1.55 },
+                      { "title": "Retorno", "text": "La rotación devuelve la nueva raíz del subárbol.", "tone": "teal", "h": 1.5 }
+                ]
+              }
+            ],
+            "notes": "Código del capítulo: la clase AVLNode tiene key, height (1 para un nodo nuevo), left y right; height(node) devuelve 0 si el nodo es null; getBalance(node) = height(node.right) - height(node.left). rightRotate(y): x = y.left; T2 = x.right; x.right = y; y.left = T2; se actualizan las alturas y se devuelve x, la nueva raíz del subárbol. leftRotate(x): y = x.right; T2 = y.left; y.left = x; x.right = T2; se actualizan alturas y se devuelve y.\n\nNota: antes, en la explicación, el capítulo muestra rotateRight(Node node) con la asignación node = left; igual que con el BST, asignar un parámetro no cambia la referencia de quien llama, por eso la implementación real devuelve la nueva raíz y el llamador la asigna (root = ..., node.left = ...)."
+          },
+          {
+            "type": "code",
+            "section": "Árboles AVL",
+            "title": "Código: insertar en un AVL",
+            "top": 1.7,
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 2,
+                "blocks": [
+                  {
+                    "code": "private AVLNode insertRecursive(AVLNode node, int key) {\n    // ... inserción normal de BST (sin duplicados)\n    node.height = 1 + Math.max(height(node.left),\n                               height(node.right));\n    int balance = getBalance(node);\n    if (balance < -1 && key < node.left.key)    // LL\n        return rightRotate(node);\n    if (balance > 1 && key > node.right.key)    // RR\n        return leftRotate(node);\n    if (balance < -1 && key > node.left.key) {  // LR\n        node.left = leftRotate(node.left);\n        return rightRotate(node);\n    }\n    if (balance > 1 && key < node.right.key) {  // RL\n        node.right = rightRotate(node.right);\n        return leftRotate(node);\n    }\n    return node;\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Después de insertar", "text": "Actualiza la altura del nodo y calcula su balance.", "tone": "teal", "h": 1.6 },
+                  { "title": "balance < −1", "text": "Pesa a la izquierda: caso LL o LR.", "tone": "amber", "h": 1.4 },
+                  { "title": "balance > 1", "text": "Pesa a la derecha: caso RR o RL.", "tone": "amber", "h": 1.4 }
+                ]
+              }
+            ],
+            "notes": "Al volver de la recursión cada ancestro del nodo insertado actualiza su altura y revisa su balance (derecha − izquierda). Si balance < −1 el nodo pesa a la izquierda: si la llave se insertó a la izquierda de node.left es el caso LL (rotación derecha); si se insertó a la derecha de node.left es LR (rotación izquierda del hijo y luego derecha). Si balance > 1 el nodo pesa a la derecha: RR (rotación izquierda) o RL (derecha del hijo y luego izquierda). El código completo del capítulo incluye al inicio la inserción normal de BST: si node es null devuelve new AVLNode(key); si key < node.key va a la izquierda; si key > node.key a la derecha; si es igual devuelve node (no se permiten duplicados). Búsquedas y recorridos no cambian respecto al BST."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Eliminación en AVL (1/2): z = 4, caso LL",
+            "rows": [
+              {
+                "joiners": ["derecha en 4"],
+                "trees": [
+                  {
+                    "title": "Se eliminan el 5 y el 8 (subárbol de z)",
+                    "tree": "4(3(2,),)",
+                    "marks": { "4": { "tag": "z" }, "3": { "tag": "y" }, "2": { "tag": "x" } }
+                  },
+                  { "title": "Después de rotar a la derecha", "tree": "3(2,4)" }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Tras eliminar, se sube hasta el primer nodo desbalanceado (4, con factor −2); **y** y **x** son los hijos de mayor altura." },
+            "notes": "El capítulo elimina varios nodos de 10(5(3(2,4),8),15(12,20(17,25))). Eliminar el 5 (tiene dos hijos) usa el predecesor: el mayor del subárbol izquierdo, el 4, lo reemplaza (en el código del BST se usaba el sucesor; lo importante es usar una sola estrategia). Luego se elimina el 8: el nodo 4 queda con factor −2 (su izquierda tiene altura 2 y su derecha está vacía). z = 4, y = 3 (hijo de mayor altura), x = 2 (hijo de mayor altura de y): caso LL, rotación derecha en 4. El árbol completo queda 10(3(2,4),15(12,20(17,25)))."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles AVL",
+            "title": "Eliminación en AVL (2/2): z = 10, caso RR",
+            "rows": [
+              {
+                "joiners": ["izquierda en 10"],
+                "trees": [
+                  {
+                    "title": "Se eliminan el 2 y el 4",
+                    "tree": "10(3,15(12,20(17,25)))",
+                    "marks": { "10": { "tag": "z" }, "15": { "tag": "y" }, "20": { "tag": "x" } }
+                  },
+                  { "title": "Después de rotar a la izquierda", "tree": "15(10(3,12),20(17,25))" }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "El 10 queda con factor **+2** (su derecha es más alta). **y** = 15 y **x** = 20 son hijos derechos: caso **RR**." },
+            "notes": "Continuación del ejemplo: se eliminan el 2 y el 4, y queda 10(3,15(12,20(17,25))). El nodo 10 tiene un subárbol izquierdo de altura 1 (solo el 3) y uno derecho de altura 3: factor +2. z = 10, y = 15 (hijo de mayor altura de z), x = 20 (hijo de mayor altura de y: 20 tiene altura 2 y 12 tiene altura 1). Es el caso RR: rotación izquierda en 10. El 15 sube, el 10 baja a su izquierda y el 12 (antes hijo izquierdo del 15) pasa a ser hijo derecho del 10. Resultado final: 15(10(3,12),20(17,25)). En el capítulo los rótulos y/x de este último paso aparecen cambiados; aquí se corrigieron."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles de expresión",
+            "title": "Árboles de expresión",
+            "legend": [
+              { "label": "Operador", "tone": "teal" },
+              { "label": "Operando", "tone": "navy" }
+            ],
+            "trees": [{ "type": "expr", "tree": "+(3,*(4,5))" }],
+            "side": {
+              "w": 4.8,
+              "items": [
+                { "card": { "title": "Hojas: operandos", "text": "Números o variables: 3, 4 y 5.", "tone": "navy", "h": 1.5 } },
+                { "card": { "title": "Nodos internos: operadores", "text": "`+` y `*` combinan a sus dos hijos.", "tone": "teal", "h": 1.5 } }
+              ]
+            },
+            "callout": { "tone": "teal", "text": "Este árbol representa `3 + (4 * 5)`. También se usan para expresiones sintácticas de un lenguaje en la **compilación**." },
+            "notes": "Aunque no son técnicamente un TDA distinto, son muy comunes en la resolución de problemas de programación. Son árboles binarios cuyas hojas son operandos y cuyos nodos internos son operadores; sirven para representar (y resolver) expresiones aritméticas o expresiones sintácticas de un lenguaje de programación en la etapa de compilación. Para evaluar `3 + (4 * 5)` se calcula primero el subárbol `*` (4 * 5 = 20) y luego la suma: 23."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-imagegrid",
+            "section": "Árboles de expresión",
+            "title": "Del árbol a la notación infija: inorden",
+            "cardHeight": 3.45,
+            "images": [
+              { "file": "expression-tree-1.png", "alt": "Árbol de expresión de (x + y) * (a - b)", "caption": "`(x + y) * (a - b)`" },
+              { "file": "expression-tree-2.png", "alt": "Árbol de expresión de (x * (y - z)) * (a - f)", "caption": "`(x * (y - z)) * (a - f)`" },
+              { "file": "expression-tree-5.png", "alt": "Árbol de expresión de ((A * (X + Y)) * C)", "caption": "`((A * (X + Y)) * C)`" }
+            ],
+            "callout": { "tone": "teal", "text": "Recorrer el árbol en **inorden** (izquierda, raíz, derecha) deja cada operador entre sus operandos." },
+            "notes": "La notación infija es la forma tradicional de escribir expresiones, con los operadores entre los operandos. Para generar la expresión únicamente se requiere recorrer el árbol en inorden, con el mismo método inOrderRecursive visto para los BST. Observación (añadida): el inorden por sí solo no escribe los paréntesis; para conservar el orden de las operaciones hay que escribir un paréntesis de apertura antes de cada subárbol que no sea una hoja y uno de cierre después. Las tres figuras son las del capítulo."
+          },
+          {
+            "type": "flow",
+            "section": "Árboles de expresión",
+            "title": "De una expresión al árbol de expresión",
+            "steps": [
+              { "title": "A postfija", "text": "Con el algoritmo **Shunting Yard** (Dijkstra, 1961), en tiempo lineal." },
+              { "title": "Pila de árboles", "text": "Un operando es un árbol de un nodo; un operador une los dos árboles de la cima." },
+              { "title": "Árbol final", "text": "Al terminar queda un único árbol de expresión." }
+            ],
+            "callout": { "tone": "teal", "text": "En la notación **infija** el operador va entre los operandos (`a + b`); en la **postfija**, después de ellos (`a b +`)." },
+            "notes": "Para convertir una expresión infija a un árbol de expresión, primero se convierte a notación postfija (postfix) y luego se recorre la postfija para construir el árbol. La definición de postfija de la barra inferior es un añadido (el capítulo solo define la infija)."
+          },
+          {
+            "type": "table",
+            "section": "Árboles de expresión",
+            "title": "Shunting Yard: de infija a postfija",
+            "columns": ["Se ha leído", "Cola de salida", "Pila de operadores"],
+            "colWeights": [2.4, 2.8, 1.8],
+            "fontSize": 17,
+            "rowHeight": 0.5,
+            "rowPad": 0.15,
+            "rows": [
+              ["(a + (b * c", "a b c", "( + ( *"],
+              ["(a + (b * c)", "a b c *", "( +"],
+              ["(a + (b * c))", "a b c * +", "(vacía)"],
+              ["… + (((d * e", "a b c * + d e", "+ ( ( ( *"],
+              ["… + (((d * e)", "a b c * + d e *", "+ ( ("],
+              ["toda la expresión", "a b c * + d e * f + g * +", "(vacía)"]
+            ],
+            "calloutY": 5.7,
+            "calloutH": 1.0,
+            "callouts": [
+              { "tone": "slate", "label": "Expresión:", "text": "`(a + (b * c)) + (((d * e) + f) * g)`" },
+              { "tone": "teal", "label": "Reglas:", "text": "un operando va a la cola; un operador se apila (antes se desapilan los de mayor precedencia)." }
+            ],
+            "notes": "El algoritmo (Dijkstra, 1961) usa dos estructuras: una pila para los operadores y una cola de salida. Recorre la expresión infija de izquierda a derecha: si el token es un operando, pasa a la cola; si es un operador, se apila, pero antes se verifica si hay en la pila operadores de mayor precedencia: de ser así se desapilan y pasan a la cola. Los paréntesis (que el capítulo no detalla): «(» se apila; «)» desapila operadores hacia la cola hasta encontrar el «(» correspondiente, que se descarta. Al terminar de leer, se desapilan todos los operadores restantes. La tabla muestra algunos instantes del recorrido (pila escrita de la base a la cima); el primero y el último coinciden con las capturas expression-tree-7 y expression-tree-9 del capítulo para esta misma expresión. Nota: en la captura expression-tree-8 la pila aún muestra «(» después del segundo «)»; siguiendo el algoritmo, en ese punto la pila queda vacía, como en la tabla. Complejidad lineal: cada token entra y sale de la pila una sola vez."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-imagegrid",
+            "section": "Árboles de expresión",
+            "title": "Construir el árbol desde la postfija (1/2)",
+            "cardHeight": 3.2,
+            "calloutY": 5.85,
+            "calloutH": 0.8,
+            "images": [
+              { "file": "expression-tree-10.png", "alt": "Cola de salida a b c * + d e * f + g * + y una pila con tres árboles de un solo nodo: a, b y c", "caption": "Se leen `a`, `b` y `c`: tres árboles de un nodo" },
+              { "file": "expression-tree-11.png", "alt": "Al leer el operador *, la pila queda con el árbol a y un árbol cuya raíz es * con hijos b y c", "caption": "Se lee `*`: une `b` y `c` bajo un nodo nuevo" }
+            ],
+            "callout": { "tone": "teal", "text": "Cada **operando** se apila como un árbol de un nodo; cada **operador** desapila dos árboles y apila el nuevo." },
+            "notes": "Se recorre la cola de salida (la expresión postfija a b c * + d e * f + g * +) de izquierda a derecha. Operando: se apila un árbol de un solo nodo. Operador: se desapilan dos árboles (el primero que sale es el hijo derecho y el segundo el izquierdo), se crea un nodo con el operador como raíz y se apila el árbol resultante. Las dos figuras son las del capítulo (expression-tree-10 y -11; los rótulos «Output Queue» y «Stack» están en inglés). En la segunda, el árbol *(b,c) queda en la cima de la pila, junto a a. Siguiente paso: `+` une a con *(b,c)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-imagegrid",
+            "section": "Árboles de expresión",
+            "title": "Construir el árbol desde la postfija (2/2)",
+            "cardHeight": 3.2,
+            "calloutY": 5.85,
+            "calloutH": 0.8,
+            "images": [
+              { "file": "expression-tree-12.png", "alt": "La flecha apunta a la e de la cola de salida; la pila tiene el árbol + con hijos a y *(b,c), y los árboles d y e", "caption": "Tras `+`, `d` y `e`: tres árboles en la pila" },
+              { "file": "expression-tree-13.png", "alt": "Árbol de expresión final con raíz + e hijos + (a, *(b,c)) y * (+(*(d,e),f), g)", "caption": "Árbol final de la expresión" }
+            ],
+            "callout": { "tone": "teal", "text": "La raíz es el **último operador** de la postfija. El recorrido inorden (con paréntesis) devuelve la expresión infija." },
+            "notes": "Continúa el proceso: `+` une a con *(b,c); luego d y e se apilan; `*` forma *(d,e); f se apila y `+` forma +(*(d,e),f); g se apila y `*` forma *(+(*(d,e),f),g); finalmente el último `+` une los dos árboles que quedan y la pila termina con un único árbol: el árbol de expresión final (expression-tree-13.png). El subárbol izquierdo es a + (b * c) y el derecho es ((d * e) + f) * g. Para evaluarlo se recorre en postorden: primero los operandos de cada operador y luego el operador (añadido)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Árboles B: árboles n-arios balanceados",
+            "intro": "Para grandes cantidades de datos en disco: bases de datos y sistemas de archivos (Bayer y McCreight, 1972).",
+            "trees": [
+              {
+                "type": "btree",
+                "tree": "24(15 20(10 12,18,21 23),33 45 48(30 32,38,47,50 52 60))",
+                "marks": { "15": { "tone": "teal" }, "20": { "tone": "teal" } },
+                "nodeMarks": { "18": "amber" }
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Entre las llaves **15** y **20** hay un hijo cuyas llaves son mayores que 15 y menores que 20." },
+            "notes": "Los árboles B son una variante de los N-arios para almacenar grandes cantidades de datos en disco; muy usados en bases de datos y sistemas de archivos. Descritos por Rudolf Bayer y Edward M. McCreight en 1972, son balanceados y cada nodo puede tener más de dos hijos. Cada nodo se compone de llaves y ramas; las llaves están ordenadas y dividen las ramas en el orden esperado. El árbol de la figura es el del capítulo (b-tree-1.png); aquí se redibujó porque la figura original repite la llave 30 en una hoja (un árbol B no repite llaves): se usó 30 y 32."
+          },
+          {
+            "type": "cards",
+            "section": "Árboles B",
+            "title": "Características de un árbol B de orden m",
+            "columns": 3,
+            "cardHeight": 2.4,
+            "cards": [
+              { "title": "Llaves y ramas", "text": "Las llaves ordenadas dividen las ramas en el orden esperado.", "tone": "teal" },
+              { "title": "Hojas al mismo nivel", "text": "Todas las hojas están a la misma profundidad.", "tone": "teal" },
+              { "title": "Orden m", "text": "Se define según el tamaño del bloque de disco.", "tone": "teal" },
+              { "title": "Mínimo de llaves", "text": "Cada nodo (menos la raíz) guarda un mínimo, ≈ m/2; la raíz, al menos una.", "tone": "navy" },
+              { "title": "Inserción en hojas", "text": "La inserción siempre ocurre en una hoja.", "tone": "navy" },
+              { "title": "Crecen desde la raíz", "text": "El árbol crece o decrece por la raíz.", "tone": "navy" }
+            ],
+            "notes": "Características de un árbol B de orden m según el capítulo. Pueden implementarse en memoria principal o secundaria (el propósito original); en el curso se estudia la implementación en memoria principal. Precisión sobre el mínimo: el capítulo dice «al menos m/2 llaves»; en los ejemplos de orden 3 cada nodo (salvo la raíz) tiene al menos 1 llave, o sea ⌈m/2⌉ − 1 llaves (⌈m/2⌉ ramas). Y el máximo es m − 1 llaves (en orden 5, hasta 4 llaves)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Búsqueda en un árbol B: la llave 21",
+            "trees": [
+              {
+                "type": "btree",
+                "tree": "24(15 20(10 12,18,21 23),33 45 48(30 32,38,47,50 52 60))",
+                "path": ["24", "15 20", "21 23"],
+                "marks": { "21": { "tone": "green" } }
+              }
+            ],
+            "callout": { "tone": "teal", "text": "21 < 24: rama izquierda · 21 > 20 (última llave): última rama · en la hoja se encuentra el 21." },
+            "notes": "La búsqueda es muy parecida a la de un BST. Pasos para buscar una llave k: 1) iniciando en la raíz, se compara k con las llaves del nodo; si se encuentra, se retorna el nodo (o true). 2) Si se halla una llave mayor que k (o k es mayor que todas), y hay una rama, se desciende por ella y se repite. 3) Si se llega a una hoja y k no está, se retorna null o false."
+          },
+          {
+            "type": "code",
+            "section": "Árboles B",
+            "title": "Código: estructura y búsqueda",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1,
+                "blocks": [
+                  { "label": "Estructura básica", "code": "class BTreeNode {\n    int order;\n    int[] keys;\n    int keyCount;\n    BTreeNode[] branches;\n}" }
+                ],
+                "cards": [
+                  { "title": "Llaves y ramas", "text": "Un nodo guarda sus llaves ordenadas y las referencias a sus ramas.", "tone": "teal", "h": 1.8 }
+                ]
+              },
+              {
+                "weight": 1.7,
+                "blocks": [
+                  {
+                    "label": "Búsqueda de una llave",
+                    "code": "private Node Search(Node x, int key) {\n    int i = 0;\n    if (x == null) return x;\n    for (i = 0; i < x.n; i++) {\n        if (key < x.key[i]) break;\n        if (key == x.key[i]) return x;\n    }\n    if (x.leaf) return null;\n    else return Search(x.child[i], key);\n}"
+                  }
+                ]
+              }
+            ],
+            "notes": "El ciclo for avanza por las llaves del nodo: se detiene en la primera llave mayor que key (break) o devuelve el nodo si encuentra la llave. Al salir, i es el índice de la rama por la que hay que descender; si el nodo es hoja, la llave no está y se devuelve null. Nota: el código de búsqueda del capítulo usa otra clase de nodo (Node con n, key[], child[] y leaf) que la clase BTreeNode (order, keys, keyCount, branches); equivalen: n = keyCount, key = keys, child = branches. Se compactaron los if de una sola instrucción."
+          },
+          {
+            "type": "cards",
+            "section": "Árboles B",
+            "title": "Inserción en un árbol B",
+            "columns": 3,
+            "cardHeight": 3.3,
+            "cards": [
+              { "badge": "1", "title": "Buscar la hoja", "text": "Se desciende comparando con las llaves hasta llegar a una hoja.", "tone": "teal" },
+              { "badge": "2", "title": "Hoja con espacio", "text": "Se inserta la llave en su posición ordenada.", "tone": "teal" },
+              { "badge": "3", "title": "Hoja llena: dividir", "text": "La llave **mediana** sube al padre y las demás se reparten en dos nodos nuevos.", "tone": "amber" }
+            ],
+            "callout": { "tone": "teal", "text": "La división se repite hacia arriba hasta la raíz: el árbol B **crece desde la raíz**." },
+            "notes": "El proceso de división de un nodo n con m − 1 llaves (nodo lleno): 1) se selecciona la llave mediana y se sube al nodo padre; 2) se crean dos nuevos nodos, n1 y n2; 3) se distribuyen las llaves de n entre n1 y n2; 4) se actualizan las ramas de n1 y n2. Si el padre también queda lleno, se divide y así sucesivamente; si se divide la raíz, el árbol gana un nivel. Los ejemplos siguientes son de orden 5 (máximo 4 llaves por nodo)."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Inserción: dividir un nodo lleno (orden 5)",
+            "rows": [
+              {
+                "joiners": ["insertar 8"],
+                "trees": [
+                  { "title": "La raíz está llena", "type": "btree", "tree": "4 5 6 11" },
+                  { "title": "Se divide: la mediana sube", "type": "btree", "tree": "6(4 5,8 11)", "marks": { "6": { "tone": "amber" } } }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Orden 5: máximo 4 llaves por nodo. Con el 8 serían 5: la mediana (**6**) pasa a ser la nueva raíz." },
+            "notes": "Primera figura de inserción del capítulo (b-tree-insertion-1 y -2): la raíz [4 5 6 11] está llena; al insertar el 8 las llaves ordenadas serían 4 5 6 8 11, la mediana es 6, que sube; las demás se reparten en dos nodos nuevos: [4 5] y [8 11]. Como la raíz se dividió, el árbol ganó un nivel."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Inserción: el árbol crece hacia arriba",
+            "rows": [
+              {
+                "joiners": ["varios elementos después"],
+                "trees": [
+                  { "title": "Una hoja llena", "type": "btree", "tree": "6(4 5,8 9 11 12)" },
+                  { "title": "Tras varias divisiones", "type": "btree", "tree": "6 11 15 19(3 4 5,8 9 10,12 14,16 17,21 28 32)" }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Cada vez que un nodo se llena se divide; las llaves medianas suben y las hojas siguen al mismo nivel." },
+            "notes": "Las dos figuras restantes del capítulo (b-tree-insertion-3 y -4), de orden 5. En la primera, el hijo derecho ya tiene 4 llaves (lleno): la siguiente inserción en él provocará otra división. En la segunda, después de varias divisiones la raíz tiene 4 llaves y cinco hijos, todos hojas al mismo nivel. El capítulo no indica qué llaves se insertaron entre una y otra."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Eliminación en una hoja (orden 3)",
+            "rows": [
+              {
+                "label": "**1.1** Hoja con más del mínimo: se elimina el 32",
+                "joiners": [true],
+                "trees": [
+                  { "type": "btree", "tree": "30 33(25 28,31 32,35)", "marks": { "32": { "tone": "red" } } },
+                  { "type": "btree", "tree": "30 33(25 28,31,35)" }
+                ]
+              },
+              {
+                "label": "**1.2** Hoja en el mínimo: pide prestado al hermano izquierdo (se elimina el 31)",
+                "joiners": [true],
+                "trees": [
+                  { "type": "btree", "tree": "30 33(25 28,31,35)", "marks": { "31": { "tone": "red" } } },
+                  { "type": "btree", "tree": "28 33(25,30,35)", "marks": { "28": { "tone": "amber" }, "30": { "tone": "amber" } } }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Orden 3: mínimo de **1 llave** por nodo. Prestar: sube la mayor del hermano (28) y baja la del padre (30)." },
+            "notes": "Caso 1: la llave está en una hoja. Subcaso 1.1: el nodo tiene más del mínimo de llaves; simplemente se elimina la llave. Subcaso 1.2: el nodo tiene el mínimo; se pide prestada una llave a un hermano: primero se visita el hermano izquierdo y, si tiene más del mínimo, se toma su llave más grande (que sube al padre, mientras la llave del padre que los separa baja al nodo); si no, se revisa el hermano derecho. Se muestran subárboles de los ejemplos del capítulo (árbol de orden 3). Precisión: el capítulo escribe «m − 1» donde se refiere al mínimo de llaves del nodo; en orden 3 el mínimo es 1 y el máximo 2."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Eliminación en una hoja: fusionar",
+            "rows": [
+              {
+                "joiners": ["eliminar 30"],
+                "trees": [
+                  { "title": "Hermanos en el mínimo", "type": "btree", "tree": "28 33(25,30,35)", "marks": { "30": { "tone": "red" } } },
+                  { "title": "Se fusionan con la llave del padre", "type": "btree", "tree": "33(25 28,35)", "marks": { "28": { "tone": "amber" } } }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Si los hermanos también están en el mínimo, se **fusionan** con la llave del padre que los separa (28 baja)." },
+            "notes": "Caso 1.2 (continuación): si los dos hermanos tienen el mínimo de llaves, se fusionan los nodos y se elimina la llave del nodo padre; la mezcla de los nodos se hace a través del nodo padre. Aquí se elimina el 30 (queda vacío), el 28 baja del padre y se fusiona con el 25: el nodo [25 28]; el padre queda solo con el 33."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Eliminación en un nodo interno",
+            "rows": [
+              {
+                "label": "**2.1** Se elimina el 33: lo reemplaza su predecesor (32)",
+                "joiners": [true],
+                "trees": [
+                  { "type": "btree", "tree": "30 33(25,31 32,35)", "marks": { "33": { "tone": "red" } } },
+                  { "type": "btree", "tree": "30 32(25,31,35)", "marks": { "32": { "tone": "amber" } } }
+                ]
+              },
+              {
+                "label": "**2.2** Se elimina el 30: sus hijos en el mínimo se fusionan",
+                "joiners": [true],
+                "trees": [
+                  { "type": "btree", "tree": "30 32(25,31,35)", "marks": { "30": { "tone": "red" } } },
+                  { "type": "btree", "tree": "32(25 31,35)" }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "**2.1:** el hijo vecino tiene más del mínimo. **2.2:** ninguno lo tiene: se fusionan los hijos." },
+            "notes": "Caso 2: la llave está en un nodo interno. Subcaso 2.1: se reemplaza por la llave inmediatamente menor (del subárbol izquierdo) o mayor (del derecho), siempre que ese subárbol tenga más del mínimo de llaves; aquí el 33 se reemplaza por el 32, que sale de la hoja [31 32]. Subcaso 2.2: si ninguno de los hijos izquierdo o derecho tiene más del mínimo, se fusionan los dos hijos y se elimina la llave del padre: se elimina el 30 y las hojas [25] y [31] pasan a ser [25 31]."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Árboles B",
+            "title": "Caso 3: se unen los hijos con el padre",
+            "rows": [
+              {
+                "joiners": ["eliminar 10"],
+                "trees": [
+                  { "title": "Todos en el mínimo", "type": "btree", "tree": "20(10(5,15),35(30,70))", "marks": { "10": { "tone": "red" } } },
+                  { "title": "Se unen hijos y padre", "type": "btree", "tree": "20 35(5 15,30,70)", "marks": { "20": { "tone": "amber" } }, "nodeMarks": { "5 15": "amber" } }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "5 y 15 se fusionan; como 35 también está en el mínimo, el 20 baja y se une con él. Las hojas siguen al mismo nivel." },
+            "notes": "Caso 3: la eliminación ocurre en un nodo interno y no puede aplicarse el caso 2; se unen los hijos junto con el padre. En el ejemplo del capítulo se elimina el 10: sus hijos [5] y [15] se fusionan en [5 15]; el nodo del 10 queda sin llaves, de modo que el 20 de la raíz baja y se une con su hermano [35]. Resultado: raíz [20 35] con tres hojas. La figura del capítulo (b-tree-deletion-6.png) muestra el resultado con una errata; aquí se dibujó correcto."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Tries",
+            "title": "Trie: un árbol de prefijos",
+            "intro": "Árbol n-ario que guarda cadenas: cada rama es un carácter. Se pronuncia como el inglés «try».",
+            "legend": [
+              { "label": "Raíz (sin valor)", "tone": "slate" },
+              { "label": "Fin de palabra (EndOfWord)", "tone": "teal" }
+            ],
+            "trees": [{ "type": "trie", "tree": "raíz(a(an(and*,ant*)),d(da(dad*),do*))" }],
+            "side": {
+              "w": 4.2,
+              "items": [
+                { "card": { "title": "Palabras guardadas", "text": "`and`, `ant`, `dad` y `do`.", "tone": "teal", "h": 1.5 } },
+                { "card": { "title": "Para qué sirve", "text": "Diccionarios y motores de búsqueda.", "tone": "navy", "h": 1.5 } }
+              ]
+            },
+            "notes": "Trie viene de «reTRIEval» y se pronuncia como el inglés try. Cada nodo representa un carácter y cada rama corresponde a un carácter de la llave insertada; el último nodo de cada llave se conoce como EndOfWord (aquí, cuadrado). La raíz no tiene un valor asignado. Cada nodo se rotula con el prefijo que representa, y la letra de la rama es el último carácter. El ejemplo es el de la figura del capítulo (trie-1.png): and, ant, dad y do."
+          },
+          {
+            "type": "code",
+            "section": "Tries",
+            "title": "El TDA Trie y su estructura en Java",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.5,
+                "blocks": [
+                  {
+                    "label": "Nodo del trie",
+                    "code": "class TrieNode {\n    TrieNode[] children = new TrieNode[ALPHABET_SIZE];\n    boolean isEndOfWord;\n\n    TrieNode() {\n        isEndOfWord = false;\n        for (int i = 0; i < ALPHABET_SIZE; i++)\n            children[i] = null;\n    }\n}\n\nclass Trie {\n    TrieNode root;\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Operaciones", "text": "**insert**, **search** y **delete** de cadenas de caracteres.", "tone": "teal", "h": 1.7 },
+                  { "title": "Arreglo de hijos", "text": "El carácter funciona como índice: `'a'` es la posición 0.", "tone": "navy", "h": 1.7 }
+                ]
+              }
+            ],
+            "notes": "Operaciones básicas: insertar una cadena, buscar una cadena y eliminar una cadena (el capítulo solo desarrolla insertar y buscar). Cada nodo tiene un arreglo de referencias a los nodos del siguiente nivel, con una posición por letra del alfabeto (ALPHABET_SIZE, por ejemplo 26 para las letras minúsculas), y una bandera isEndOfWord. En el código de inserción, index = key.charAt(level) - 'a' convierte el carácter en posición del arreglo."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Tries",
+            "title": "Inserción en un trie",
+            "rows": [
+              {
+                "joiners": [true, true],
+                "trees": [
+                  { "title": "Insertar «and»", "type": "trie", "tree": "raíz(a(an(and*)))", "marks": { "and": { "tone": "amber" } } },
+                  { "title": "Insertar «ant»", "type": "trie", "tree": "raíz(a(an(and*,ant*)))", "marks": { "ant": { "tone": "amber" } } },
+                  { "title": "Insertar «an»", "type": "trie", "tree": "raíz(a(an*(and*,ant*)))", "marks": { "an": { "tone": "amber" } } }
+                ]
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Se reutilizan los nodos que ya existen. Si la llave es un **prefijo** de otra, solo se marca su último nodo como fin de palabra." },
+            "notes": "Insertar una llave es sencillo: cada carácter se inserta como un nodo individual; si la llave es nueva o extiende una existente, se construyen los nodos que faltan y se marca el final de palabra en el último; si la llave es un prefijo de una existente, simplemente se marca el último nodo como fin de palabra. La longitud de la llave determina la profundidad del trie. Las dos primeras figuras son las del capítulo (trie-2.png: «and» y luego «ant»); la tercera («an») se añadió para ilustrar el caso del prefijo. En amarillo, el nodo agregado o marcado en cada paso."
+          },
+          {
+            "type": "code",
+            "section": "Tries",
+            "title": "Código: insertar en un trie",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.7,
+                "blocks": [
+                  {
+                    "code": "void insert(String key) {\n    int level;\n    int length = key.length();\n    int index;\n    TrieNode pCrawl = root;\n\n    for (level = 0; level < length; level++) {\n        index = key.charAt(level) - 'a';\n        if (pCrawl.children[index] == null)\n            pCrawl.children[index] = new TrieNode();\n\n        pCrawl = pCrawl.children[index];\n    }\n    pCrawl.isEndOfWord = true;  // último nodo\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Un nodo por carácter", "text": "Si el hijo no existe, se crea; luego se desciende por él.", "tone": "teal", "h": 1.6 },
+                  { "title": "Fin de palabra", "text": "El último nodo se marca con `isEndOfWord = true`.", "tone": "amber", "h": 1.5 },
+                  { "title": "Profundidad", "text": "La longitud de la llave define la profundidad.", "tone": "navy", "h": 1.5 }
+                ]
+              }
+            ],
+            "notes": "pCrawl (puntero que \"se arrastra\") recorre el trie desde la raíz. Para cada carácter de la llave se calcula su índice en el arreglo de hijos; si no hay nodo en esa posición se crea uno nuevo; luego pCrawl avanza a ese hijo. Al terminar la llave se marca el último nodo como fin de palabra. Se asume que las llaves solo tienen letras minúsculas de la «a» a la «z»."
+          },
+          {
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
+            "section": "Tries",
+            "title": "Búsqueda en un trie",
+            "trees": [{ "type": "trie", "tree": "raíz(a(an(and*,ant*)),d(da(dad*),do*))", "path": ["raíz", "a", "an", "ant"], "marks": { "ant": { "tone": "green" } } }],
+            "side": {
+              "w": 5.4,
+              "items": [
+                {
+                  "table": {
+                    "columns": ["Consulta", "Resultado"],
+                    "colW": [1.3, 4.1],
+                    "fontSize": 16,
+                    "rowH": [0.5, 0.8, 0.8, 0.8],
+                    "rows": [
+                      ["ant", "true: llega a «ant», que es fin de palabra"],
+                      ["an", "false: el nodo existe, pero no es fin de palabra"],
+                      ["dot", "false: no hay rama «t» bajo «do»"]
+                    ]
+                  }
+                }
+              ]
+            },
+            "callout": { "tone": "teal", "text": "La búsqueda termina por **fin de la cadena** (se revisa `isEndOfWord`) o por **falta de rama** (la llave no existe)." },
+            "notes": "Buscar una llave es similar a insertarla, pero se detiene si no hay más caracteres en la llave o no hay más nodos en el trie. En el primer caso, si isEndOfWord del último nodo es verdadero, la llave existe; en el segundo, la búsqueda termina sin examinar todos los caracteres porque la llave no está. En el trie de la diapositiva, resaltado en amarillo el camino de «ant». Las consultas «an» y «dot» se añadieron para mostrar los dos tipos de fracaso."
+          },
+          {
+            "type": "code",
+            "section": "Tries",
+            "title": "Código: buscar en un trie",
+            "codeSize": 14,
+            "columns": [
+              {
+                "weight": 1.7,
+                "blocks": [
+                  {
+                    "code": "boolean search(String key) {\n    int level;\n    int length = key.length();\n    int index;\n    TrieNode pCrawl = root;\n\n    for (level = 0; level < length; level++) {\n        index = key.charAt(level) - 'a';\n\n        if (pCrawl.children[index] == null)\n            return false;\n\n        pCrawl = pCrawl.children[index];\n    }\n    return pCrawl.isEndOfWord;\n}"
+                  }
+                ]
+              },
+              {
+                "weight": 1,
+                "cards": [
+                  { "title": "Falta una rama", "text": "Devuelve `false` sin revisar el resto de la llave.", "tone": "red", "h": 1.6 },
+                  { "title": "Se agotó la llave", "text": "Devuelve el valor de `isEndOfWord` del último nodo.", "tone": "green", "h": 1.6 }
+                ]
+              }
+            ],
+            "notes": "La estructura es la misma que la de insert: se recorre el trie carácter por carácter. Si en algún momento no existe el hijo para el carácter, la llave no está. Al terminar la llave, el resultado es isEndOfWord del último nodo: un prefijo que solo es camino hacia otras palabras (como «an» en el ejemplo) no cuenta como palabra."
+          },
+          {
+            "type": "table",
+            "section": "Cierre",
+            "title": "Comparación de las estructuras",
+            "columns": ["Estructura", "Idea clave", "Implementación", "Uso típico"],
+            "colWeights": [1.1, 2.6, 1.7, 3],
+            "fontSize": 17,
+            "rowHeight": 0.55,
+            "rowPad": 0.1,
+            "calloutY": 5.85,
+            "rows": [
+              ["BST", "izquierdo < nodo < derecho", "Nodos enlazados", "Búsqueda eficiente"],
+              ["Heap", "Completo; padre ≥ hijos (máx.)", "Arreglo", "Colas de prioridad, heap sort"],
+              ["AVL", "BST con balance −1, 0 o 1", "Nodos y rotaciones", "Búsqueda en O(log n) garantizada"],
+              ["Expresión", "Hoja: operando; nodo: operador", "Nodos enlazados", "Compiladores, evaluar expresiones"],
+              ["Árbol B", "N-ario; hojas al mismo nivel", "Llaves y ramas", "Disco: bases de datos y archivos"],
+              ["Trie", "Un carácter por nodo", "Arreglo de hijos", "Diccionarios, motores de búsqueda"]
+            ],
+            "callout": { "tone": "teal", "text": "Todas organizan los datos en jerarquías: la **forma** del árbol define qué operaciones son rápidas." },
+            "notes": "Cuadro resumen. Pregunta para la clase: si necesita una cola de prioridad, ¿qué estructura elige? ¿Y para un autocompletado de palabras? ¿Y para guardar millones de registros en disco? (Heap, trie y árbol B)."
+          },
+          {
+            "type": "cards",
+            "section": "Cierre",
+            "title": "Ahora usted",
+            "intro": "Aplique lo aprendido (las respuestas están en las notas del orador):",
+            "columns": 2,
+            "textSize": 18,
+            "cards": [
+              { "title": "A · BST", "text": "Inserte 50, 30, 70, 20, 40, 60 y 80 en un BST vacío. Escriba el recorrido inorden.", "tone": "teal" },
+              { "title": "B · AVL", "text": "Inserte 10, 20 y 30 en un AVL vacío. ¿Qué caso de rotación ocurre?", "tone": "teal" },
+              { "title": "C · Heap", "text": "Inserte 5, 10, 3 y 8, en ese orden, en un heap máximo. ¿Cómo queda el arreglo?", "tone": "amber" },
+              { "title": "D · Expresión", "text": "Dibuje el árbol de `(a + b) * c` y escriba su expresión postfija.", "tone": "amber" }
+            ],
+            "notes": "Ejercicios añadidos (el capítulo no trae ejercicios). Respuestas:\nA) El árbol queda perfecto: 50(30(20,40),70(60,80)). Inorden: 20 30 40 50 60 70 80 (ascendente).\nB) Al insertar el 30, el 10 queda con factor +2; y = 20 y x = 30 son hijos derechos: caso RR, rotación izquierda en 10. Resultado: 20(10,30).\nC) Se inserta 5: [5]. Se inserta 10: se añade al final y sube sobre el 5: [10, 5]. Se inserta 3: [10, 5, 3]. Se inserta 8: se añade en la posición 3 (padre: posición 1, valor 5); 8 > 5, se intercambian; el nuevo padre es 10 y 8 < 10, se detiene: [10, 8, 3, 5].\nD) Árbol: raíz *, hijo izquierdo + (con hojas a y b), hijo derecho c. Postfija: a b + c *."
+          },
+          {
+            "type": "summary",
+            "section": "Cierre",
+            "title": "Resumen",
+            "marker": "dot",
+            "bold": false,
+            "titleSize": 20,
+            "items": [
+              "**Árboles:** una raíz y nodos con cero o más hijos; insertar, eliminar, buscar y recorrer.",
+              "**BST:** izquierdo < nodo < derecho; el inorden da el orden; puede degenerar en una lista.",
+              "**Heap:** árbol completo con la propiedad de heap; se guarda en un arreglo.",
+              "**AVL:** BST con factor de balance −1, 0 o 1; rotaciones LL, RR, LR y RL.",
+              "**Árboles de expresión:** hojas = operandos, nodos internos = operadores.",
+              "**Árboles B y tries:** árboles n-arios para datos en disco y para cadenas de caracteres."
+            ],
+            "footnote": "Orígenes mencionados en el capítulo: AVL (Adelson-Velsky y Landis, 1962) · árboles B (Bayer y McCreight, 1972) · Shunting Yard (Dijkstra, 1961).",
+            "notes": "Cierre de la lección: los árboles organizan datos de forma jerárquica y cada variante optimiza algo distinto (búsqueda, prioridad, balance, evaluación de expresiones, acceso a disco, prefijos). El capítulo no incluye referencias bibliográficas; el pie de la diapositiva solo recoge los orígenes que menciona. Lo siguiente en el curso son los grafos, una generalización de los árboles."
+          }
+        ]
+      }

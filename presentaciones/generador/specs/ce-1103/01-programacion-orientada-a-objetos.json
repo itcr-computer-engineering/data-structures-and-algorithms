@@ -1,0 +1,825 @@
+{
+  "meta": {
+    "title": "Programación Orientada a Objetos",
+    "author": "CE-1103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-1103 · Lección 01 · Programación Orientada a Objetos",
+    "footer": "CE-1103 · Programación Orientada a Objetos",
+    "theme": "dark",
+    "codeLang": "csharp",
+    "assetsDir": "../../../../ce-1103/images",
+    "output": "../../../ce-1103/Lección 01 - Programación Orientada a Objetos.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-1103 · Lección 01",
+      "title": "Programación Orientada a Objetos",
+      "subtitle": "Modelar el mundo real con clases y objetos",
+      "terminal": {
+        "file": "Televisor.cs",
+        "lang": "csharp",
+        "code": "class Televisor\n{\n    public bool encendido;\n    public void Encender() {}\n}"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Primera lección del curso. Introduce la programación orientada a objetos (POO) junto con los conceptos previos necesarios: tipos de datos, tipos valor y referencia, y tipos de datos abstractos. Los ejemplos del capítulo están en C# (y algunos en Python); se mantienen así en la presentación."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Distinguir tipos **simples**, **compuestos**, de **valor** y de **referencia**",
+        "Explicar qué es un **tipo de dato abstracto (TDA)** y su relación con las **clases**",
+        "Diferenciar **clase** y **objeto**",
+        "Aplicar los cuatro principios: **abstracción**, **encapsulamiento**, **herencia** y **polimorfismo**",
+        "Reconocer el polimorfismo en **tiempo de ejecución** y en **tiempo de compilación**"
+      ],
+      "notes": "Un objetivo por bloque de la lección. Los bloques son: conceptos esenciales (tipos de datos y TDA), conceptos de POO (objeto y clase) y los cuatro principios."
+    },
+    {
+      "type": "cards",
+      "section": "Conceptos esenciales",
+      "title": "Tipos de datos",
+      "intro": "Define qué valores puede tomar una variable y qué operaciones admite. En Python:",
+      "columns": 4,
+      "cardHeight": 2.4,
+      "cards": [
+        { "title": "int", "text": "Enteros: números sin decimales", "footer": "1, 20, -5", "footerSize": 18, "tone": "teal" },
+        { "title": "float", "text": "Flotantes: números con decimales", "footer": "3.14", "footerSize": 18, "tone": "teal" },
+        { "title": "str", "text": "Cadenas: secuencias de caracteres", "footer": "\"Hola, mundo!\"", "footerSize": 18, "tone": "teal" },
+        { "title": "bool", "text": "Booleanos: valores de verdad", "footer": "True, False", "footerSize": 18, "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Operaciones:", "text": "aritméticas con enteros y flotantes, concatenar cadenas y operaciones lógicas con booleanos." },
+      "notes": "Un tipo de dato es una clasificación que especifica qué valores puede tomar una variable y qué operaciones se pueden realizar sobre ellos. Se usan al declarar variables y al definir funciones, entre otros usos. El capítulo presenta los tipos más comunes de Python. Pregunta para la clase: ¿qué tipos de datos conocen en otros lenguajes que ya han usado?"
+    },
+    {
+      "type": "image",
+      "section": "Conceptos esenciales",
+      "title": "Los IDE aprovechan los tipos de datos",
+      "image": "01-programación-orientada-a-objectos/image-00.png",
+      "alt": "Captura de Visual Studio: al escribir variableTipoString punto, el IDE sugiere los métodos del tipo string, como ToString, ToUpper, Trim y TrimEnd",
+      "caption": "Autocompletado según el tipo de dato: la variable es un `string`, así que se sugieren sus operaciones.",
+      "notes": "Los IDE suelen proporcionar herramientas para trabajar con tipos de datos, como autocompletado y resaltado de sintaxis, lo que facilita escribir y comprender el código. Aquí la variable es de tipo string y el IDE ofrece solo las operaciones válidas para ese tipo."
+    },
+    {
+      "type": "compare",
+      "section": "Conceptos esenciales",
+      "title": "Tipo de dato simple vs. compuesto",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Simple",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Representa **un único valor**",
+            "Son los tipos básicos para valores individuales",
+            "No tiene sentido práctico separarlos en partes más pequeñas"
+          ]
+        },
+        {
+          "title": "Compuesto",
+          "tone": "amber",
+          "textSize": 19,
+          "text": "Representa una **colección de valores** de otros tipos de datos.",
+          "chips": ["nombre", "edad", "dirección"],
+          "note": "Ejemplo: un tipo `Cliente`."
+        }
+      ],
+      "callout": { "tone": "teal", "text": "**Los objetos se consideran tipos de datos compuestos.**" },
+      "notes": "Un tipo compuesto se usa para estructuras de datos más complejas que contienen múltiples valores de otros tipos. Por ejemplo, un tipo Cliente puede contener nombre, edad, dirección, etc. Los objetos son el caso típico de tipo compuesto."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-memoria",
+      "section": "Conceptos esenciales",
+      "title": "Tipo valor vs. tipo referencia",
+      "left": {
+        "title": "Tipo valor",
+        "text": "Almacena el **valor** directamente en la memoria.",
+        "code": "int x = 5;\nint y = x;",
+        "vars": ["x", "y"],
+        "values": ["5", "5"],
+        "caption": "Dos copias independientes: cambiar `y` no afecta a `x`."
+      },
+      "right": {
+        "title": "Tipo referencia",
+        "text": "Almacena una **referencia** a una ubicación en memoria.",
+        "code": "Televisor a = new Televisor();\nTelevisor b = a;",
+        "vars": ["a", "b"],
+        "object": "Televisor",
+        "caption": "un solo objeto compartido"
+      },
+      "callout": { "tone": "teal", "text": "Usualmente los tipos **simples** son de **valor** y los **compuestos** de **referencia**. Los **objetos** son tipos de referencia." },
+      "notes": "Un tipo de referencia permite acceder a memoria que puede ser compartida y modificada por varias partes de un programa. En Python, las listas y los diccionarios son tipos de referencia; los enteros y los flotantes, tipos de valor. Los objetos en la mayoría de lenguajes orientados a objetos también son tipos de referencia.\n\nEl diagrama (con `int` y `Televisor`) es un ejemplo ilustrativo agregado: en C#, copiar un `int` duplica el valor, pero copiar una variable de tipo clase solo duplica la referencia, de modo que `a` y `b` apuntan al mismo objeto. Lectura adicional (C#): https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types"
+    },
+    {
+      "type": "cards",
+      "section": "Conceptos esenciales",
+      "title": "Tipo de dato abstracto (TDA)",
+      "columns": 3,
+      "cardHeight": 3.2,
+      "cards": [
+        { "badge": "1", "title": "Modelo conceptual", "text": "Define un **conjunto de valores** y un **conjunto de operaciones** sobre ellos.", "tone": "teal" },
+        { "badge": "2", "title": "Solo la interfaz", "text": "Especifica **qué** operaciones existen, **no cómo** se implementan.", "tone": "teal" },
+        { "badge": "3", "title": "Dos vistas", "text": "Vista **lógica** (la interfaz) y vista **física** (la implementación).", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Un TDA permite usar los datos **sin preocuparse** por los detalles de implementación." },
+      "notes": "Los TDA son una forma de abstracción que permite a los programadores trabajar con datos de manera más abstracta y genérica. Un TDA especifica una interfaz con las operaciones permitidas, pero no cómo se implementan; por eso tiene una vista lógica y una vista física o de implementación."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-imagen-lado",
+      "section": "Conceptos esenciales",
+      "title": "Un TDA, varias implementaciones",
+      "image": "01-programación-orientada-a-objectos/image-03.png",
+      "alt": "Diagrama de clases: las clases ArrayList (con un arreglo de enteros) y LinkedList (con un nodo inicial) implementan la interfaz List, que define AddFirst, AddLast, DeleteFirst, DeleteLast, Find y Clear",
+      "imageW": 4.2,
+      "imageH": 3.9,
+      "panel": {
+        "title": "Una interfaz, dos implementaciones",
+        "tone": "teal",
+        "size": 19,
+        "items": [
+          "Interfaz `List`: `AddFirst`, `AddLast`, `DeleteFirst`, `DeleteLast`, `Find` y `Clear`",
+          "`ArrayList`: un arreglo (`int[]`) con **memoria estática**",
+          "`LinkedList`: **Nodos** con **memoria dinámica**",
+          "El API de `List` no debe revelar cómo se implementa por dentro"
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Quien usa `List` no necesita saber si por dentro hay **Nodos** o un **arreglo**." },
+      "notes": "El diagrama ilustra cómo un TDA Lista puede implementarse mediante nodos con memoria dinámica o mediante un arreglo con memoria estática. Es también un diagrama de clases UML: el rectángulo superior es el nombre, el central los atributos y el inferior los métodos; la flecha punteada con triángulo hueco indica que la clase implementa la interfaz (notación UML agregada para orientar la lectura de los diagramas que siguen)."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-ecuacion",
+      "section": "Conceptos esenciales",
+      "title": "De los TDA a las clases",
+      "ops": ["+", "="],
+      "items": [
+        { "tag": "qué", "title": "TDA", "text": "La **interfaz**: las operaciones que se pueden realizar con los datos.", "tone": "teal" },
+        { "tag": "cómo", "title": "Implementación", "text": "La **estructura de datos** que almacena y opera los datos.", "tone": "navy" },
+        { "tag": "POO", "title": "Clase", "text": "En programación orientada a objetos, **TDA + implementación** forman una clase.", "tone": "amber" }
+      ],
+      "callout": { "tone": "teal", "text": "Algunos lenguajes permiten definir **interfaces**: un TDA **puro**, sin implementación." },
+      "notes": "Una estructura de datos se puede entender como la implementación de un TDA. En POO, un TDA más su implementación forman una clase. Las interfaces (que veremos con polimorfismo) son el equivalente a un TDA puro."
+    },
+    {
+      "type": "cards",
+      "section": "Objetos y clases",
+      "title": "¿Qué es la programación orientada a objetos?",
+      "columns": 3,
+      "cardHeight": 3.2,
+      "cards": [
+        { "badge": "1", "title": "Paradigma", "text": "Modela conceptos del **mundo real** como **objetos**.", "tone": "teal" },
+        { "badge": "2", "title": "Objetos", "text": "Tienen **atributos** (datos) y **comportamientos** (métodos).", "tone": "teal" },
+        { "badge": "3", "title": "Primera clase", "text": "Se pueden manipular y **pasar como argumentos** a funciones.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Construir software orientado a objetos: **definir clases** y crear **instancias** (objetos) que interactúan entre sí." },
+      "notes": "POO es un paradigma de programación. Los objetos son «ciudadanos de primera clase»: pueden ser manipulados y pasados como argumentos a funciones. Hay otros paradigmas de programación: https://es.wikipedia.org/wiki/Paradigma_de_programaci%C3%B3n"
+    },
+    {
+      "type": "cards",
+      "section": "Objetos y clases",
+      "title": "Definición de objeto",
+      "columns": 3,
+      "cardHeight": 3.2,
+      "cards": [
+        { "badge": "1", "title": "Estructura de datos", "text": "Agrupa **atributos** (datos) y **métodos** (funciones) que operan sobre esos datos.", "tone": "teal" },
+        { "badge": "2", "title": "Instancia de clase", "text": "La clase define la estructura (**atributos**) y el comportamiento (**métodos**).", "tone": "teal" },
+        { "badge": "3", "title": "Interfaz del objeto", "text": "Sus métodos y atributos **públicos**, accesibles desde otros objetos.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "La mayoría de los lenguajes orientados a objetos requieren **definir una clase** para crear objetos." },
+      "notes": "La interfaz de un objeto la definen los métodos y atributos públicos: lo que pueden usar otros objetos que interactúan con él."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Objetos y clases",
+      "title": "Definición de clase: Televisor",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.25,
+          "blocks": [
+            {
+              "label": "Clase: plantilla de los objetos",
+              "code": "class Televisor\n{\n    // Atributos\n    public string marca;\n    public int pulgadas;\n    public bool encendido;\n\n    // Métodos\n    public void Encender() { encendido = true; }\n    public void Apagar() { encendido = false; }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Objetos: instancias de la clase",
+              "code": "Televisor samsung = new Televisor();\nTelevisor lg = new Televisor();\nlg.Encender();\nConsole.WriteLine(samsung.encendido);\n// Imprime false"
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "Clase vs. objeto:", "text": "la clase es un **plano o molde**; con `new` se **crean** (instancian) objetos a partir de ella." },
+        { "tone": "amber", "label": "Recuerde:", "text": "definir clases es **extender el lenguaje** con nuevos tipos de datos compuestos." }
+      ],
+      "notes": "Ejemplo del capítulo (clase Televisor). Se condensaron los métodos en una línea y se agregó el modificador `public` a los atributos: en C#, un miembro sin modificador es `private`, y el ejemplo imprime `samsung.encendido` desde fuera de la clase, así que debe ser público para compilar. El capítulo lo omite por simplicidad; la visibilidad se estudia con el encapsulamiento.\n\nLas clases son plantillas que definen la estructura y el comportamiento de los objetos. Un objeto opera sobre sus propios datos y no afecta la memoria de otros objetos."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-uml",
+      "section": "Objetos y clases",
+      "title": "De la clase a los objetos",
+      "classes": [
+        {
+          "id": "tv", "name": "Televisor", "tone": "teal", "x": 0.9, "y": 2.0, "w": 3.6,
+          "attrs": ["+ marca: string", "+ pulgadas: int", "+ encendido: bool"],
+          "methods": ["+ Encender()", "+ Apagar()"]
+        },
+        {
+          "id": "samsung", "name": "samsung : Televisor", "underline": true, "tone": "amber", "x": 7.4, "y": 1.95, "w": 3.9,
+          "attrs": ["marca = null", "pulgadas = 0", "encendido = false"]
+        },
+        {
+          "id": "lg", "name": "lg : Televisor", "underline": true, "tone": "amber", "x": 7.4, "y": 3.9, "w": 3.9,
+          "attrs": ["marca = null", "pulgadas = 0", { "t": "encendido = true", "tone": "green" }]
+        }
+      ],
+      "links": [
+        { "from": "tv", "to": "samsung", "kind": "use", "dashed": true, "label": "instancia" },
+        { "from": "tv", "to": "lg", "kind": "use", "dashed": true, "label": "instancia" }
+      ],
+      "callout": { "tone": "teal", "text": "Cada objeto es un **bloque de memoria independiente**: `lg.Encender()` no cambia el estado de `samsung`." },
+      "calloutY": 5.85,
+      "calloutH": 0.85,
+      "notes": "Diagrama de clases UML: la clase Televisor (nombre, atributos y métodos) y los dos objetos creados en el ejemplo anterior. El signo + indica visibilidad pública. Los valores iniciales (null y 0) son los valores por defecto de C# para campos no inicializados; es un detalle agregado para completar el diagrama. Después de `lg.Encender()`, solo el atributo encendido de lg cambia."
+    },
+    {
+      "type": "cards",
+      "section": "Principios de POO",
+      "title": "Los cuatro principios de la POO",
+      "columns": 4,
+      "cardHeight": 3.5,
+      "titleSize": 18,
+      "textSize": 16,
+      "cards": [
+        { "badge": "A", "title": "Abstracción", "text": "Modelar el problema con objetos de **alto nivel** que ocultan su implementación.", "tone": "teal" },
+        { "badge": "E", "title": "Encapsulamiento", "text": "Asociar código y datos; **exponer solo la interfaz** necesaria.", "tone": "teal" },
+        { "badge": "H", "title": "Herencia", "text": "Jerarquías de clases para **reutilizar código** (relación «es un/a»).", "tone": "teal" },
+        { "badge": "P", "title": "Polimorfismo", "text": "Un objeto puede comportarse de **muchas formas** distintas.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "text": "Son los elementos que **distinguen** la programación orientada a objetos de otros paradigmas." },
+      "notes": "Estos son los conceptos fundamentales que rigen la POO: la base para entender cómo se estructura y cómo se trabaja con este paradigma. Las siguientes diapositivas desarrollan cada uno."
+    },
+    {
+      "type": "cards",
+      "section": "Abstracción",
+      "title": "Abstracción",
+      "columns": 3,
+      "cardHeight": 3.1,
+      "cards": [
+        { "badge": "1", "title": "Modelar el problema", "text": "Con objetos de **alto nivel** que **ocultan** los detalles de su implementación.", "tone": "teal" },
+        { "badge": "2", "title": "Clases y objetos", "text": "Representan **entidades del mundo real**: `Persona` con nombre, edad y métodos.", "tone": "teal" },
+        { "badge": "3", "title": "Comportamiento", "text": "Pensamos en **comportamiento y atributos**, no en variables y procedimientos.", "tone": "teal" }
+      ],
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "la palabra reservada `abstract` de algunos lenguajes **no** tiene relación con la abstracción como principio de POO." },
+      "notes": "La abstracción es la principal característica de la POO. Se logra mediante la creación de clases y objetos que representan entidades del mundo real. Por ejemplo, una clase Persona puede representar a una persona, con atributos como nombre y edad, y métodos que permiten interactuar con ella."
+    },
+    {
+      "type": "compare",
+      "section": "Abstracción",
+      "title": "Piezas de LEGO vs. plasticina",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Piezas de LEGO",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Tienen una **interfaz** específica para conectarse",
+            "No necesitamos saber cómo están construidas por dentro",
+            "Clara separación entre interfaz e implementación"
+          ]
+        },
+        {
+          "title": "Plasticina",
+          "tone": "amber",
+          "itemSize": 19,
+          "items": [
+            "**No hay** una clara separación",
+            "Todo forma parte de **un todo**",
+            "No hay interfaz que oculte los detalles"
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "La abstracción hace que los objetos se comporten como **piezas de LEGO**." },
+      "notes": "Analogía del capítulo: la abstracción permite que los objetos se comporten como piezas de LEGO, con una interfaz específica para interactuar con ellos, sin necesidad de saber cómo están construidos internamente. Al trabajar con plasticina no hay una clara separación: todo forma parte de un todo. Pregunta para la clase: ¿qué otros objetos cotidianos tienen una interfaz clara (un control remoto, un enchufe)?"
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-uml",
+      "section": "Encapsulamiento",
+      "title": "Encapsulamiento: la clase BankAccount",
+      "classes": [
+        { "id": "prog", "name": "Program", "tone": "slate", "x": 0.8, "y": 2.2, "w": 2.4, "h": 2.48, "methods": ["+ Main()"] },
+        {
+          "id": "bank", "name": "BankAccount", "tone": "teal", "x": 4.7, "y": 2.2, "w": 3.6,
+          "attrs": [
+            { "t": "- accountNumber: string", "tone": "red" },
+            { "t": "- balance: decimal", "tone": "red" }
+          ],
+          "methods": [
+            { "t": "+ GetBalance(): decimal", "tone": "green" },
+            { "t": "+ Deposit(amount: decimal)", "tone": "green" },
+            { "t": "+ Withdraw(amount: decimal)", "tone": "green" }
+          ]
+        }
+      ],
+      "links": [
+        { "from": "prog", "to": "bank", "kind": "use", "toMember": 0, "blocked": true },
+        { "from": "prog", "to": "bank", "kind": "use", "toMember": 1, "blocked": true },
+        { "from": "prog", "to": "bank", "kind": "use", "toMember": 2, "tone": "green" },
+        { "from": "prog", "to": "bank", "kind": "use", "toMember": 3, "tone": "green" },
+        { "from": "prog", "to": "bank", "kind": "use", "toMember": 4, "tone": "green" }
+      ],
+      "panel": {
+        "x": 8.85, "y": 2.0, "w": 3.78, "h": 3.6, "tone": "navy", "title": "Interfaz vs. detalle", "size": 17,
+        "items": [
+          "`private`: solo accesible desde la misma clase",
+          "`public`: la interfaz que se expone",
+          "`account.balance = …` no compila (error **CS0122**)"
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Se **ocultan** los detalles de implementación y se expone **solo la interfaz** necesaria." },
+      "calloutY": 5.95,
+      "notes": "Ningún objeto externo a BankAccount puede acceder directamente a los atributos accountNumber y balance; solo puede usar los métodos públicos. Los símbolos UML: + público, - privado. Las flechas verdes son accesos permitidos; las rojas con X son accesos que el compilador rechaza.\n\nLos objetos son módulos autocontenidos que asocian código con sus datos; los datos pueden o no exponerse según lo decida el programador."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Encapsulamiento",
+      "title": "BankAccount: ocultar datos, exponer métodos",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase BankAccount (recortada)",
+              "code": "public class BankAccount\n{\n    private string accountNumber;\n    private decimal balance;\n\n    public decimal GetBalance()\n    {\n        return balance;  // una copia\n    }\n    // + Deposit(...) y Withdraw(...)\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Código externo",
+              "code": "var account = new BankAccount(\"1234567890\");\naccount.Deposit(1000);\naccount.Withdraw(500);\ndecimal balance = account.GetBalance();\n\naccount.balance = 1000000;  // error"
+                          }
+                        ],
+          "cards": [
+            { "title": "Acceso controlado", "text": "`balance` solo cambia con `Deposit()` y `Withdraw()`.", "tone": "teal", "h": 1.6 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "red", "label": "Error CS0122:", "text": "`'BankAccount.balance' is inaccessible due to its protection level`", "size": 16 }
+      ],
+      "calloutsY": 6.2,
+      "calloutsH": 0.65,
+      "notes": "Se recortó la clase del capítulo: se omiten el constructor, Deposit y Withdraw (Deposit suma a balance; Withdraw resta solo si amount <= balance y, si no, imprime «Fondos insuficientes»). La captura original del capítulo (images/01-programación-orientada-a-objectos/image-01.png) muestra la clase completa y el error del compilador; es muy alta para una diapositiva, por eso se recreó como código.\n\nGetBalance retorna una copia del valor de balance: el código externo puede leerlo pero no modificarlo directamente."
+    },
+    {
+      "type": "table",
+      "section": "Encapsulamiento",
+      "title": "Modificadores de acceso (C#)",
+      "columns": ["Modificador", "Accesible desde", "Símbolo UML"],
+      "colWeights": [1.3, 3.6, 1.1],
+      "fontSize": 20,
+      "rowHeight": 0.8,
+      "rows": [
+        ["public", "Cualquier parte del código", "+"],
+        ["private", "Solo la misma clase", "-"],
+        ["protected", "La misma clase y sus clases derivadas", "#"]
+      ],
+      "callout": { "tone": "teal", "text": "El programador decide **qué se expone** y qué se oculta de cada clase." },
+      "notes": "C# soporta muchos modificadores de acceso; estos son los tres básicos del capítulo. La columna «Símbolo UML» se agregó: en los diagramas de clases, + es público, - es privado y # es protegido. Más información: https://learn.microsoft.com/es-es/dotnet/csharp/language-reference/keywords/access-modifiers"
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Encapsulamiento",
+      "title": "Acceso controlado con get y set",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "code": "public class Persona\n{\n    private string nombre;\n\n    public string GetNombre()\n    {\n        return nombre;\n    }\n\n    public void SetNombre(string nombre)\n    {\n        this.nombre = nombre;\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1.2,
+          "cards": [
+            { "title": "Atributo privado", "text": "`nombre` solo es accesible desde la misma clase.", "tone": "red", "h": 1.7, "textSize": 18 },
+            { "title": "Métodos públicos", "text": "`GetNombre()` y `SetNombre()` permiten leer y modificar `nombre` de forma **controlada**.", "tone": "green", "h": 2.1, "textSize": 18 }
+          ]
+        }
+      ],
+      "notes": "El atributo nombre está declarado como private y se ofrecen los métodos públicos GetNombre() y SetNombre() para acceder a él y modificarlo de manera controlada. En C# también existen las propiedades (get y set): https://learn.microsoft.com/es-es/dotnet/csharp/programming-guide/classes-and-structs/properties"
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-uml",
+      "section": "Herencia",
+      "title": "Herencia: Animal y Perro",
+      "classes": [
+        {
+          "id": "animal", "name": "Animal", "tone": "teal", "x": 1.6, "y": 1.95, "w": 3.6,
+          "attrs": ["+ Nombre: string", "+ Edad: int"],
+          "methods": ["+ Comer()"]
+        },
+        { "id": "perro", "name": "Perro", "tone": "amber", "x": 1.6, "y": 4.4, "w": 3.6, "attrs": [], "methods": ["+ Ladrar()"] }
+      ],
+      "links": [{ "from": "perro", "to": "animal", "kind": "inherit", "label": "es un" }],
+      "panel": {
+        "x": 6.2, "y": 1.95, "w": 6.43, "h": 3.9, "tone": "navy", "title": "Superclase y subclase", "size": 18,
+        "items": [
+          "**Superclase** (`Animal`): comportamiento general",
+          "**Subclase** (`Perro`): comportamiento especializado",
+          "Cada clase tiene **máximo una** clase padre",
+          "Relación «es un/a»: un perro **es un** animal"
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Se hereda para **reutilizar código**: `Perro` obtiene `Nombre`, `Edad` y `Comer()` de `Animal`." },
+      "calloutY": 6.05,
+      "calloutH": 0.75,
+      "notes": "La herencia define jerarquías de objetos con el objetivo de reutilizar código. La flecha con triángulo hueco apunta de la subclase a la superclase. Otro ejemplo del capítulo: si tenemos una clase Vehículo y una clase Automóvil, podemos decir que un automóvil es un vehículo."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Herencia",
+      "title": "Superclase: Animal",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.4,
+          "blocks": [
+            {
+              "label": "Definición de la clase base",
+              "code": "public class Animal\n{\n    public string Nombre { get; set; }\n    public int Edad { get; set; }\n\n    public void Comer()\n    {\n        Console.WriteLine(\"El animal está comiendo\");\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Comportamiento general", "text": "`Nombre`, `Edad` y `Comer()` sirven para cualquier animal.", "tone": "teal", "h": 1.7 },
+            { "title": "Propiedades de C#", "text": "`{ get; set; }`: leer y modificar el valor.", "tone": "navy", "h": 1.5 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "La superclase provee el comportamiento **general**; las subclases lo **especializan**." }],
+      "calloutsY": 5.6,
+      "calloutsH": 0.85,
+      "notes": "Definición de la clase base del ejemplo del capítulo. Las propiedades Nombre y Edad usan la sintaxis auto-implementada de C#."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Herencia",
+      "title": "Subclase: Perro hereda de Animal",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.35,
+          "blocks": [
+            {
+              "label": "La subclase agrega comportamiento",
+              "code": "public class Perro : Animal\n{\n    public void Ladrar()\n    {\n        Console.WriteLine(\"El perro está ladrando\");\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Uso",
+              "code": "Perro perro = new Perro();\nperro.Nombre = \"Firulais\";\nperro.Edad = 3;\nperro.Comer();   // heredado\nperro.Ladrar();  // propio"
+            }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "`Perro : Animal` significa «**Perro hereda de Animal**»: no repite `Nombre`, `Edad` ni `Comer()`." }],
+      "calloutsY": 5.1,
+      "calloutsH": 0.9,
+      "notes": "En el programa principal del capítulo se crea primero una instancia de la clase base (Animal) y luego una de la subclase (Perro). Nótese que Perro hereda de Animal las propiedades Nombre y Edad y el método Comer, además de tener su propio método Ladrar."
+    },
+    {
+      "type": "compare",
+      "section": "Polimorfismo",
+      "title": "Polimorfismo: «muchas formas»",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "En tiempo de ejecución",
+          "tone": "teal",
+          "textSize": 19,
+          "text": "Una clase hija **anula** (override) un método `public` o `protected` de la clase padre.",
+          "itemSize": 18,
+          "items": ["Se resuelve **al ejecutar** el programa", "Ejemplo: `Draw()` en `Shape` y `Circle`"]
+        },
+        {
+          "title": "En tiempo de compilación",
+          "tone": "amber",
+          "textSize": 19,
+          "text": "**Sobrecarga** (overload): varios métodos con el **mismo nombre** y **distintos parámetros**.",
+          "itemSize": 18,
+          "items": ["Se resuelve **al compilar** el programa", "Ejemplo: `foo()` y `foo(int x)`"]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Polimorfismo: la capacidad de un objeto de **comportarse de diferentes maneras**." },
+      "notes": "Etimológicamente significa «muchas formas». Hay dos tipos: run-time (tiempo de ejecución) y compile-time (tiempo de compilación). Las frases «se resuelve al ejecutar» y «se resuelve al compilar» resumen la diferencia: en el primer caso el método correcto se determina cuando el programa corre; en el segundo, el compilador elige la versión según los parámetros."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-uml",
+      "section": "Polimorfismo",
+      "title": "Run-time: una jerarquía de figuras",
+      "classes": [
+        { "id": "shape", "name": "Shape", "tone": "teal", "x": 3.0, "y": 1.95, "w": 3.3, "methods": ["+ virtual Draw()"] },
+        { "id": "circle", "name": "Circle", "tone": "amber", "x": 0.8, "y": 4.1, "w": 3.3, "methods": ["+ override Draw()"] },
+        { "id": "square", "name": "Square", "tone": "amber", "x": 5.2, "y": 4.1, "w": 3.3, "methods": ["+ override Draw()"] }
+      ],
+      "links": [
+        { "from": "circle", "to": "shape", "kind": "inherit" },
+        { "from": "square", "to": "shape", "kind": "inherit" }
+      ],
+      "panel": {
+        "x": 9.1, "y": 1.95, "w": 3.53, "h": 3.9, "tone": "navy", "title": "Cómo se logra", "size": 17,
+        "items": [
+          "`virtual`: el padre permite que lo anulen",
+          "`override`: la hija redefine `Draw()`",
+          "Una variable `Shape` puede referirse a un `Circle` o a un `Square`"
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Cada subclase **anula** `Draw()` con su propio comportamiento." },
+      "notes": "Cuando una clase hija anula (override) un método public/protected de la clase padre, el método a ejecutar se decide en tiempo de ejecución según la clase real del objeto. En C# el método base se marca virtual y el de la hija override."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "Run-time: sobrescribir con override",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase padre",
+              "code": "public class Shape\n{\n    public virtual void Draw()\n    {\n        Console.WriteLine(\"Drawing a shape\");\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase hija",
+              "code": "public class Circle : Shape\n{\n    public override void Draw()\n    {\n        Console.WriteLine(\"Drawing a circle\");\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "label": "virtual:", "text": "la clase padre **permite** que `Draw()` sea anulado." },
+        { "tone": "amber", "label": "override:", "text": "la clase hija **redefine** `Draw()`." },
+        { "tone": "navy", "label": "Square:", "text": "es igual; imprime «Drawing a square»." }
+      ],
+      "calloutsY": 5.0,
+      "calloutsH": 1.1,
+      "notes": "Código del capítulo: Shape tiene un método virtual Draw() y las subclases Circle y Square lo anulan con override. Aquí se muestran Shape y Circle; Square es idéntica salvo el mensaje."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "¿Qué método se ejecuta?",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.3,
+          "blocks": [
+            {
+              "label": "Código cliente",
+              "code": "public static void Main(string[] args)\n{\n    Shape shape1 = new Circle();\n    Shape shape2 = new Square();\n\n    shape1.Draw(); // Drawing a circle\n    shape2.Draw(); // Drawing a square\n}"
+            }
+          ],
+          "cards": [
+            { "title": "Se resuelve al llamarlo", "text": "El método correcto se determina **al llamarlo**.", "tone": "teal", "h": 1.4 }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Tipo declarado", "text": "`shape1` se declara como `Shape`.", "tone": "navy", "h": 1.3 },
+            { "title": "Clase real del objeto", "text": "En ejecución, `shape1` es un `Circle`.", "tone": "teal", "h": 1.3 },
+            { "title": "Búsqueda del método", "text": "Se busca `Draw()` en `Circle`; si no está, se sube por la jerarquía.", "tone": "amber", "h": 1.6 }
+          ]
+        }
+      ],
+      "notes": "Cuando el código cliente llama el método, este se «resuelve» en ese momento invocando el método correcto. Para encontrarlo, se busca en la clase real del objeto en tiempo de ejecución y, en caso de no estar, se sigue subiendo por la jerarquía de clases."
+    },
+    {
+      "type": "compare",
+      "section": "Polimorfismo",
+      "title": "Tratar a la hija como si fuera la padre",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Visible en la clase padre",
+          "tone": "green",
+          "textSize": 20,
+          "text": "Todo atributo o método **visible** de `Animal` se accede a través de la hija.",
+          "code": "Animal a = new Perro();\na.Comer();  // OK",
+          "codeSize": 18
+        },
+        {
+          "title": "Específico de la hija",
+          "tone": "red",
+          "textSize": 20,
+          "text": "Lo que es **propio** de `Perro` no es accesible a través de la clase padre.",
+          "code": "Animal a = new Perro();\na.Ladrar();  // error",
+          "codeSize": 18
+        }
+      ],
+      "callout": { "tone": "teal", "text": "El polimorfismo permite **tratar a la clase hija como si fuera la padre**." },
+      "notes": "Los ejemplos de código (Animal a = new Perro()) son un complemento agregado con las clases de la sección de herencia. Con Animal a = new Perro(), el compilador solo conoce los miembros de Animal; Ladrar() no existe en Animal, así que a.Ladrar() produce un error de compilación (CS1061). Para llamar a Ladrar() hace falta una variable de tipo Perro."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-uml",
+      "section": "Polimorfismo",
+      "title": "Clases abstractas e interfaces",
+      "labels": [
+        { "x": 1.4, "y": 1.9, "text": "Clase abstracta", "tone": "teal" },
+        { "x": 7.2, "y": 1.9, "text": "Interfaz", "tone": "amber" }
+      ],
+      "classes": [
+        {
+          "id": "animal", "name": "Animal", "stereotype": "abstract", "tone": "teal", "x": 1.4, "y": 2.5, "w": 4.0,
+          "methods": ["+ Respirar()", { "t": "+ PorDefinir()", "italic": true }]
+        },
+        { "id": "perro", "name": "Perro", "tone": "teal", "x": 1.4, "y": 4.75, "w": 4.0, "methods": ["+ PorDefinir()"] },
+        { "id": "alim", "name": "Alimentable", "stereotype": "interface", "tone": "amber", "x": 7.2, "y": 2.5, "w": 4.0, "methods": ["+ alimentar()"] },
+        { "id": "persona", "name": "Persona", "tone": "amber", "x": 7.2, "y": 4.75, "w": 4.0, "methods": ["+ alimentar()"] }
+      ],
+      "links": [
+        { "from": "perro", "to": "animal", "kind": "inherit" },
+        { "from": "persona", "to": "alim", "kind": "realize" }
+      ],
+      "callout": { "tone": "teal", "text": "La clase abstracta da polimorfismo **dentro de una jerarquía**; la interfaz, **sin formar parte de una jerarquía**." },
+      "calloutY": 6.0,
+      "calloutH": 0.8,
+      "notes": "Algunos lenguajes permiten crear clases abstractas, útiles para el polimorfismo; y también interfaces, que proveen polimorfismo sin formar parte de una jerarquía. En UML el nombre en cursiva (o el estereotipo «abstract») marca lo abstracto, y la flecha punteada con triángulo hueco indica que una clase implementa una interfaz."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "Clase abstracta en C#",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase abstracta",
+              "code": "public abstract class Animal\n{\n    public void Respirar()\n    {\n        Console.Write(\"Respirando\");\n    }\n\n    // sin definición: fuerza a las\n    // hijas a implementarlo\n    public abstract void PorDefinir();\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase hija",
+              "code": "public class Perro : Animal\n{\n    // si no lo implementa, el\n    // compilador arroja un error\n    public override void PorDefinir()\n    {\n        Console.Write(\"Foo...\");\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Un método `abstract` **no tiene cuerpo** y obliga a cada clase hija a implementarlo." }],
+      "calloutsY": 5.9,
+      "calloutsH": 0.85,
+      "notes": "Se corrigió el código del capítulo para que sea C# válido: se agregaron los modificadores public, el tipo de retorno void y el punto y coma, y el método de la hija usa override (en C# la implementación de un método abstracto se marca con override). La clase Perro del capítulo también define Comer(); se omite aquí por brevedad."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "Interfaz en C#",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 0.75,
+          "blocks": [
+            {
+              "label": "Interfaz",
+              "code": "public interface Alimentable\n{\n    void alimentar();\n}"
+            }
+          ],
+          "cards": [
+            { "title": "Sin jerarquía", "text": "`Persona` no hereda de nadie y aun así es `Alimentable`.", "tone": "teal", "h": 1.7 }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Clase que la implementa",
+              "code": "public class Persona : Alimentable\n{\n    // Implementa el método de la interfaz.\n    // Si no lo hace, el compilador arroja un error.\n    public void alimentar()\n    {\n        Console.Write(\"Comiendo\");\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Una **interfaz** da polimorfismo **sin formar parte de una jerarquía** de clases." }],
+      "calloutsY": 5.95,
+      "calloutsH": 0.8,
+      "notes": "Las interfaces proveen polimorfismo sin formar parte de una jerarquía: cualquier clase (Persona, Perro, Robot…) puede implementar Alimentable y tratarse como tal. Se agregó el modificador public al método implementado, necesario en C#. El nombre `alimentar` en minúscula es el del capítulo (la convención de C# usaría Alimentar)."
+    },
+    {
+      "type": "diagram",
+      "kind": "poo-code",
+      "section": "Polimorfismo",
+      "title": "Compile-time: sobrecarga de métodos",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Mismo nombre, distintos parámetros",
+              "code": "public class TestClass\n{\n    public void foo() { }\n\n    public void foo(int x) { }\n\n    public void foo(string s, int x) { }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1.1,
+          "blocks": [
+            {
+              "label": "Uso",
+              "code": "var t = new TestClass();\nt.foo();         // foo()\nt.foo(7);        // foo(int x)\nt.foo(\"a\", 7);   // foo(string s, int x)"
+            }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "amber", "label": "Sobrecarga (overload):", "text": "el compilador elige la versión según los **argumentos** de la llamada." }],
+      "calloutsY": 5.4,
+      "calloutsH": 0.9,
+      "notes": "Sobrecargar métodos es la habilidad de crear varios métodos con el mismo nombre pero diferentes parámetros. Se agregó el modificador public (sin él, los métodos de C# serían privados) y el bloque «Uso» como complemento para ver qué versión se invoca en cada llamada."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted",
+      "intro": "Aplique lo aprendido a cada caso:",
+      "columns": 3,
+      "cardHeight": 3.6,
+      "textSize": 19,
+      "cards": [
+        { "badge": "A", "title": "¿Es un/a?", "text": "Dadas `Vehículo` y `Automóvil`, ¿cuál es la superclase? Escriba la frase «es un/a».", "tone": "teal" },
+        { "badge": "B", "title": "Visibilidad", "text": "En `BankAccount`, ¿qué modificador usaría para `balance` y cuál para `Deposit()`?", "tone": "teal" },
+        { "badge": "C", "title": "¿Override u overload?", "text": "`Sumar(int a)` y `Sumar(int a, int b)` en una clase: ¿override u overload?", "tone": "teal" }
+      ],
+      "notes": "Ejercicios agregados (el capítulo no trae ejercicios).\n\nA) La superclase es Vehículo y la subclase es Automóvil: «un automóvil es un vehículo».\nB) balance debe ser private (para que solo la clase lo modifique) y Deposit() debe ser public (es parte de la interfaz).\nC) Overload (sobrecarga): mismo nombre y distintos parámetros, se resuelve en compilación. Override sería redefinir en una clase hija un método de la clase padre con la misma firma."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 21,
+      "items": [
+        "**Tipos de datos:** simples o compuestos; de valor o de referencia. Los objetos son compuestos y de referencia.",
+        "**TDA:** una interfaz sin implementación. TDA + implementación = **clase**.",
+        "**Clase y objeto:** la clase es la plantilla; cada objeto es una instancia con sus propios datos.",
+        "**Abstracción y encapsulamiento:** ocultar los detalles y exponer solo la interfaz (`public` / `private`).",
+        "**Herencia y polimorfismo:** relación «es un/a»; `override` en ejecución y sobrecarga en compilación."
+      ],
+      "footnote": "Referencias: Paradigma de programación (es.wikipedia.org/wiki/Paradigma_de_programación) · Microsoft Learn: tipos de valor, modificadores de acceso y propiedades en C# (learn.microsoft.com).",
+      "notes": "Cierre de la lección. Siguiente tema: estructuras de datos lineales, donde se aplicarán estos conceptos para implementar TDA como la Lista mediante clases."
+    }
+  ]
+}
