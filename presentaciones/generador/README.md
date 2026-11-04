@@ -22,6 +22,10 @@ powershell -File contact-sheet.ps1
 - `render.ps1` exporta cada diapositiva a `render\slide-NN.png`, avisa de formas fuera de la diapositiva y, con `-Pdf`, genera el PDF junto al `.pptx`.
 - `contact-sheet.ps1` arma hojas de contacto (`render\sheet-NN.png`) para revisar varias diapositivas a la vez.
 
+## Uso con Copilot (skill)
+
+La skill `.github\skills\generar-presentacion\` guía a Copilot para crear una presentación nueva de otro tema: leer el capítulo, planificar, escribir el spec, construir y hacer la revisión visual. Pídale, por ejemplo: «Genera una presentación de `ce-2103\04-algoritmos-de-busqueda.md`». Incluye una plantilla (`templates\spec-template.json`), la referencia completa del spec y la lista de revisión visual.
+
 ## Estructura del spec
 
 ```json
@@ -38,14 +42,14 @@ powershell -File contact-sheet.ps1
 
 | `type` | Uso | Campos principales |
 |--------|-----|--------------------|
-| `title` | Portada | `tag`, `title`, `subtitle`, `meta` |
+| `title` | Portada | `tag`, `title`, `subtitle`, `meta`, `terminal{file,lang,code}` |
 | `list` / `summary` | Lista numerada o con viñetas | `items`, `marker` (`dot`), `footnote` |
 | `flow` | Pasos con flechas | `steps[{title,text}]`, `callout` |
 | `image` | Imagen con leyenda | `image`, `alt`, `caption` |
 | `cards` | Rejilla de tarjetas | `cards[{title,text,badge,tone,footer}]`, `columns`, `intro`, `callout` |
 | `compare` | Dos paneles | `panels[{title,tone,text,items,chips,code,note}]`, `vs`, `callout` |
 | `table` | Tabla comparativa | `columns`, `rows`, `colWeights`, `callout` |
-| `code` | Bloques de código (`sql`, `json`) en columnas | `columns[{weight,blocks[{label,code}],cards}]`, `callouts` |
+| `code` | Bloques de código en columnas | `columns[{weight,blocks[{label,code,lang}],cards}]`, `callouts`; lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `python`, `pseudo`, `plain` (por defecto `meta.codeLang`) |
 | `diagram` | Diagramas a medida | `kind`: `dbms-architecture`, `annotated-table`, `m2m`, `scan`, `index-map`, `join-result`, `venn-grid`, `timeline-cards`, `scale`, `flat-table`, `entities`, `er`, `schema` |
 
 Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagramas nuevos se agregan en `lib\diagrams.js`; los tipos de diapositiva, en `lib\layouts.js`.

@@ -17,25 +17,25 @@ const layouts = {
     const { colors, fonts } = ctx.theme;
     const { w, h } = ctx.theme.page;
     ctx.slide.background = { color: colors.titleBg };
-    // Decoración: ventana de terminal con una consulta SQL
-    const wx = 7.7, wy = 1.95, ww = w - 0.9 - 7.7, wh = 3.0;
-    box(ctx, { x: wx, y: wy, w: ww, h: wh, fill: colors.codeBg, line: colors.border, radius: 0.14 });
-    box(ctx, { x: wx, y: wy, w: ww, h: 0.5, fill: colors.panel, line: colors.border, radius: 0.14 });
-    box(ctx, { x: wx + 0.01, y: wy + 0.3, w: ww - 0.02, h: 0.21, fill: colors.panel, shape: 'rect' });
-    ['FF5F56', 'FFBD2E', '27C93F'].forEach((c, i) => {
-      ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: wx + 0.3 + i * 0.28, y: wy + 0.17, w: 0.17, h: 0.17, fill: { color: c }, line: { type: 'none' } });
-    });
-    text(ctx, 'bases_de_datos.sql', { x: wx, y: wy, w: ww, h: 0.5, fontSize: 12, color: colors.muted, fontFace: fonts.code, align: 'center', valign: 'middle' });
-    const code = "-- Lección 08\nSELECT *\nFROM bases_de_datos\nWHERE tema IN ('SQL', 'NoSQL');";
-    const runs = [];
-    const lines = code.split('\n');
-    lines.forEach((ln, i) => {
-      const rs = C.highlightLine(ln, 'sql', ctx);
-      rs[rs.length - 1].options.breakLine = i < lines.length - 1;
-      runs.push(...rs);
-    });
-    text(ctx, runs, { x: wx + 0.35, y: wy + 0.85, w: ww - 0.6, h: 1.9, fontSize: 17, fontFace: fonts.code, lineSpacing: 30, wrap: false });
-
+    // Decoración opcional: ventana de terminal con un fragmento de código (spec: `terminal {file, lang, code}`)
+    if (s.terminal) {
+      const wx = 7.7, wy = 1.95, ww = w - 0.9 - 7.7, wh = 3.0;
+      box(ctx, { x: wx, y: wy, w: ww, h: wh, fill: colors.codeBg, line: colors.border, radius: 0.14 });
+      box(ctx, { x: wx, y: wy, w: ww, h: 0.5, fill: colors.panel, line: colors.border, radius: 0.14 });
+      box(ctx, { x: wx + 0.01, y: wy + 0.3, w: ww - 0.02, h: 0.21, fill: colors.panel, shape: 'rect' });
+      ['FF5F56', 'FFBD2E', '27C93F'].forEach((c, i) => {
+        ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: wx + 0.3 + i * 0.28, y: wy + 0.17, w: 0.17, h: 0.17, fill: { color: c }, line: { type: 'none' } });
+      });
+      text(ctx, s.terminal.file || '', { x: wx, y: wy, w: ww, h: 0.5, fontSize: 12, color: colors.muted, fontFace: fonts.code, align: 'center', valign: 'middle' });
+      const runs = [];
+      const lines = s.terminal.code.split('\n');
+      lines.forEach((ln, i) => {
+        const rs = C.highlightLine(ln, s.terminal.lang || 'plain', ctx);
+        rs[rs.length - 1].options.breakLine = i < lines.length - 1;
+        runs.push(...rs);
+      });
+      text(ctx, runs, { x: wx + 0.35, y: wy + 0.85, w: ww - 0.6, h: 1.9, fontSize: 17, fontFace: fonts.code, lineSpacing: 30, wrap: false });
+    }
     text(ctx, s.tag, {
       x: 0.9, y: 2.2, w: 6.5, h: 0.4, fontSize: 18, color: colors.teal, fontFace: fonts.code, valign: 'middle',
     });
@@ -179,7 +179,7 @@ const layouts = {
         cy += th + 0.1;
       }
       if (p.code) {
-        const ch = codeBlock(ctx, { x: x + 0.35, y: cy, w: iw, code: p.code, lang: p.codeLang || 'sql', fontSize: p.codeSize || 15 });
+        const ch = codeBlock(ctx, { x: x + 0.35, y: cy, w: iw, code: p.code, lang: p.codeLang, fontSize: p.codeSize || 15 });
         cy += ch + 0.15;
       }
       if (p.note) {
@@ -232,7 +232,7 @@ const layouts = {
           text(ctx, b.label, { x, y, w: cw, h: 0.35, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
           y += 0.4;
         }
-        const h = codeBlock(ctx, { x, y, w: cw, code: b.code, lang: b.lang || 'sql', fontSize: b.size || s.codeSize || 15 });
+        const h = codeBlock(ctx, { x, y, w: cw, code: b.code, lang: b.lang, fontSize: b.size || s.codeSize || 15 });
         y += h + 0.1;
         if (b.note) {
           const th = estLines(b.note, 15, cw) * lineH(15) + 0.05;

@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "title": "Título del tema",
+    "author": "CE-XXXX",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-XXXX · Lección NN · Título del tema",
+    "footer": "CE-XXXX · Título del tema",
+    "theme": "dark",
+    "codeLang": "python",
+    "assetsDir": "../../../../ce-XXXX/images/NN-tema",
+    "output": "../../../ce-XXXX/Lección NN - Título del tema.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-XXXX · Lección NN",
+      "title": "Título del tema",
+      "subtitle": "Una frase que resuma la lección",
+      "terminal": {
+        "file": "tema.py",
+        "lang": "python",
+        "code": "# Lección NN\ndef aprender(tema):\n    return practicar(tema)"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Contexto de la lección: qué se vio antes y qué viene después."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "items": [
+        "Qué es **[concepto A]** y para qué sirve",
+        "Cómo funciona **[concepto B]**",
+        "Cómo se compara **[A]** con **[B]**",
+        "Cómo aplicarlo en un caso práctico"
+      ],
+      "notes": "Un objetivo por bloque de la lección."
+    },
+    {
+      "type": "flow",
+      "section": "Fundamentos",
+      "title": "Del problema a la solución",
+      "steps": [
+        { "title": "Problema", "text": "Describa en una o dos frases la situación que motiva el tema." },
+        { "title": "Idea", "text": "La idea central que resuelve el problema." },
+        { "title": "Resultado", "text": "Qué se obtiene al aplicar la idea." }
+      ],
+      "callout": { "tone": "amber", "label": "Recuerde:", "text": "una frase que los estudiantes deben llevarse de esta diapositiva." },
+      "notes": "Ejemplo cotidiano para introducir el concepto."
+    },
+    {
+      "type": "cards",
+      "section": "Fundamentos",
+      "title": "Tres ideas clave",
+      "intro": "Una línea de contexto que prepara las tarjetas:",
+      "columns": 3,
+      "cards": [
+        { "badge": "1", "title": "Idea uno", "text": "Explicación breve, de dos o tres líneas como máximo.", "tone": "teal" },
+        { "badge": "2", "title": "Idea dos", "text": "Explicación breve, de dos o tres líneas como máximo.", "tone": "teal" },
+        { "badge": "3", "title": "Idea tres", "text": "Explicación breve, de dos o tres líneas como máximo.", "tone": "teal" }
+      ],
+      "notes": "Detalles, analogías y errores frecuentes van aquí, no en la diapositiva."
+    },
+    {
+      "type": "compare",
+      "section": "Fundamentos",
+      "title": "A vs. B",
+      "vs": true,
+      "panelHeight": 3.6,
+      "panels": [
+        { "title": "Opción A", "tone": "teal", "itemSize": 20, "items": ["Característica 1", "Característica 2", "Característica 3"] },
+        { "title": "Opción B", "tone": "slate", "itemSize": 20, "items": ["Característica 1", "Característica 2", "Característica 3"] }
+      ],
+      "callout": { "tone": "teal", "text": "Cuándo conviene cada una." },
+      "notes": "Pregunta para la clase: ¿qué opción elegirían y por qué?"
+    },
+    {
+      "type": "table",
+      "section": "Fundamentos",
+      "title": "Resumen comparativo",
+      "columns": ["", "Opción A", "Opción B"],
+      "colWeights": [1.2, 2, 2],
+      "rows": [
+        ["Costo", "O(1)", "O(n)"],
+        ["Memoria", "Constante", "Proporcional a n"],
+        ["Uso típico", "Acceso directo", "Recorrido completo"]
+      ],
+      "callout": { "tone": "teal", "text": "Conclusión de la tabla en una frase." },
+      "notes": "Evite más de seis filas por diapositiva."
+    },
+    {
+      "type": "code",
+      "section": "Práctica",
+      "title": "Ejemplo en código",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.4,
+          "blocks": [
+            { "label": "Implementación", "code": "def buscar(lista, objetivo):\n    for i, valor in enumerate(lista):\n        if valor == objetivo:\n            return i  # encontrado\n    return -1" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Costo", "text": "Recorre la lista una vez.", "footer": "O(n)", "footerSize": 22, "tone": "amber", "h": 1.75 }
+          ]
+        }
+      ],
+      "callouts": [{ "tone": "teal", "text": "Qué observar en el código." }],
+      "notes": "Recorra el código línea por línea con un ejemplo concreto."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Ahora usted",
+      "intro": "Aplique lo aprendido a cada caso:",
+      "columns": 3,
+      "cardHeight": 3.2,
+      "cards": [
+        { "badge": "A", "title": "Caso A", "text": "Enunciado breve del ejercicio.", "tone": "teal" },
+        { "badge": "B", "title": "Caso B", "text": "Enunciado breve del ejercicio.", "tone": "teal" },
+        { "badge": "C", "title": "Caso C", "text": "Enunciado breve del ejercicio.", "tone": "teal" }
+      ],
+      "notes": "Respuestas sugeridas para cada caso."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 21,
+      "items": [
+        "**[Concepto A]:** una frase.",
+        "**[Concepto B]:** una frase.",
+        "**[Comparación]:** una frase.",
+        "**[Aplicación]:** una frase."
+      ],
+      "footnote": "Referencias: Autor, A. (Año). Título del libro. Editorial.",
+      "notes": "Cierre y adelanto de la próxima lección."
+    }
+  ]
+}

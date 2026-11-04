@@ -14,6 +14,11 @@
       "tag": "CE-2103 · Lección 08",
       "title": "Bases de Datos",
       "subtitle": "De los archivos a SQL y NoSQL",
+      "terminal": {
+        "file": "bases_de_datos.sql",
+        "lang": "sql",
+        "code": "-- Lección 08\nSELECT *\nFROM bases_de_datos\nWHERE tema IN ('SQL', 'NoSQL');"
+      },
       "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
       "notes": "Esta lección cierra el tema de almacenamiento externo. Hasta ahora vimos cómo se organizan los datos en disco (árboles B, hashing externo); hoy vemos cómo los sistemas reales los administran y los consultan."
     },

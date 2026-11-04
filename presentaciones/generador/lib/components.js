@@ -226,24 +226,72 @@ function callout(ctx, { x, y, w, h, tone = 'teal', label, text: body, size = 17 
 }
 
 // ---------- Código con resaltado simple ----------
-const SQL_KW = new Set(
-  ('SELECT FROM WHERE JOIN ON CREATE TABLE INDEX INSERT INTO VALUES UPDATE SET DELETE PRIMARY KEY FOREIGN ' +
-    'REFERENCES ALTER DROP AND OR NOT NULL ORDER BY GROUP INNER LEFT RIGHT FULL OUTER AS UNIQUE DEFAULT CONSTRAINT')
-    .split(' ')
-);
-const SQL_TYPES = new Set('INT VARCHAR DATE DECIMAL TEXT'.split(' '));
+// Lenguajes admitidos en `lang`: sql, json, c, cpp, java, csharp, python, pseudo, plain.
+// Para agregar otro basta con registrarlo en LANGS (palabras clave, tipos y marca de comentario).
+const words = (s) => new Set(s.split(' '));
+const C_FLOW = 'if else for while do switch case break continue return goto default';
+const LANGS = {
+  sql: {
+    ignoreCase: true,
+    comment: '--',
+    kw: words(
+      'SELECT FROM WHERE JOIN ON CREATE TABLE INDEX INSERT INTO VALUES UPDATE SET DELETE PRIMARY KEY FOREIGN ' +
+        'REFERENCES ALTER DROP AND OR NOT NULL ORDER BY GROUP INNER LEFT RIGHT FULL OUTER AS UNIQUE DEFAULT CONSTRAINT'
+    ),
+    types: words('INT VARCHAR DATE DECIMAL TEXT'),
+  },
+  c: {
+    comment: '//',
+    kw: words(`${C_FLOW} struct typedef sizeof static const enum union extern NULL true false`),
+    types: words('int char float double long short unsigned signed void bool size_t'),
+  },
+  cpp: {
+    comment: '//',
+    kw: words(`${C_FLOW} struct class public private protected template typename new delete nullptr static const virtual namespace using true false`),
+    types: words('int char float double long short unsigned signed void bool string vector size_t auto'),
+  },
+  java: {
+    comment: '//',
+    kw: words(`${C_FLOW} class interface extends implements public private protected static final new this super null true false throw throws try catch finally import package`),
+    types: words('int char float double long short byte void boolean String List Map ArrayList'),
+  },
+  csharp: {
+    comment: '//',
+    kw: words(`${C_FLOW} class interface public private protected static readonly new this base null true false throw try catch finally using namespace var foreach in`),
+    types: words('int char float double long short byte void bool string List Dictionary'),
+  },
+  python: {
+    comment: '#',
+    kw: words('if elif else for while in not and or return def class import from as with try except finally raise lambda None True False break continue pass yield'),
+    types: words('int str float bool list dict set tuple'),
+  },
+  pseudo: {
+    ignoreCase: true,
+    comment: '//',
+    kw: words(
+      'SI ENTONCES SINO MIENTRAS PARA HASTA REPETIR HACER RETORNAR DEVOLVER FIN FUNCION PROCEDIMIENTO LEER ESCRIBIR Y O NO VERDADERO FALSO ' +
+        'IF THEN ELSE WHILE FOR DO RETURN END FUNCTION AND OR NOT TRUE FALSE'
+    ),
+    types: words('ENTERO REAL CADENA BOOLEANO ARREGLO'),
+  },
+  json: {},
+  plain: {},
+};
 
 function highlightLine(line, lang, ctx) {
   const { colors, fonts } = ctx.theme;
   const mk = (t, color) => ({ text: t, options: { color, fontFace: fonts.code } });
+  const L = LANGS[lang];
+  if (!L) throw new Error(`Lenguaje de código desconocido: ${lang}`);
   if (lang === 'plain') return [mk(line || ' ', colors.codeText)];
-  // Comentarios SQL: todo lo que sigue a "--" (fuera de cadenas simples)
+  // Comentario de línea: desde la marca hasta el final (si no está dentro de una cadena)
   let comment = null;
-  if (lang === 'sql') {
-    const ci = line.search(/--/);
-    if (ci >= 0 && (line.slice(0, ci).match(/'/g) || []).length % 2 === 0) {
+  if (L.comment) {
+    const ci = line.indexOf(L.comment);
+    const before = ci >= 0 ? line.slice(0, ci) : '';
+    if (ci >= 0 && (before.match(/'/g) || []).length % 2 === 0 && (before.match(/"/g) || []).length % 2 === 0) {
       comment = line.slice(ci);
-      line = line.slice(0, ci);
+      line = before;
     }
   }
   const out = [];
@@ -256,9 +304,8 @@ function highlightLine(line, lang, ctx) {
       out.push(mk(tok, isKey ? colors.codeType : colors.codeStr));
     } else if (num) out.push(mk(tok, colors.codeNum));
     else if (word) {
-      const up = tok.toUpperCase();
-      const isSql = lang === 'sql';
-      out.push(mk(tok, isSql && SQL_KW.has(up) ? colors.codeKw : isSql && SQL_TYPES.has(up) ? colors.codeType : colors.codeText));
+      const key = L.ignoreCase ? tok.toUpperCase() : tok;
+      out.push(mk(tok, L.kw && L.kw.has(key) ? colors.codeKw : L.types && L.types.has(key) ? colors.codeType : colors.codeText));
     } else out.push(mk(tok, colors.codeText));
   }
   if (comment) out.push(mk(comment, colors.codeComment));
@@ -269,7 +316,8 @@ function codeHeight(code, fontSize) {
   return code.split('\n').length * ((fontSize * 1.3) / 72) + 0.4;
 }
 
-function codeBlock(ctx, { x, y, w, code, lang = 'sql', fontSize = 15 }) {
+function codeBlock(ctx, { x, y, w, code, lang, fontSize = 15 }) {
+  lang = lang || ctx.meta.codeLang || 'sql';
   const lines = code.split('\n');
   const h = codeHeight(code, fontSize);
   box(ctx, { x, y, w, h, fill: ctx.theme.colors.codeBg, line: ctx.theme.colors.codeBorder, radius: 0.1 });
