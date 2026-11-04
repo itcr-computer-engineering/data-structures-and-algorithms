@@ -26,4 +26,4 @@ Material de los cursos CE-1103 y CE-2103 del Instituto Tecnológico de Costa Ric
 | 07 · Algoritmos de compresión | [pptx](<presentaciones/ce-2103/Lección 07 - Algoritmos de Compresión.pptx>) · [pdf](<presentaciones/ce-2103/Lección 07 - Algoritmos de Compresión.pdf>) |
 | 08 · Bases de datos | [pptx](<presentaciones/ce-2103/Lección 08 - Bases de Datos.pptx>) · [pdf](<presentaciones/ce-2103/Lección 08 - Bases de Datos.pdf>) |
 
-Cada lección es un `.pptx` con su `.pdf` en `presentaciones/ce-1103` y `presentaciones/ce-2103`.
+Cada lección es un `.pptx` con su `.pdf` en `presentaciones/ce-1103` y `presentaciones/ce-2103`. Los capítulos Markdown y las presentaciones originales en inglés están en [`archive`](archive) (obsoletos, sin mantenimiento).
