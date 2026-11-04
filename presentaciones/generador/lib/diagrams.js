@@ -609,7 +609,7 @@ function strips(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: 2.5 + s.rows.length * 0.72 + 0.15, w: w - 2 * mx, h: 0.65, size: 16, ...s.callout });
 }
 
-module.exports = {
+const builtin = {
   'dbms-architecture': dbmsArchitecture,
   'annotated-table': annotatedTable,
   m2m,
@@ -628,3 +628,21 @@ module.exports = {
   bitstream,
   strips,
 };
+
+// Extensiones por tema: cada archivo `lib/diagrams.<tema>.js` exporta { 'kind': (ctx, slideSpec) => void }.
+// Los `kind` de una extensión deben llevar el prefijo del tema (p. ej. `memoria-heap`) para no chocar con otros.
+const fs = require('fs');
+const path = require('path');
+const extensions = {};
+fs.readdirSync(__dirname)
+  .filter((f) => /^diagrams\..+\.js$/.test(f))
+  .sort()
+  .forEach((f) => {
+    const ext = require(path.join(__dirname, f));
+    Object.keys(ext).forEach((kind) => {
+      if (builtin[kind] || extensions[kind]) throw new Error(`Diagrama duplicado "${kind}" en ${f}`);
+      extensions[kind] = ext[kind];
+    });
+  });
+
+module.exports = { ...builtin, ...extensions };

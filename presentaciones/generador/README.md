@@ -16,11 +16,11 @@ El archivo de salida se define en `meta.output` del spec (relativo al spec). Pue
 
 ```powershell
 powershell -File render.ps1 -Pptx "..\ce-2103\Lección 08 - Bases de Datos.pptx" -Pdf
-powershell -File contact-sheet.ps1
+powershell -File contact-sheet.ps1 -Dir "render\Lección 08 - Bases de Datos"
 ```
 
-- `render.ps1` exporta cada diapositiva a `render\slide-NN.png`, avisa de formas fuera de la diapositiva y, con `-Pdf`, genera el PDF junto al `.pptx`.
-- `contact-sheet.ps1` arma hojas de contacto (`render\sheet-NN.png`) para revisar varias diapositivas a la vez.
+- `render.ps1` exporta cada diapositiva a `render\<nombre del pptx>\slide-NN.png`, avisa de formas fuera de la diapositiva y, con `-Pdf`, genera el PDF junto al `.pptx`. Puede ejecutarse en paralelo (un mutex serializa el uso de PowerPoint).
+- `contact-sheet.ps1 -Dir <carpeta>` arma hojas de contacto (`sheet-NN.png`) para revisar varias diapositivas a la vez.
 
 ## Uso con Copilot (skill)
 

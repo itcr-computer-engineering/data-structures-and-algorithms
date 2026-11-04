@@ -33,10 +33,10 @@ Ejemplo completo y de referencia: `presentaciones\generador\specs\ce-2103\08-bas
 5. **Revisión visual (obligatoria).**
    ```powershell
    powershell -NoProfile -File render.ps1 -Pptx "..\<curso>\Lección <NN> - <Tema>.pptx"
-   powershell -NoProfile -File contact-sheet.ps1
+   powershell -NoProfile -File contact-sheet.ps1 -Dir "render\Lección <NN> - <Tema>"
    ```
-   Abra `render\sheet-NN.png` (6 diapositivas por hoja) con la herramienta `view` para una pasada general y luego `render\slide-NN.png` a tamaño completo para cada diapositiva sospechosa. Siga `references\qa-checklist.md`. Corrija el spec (o el generador) y repita hasta que no haya texto desbordado, solapado ni mal ubicado. `render.ps1` también avisa de formas fuera de la diapositiva.
-6. **Entregables.** Con `-Pdf` en `render.ps1` genere el PDF junto al `.pptx` (las lecciones existentes incluyen ambos). Elimine `presentaciones\generador\render\` (está en `.gitignore`).
+   `render.ps1` guarda los PNG en `render\<nombre del pptx>\` y es seguro ejecutarlo en paralelo desde varios procesos (un mutex serializa PowerPoint y no cierra una sesión ajena). Abra `sheet-NN.png` (6 diapositivas por hoja) con la herramienta `view` para una pasada general y luego `slide-NN.png` a tamaño completo para cada diapositiva sospechosa. Siga `references\qa-checklist.md`. Corrija el spec (o el generador) y repita hasta que no haya texto desbordado, solapado ni mal ubicado. `render.ps1` también avisa de formas fuera de la diapositiva.
+6. **Entregables.** Con `-Pdf` en `render.ps1` genere el PDF junto al `.pptx` (las lecciones existentes incluyen ambos). Elimine `presentaciones\generador\render\<nombre>\` (`render` está en `.gitignore`).
 7. **Guardar.** Haga commit del spec, el `.pptx`, el `.pdf` y cualquier cambio al generador. Nunca incluya `node_modules` ni `render`. Si cambió `lib\`, regenere también las demás presentaciones afectadas para comprobar que no se rompieron.
 
 ## Reglas de contenido (rol: profesor de primer año de Ingeniería en Computadores)
@@ -70,6 +70,7 @@ Detalles de campos, valores por defecto y límites de cada tipo: `references\spe
 Extienda el generador en vez de forzar el contenido:
 
 - Nuevo diagrama: función en `presentaciones\generador\lib\diagrams.js`, registrada en `module.exports`, con campos en el spec. Nuevo tipo de diapositiva: `lib\layouts.js`. Primitivas reutilizables (cajas, chips, flechas, tablas, código, tarjetas, callouts): `lib\components.js`.
+- **Diagramas específicos de un tema** (o si varios agentes trabajan a la vez): cree `lib\diagrams.<tema>.js`, que exporta `{ '<tema>-<nombre>': (ctx, spec) => … }`. `diagrams.js` lo carga solo y falla si un `kind` se repite. Use `require('./components')` para las primitivas y copie el patrón de `diagrams.js` (`header` ya lo dibuja `layouts.diagram`).
 - Use **solo colores semánticos** del tema (`colors.heading`, `colors.panel`, `ctx.T.<tono>.accent/on/text/soft`, etc.); nunca hexadecimales fijos, para que `meta.theme: "dark" | "light"` siga funcionando.
 - Otro lenguaje de código: agréguelo a `LANGS` en `lib\components.js` (palabras clave, tipos, marca de comentario).
 - Documente el campo nuevo en `references\spec-reference.md` y en `presentaciones\generador\README.md`.

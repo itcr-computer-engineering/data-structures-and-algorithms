@@ -1,11 +1,13 @@
 # Genera hojas de contacto (2 columnas x 3 filas) a partir de los PNG renderizados.
+# Uso: powershell -File contact-sheet.ps1 -Dir .\render\<nombre>   (los mismos PNG que produce render.ps1)
 param(
-  [string]$Dir = (Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'render'),
+  [Parameter(Mandatory = $true)][string]$Dir,
   [int]$Cols = 2,
   [int]$Rows = 3,
   [int]$CellW = 800
 )
 Add-Type -AssemblyName System.Drawing
+Get-ChildItem $Dir -Filter 'sheet-*.png' -ErrorAction SilentlyContinue | Remove-Item -Force
 $files = Get-ChildItem $Dir -Filter 'slide-*.png' | Sort-Object Name
 $first = [System.Drawing.Image]::FromFile($files[0].FullName)
 $cellH = [int]($CellW * $first.Height / $first.Width)
