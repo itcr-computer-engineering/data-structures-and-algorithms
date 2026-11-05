@@ -1,0 +1,933 @@
+{
+  "meta": {
+    "title": "Algoritmos de Búsqueda",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 04 · Algoritmos de Búsqueda",
+    "footer": "CE-2103 · Algoritmos de Búsqueda",
+    "theme": "dark",
+    "codeLang": "java",
+    "assetsDir": "../../../../ce-2103/images",
+    "output": "../../../ce-2103/Lección 04 - Algoritmos de Búsqueda.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 04",
+      "title": "Algoritmos de Búsqueda",
+      "subtitle": "Encontrar un valor en un array y un camino en un mapa",
+      "terminal": {
+        "file": "busqueda.log",
+        "lang": "plain",
+        "code": "$ buscar(arr, 20)\nindice = 6\n$ buscar(arr, 99)\nindice = -1"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Esta lección abarca los algoritmos de búsqueda en estructuras de datos como los arrays y se expande a las búsquedas en planos (por ejemplo, en videojuegos). No incluye motores de búsqueda textuales."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Aplicar la **búsqueda secuencial** y reconocer su costo `O(n)`",
+        "Explicar la búsqueda **binaria**, por **interpolación** y por **salto**",
+        "Comparar la **complejidad** de los algoritmos de búsqueda en arrays",
+        "Describir el **pathfinding** básico y cómo rodear obstáculos",
+        "Modelar un mapa como **grafo** y aplicar BFS, Dijkstra y A* (con **G, H y F**)"
+      ],
+      "notes": "Cinco objetivos, uno por bloque de la lección: los tres primeros se refieren a la búsqueda en arrays y los dos últimos a pathfinding (búsqueda de caminos en un plano). El último incluye seguir A* paso a paso sobre una rejilla."
+    },
+    {
+      "type": "cards",
+      "section": "Búsqueda secuencial",
+      "title": "Búsqueda secuencial (lineal)",
+      "intro": "La solución trivial: revisar cada elemento hasta encontrar el buscado.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "callout": { "tone": "amber", "label": "Importante:", "text": "si la colección está **desordenada**, es la única opción." },
+      "cards": [
+        { "title": "Comparar", "text": "En el peor caso, cada elemento se compara contra la llave de búsqueda.", "tone": "teal" },
+        { "title": "Si hay match", "text": "La búsqueda termina y se retorna el índice del elemento.", "tone": "green" },
+        { "title": "Si no hay match", "text": "Se retorna `-1` (u otro índice negativo).", "tone": "amber" }
+      ],
+      "notes": "La búsqueda secuencial (también llamada lineal) revisa o procesa cada elemento hasta encontrar el deseado. Cuando la colección está desordenada es la única opción. En inglés, a la coincidencia se le llama «match»."
+    },
+    {
+      "type": "image",
+      "section": "Búsqueda secuencial",
+      "title": "Ejemplo: buscar el 20",
+      "image": "search-algo-1.png",
+      "alt": "Array de 9 elementos (10, 50, 30, 70, 80, 60, 20, 90, 40) con flechas que van de un elemento al siguiente hasta llegar al 20, en el índice 6",
+      "caption": "Se comparan 7 elementos (índices 0 a 6) hasta encontrar el `20` en el índice 6.",
+      "notes": "Recorra la figura con la clase: se compara 10, 50, 30, 70, 80, 60 y finalmente 20. Pregunta: ¿cuántas comparaciones habría hecho si buscáramos el 40? (9, porque es el último elemento)."
+    },
+    {
+      "type": "code",
+      "section": "Búsqueda secuencial",
+      "title": "Implementación en Java",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "SequentialSearch.java",
+              "code": "public class SequentialSearch {\n    public static int search(int[] arr, int x) {\n        for (int i = 0; i < arr.length; i++) {\n            if (arr[i] == x) {\n                return i;\n            }\n        }\n        return -1;\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Mejor caso", "text": "El elemento es el primero.", "footer": "O(1)", "footerSize": 22, "tone": "green", "h": 1.85 },
+            { "title": "Peor caso", "text": "Recorre el array completo.", "footer": "O(n)", "footerSize": 22, "tone": "red", "h": 1.85 }
+          ]
+        }
+      ],
+      "calloutsY": 5.95,
+      "calloutsH": 0.85,
+      "callouts": [
+        { "tone": "amber", "label": "Ojo:", "text": "es **ineficiente** para colecciones grandes." },
+        { "tone": "teal", "label": "Pero:", "text": "si el array no está ordenado (o no se quiere ordenar), es la única opción." }
+      ],
+      "notes": "El ciclo recorre el array; si encuentra x retorna el índice i y, si termina el ciclo sin encontrarlo, retorna -1.       Complejidad temporal: O(n) en el peor caso y O(1) en el mejor caso. Pregunta para la clase: si el array estuviera ordenado, ¿cómo se mejora la secuencial? Se puede salir en cuanto arr[i] > x (retornar -1), porque los siguientes elementos son aún mayores; ahorra comparaciones cuando el valor no está, pero el peor caso sigue siendo O(n)."
+    },
+    {
+      "type": "flow",
+      "section": "Búsqueda binaria",
+      "title": "Búsqueda binaria: dividir el arreglo",
+      "steps": [
+        { "title": "Comparar", "text": "Se compara la llave con el elemento del medio." },
+        { "title": "Descartar", "text": "Si es menor, se sigue a la izquierda; si es mayor, a la derecha." },
+        { "title": "Repetir", "text": "Hasta hallar el valor o hasta que el subarreglo quede vacío." }
+      ],
+      "callout": { "tone": "teal", "label": "Requisito:", "text": "el arreglo debe estar **ordenado**. A diferencia de la secuencial, no lo recorre de extremo a extremo." },
+      "notes": "La búsqueda binaria encuentra la posición de un valor en un arreglo ordenado. En lugar de recorrerlo desde el primer elemento hasta el último, lo divide en dos mitades y compara el valor buscado con el elemento en el medio."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-array-steps",
+      "section": "Búsqueda binaria",
+      "title": "Ejecución: buscar el 9",
+      "values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "target": 9,
+      "legend": [["Elemento medio", "teal"], ["Encontrado", "green"], ["Corchete: rango de búsqueda", "slate"]],
+      "rows": [
+        { "label": "Paso 1", "active": [0, 8], "teal": [4], "note": ["`left=0  right=8  mid=4`", "**5 < 9** → mitad derecha"] },
+        { "label": "Paso 2", "active": [5, 8], "teal": [6], "note": ["`left=5  right=8  mid=6`", "**7 < 9** → mitad derecha"] },
+        { "label": "Paso 3", "active": [7, 8], "teal": [7], "note": ["`left=7  right=8  mid=7`", "**8 < 9** → mitad derecha"] },
+        { "label": "Paso 4", "active": [8, 8], "green": [8], "note": ["`left=8  right=8  mid=8`", "**9 == 9** → encontrado"] }
+      ],
+      "callout": { "tone": "green", "label": "Ahorro:", "text": "4 comparaciones en 9 elementos; la secuencial habría hecho 9." },
+      "notes": "El corchete bajo cada fila marca el rango de búsqueda actual (left a right) y las celdas tenues quedaron descartadas. Los valores de mid siguen la fórmula del código: mid = left + (right - left) / 2 (5, 7, 8 y 9: 4 comparaciones, frente a 9 de la secuencial). Pregunta: ¿por qué el rango [5, 8] tiene como medio el 7 y no el 8? Porque la división entera trunca: 5 + (8 - 5) / 2 = 5 + 1 = 6, que es el índice del 7."
+    },
+    {
+      "type": "code",
+      "section": "Búsqueda binaria",
+      "title": "Implementación en Java",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.9,
+          "blocks": [
+            {
+              "label": "binarySearch",
+              "code": "public static int binarySearch(int[] arr, int target) {\n    int left = 0;\n    int right = arr.length - 1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Descartar mitades", "text": "Si `arr[mid]` es menor que `target`, sube `left`; si no, baja `right`.", "textSize": 17, "tone": "teal", "h": 2.35 },
+            { "title": "Costo", "text": "Cada paso descarta la mitad del rango.", "textSize": 17, "footer": "O(log n)", "footerSize": 22, "tone": "green", "h": 2.3 }
+          ]
+        }
+      ],
+      "notes": "El ciclo termina cuando se encuentra el valor (return mid) o cuando el subarreglo queda vacío (left > right), y entonces se retorna -1. Calcular mid como left + (right - left) / 2 evita el desbordamiento que podría ocurrir con (left + right) / 2 en arrays muy grandes. La complejidad O(log n) es la referencia con la que se compara la búsqueda por interpolación."
+    },
+    {
+      "type": "compare",
+      "section": "Interpolación",
+      "title": "Binaria vs. interpolación",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Búsqueda binaria",
+          "tone": "slate",
+          "itemSize": 20,
+          "items": [
+            "Compara siempre contra el elemento **central**",
+            "Divide el rango en dos mitades",
+            "No usa el valor de la llave para elegir la posición"
+          ]
+        },
+        {
+          "title": "Interpolación",
+          "tone": "teal",
+          "itemSize": 20,
+          "items": [
+            "Considera la **llave** antes de elegir contra cuál elemento comparar",
+            "Usa los valores en los extremos del array",
+            "Mejora si los valores están **distribuidos uniformemente**"
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "label": "Analogía:", "text": "para buscar «Bob» en un directorio telefónico no se abre por la mitad, sino **cerca del principio**. Eso hace la interpolación: es una **mejora** de la binaria que solo cambia cómo se calcula `mid`." },
+      "notes": "La búsqueda por interpolación calcula la posición de la mitad del array a partir del valor del elemento buscado y de los valores en los extremos. Funciona mejor cuando los valores están distribuidos uniformemente. Analogía del directorio telefónico: si busca «Bob», sabe que está cerca del principio y abre el libro ahí; si busca «Zoe», lo abre cerca del final. La binaria, en cambio, siempre abriría por la mitad."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-formula",
+      "section": "Interpolación",
+      "title": "La posición estimada",
+      "label": "Cálculo de la posición del elemento medio",
+      "formula": "mid = low + ((x - arr[low]) * (high - low)) / (arr[high] - arr[low])",
+      "size": 20,
+      "cardHeight": 2.2,
+      "parts": [
+        { "title": "Qué cambia", "text": "Es el mismo código de la binaria; solo se calcula distinto `mid`.", "tone": "teal" },
+        { "title": "Variables", "text": "`low` y `high` son índices; `arr[low]` y `arr[high]`, los valores en esos índices.", "tone": "navy" },
+        { "title": "Se adapta a la llave", "text": "Si `x` está cerca de `arr[high]`, `mid` cae cerca de `high`.", "tone": "navy" }
+      ],
+      "callout": { "tone": "amber", "label": "Complejidad:", "text": "`O(log log n)` en el caso promedio (distribución uniforme); `O(n)` si los datos no son uniformes." },
+      "notes": "Low y high se refieren a los índices del array, y arr[low] y arr[high] a los valores en esos índices. La mejora con respecto a la búsqueda binaria se da en el caso promedio, que depende de la distribución uniforme de los elementos: O(log log n). En el peor caso (datos no uniformemente distribuidos) la complejidad degrada a O(n). La tercera tarjeta es una lectura directa de la fórmula: la fracción (x - arr[low]) / (arr[high] - arr[low]) indica en qué punto del rango de valores está x,       y al multiplicarla por (high - low) se obtiene el desplazamiento en índices. Buena práctica: antes de aplicar la fórmula compruebe que x esté entre arr[low] y arr[high] y que arr[high] != arr[low]; si no, la división es entre cero o el valor no puede estar en el rango."
+    },
+    {
+            "type": "diagram",
+            "kind": "busqueda-array-steps",
+            "section": "Interpolación",
+            "title": "Interpolación: un ejemplo con números",
+            "values": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            "target": 70,
+            "noteWidth": 5.0,
+            "rowHeight": 1.05,
+            "legend": [["Comparado", "amber"], ["Encontrado", "green"], ["Corchete: rango de búsqueda", "slate"]],
+            "rows": [
+              { "label": "Interp.", "active": [0, 9], "green": [6], "note": ["`0 + ((70-10)*(9-0)) / (100-10) = 6`", "**arr[6] = 70** → 1 comparación"] },
+              { "label": "Binaria", "amber": [4, 5, 7], "green": [6], "note": ["índices comparados: `4, 7, 5, 6`", "**4 comparaciones**"] }
+            ],
+            "calloutsH": 1.45,
+            "callouts": [
+              { "tone": "teal", "label": "Idea clave:", "text": "el `70` está a **2/3** del rango de valores (10 a 100), así que `mid` cae a 2/3 del rango de índices (0 a 9): el **6**." },
+              { "tone": "amber", "label": "Ojo:", "text": "con valores no uniformes, como `[5, 6, 9, 11, 15, 18, 20, 25, 28, 39]`, la ventaja desaparece: para buscar el 28, ambas hacen 3 comparaciones." }
+            ],
+            "notes": "Ejemplo verificado con un programa. Arreglo ordenado y uniforme [10, 20, …, 100], índices 0 a 9, buscar 70. Interpolación: mid = 0 + ((70 - 10) * (9 - 0)) / (100 - 10) = 540 / 90 = 6, y arr[6] = 70: una sola comparación. Binaria: mid = 4 (50 < 70), 7 (80 > 70), 5 (60 < 70) y 6 (70): cuatro comparaciones. La fracción (x - arr[low]) / (arr[high] - arr[low]) = 60 / 90 = 2/3 dice en qué punto del rango de valores está x; multiplicada por (high - low) = 9 da el desplazamiento 6. Importante: high es el último índice (9), no el tamaño del arreglo (10). Contraste con datos no uniformes: en [5, 6, 9, 11, 15, 18, 20, 25, 28, 39] buscar 28 da mid = 0 + (23 * 9) / 34 = 207 / 34 = 6,09, que la división entera trunca a 6 (valor 20); luego low = 7 y mid = 7 + (3 * 2) / 14 = 7 (valor 25); luego low = 8 y mid = 8 (valor 28). Son 3 comparaciones; la binaria compara los índices 4, 7 y 8, también 3. Con el salto de 28 a 39 los valores dejan de ser uniformes y la interpolación pierde su ventaja (y en el peor caso degrada a O(n)). Pregunta para la clase: ¿qué pasaría si el arreglo fuera [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000] y buscáramos el 9? Respuesta (verificada): el 1000 distorsiona la fracción y mid avanza de a un índice (0, 1, 2, …, 8): 9 comparaciones, mientras que la binaria necesita 3 (índices 4, 7 y 8)."
+          },
+          {
+            "type": "cards",
+            "section": "Búsqueda por salto",
+      "title": "Búsqueda por salto (Jump Search)",
+      "columns": 3,
+      "cardHeight": 2.8,
+      "textSize": 19,
+      "callout": { "tone": "green", "label": "Complejidad temporal:", "text": "`O(sqrt(n))`. Compara menos elementos que la búsqueda secuencial." },
+      "cards": [
+        { "title": "Array ordenado", "text": "Aplicable solo a arrays ordenados.", "tone": "teal" },
+        { "title": "Saltos de √n", "text": "Avanza en bloques de tamaño √n, un número fijo de elementos por salto.", "tone": "teal" },
+        { "title": "Tamaño del bloque", "text": "Determinarlo bien es crucial para el rendimiento del algoritmo.", "tone": "amber" }
+      ],
+      "notes": "Normalmente se utiliza sqrt(n) como tamaño de bloque, donde n es el tamaño del array."
+    },
+    {
+      "type": "image",
+      "section": "Búsqueda por salto",
+      "title": "Jump Search: ejemplo con n = 16",
+      "image": "search-algo-2.png",
+      "alt": "Array con los 16 primeros números de Fibonacci y flechas que saltan de 4 en 4 (índices 0, 4, 8 y 12); en el índice 12 el valor 144 es mayor que 55 y una flecha regresa al bloque anterior",
+      "caption": "n = 16 y √n = 4: se salta de 4 en 4 hasta pasar el valor (144 > 55) y se retrocede.",
+      "notes": "Con n = 16 el bloque es de 4 elementos: se salta a los índices 0, 4, 8 y 12. Al llegar a 144 (mayor que 55) se regresa al bloque anterior. Dentro de ese bloque se busca secuencialmente (21, 34, 55), que es como funciona Jump Search en general; la figura solo muestra los saltos."
+    },
+    {
+      "type": "table",
+      "section": "Búsqueda en arrays",
+      "title": "Comparación de los algoritmos",
+      "columns": ["Algoritmo", "¿Requiere orden?", "Complejidad temporal", "Idea clave"],
+      "colWeights": [1.5, 1.7, 2.6, 2.6],
+      "fontSize": 17,
+      "rowHeight": 0.62,
+      "rowPad": 0.12,
+      "calloutY": 5.75,
+      "rows": [
+        ["Secuencial", "No", "O(n) peor · O(1) mejor", "Revisa elemento por elemento"],
+        ["Binaria", "Sí", "O(log n)", "Divide el arreglo a la mitad"],
+        ["Interpolación", "Sí", "O(log log n) promedio · O(n) peor", "Estima la posición con la llave"],
+        ["Salto", "Sí", "O(√n)", "Avanza en bloques de tamaño √n"],
+        ["Hash (repaso)", "No", "O(1) promedio · O(n) peor", "Función hash → índice"]
+      ],
+      "callout": { "tone": "teal", "label": "Regla práctica:", "text": "desordenado → secuencial; ordenado → binaria, interpolación o salto; muchas búsquedas sobre los mismos datos → tabla hash." },
+      "notes": "Complejidades: secuencial (O(n) peor y O(1) mejor), interpolación (O(log log n) promedio y O(n) peor), salto (O(sqrt(n))) y binaria (O(log n)). La fila Hash es un repaso de Estructuras de Datos 1 (CE-1103, «Ordenamiento y búsqueda»: función hash, buckets, colisiones y separate chaining): no requiere orden, la función hash convierte la llave en un índice del arreglo y la búsqueda cuesta O(1) en promedio; si hay muchas colisiones, degrada a O(n). El O(1) promedio / O(n) peor es la referencia estándar de las tablas hash (los índices hash de la lección de bases de datos también ofrecen O(1) promedio). Conviene preguntar: ¿qué cuesta ordenar antes de buscar? Si solo se busca una vez, puede no valer la pena ordenar; si se busca muchas veces, la tabla hash (o un arreglo ordenado) amortiza el costo de prepararlos."
+    },
+    {
+      "type": "cards",
+      "section": "Búsqueda en arrays",
+      "title": "Ahora usted: búsqueda en arrays",
+      "intro": "Resuelva cada caso y compare su respuesta con un compañero:",
+      "columns": 4,
+      "cardHeight": 3.7,
+      "cards": [
+        { "badge": "A", "title": "Secuencial", "text": "¿Cuántas comparaciones se hacen para buscar el `40` en `[10, 50, 30, 70, 80, 60, 20, 90, 40]`?", "textSize": 17, "tone": "teal" },
+        { "badge": "B", "title": "Binaria", "text": "En `[1…9]`, ¿contra qué elementos del medio se compara para buscar el `3`?", "textSize": 17, "tone": "teal" },
+        { "badge": "C", "title": "Salto", "text": "Un array ordenado tiene 100 elementos: ¿qué tamaño de bloque se usa?", "textSize": 17, "tone": "teal" },
+        { "badge": "D", "title": "Ordenado", "text": "En `[10, 20, 30, 40]`, ¿cómo evita la secuencial recorrer todo al buscar el `15`?", "textSize": 17, "tone": "teal" }
+      ],
+      "notes": "Respuestas: A) 9 comparaciones, porque el 40 es el último elemento (índice 8). B) Se compara con 5 (índice 4), luego con 2 (índice 1) y finalmente con 3 (índice 2): 3 comparaciones. C) √100 = 10 elementos por salto. D) Con el arreglo ordenado puede salir en cuanto arr[i] > x: compara 10 (menor) y 20 (mayor que 15) y retorna -1 tras 2 comparaciones, sin revisar el 30 ni el 40. Mejora el caso en que el valor no está, pero el peor caso sigue siendo O(n) (por ejemplo, buscar el último elemento)."
+    },
+    {
+      "type": "cards",
+      "section": "Pathfinding",
+      "title": "Pathfinding: búsqueda de caminos",
+      "intro": "Camino entre dos puntos de un plano (videojuegos, simulaciones). Depende de:",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "textSize": 20,
+      "callout": { "tone": "amber", "label": "No hay receta única:", "text": "la elección del algoritmo depende del problema; se suelen combinar varios." },
+      "cards": [
+        { "title": "El destino", "text": "¿Es estacionario o móvil?", "tone": "teal" },
+        { "title": "Los obstáculos", "text": "¿Hay obstáculos en el mapa?", "tone": "teal" },
+        { "title": "El terreno", "text": "¿Hay diferentes tipos de terreno en el mapa?", "tone": "teal" }
+      ],
+      "notes": "Pathfinding se refiere a la búsqueda de caminos entre dos puntos en un plano; es especialmente útil para videojuegos y simulaciones. Incluye una amplia variedad de algoritmos y no hay una solución única para todos los casos. Dos preguntas guía adicionales para la clase: ¿el camino más corto es siempre el mejor? (no: a veces importa más el terreno, el peligro o que el movimiento parezca natural) y ¿basta con una ruta parcial o hay que llegar exactamente al destino? (en un juego, a veces alcanza con acercarse al objetivo)."
+    },
+    {
+      "type": "code",
+      "section": "Pathfinding",
+      "title": "Pathfinding básico: un paso a la vez",
+      "codeSize": 20,
+      "columns": [
+        {
+          "weight": 1.3,
+          "blocks": [
+            {
+              "label": "Mover al personaje de A hacia B",
+              "code": "if (positionX > destinationX)\n    positionX--;\nelse if (positionX < destinationX)\n    positionX++;\nif (positionY > destinationY)\n    positionY--;\nelse if (positionY < destinationY)\n    positionY++;"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "La idea", "text": "Acercar al personaje un paso en X y otro en Y hacia el destino.", "tone": "teal", "h": 2.0 },
+            { "title": "Su límite", "text": "No es óptima: no considera obstáculos, terreno ni la distancia real.", "tone": "amber", "h": 2.0 }
+          ]
+        }
+      ],
+      "notes": "Pathfinding básico: encontrar el camino más corto entre dos puntos en un plano sin obstáculos; por ejemplo, cómo se mueve un personaje de un punto A a un punto B en un mapa de videojuego. Es una solución simple, pero no óptima."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding",
+      "title": "Básico vs. línea de visión",
+      "panels": [
+        {
+          "title": "Pathfinding básico",
+          "tone": "amber",
+          "image": "04-algoritmos-de-busqueda/image-01.png",
+          "alt": "Un triángulo (origen) llega a un círculo (destino) con un tramo diagonal y luego uno horizontal",
+          "caption": "Movimiento poco natural"
+        },
+        {
+          "title": "Línea de visión",
+          "tone": "teal",
+          "image": "04-algoritmos-de-busqueda/image-02.png",
+          "alt": "Un triángulo avanza en línea recta hacia el círculo; el camino del método básico aparece punteado",
+          "caption": "Movimiento esperado"
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Prefiera la línea de visión (u otros enfoques más sofisticados) cuando sea posible; el método simple es solo una **aproximación**." },
+      "notes": "El movimiento que resulta del método simple no es «natural». Con algoritmos de línea de visión se mejora el movimiento del personaje. Los métodos de línea de visión y los enfoques más sofisticados producen resultados más precisos."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding",
+      "title": "Obstáculos: los enfoques simples no bastan",
+      "panelHeight": 4.9,
+      "panels": [
+        {
+          "title": "Camino bloqueado",
+          "tone": "red",
+          "weight": 1.1,
+          "image": "04-algoritmos-de-busqueda/image-03.png",
+          "alt": "Un triángulo y un círculo separados por una pared; las líneas rectas entre ellos chocan con la pared",
+          "caption": "La línea recta choca con la pared"
+        },
+        {
+          "title": "Idea clave",
+          "tone": "teal",
+          "weight": 1.5,
+          "itemSize": 24,
+          "items": [
+            "Pathfinding no se resuelve con **un solo algoritmo**",
+            "Se resuelve con una **combinación** de algoritmos",
+            "Al encontrar obstáculos, el método básico y la línea de visión no son suficientes"
+          ]
+        }
+      ],
+      "notes": "Pathfinding no es un problema que se resuelve con un solo algoritmo, sino con una combinación de ellos. Las siguientes diapositivas muestran dos técnicas sencillas para esquivar obstáculos."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding",
+      "title": "Movimiento aleatorio ante obstáculos",
+      "panelHeight": 4.0,
+      "panels": [
+        {
+          "title": "Esquivar al enemigo",
+          "tone": "slate",
+          "weight": 1,
+          "image": "04-algoritmos-de-busqueda/image-04.png",
+          "alt": "Captura de un juego con árboles y un camino de piedra; una flecha indica el movimiento aleatorio del personaje para evitar al enemigo",
+          "caption": "Un movimiento aleatorio puede bastar"
+        },
+        {
+          "title": "Pseudocódigo",
+          "weight": 1,
+          "codeSize": 14,
+          "code": "if Player In Line of Sight {\n    Follow Straight Path to Player\n} else {\n    Move in Random Direction\n}",
+          "note": "Aunque parezca poco eficiente, es simple y efectivo con **pocos obstáculos**.",
+          "noteSize": 17
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Límite:", "text": "sirve para esquivar a un enemigo; para **llegar a una meta** entre muchos obstáculos el azar no es fiable y puede no alcanzarla." },
+      "notes": "El movimiento aleatorio es una solución simple y efectiva para evitar obstáculos, especialmente en ambientes con relativamente pocos obstáculos. Un movimiento aleatorio para evitar al enemigo puede ser suficiente y evita caer en un gasto computacional innecesario. Aclaración de alcance: este es el uso que se ilustra aquí (esquivar a un enemigo con pocos obstáculos y sin línea de visión). Usar el azar para llegar a una meta con muchos obstáculos es otra cosa: no es fiable, el personaje puede quedar atrapado en muchas situaciones y no llegar nunca; por eso hacen falta técnicas como el rodeo y, sobre todo, los algoritmos basados en grafos."
+    },
+    {
+      "type": "flow",
+      "section": "Pathfinding",
+      "title": "Rodear obstáculos",
+      "steps": [
+        { "title": "Intentar", "text": "El personaje intenta un pathfinding básico hasta el objetivo." },
+        { "title": "Rodear", "text": "Si encuentra un obstáculo grande (montaña, agua), pasa a modo de rodeo." },
+        { "title": "Reintentar", "text": "Sigue el borde hasta poder volver al pathfinding básico con éxito." }
+      ],
+      "callout": { "tone": "amber", "label": "Difícil:", "text": "saber cuándo salir del modo de rodeo (una opción: determinar, antes de entrar, por dónde se puede salir). Y aun así, en algunos mapas **puede atascarse**." },
+      "notes": "Rodear obstáculos es relativamente simple y útil para evitar obstáculos grandes en el plano, como montañas o masas de agua. El problema es que puede ser difícil determinar cuándo salir del modo de rodeo. Además, como el movimiento aleatorio, el seguimiento de contornos tampoco garantiza llegar: en algunos mapas el personaje queda atascado dando vueltas. Esa limitación es la que motiva pasar a los algoritmos basados en grafos (BFS, Dijkstra, A*), que sí garantizan encontrar un camino si existe."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding",
+      "title": "Rodeo con línea de visión en cada paso",
+      "panels": [
+        {
+          "title": "Rodeo de obstáculos",
+          "tone": "amber",
+          "image": "04-algoritmos-de-busqueda/image-05.png",
+          "alt": "Cuadrícula con un obstáculo negro; una ruta de puntos lo rodea desde el triángulo de inicio hasta el cuadrado de destino",
+          "caption": "Sigue el borde del obstáculo"
+        },
+        {
+          "title": "Con línea de visión",
+          "tone": "teal",
+          "image": "04-algoritmos-de-busqueda/image-06.png",
+          "alt": "Cuadrícula con un obstáculo negro; la ruta rodea el obstáculo y luego va en línea recta hasta el cuadrado de destino",
+          "caption": "Va recto en cuanto ve el objetivo"
+        }
+      ],
+      "callout": { "tone": "teal", "text": "En cada paso: si el personaje **ve el objetivo**, avanza en línea recta; si no, sigue rodeando el obstáculo." },
+      "notes": "Para hacer el movimiento más natural se puede intentar la línea de visión en cada paso. Si el personaje puede ver el objetivo, se mueve en línea recta hacia él; si no, continúa rodeando el obstáculo."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding en grafos",
+      "title": "El mapa como un grafo",
+      "panelHeight": 4.9,
+      "panels": [
+        {
+          "title": "Mapas y sus grafos",
+          "weight": 2.2,
+          "image": "04-algoritmos-de-busqueda/image-07.png",
+          "alt": "Dos mapas, uno de interior con paredes y otro con un río y un puente; sobre cada uno hay un grafo de nodos conectados por aristas"
+        },
+        {
+          "title": "Elementos",
+          "tone": "teal",
+          "weight": 1,
+          "itemSize": 20,
+          "items": [
+            "**Nodos:** posiciones en el mapa",
+            "**Aristas:** conexiones entre las posiciones",
+            "**Costo** de cada arista: la distancia o el tiempo que toma recorrerla"
+          ]
+        }
+      ],
+      "notes": "En este enfoque el mapa se representa como un grafo: los nodos son las posiciones en el mapa y las aristas son las conexiones entre ellas. Cada arista tiene un costo asociado, que puede ser la distancia entre los nodos o el tiempo que toma recorrerla."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Pathfinding en grafos",
+      "title": "La rejilla (grid) también es un grafo",
+      "panels": [
+        {
+          "title": "El mapa como grid",
+          "image": "04-algoritmos-de-busqueda/image-08.png",
+          "alt": "Mapa dividido en una rejilla de celdas cuadradas",
+          "caption": "Un mapa modelado como rejilla"
+        },
+        {
+          "title": "El grid es un grafo",
+          "tone": "teal",
+          "image": "04-algoritmos-de-busqueda/image-09.png",
+          "alt": "La misma rejilla con un nodo en cada celda y aristas que conectan las celdas vecinas",
+          "caption": "Cada celda es un nodo unido a sus vecinas"
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Una rejilla es un **tipo especial de grafo**." },
+      "notes": "Si el mapa se modela como una rejilla, se puede ver como un tipo de grafo especial. Los algoritmos que siguen (BFS, Dijkstra y A*) se explican sobre este modelo."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "BFS",
+      "title": "Breadth-first search (BFS)",
+      "panelHeight": 4.9,
+      "panels": [
+        {
+          "title": "Búsqueda en amplitud",
+          "weight": 1.7,
+          "image": "04-algoritmos-de-busqueda/image-10.png",
+          "alt": "Rejilla con una zona en forma de rombo que se expande alrededor del personaje en todas direcciones, bordeando dos muros",
+          "caption": "Expansión en todas las direcciones"
+        },
+        {
+          "title": "Cómo funciona",
+          "tone": "teal",
+          "weight": 1,
+          "itemSize": 21,
+          "items": [
+            "Comienza en un **nodo raíz**",
+            "Explora **todos los vecinos** antes de avanzar a los vecinos de estos",
+            "Se expande **en todas las direcciones**"
+          ]
+        }
+      ],
+      "notes": "El algoritmo BFS (búsqueda en amplitud) es un algoritmo de búsqueda de grafos que comienza en un nodo raíz y explora todos los nodos vecinos antes de avanzar a los vecinos de estos.       Es el algoritmo que se vio en el curso de Estructuras de Datos 1; el pseudocódigo de la siguiente diapositiva es un recordatorio. Garantía: en un grafo sin pesos (todos los pasos cuestan igual), BFS sí encuentra el camino con menos aristas; si los costos son distintos, ya no es óptimo (por eso existe Dijkstra). No confundir con «Best-First», que se verá más adelante."
+    },
+    {
+      "type": "code",
+      "section": "BFS",
+      "title": "BFS: pseudocódigo",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "Recordatorio de Estructuras de Datos 1",
+              "lang": "python",
+              "code": "frontier = Queue()\nfrontier.put(start)\ncame_from = dict()\ncame_from[start] = None\n\nwhile not frontier.empty():\n    current = frontier.get()\n    if current == goal:\n        break\n    for next in graph.neighbors(current):\n        if next not in came_from:\n            frontier.put(next)\n            came_from[next] = current"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "frontier", "text": "Cola de los nodos que faltan por explorar.", "tone": "teal", "h": 1.75 },
+            { "title": "came_from", "text": "Guarda desde qué nodo se llegó a cada uno.", "tone": "navy", "h": 1.75 }
+          ]
+        }
+      ],
+      "notes": "Frontier es la cola de nodos pendientes y came_from registra de dónde se llegó a cada nodo (sirve también para reconstruir el camino al final y para no visitar un nodo dos veces)."
+    },
+    {
+      "type": "diagram",
+      "kind": "grafos-panels",
+      "section": "BFS",
+      "title": "BFS vs. DFS: cola contra pila",
+      "panelHeight": 4.1,
+      "graphHeight": 2.7,
+      "calloutY": 6.1,
+      "calloutH": 0.75,
+      "graphs": [
+        {
+          "preset": "recorrido",
+          "tone": "teal",
+          "title": "BFS: cola (FIFO)",
+          "text": "Visita por niveles. Orden: **D B C H R A T**",
+          "textSize": 18,
+          "states": { "D": "done", "B": "done", "C": "done", "H": "done", "R": "done", "A": "done", "T": "done" },
+          "edgeStates": { "D>B": "tree", "D>C": "tree", "B>H": "tree", "C>R": "tree", "H>A": "tree", "H>T": "tree" }
+        },
+        {
+          "preset": "recorrido",
+          "tone": "amber",
+          "title": "DFS: pila (LIFO)",
+          "text": "Profundiza antes de volver. Orden: **D C R H T A B**",
+          "textSize": 18,
+          "states": { "D": "done", "B": "done", "C": "done", "H": "done", "R": "done", "A": "done", "T": "done" },
+          "edgeStates": { "D>C": "tree", "C>R": "tree", "R>H": "tree", "H>T": "tree", "H>A": "tree", "D>B": "tree" }
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "DFS **no** garantiza el camino más corto. Si es recursivo, en un mapa grande puede desbordar la pila: use una pila explícita." },
+      "notes": "Repaso de Estructuras de Datos 1 (CE-1103, lección «Grafos»): mismo grafo y mismo nodo de inicio (D), con los adyacentes en orden alfabético; solo cambia la estructura que guarda los nodos pendientes. BFS usa una cola (FIFO): D; B C; C H; H R; R A T; A T; T. Orden de visita verificado: D B C H R A T. DFS usa una pila (LIFO): D; B C; B R; B H; B A T; B A; B. Orden verificado: D C R H T A B. En H se empujan A y T (D ya estaba visitado) y T queda en el tope, por eso se visita antes que A. Las aristas resaltadas muestran por cuál arista se descubrió (BFS) o se empujó (DFS) cada nodo: BFS explora todo el nivel actual antes de bajar al siguiente, por eso en un grafo sin pesos halla el camino con menos aristas; DFS puede llegar a la meta por un camino larguísimo. DFS recursivo: cada llamada consume espacio en la pila de llamadas, así que una profundidad grande puede producir un desbordamiento; la versión iterativa con una pila explícita lo evita."
+    },
+    {
+      "type": "diagram",
+      "kind": "busqueda-paneles",
+      "section": "Dijkstra",
+      "title": "BFS vs. Dijkstra",
+      "panelHeight": 4.9,
+      "panels": [
+        {
+          "title": "BFS y Dijkstra en acción",
+          "weight": 2.2,
+          "image": "04-algoritmos-de-busqueda/image-11.png",
+          "alt": "Dos rejillas lado a lado: a la izquierda Breadth First Search y a la derecha Dijkstra's Algorithm, con las zonas exploradas desde el personaje hacia la X de destino"
+        },
+        {
+          "title": "La diferencia",
+          "tone": "teal",
+          "weight": 1,
+          "itemSize": 18,
+          "items": [
+            "**BFS:** todo movimiento cuesta lo mismo",
+            "**Dijkstra:** cada terreno tiene un costo (bosque, agua, desierto…)",
+            "Lleva el **costo acumulado** y usa una **cola de prioridad**"
+          ]
+        }
+      ],
+      "notes": "En muchos escenarios las distintas posiciones del mapa tienen distintos costos o pesos; por ejemplo, en juegos de estrategia el tipo de terreno afecta la velocidad de los personajes. La figura es una captura de la animación de Red Blob Games: https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search"
+    },
+    {
+      "type": "code",
+      "section": "Dijkstra",
+      "title": "Dijkstra: pseudocódigo",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 0.85,
+          "blocks": [
+            {
+              "label": "Inicialización",
+              "lang": "python",
+              "code": "frontier = PriorityQueue()\nfrontier.put(start, 0)\ncame_from = {}\ncost_so_far = {}\ncame_from[start] = None\ncost_so_far[start] = 0"
+            }
+          ],
+          "cards": [
+            { "title": "Qué cambia", "text": "Una **cola de prioridad** y el **costo acumulado** deciden el siguiente paso.", "tone": "amber", "h": 2.0 }
+          ]
+        },
+        {
+          "weight": 1.85,
+          "blocks": [
+            {
+              "label": "Ciclo principal",
+              "lang": "python",
+              "code": "while not frontier.empty() {\n    current = frontier.get()\n    if current == goal { break }\n    for next in graph.neighbors(current) {\n        new_cost = cost_so_far[current] + graph.cost(current, next)\n        if next not in cost_so_far\n               or new_cost < cost_so_far[next] {\n            cost_so_far[next] = new_cost\n            priority = new_cost\n            frontier.put(next, priority)\n            came_from[next] = current\n        }\n    }\n}"
+            }
+          ]
+        }
+      ],
+      "notes": "Dijkstra lleva el rastro del costo acumulado y utiliza una cola de prioridad para escoger el siguiente paso."
+    },
+    {
+      "type": "cards",
+      "section": "A*",
+      "title": "A*: costo real más heurística",
+      "intro": "Como Dijkstra, pero con una estimación de lo que falta por recorrer:",
+      "columns": 3,
+      "cardHeight": 2.5,
+      "callout": { "tone": "slate", "label": "En la práctica:", "text": "se usa, con ciertas mejoras, en game engines modernos como Unity." },
+      "cards": [
+        { "title": "Costo real", "text": "Igual que Dijkstra: lo que ya costó llegar al nodo.", "tone": "teal" },
+        { "title": "Heurística", "text": "Función que **estima** el costo de llegar al destino desde un nodo.", "tone": "teal" },
+        { "title": "Admisible", "text": "Nunca debe **sobreestimar** el costo real.", "tone": "amber" }
+      ],
+      "notes": "A* considera el costo real (similar a Dijkstra) y una heurística que estima el costo restante. La heurística debe ser admisible, es decir, nunca sobreestimar el costo real. Consecuencia importante: con una heurística admisible, A* encuentra el camino óptimo (de menor costo); solo deja de garantizarlo si la heurística sobreestima. No es cierto que «quizá no encuentre el camino óptimo»: eso solo ocurre con heurísticas inadmisibles. Para ir más allá (referencia, no evaluable): existen variantes como IDA*, SMA* (menos memoria), HPA* (jerárquico), Jump Point Search (rejillas uniformes) y LPA*/D* Lite (replanificar cuando el mapa cambia)."
+    },
+    {
+      "type": "code",
+      "section": "A*",
+      "title": "A*: una sola línea cambia",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Dijkstra", "lang": "python", "code": "cost_so_far[next] = new_cost\npriority = new_cost\nfrontier.put(next, priority)" }
+          ],
+          "cards": [
+            { "title": "Dijkstra", "text": "La prioridad es solo el costo acumulado.", "tone": "amber", "h": 1.7 }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "A*", "lang": "python", "code": "cost_so_far[next] = new_cost\npriority = new_cost + heuristic(goal, next)\nfrontier.put(next, priority)" }
+          ],
+          "cards": [
+            { "title": "A*", "text": "La prioridad suma la heurística: guía la búsqueda al destino.", "tone": "teal", "h": 1.7 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "A* es más rápido porque la heurística **guía la búsqueda** hacia el destino." },
+        { "tone": "amber", "text": "Peor caso: igual a Dijkstra. Mejor caso: **muchas menos** comparaciones." }
+      ],
+      "notes": "El pseudocódigo completo de A* es idéntico al de Dijkstra salvo por la línea de la prioridad: priority = new_cost + heuristic(goal, next). Aunque A* y Dijkstra encuentran el camino, la cantidad de comparaciones de A* es mucho menor. La visualización en https://www.redblobgames.com/pathfinding/a-star/introduction.html#astar permite compararlos."
+    },
+    {
+            "type": "table",
+      "section": "A*",
+            "title": "De BFS a A*: cambia la prioridad",
+            "columns": ["Algoritmo", "Prioridad en la cola", "Qué garantiza", "Explora"],
+            "colWeights": [1.8, 2.5, 3.2, 1.9],
+            "fontSize": 17,
+            "rowHeight": 0.7,
+            "calloutY": 5.55,
+            "rows": [
+              ["BFS", "Orden de llegada (FIFO)", "Menos pasos, si costos iguales", "Mucho"],
+              ["Dijkstra", "`g`: costo acumulado", "Camino de menor costo", "Mucho"],
+              ["Greedy Best-First", "`h`: solo la heurística", "No garantiza el más corto", "Poco"],
+              ["A*", "`g + h`", "Camino óptimo si H es admisible", "Menos que Dijkstra"]
+            ],
+            "callout": { "tone": "teal", "label": "Lo único que cambia:", "text": "el valor de `priority` en `frontier.put(next, priority)`. Todo lo demás es el mismo ciclo." },
+            "notes": "Familia de algoritmos sobre el mismo ciclo (frontier, came_from, cost_so_far); lo único que cambia es la prioridad con que se ordena la cola. BFS: cola FIFO, todos los pasos cuestan igual; halla el camino con menos pasos. Dijkstra: prioridad g (costo acumulado); maneja costos distintos (no negativos) y puede explorar mucho. Greedy Best-First (búsqueda voraz): prioridad h (solo la estimación de lo que falta); explora poco, pero el camino puede no ser el más corto. A*: prioridad g + h; con una heurística admisible halla el camino óptimo explorando menos que Dijkstra. Escriba siempre «Greedy Best-First» y no lo abrevie «BFS»: esa sigla ya significa Breadth-First Search."
+          },
+          {
+            "type": "code",
+            "section": "A*",
+            "title": "Heurística: distancia Manhattan",
+      "codeSize": 18,
+      "columns": [
+        {
+          "weight": 1.35,
+          "blocks": [
+            { "label": "Heurística para una rejilla", "code": "// Manhattan distance\nfunction heuristic(a, b) {\n    return abs(a.x - b.x) + abs(a.y - b.y)\n}" }
+          ],
+          "cards": [
+            { "title": "Se usa en A*", "text": "`priority = new_cost + heuristic(goal, next)`", "textSize": 16, "tone": "slate", "h": 1.5 }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Manhattan", "text": "`|dx| + |dy|`: suma de las diferencias en x y en y.", "tone": "teal", "h": 1.75 },
+            { "title": "Euclidiana", "text": "`sqrt(dx² + dy²)`: distancia en línea recta entre los dos puntos.", "tone": "teal", "h": 1.75 }
+          ]
+        }
+      ],
+      "calloutsY": 6.0,
+      "calloutsH": 0.8,
+      "callouts": [{ "tone": "amber", "label": "Ojo:", "text": "según el escenario, la heurística se puede **precalcular** y guardar en una tabla de búsqueda." }],
+      "notes": "Para calcular la heurística se puede utilizar la distancia Manhattan o la distancia Euclidiana. La Manhattan es la suma de las diferencias en las coordenadas x y y (dx = a.x - b.x, dy = a.y - b.y, en valor absoluto), mientras que la Euclidiana es la distancia en línea recta: sqrt(dx² + dy²). No hay una única forma «correcta» de calcular H. Cuidado con la admisibilidad: Manhattan nunca sobreestima solo si el movimiento es en 4 direcciones (arriba, abajo, izquierda, derecha) y cada paso cuesta lo mismo; es lo que se usa en la traza de las siguientes diapositivas. Si se permiten diagonales (por ejemplo, costo 10 por paso recto y 14 por diagonal), Manhattan escalada sobreestima: un paso diagonal cuesta 14, pero Manhattan × 10 da 20. En ese caso conviene la distancia octil: 10 * (dx + dy) - 6 * min(dx, dy), que da 14 para un paso diagonal. Además, G y H deben usar la misma escala: si G cuenta 10 por paso, H debe multiplicarse por 10; si no, H pesa casi nada y A* se comporta como Dijkstra."
+    },
+    {
+            "type": "table",
+            "section": "A*",
+            "title": "A*: el mismo algoritmo, con otros nombres",
+            "columns": ["En la literatura", "En el pseudocódigo", "Significa"],
+            "colWeights": [1.8, 3.4, 3.7],
+            "fontSize": 17,
+            "rowHeight": 0.56,
+            "calloutY": 6.12,
+            "calloutH": 0.72,
+            "rows": [
+              ["G", "`cost_so_far[next]`", "Costo acumulado desde el inicio"],
+              ["H", "`heuristic(goal, next)`", "Estimación de lo que falta hasta la meta"],
+              ["F = G + H", "`priority`", "Decide el orden: se expande el menor F"],
+              ["Lista abierta", "`frontier`", "Nodos descubiertos por explorar"],
+              ["Lista cerrada", "salieron de `frontier`", "Nodos ya expandidos"],
+              ["Re-parent", "`new_cost < cost_so_far[next]`", "Si G mejora, se cambia el padre"]
+            ],
+            "callout": { "tone": "teal", "label": "El ciclo:", "text": "se expande el nodo de **menor F**, se descubren sus vecinos y se repite hasta sacar la meta de la lista abierta." },
+            "notes": "Vocabulario de la literatura (y de muchos tutoriales y libros) frente a las variables del pseudocódigo de esta lección. G = costo acumulado desde el inicio (cost_so_far); H = heurística (heuristic(goal, next)); F = G + H es la prioridad (priority). La lista abierta equivale a frontier (la cola de prioridad con los nodos por explorar). La lista cerrada son los nodos ya expandidos, es decir, los que ya salieron de frontier; el pseudocódigo no la guarda aparte: came_from y cost_so_far registran todo nodo alcanzado (abierto o cerrado). Re-parent: si se llega a un nodo ya descubierto por un camino con menor G, se le cambia el padre (en el código, la condición new_cost < cost_so_far[next] y la asignación came_from[next] = current); si el nuevo G no es menor, el nodo se deja igual. Hay que asignar un costo a cada tipo de movimiento (horizontal, vertical y, si se permite, diagonal); en la traza se usan 4 direcciones con costo 1. Siempre se expande el nodo de menor F."
+          },
+          {
+            "type": "diagram",
+            "kind": "busqueda-grid",
+            "section": "A*",
+            "title": "A* paso a paso: el mapa y la heurística H",
+            "step": 1,
+            "stepTotal": 3,
+            "grid": {
+              "cols": 6,
+              "rows": 7,
+              "walls": [16, 26, 28, 34],
+              "start": 14,
+              "goal": 35,
+              "main": [
+                ["9", "8", "7", "6", "5", "6"],
+                ["8", "7", "6", "5", "4", "5"],
+                ["7", "6", "5", "", "3", "4"],
+                ["6", "5", "4", "3", "2", "3"],
+                ["5", "", "3", "", "1", "2"],
+                ["4", "3", "2", "", "0", "1"],
+                ["5", "4", "3", "2", "1", "2"]
+              ]
+            },
+            "side": [
+              {
+                "type": "list",
+                "size": 19,
+                "items": [
+                  "Movimiento en **4 direcciones**, con costo **1** por paso.",
+                  "**H** = distancia Manhattan hasta la meta: filas + columnas que faltan, sin contar los muros.",
+                  "Ejemplo: del nodo 14 al 35, H = 3 + 3 = **6**."
+                ]
+              },
+              { "type": "note", "tone": "teal", "text": "En cada celda: el número del nodo (arriba) y su **H** (centro)." }
+            ],
+            "notes": "Traza de A* verificada con un programa. La rejilla tiene 6 columnas y 7 filas; los nodos se numeran por filas, de 1 a 42. Inicio = 14, meta = 35, muros = 16, 26, 28 y 34 (quedan 38 celdas libres). Convención única: 4 vecinos y costo 1 por paso, de modo que G cuenta pasos y H = |dx| + |dy| en celdas, sin escalar. Con esta convención Manhattan es admisible y A* encuentra el camino óptimo. La heurística ignora los muros: por eso H(14) = 6 aunque el 16 sea un muro. Observe que a lo largo del camino óptimo H baja de a uno (6, 5, 4, 3, 2, 1, 0). Pregunta para la clase: ¿cuál es el H del nodo 29? (1: está una fila arriba de la meta)."
+          },
+          {
+            "type": "diagram",
+            "kind": "busqueda-grid",
+            "section": "A*",
+            "title": "A* paso a paso: primera expansión",
+            "step": 2,
+            "stepTotal": 3,
+            "grid": {
+              "cols": 6,
+              "rows": 7,
+              "walls": [16, 26, 28, 34],
+              "start": 14,
+              "goal": 35,
+              "dimFree": true,
+              "states": { "14": "closed", "8": "open", "13": "open", "15": "next", "20": "open" },
+              "main": [
+                ["9", "8", "7", "6", "5", "6"],
+                ["8", "1+7=8", "6", "5", "4", "5"],
+                ["1+7=8", "0+6=6", "1+5=6", "", "3", "4"],
+                ["6", "1+5=6", "4", "3", "2", "3"],
+                ["5", "", "3", "", "1", "2"],
+                ["4", "3", "2", "", "0", "1"],
+                ["5", "4", "3", "2", "1", "2"]
+              ]
+            },
+            "side": [
+              {
+                "type": "legend",
+                "items": [
+                  { "state": "closed", "label": "Cerrado" },
+                  { "state": "open", "label": "Abierto" },
+                  { "state": "next", "label": "Siguiente" }
+                ]
+              },
+              {
+                "type": "table",
+                "label": "Lista abierta (G + H = F)",
+                "columns": ["Nodo", "G", "H", "F", "Padre"],
+                "colWeights": [1, 0.8, 0.8, 0.8, 1],
+                "rows": [["8", "1", "7", "8", "14"], ["13", "1", "7", "8", "14"], ["15", "1", "5", "6", "14"], ["20", "1", "5", "6", "14"]],
+                "hlRows": [2],
+                "fontSize": 17,
+                "rowH": 0.44
+              },
+              { "type": "note", "tone": "teal", "text": "Se expande el de **menor F**: el 15 y el 20 empatan (F\u00A0=\u00A06); gana el de menor número." }
+            ],
+            "notes": "Primera iteración. Se saca el 14 de la lista abierta y pasa a la cerrada (G = 0, H = 6, F = 6). Se abren sus vecinos transitables: arriba el 8, abajo el 20, a la izquierda el 13 y a la derecha el 15, todos con padre 14 y G = 1. H(8) = 7, H(13) = 7, H(15) = 5, H(20) = 5, así que F = 8, 8, 6 y 6. Criterio de desempate usado en toda la traza: menor F, luego menor H y, si sigue el empate, menor número de nodo; por eso sigue el 15. Para la clase, segunda iteración: al expandir el 15 se abren el 9 (G = 2, H = 6, F = 8) y el 21 (G = 2, H = 4, F = 6); el 14 ya está cerrado. Luego se expande el 21 (menor F): el 20 ya estaba abierto con G = 1 (padre 14); llegar a él desde el 21 daría G = 3, que no mejora, así que NO se le cambia el padre (regla de re-parent). En esta rejilla con costo uniforme nunca ocurre un re-parent; sí puede ocurrir cuando los terrenos tienen costos distintos."
+          },
+          {
+            "type": "diagram",
+            "kind": "busqueda-grid",
+            "section": "A*",
+            "title": "A* paso a paso: el resultado",
+            "step": 3,
+            "stepTotal": 3,
+            "calloutH": 0.55,
+            "grids": [
+              {
+                "title": "A*: 7 nodos expandidos",
+                "tone": "teal",
+                "cols": 6,
+                "rows": 7,
+                "cellW": 0.8,
+                "cellH": 0.44,
+                "showId": false,
+                "labels": false,
+                "mainSize": 16,
+                "walls": [16, 26, 28, 34],
+                "start": 14,
+                "goal": 35,
+                "states": { "15": "path", "21": "path", "22": "path", "23": "path", "29": "path", "8": "open", "9": "open", "13": "open", "17": "open", "20": "open", "24": "open", "27": "open", "30": "open" },
+                "main": [
+                  ["", "", "", "", "", ""],
+                  ["", "", "", "", "", ""],
+                  ["", "1", "2", "", "", ""],
+                  ["", "", "3", "4", "5", ""],
+                  ["", "", "", "", "6", ""],
+                  ["", "", "", "", "7", ""],
+                  ["", "", "", "", "", ""]
+                ]
+              },
+              {
+                "title": "Dijkstra: 30 nodos expandidos",
+                "tone": "slate",
+                "cols": 6,
+                "rows": 7,
+                "cellW": 0.8,
+                "cellH": 0.44,
+                "showId": false,
+                "labels": false,
+                "mainSize": 16,
+                "walls": [16, 26, 28, 34],
+                "start": 14,
+                "goal": 35,
+                "states": {
+                  "1": "closed", "2": "closed", "3": "closed", "4": "closed", "5": "closed", "7": "closed", "8": "closed", "9": "closed", "10": "closed", "11": "closed", "12": "closed",
+                  "13": "closed", "15": "closed", "17": "closed", "19": "closed", "20": "closed", "21": "closed", "22": "closed", "23": "closed", "24": "closed", "25": "closed",
+                  "27": "closed", "29": "closed", "31": "closed", "32": "closed", "33": "closed", "37": "closed", "39": "closed",
+                  "6": "open", "18": "open", "30": "open", "38": "open", "40": "open"
+                },
+                "main": [
+                  ["16", "9", "15", "21", "27", ""],
+                  ["10", "4", "7", "13", "19", "28"],
+                  ["5", "1", "2", "", "23", ""],
+                  ["8", "3", "6", "11", "17", "24"],
+                  ["14", "", "12", "", "22", ""],
+                  ["20", "25", "18", "", "30", ""],
+                  ["29", "", "26", "", "", ""]
+                ]
+              }
+            ],
+            "legend": [
+              { "state": "start", "label": "Inicio" },
+              { "state": "goal", "label": "Meta" },
+              { "state": "path", "label": "Camino de A*" },
+              { "state": "closed", "label": "Expandido" },
+              { "state": "open", "label": "Descubierto, sin expandir" }
+            ],
+            "callout": { "tone": "teal", "label": "Mismo costo (6):", "text": "A* expandió **7** nodos; Dijkstra, **30** de las 38 celdas libres. El número es el orden de expansión." },
+            "notes": "Resultado de la traza completa (verificada con un programa), con el desempate menor F, luego menor H, luego menor número. A* expande, en este orden, 14, 15, 21, 22, 23, 29 y 35 (7 nodos) y halla el camino 14 → 15 → 21 → 22 → 23 → 29 → 35, de costo 6; el camino se reconstruye siguiendo came_from desde la meta hasta el inicio. Quedan 8 nodos abiertos sin expandir (8, 9, 13, 17, 20, 24, 27 y 30). Dijkstra, con el mismo desempate, expande 30 de las 38 celdas libres antes de sacar la meta (el 35 es el expandido número 30) y encuentra un camino del mismo costo, 6. Con otro desempate (solo menor F y luego menor número) las cifras cambian (A* 10 nodos, Dijkstra 33, BFS 34), pero A* siempre explora mucho menos. Con una heurística admisible, A* garantiza el camino óptimo: aquí, 6 pasos es el mínimo posible (3 filas + 3 columnas). Greedy Best-First también expande los mismos 7 nodos en este mapa y halla el mismo camino, porque no hay trampas; la diferencia aparece con obstáculos que obligan a alejarse de la meta. Observe también la forma del área explorada: Dijkstra se expande en todas direcciones, A* se dirige hacia la meta."
+          },
+          {
+            "type": "cards",
+            "section": "Práctica",
+      "title": "Ahora usted: ¿qué algoritmo uso?",
+      "intro": "Elija la técnica de pathfinding más adecuada para cada caso:",
+      "columns": 3,
+      "cardHeight": 3.6,
+      "cards": [
+        { "badge": "A", "title": "Mapa abierto", "text": "Un personaje debe ir a un punto, sin obstáculos ni terrenos distintos.", "textSize": 19, "tone": "teal" },
+        { "badge": "B", "title": "Terrenos con costo", "text": "Bosque, agua y desierto afectan la velocidad. ¿Qué algoritmo y qué estructura usa?", "textSize": 19, "tone": "teal" },
+        { "badge": "C", "title": "Rejilla grande", "text": "Un solo destino conocido en una rejilla. ¿Cómo mejora A* a Dijkstra?", "textSize": 19, "tone": "teal" }
+      ],
+      "notes": "Respuestas sugeridas: A) Pathfinding básico, mejor con línea de visión. B) Dijkstra, con cola de prioridad y costo acumulado (también serviría A*). C) A* con una heurística admisible (por ejemplo, Manhattan): la heurística guía la búsqueda hacia el destino y reduce las comparaciones; en el peor caso iguala a Dijkstra (en la traza de la rejilla: 7 nodos expandidos frente a 30)."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 21,
+      "items": [
+        "**Secuencial:** `O(n)`; la única opción si el array está desordenado.",
+        "**Binaria, interpolación y salto:** requieren arrays ordenados.",
+        "**Interpolación:** `O(log log n)` en promedio; **salto:** `O(sqrt(n))`.",
+        "**Pathfinding:** no hay solución única; se combinan básico, línea de visión, aleatorio y rodeo.",
+        "**Grafos:** **BFS** (costos iguales), **Dijkstra** (costos distintos) y A* (`F = G + H`)."
+      ],
+      "footnote": "Referencias: GeeksforGeeks, «Jump Search»; OpenGenus, «Time complexity of Interpolation Search»; Wikipedia, «Pathfinding»; Red Blob Games, «Pathfinding on Grids» (redblobgames.com/pathfinding/a-star/introduction.html); Bourg, D. M. (2004). AI for Game Developers. O'Reilly Media. ISBN 978-0-596-00555-2.",
+      "notes": "Cierre de la lección. Idea final sobre A*: F = G + H (costo acumulado más heurística) y, con una heurística admisible, el camino que encuentra es óptimo. Enlaces: https://iq.opengenus.org/time-complexity-of-interpolation-search/ · https://www.geeksforgeeks.org/jump-search/ · https://en.wikipedia.org/wiki/Pathfinding · https://www.redblobgames.com/pathfinding/a-star/introduction.html"
+    }
+  ]
+}

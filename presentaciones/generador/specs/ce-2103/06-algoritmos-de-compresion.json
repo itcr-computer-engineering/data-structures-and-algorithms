@@ -1,0 +1,796 @@
+{
+  "meta": {
+    "title": "Algoritmos de Compresión",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 07 · Algoritmos de Compresión",
+    "footer": "CE-2103 · Algoritmos de Compresión",
+    "theme": "dark",
+    "codeLang": "plain",
+    "assetsDir": "../../../../ce-2103/images/06-compresion",
+    "output": "../../../ce-2103/Lección 07 - Algoritmos de Compresión.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 07",
+      "title": "Algoritmos de Compresión",
+      "subtitle": "Representar los mismos datos con menos bits",
+      "terminal": {
+        "file": "huffman.log",
+        "lang": "plain",
+        "code": "$ comprimir bcaadddccacacac\n120 bits -> 28 bits\n$ descomprimir\nbcaadddccacacac"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Esta lección trata de la compresión de datos: qué es comprimir, los dos tipos de compresión y los algoritmos sin pérdida más conocidos (Huffman, LZ77, LZ78 y LZW), junto con el límite teórico de Shannon. Incluye también la codificación aritmética (opcional: confirmar si entra en el alcance del curso) y ejercicios con solución."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "items": [
+        "Diferenciar la compresión **con pérdida** y **sin pérdida**",
+        "Construir el árbol y los códigos de **Huffman**",
+        "Explicar la **entropía** y el límite de Shannon",
+        "Aplicar la **codificación aritmética** a mensajes cortos",
+        "Comprimir y descomprimir con **LZ77**, **LZ78** y **LZW**",
+        "Comparar los algoritmos según sus características"
+      ],
+      "notes": "Seis objetivos, uno por bloque de la lección. La codificación aritmética es opcional (confirmar si entra en el alcance del curso); si no entra, omita ese objetivo y las tres diapositivas de la sección «Codificación aritmética». A lo largo de la lección hay ejercicios con solución para practicar en clase."
+    },
+    {
+      "type": "flow",
+      "section": "Introducción",
+      "title": "¿Qué es comprimir?",
+      "steps": [
+        { "title": "Datos originales", "text": "Un conjunto de bits: texto, imágenes, audio, video." },
+        { "title": "Algoritmo", "text": "Reduce la cantidad de bits requeridos para representar los datos." },
+        { "title": "Resultado", "text": "Datos comprimidos: ocupan menos espacio en disco y viajan más rápido por la red." }
+      ],
+      "callout": { "tone": "teal", "label": "Dos categorías:", "text": "compresión **con pérdida** (lossy) y **sin pérdida** (lossless)." },
+      "notes": "Comprimir ahorra espacio de almacenamiento y acelera la transferencia de datos por la red."
+    },
+    {
+      "type": "compare",
+      "section": "Tipos de compresión",
+      "title": "Con pérdida vs. sin pérdida",
+      "vs": true,
+      "panelHeight": 3.9,
+      "callout": { "tone": "slate", "text": "Ejemplos: **JPEG** y **MP3** (con pérdida) · **ZIP** y **GIF** (sin pérdida)." },
+      "panels": [
+        {
+          "title": "Con pérdida (lossy)",
+          "tone": "amber",
+          "itemSize": 19,
+          "items": [
+            "Elimina información innecesaria",
+            "**Irreversible:** el original no se recupera",
+            "Audio, video e imágenes",
+            "Parámetro de calidad: compresión vs. degradación"
+          ]
+        },
+        {
+          "title": "Sin pérdida (lossless)",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Reduce el tamaño sin perder información",
+            "**Reversible:** se recupera el original",
+            "Texto, documentos y bases de datos",
+            "Reemplaza patrones repetidos por códigos más cortos"
+          ]
+        }
+      ],
+      "notes": "Los algoritmos lossy usan métodos de codificación que generan representaciones inexactas de los datos originales. La calidad se mide según la cantidad de información que se pierde."
+    },
+    {
+      "type": "image",
+      "section": "Tipos de compresión",
+      "title": "Con pérdida: el parámetro de calidad",
+      "image": "image-01.png",
+      "alt": "Fotografía de un niño con casco de aviador comprimida con calidades de 50 %, 33 % y 5 %",
+      "caption": "Un parámetro de calidad equilibra la tasa de compresión y la degradación visible (50 %, 33 %, 5 %).",
+      "notes": "Los algoritmos lossy normalmente exponen parámetros de calidad que permiten ajustar el balance entre la tasa de compresión y la degradación que nota el usuario final. Pregunta: ¿en qué punto empieza a molestar la degradación?"
+    },
+    {
+      "type": "image",
+      "section": "Tipos de compresión",
+      "title": "¿Por qué usar compresión con pérdida?",
+      "image": "image-02.png",
+      "alt": "Fotografía de un gato: original a la izquierda y versión con compresión con pérdida, más pixelada, a la derecha",
+      "caption": "Los formatos de alta fidelidad (raw) son enormes: sin compresión lossy, el streaming de audio y video no sería posible.",
+      "notes": "Se usa donde la calidad no es crítica, como la transmisión de video y audio en línea."
+    },
+    {
+      "type": "cards",
+      "section": "Tipos de compresión",
+      "title": "Percepción de la calidad",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "callout": { "tone": "amber", "text": "Los algoritmos **lossy** optimizan la calidad percibida según los atributos fisio-psicológicos del ser humano." },
+      "cards": [
+        { "title": "Distorsión", "text": "Diferencia entre los datos originales y los comprimidos.", "tone": "amber" },
+        { "title": "Percepción subjetiva", "text": "Depende del observador: un audiófilo tolera menos distorsión que una persona promedio.", "tone": "amber" },
+        { "title": "Fisiología humana", "text": "JPEG elimina detalles poco visibles; MP3, sonidos poco audibles.", "tone": "amber" }
+      ],
+      "notes": "Los algoritmos lossy optimizan la percepción de calidad según atributos fisio-psicológicos. JPEG se basa en la percepción visual humana. MP3 usa un modelo psicoacústico de enmascaramiento frecuencial y temporal. Para profundizar en JPEG: https://www.youtube.com/watch?v=0me3guauqOU&t=1976s"
+    },
+    {
+      "type": "compare",
+      "section": "Tipos de compresión",
+      "title": "Compresión sin pérdida",
+      "panelHeight": 4.0,
+      "callout": { "tone": "slate", "text": "Es la categoría adecuada para texto, documentos y bases de datos, donde no se puede perder información." },
+      "panels": [
+        {
+          "title": "Cómo funciona",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Es reversible: se recupera el original",
+            "Usa estadística para hallar patrones repetidos",
+            "Los reemplaza por códigos más cortos",
+            "Ej.: frecuencia de caracteres o de colores"
+          ]
+        },
+        {
+          "title": "Algoritmos comunes",
+          "tone": "navy",
+          "chips": ["Huffman", "LZW", "LZ77", "LZ78", "RLE", "Deflate (ZIP)", "BWT"],
+          "note": "En esta lección: **Huffman**, **LZ77**, **LZ78** y **LZW**."
+        }
+      ],
+      "notes": "RLE = Run-Length Encoding. BWT = Burrows-Wheeler Transform. Deflate es el que se utiliza en ZIP y combina LZ77 con Huffman (también lo usan gzip y PNG). La codificación aritmética no es un «tipo» de compresión: es una técnica de codificación que se puede usar tanto con pérdida como sin pérdida; se verá después de la entropía (opcional: confirmar si entra en el alcance del curso)."
+    },
+    {
+      "type": "cards",
+      "section": "Huffman",
+      "title": "Huffman: códigos de longitud variable",
+      "intro": "Desarrollado por David A. Huffman (publicado en 1952). Es un algoritmo de compresión sin pérdida.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "titleSize": 20,
+      "callout": { "tone": "teal", "text": "No todos los símbolos necesitan los 8 bits de ASCII: si una letra aparece mucho, conviene darle un código muy corto." },
+      "cards": [
+        { "title": "Longitud variable", "text": "Códigos cortos para los símbolos frecuentes y largos para los poco frecuentes.", "tone": "teal" },
+        { "title": "Árbol binario", "text": "Se construye un árbol que asigna un código a cada símbolo.", "tone": "teal" },
+        { "title": "Tabla de conversión", "text": "Se guarda en el archivo comprimido: es esencial para descomprimir.", "tone": "teal" }
+      ],
+      "notes": "Idea central: no todos los símbolos necesitan los mismos 8 bits de ASCII. Si una letra aparece muchísimo, conviene darle un código muy corto. Anécdota: Huffman lo ideó en 1951, siendo estudiante en un curso de teoría de la información del MIT, y lo publicó en 1952. Aplicaciones: la etapa final de JPEG usa códigos de Huffman, y Deflate (ZIP, gzip, PNG) combina LZ77 con Huffman."
+    },
+    {
+      "type": "list",
+      "section": "Huffman",
+      "title": "El algoritmo en 6 pasos",
+      "titleSize": 20,
+      "bold": false,
+      "items": [
+        "Calcular la **frecuencia** de cada símbolo en el archivo.",
+        "Crear un **nodo hoja** por símbolo y ordenarlos de menor a mayor frecuencia.",
+        "**Unir** los dos nodos menores en un padre y reordenar la lista.",
+        "Repetir el paso 3 hasta que quede **un solo nodo**.",
+        "Recorrer el árbol: **0** a las ramas izquierdas y **1** a las derechas.",
+        "Crear la **tabla de conversión** y comprimir el archivo."
+      ],
+      "notes": "Los pasos 2 a 4 construyen el árbol; el 5 asigna los códigos; el 6 produce el archivo comprimido."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "Huffman",
+      "title": "Ejemplo: frecuencias de los símbolos",
+      "queryLabel": "Texto original (15 símbolos)",
+      "query": "bcaadddccacacac",
+      "queryLang": "plain",
+      "queryFontSize": 24,
+      "resultLabel": "Frecuencias",
+      "result": {
+        "columns": ["Símbolo", "Frecuencia"],
+        "colW": [1.8, 2.2],
+        "rows": [["b", "1"], ["c", "6"], ["a", "5"], ["d", "3"]]
+      },
+      "callout": { "tone": "amber", "text": "En ASCII cada carácter ocupa 8 bits: 8 × 15 = **120 bits** en total." },
+      "notes": "Paso 1 del algoritmo: contar frecuencias. Este es el texto que comprimiremos en las siguientes diapositivas."
+    },
+    {
+      "type": "diagram",
+      "kind": "merge-steps",
+      "section": "Huffman",
+      "title": "Construcción del árbol",
+      "rows": [
+        {
+          "label": "Inicio",
+          "nodes": [{ "leaf": "b", "freq": 1, "hl": true }, { "leaf": "d", "freq": 3, "hl": true }, { "leaf": "a", "freq": 5 }, { "leaf": "c", "freq": 6 }],
+          "note": "Hojas ordenadas por frecuencia. Se unen las dos menores: **b** y **d**."
+        },
+        {
+          "label": "Paso 1",
+          "nodes": [{ "sum": 4, "hl": true }, { "leaf": "a", "freq": 5, "hl": true }, { "leaf": "c", "freq": 6 }],
+          "note": "El nodo **4** se inserta según su frecuencia. Se unen **4** y **a**."
+        },
+        {
+          "label": "Paso 2",
+          "nodes": [{ "leaf": "c", "freq": 6, "hl": true }, { "sum": 9, "hl": true }],
+          "note": "El nodo **9** queda al final: tiene la mayor frecuencia. Se unen **c** y **9**."
+        },
+        {
+          "label": "Paso 3",
+          "nodes": [{ "sum": 15 }],
+          "note": "Queda un solo nodo: la **raíz** (15 = total de símbolos)."
+        }
+      ],
+      "notes": "Los nodos con borde ámbar son los dos que se unen en el siguiente paso. Cada nodo interno suma las frecuencias de sus hijos."
+    },
+    {
+      "type": "diagram",
+      "kind": "tree",
+      "section": "Huffman",
+      "title": "El árbol y la tabla de conversión",
+      "treeWidth": 6.6,
+      "nodes": [
+        { "id": "n15", "label": "15", "x": 0.42, "y": 0 },
+        { "id": "c", "label": "c", "sub": "6", "shape": "square", "x": 0.08, "y": 0.34 },
+        { "id": "n9", "label": "9", "x": 0.76, "y": 0.34 },
+        { "id": "n4", "label": "4", "x": 0.55, "y": 0.68 },
+        { "id": "a", "label": "a", "sub": "5", "shape": "square", "x": 0.97, "y": 0.68 },
+        { "id": "b", "label": "b", "sub": "1", "shape": "square", "x": 0.33, "y": 1 },
+        { "id": "d", "label": "d", "sub": "3", "shape": "square", "x": 0.77, "y": 1 }
+      ],
+      "edges": [
+        { "from": "n15", "to": "c", "label": "0" },
+        { "from": "n15", "to": "n9", "label": "1" },
+        { "from": "n9", "to": "n4", "label": "0" },
+        { "from": "n9", "to": "a", "label": "1" },
+        { "from": "n4", "to": "b", "label": "0" },
+        { "from": "n4", "to": "d", "label": "1" }
+      ],
+      "table": {
+        "columns": ["Símbolo", "Frecuencia", "Código"],
+        "colW": [1.5, 1.7, 1.4],
+        "rows": [["a", "5", "11"], ["b", "1", "100"], ["c", "6", "0"], ["d", "3", "101"]],
+        "emphasisCol": 2
+      },
+      "callout": { "tone": "teal", "text": "**0** a la izquierda y **1** a la derecha. Los símbolos frecuentes quedan cerca de la raíz y reciben códigos más cortos." },
+      "notes": "El código de cada símbolo es el camino desde la raíz hasta su hoja. Ninguno es prefijo de otro, por eso se pueden decodificar sin ambigüedad."
+    },
+    {
+      "type": "diagram",
+      "kind": "bitstream",
+      "section": "Huffman",
+      "title": "Comprimir el texto",
+      "streamLabel": "bcaadddccacacac  →  28 bits",
+      "top": 2.35,
+      "segments": [
+        { "bits": "100", "sym": "b" }, { "bits": "0", "sym": "c" }, { "bits": "11", "sym": "a" }, { "bits": "11", "sym": "a" },
+        { "bits": "101", "sym": "d" }, { "bits": "101", "sym": "d" }, { "bits": "101", "sym": "d" }, { "bits": "0", "sym": "c" },
+        { "bits": "0", "sym": "c" }, { "bits": "11", "sym": "a" }, { "bits": "0", "sym": "c" }, { "bits": "11", "sym": "a" },
+        { "bits": "0", "sym": "c" }, { "bits": "11", "sym": "a" }, { "bits": "0", "sym": "c" }
+      ],
+      "bars": [
+        { "label": "ASCII (8 × 15)", "value": 120, "text": "120 bits", "tone": "red" },
+        { "label": "Huffman", "value": 28, "text": "28 bits", "tone": "green" }
+      ],
+      "callout": { "tone": "amber", "text": "El tamaño de la tabla de conversión también cuenta como parte del archivo comprimido." },
+      "notes": "La secuencia completa es 1000111110110110100110110110. Cada recuadro es el código de un símbolo; el símbolo está debajo. 28 / 120 es aproximadamente un 23 % del tamaño original, sin contar la tabla."
+    },
+    {
+      "type": "flow",
+      "section": "Huffman",
+      "title": "Descomprimir",
+      "steps": [
+        { "title": "Leer los bits", "text": "La cadena comprimida se trata como un stream de datos." },
+        { "title": "Recorrer el árbol", "text": "Cada bit baja un nivel: 0 a la izquierda, 1 a la derecha." },
+        { "title": "Emitir el símbolo", "text": "Al llegar a una hoja se emite el símbolo y se vuelve a la raíz." }
+      ],
+      "callout": { "tone": "teal", "label": "Ejemplo:", "text": "`100` → b, `0` → c, `11` → a, `11` → a, `101` → d, y así hasta el final." },
+      "notes": "Se repite el proceso hasta llegar al final de la secuencia. Por eso la tabla (o el árbol) debe viajar junto con el archivo comprimido: a diferencia de LZW, el decodificador de Huffman no puede reconstruirla por sí solo."
+    },
+    {
+      "type": "diagram",
+      "kind": "tree",
+      "section": "Huffman",
+      "title": "Ejercicio resuelto: comprimir «abfabcaecedba»",
+      "treeWidth": 6.6,
+      "nodes": [
+        { "id": "n13", "label": "13", "x": 0.54, "y": 0 },
+        { "id": "n5", "label": "5", "x": 0.27, "y": 0.34 },
+        { "id": "n8", "label": "8", "x": 0.81, "y": 0.34 },
+        { "id": "n2", "label": "2", "x": 0.14, "y": 0.68 },
+        { "id": "b", "label": "b", "sub": "3", "shape": "square", "x": 0.4, "y": 0.68 },
+        { "id": "n4", "label": "4", "x": 0.66, "y": 0.68 },
+        { "id": "a", "label": "a", "sub": "4", "shape": "square", "x": 0.95, "y": 0.68 },
+        { "id": "f", "label": "f", "sub": "1", "shape": "square", "x": 0.03, "y": 1 },
+        { "id": "d", "label": "d", "sub": "1", "shape": "square", "x": 0.25, "y": 1 },
+        { "id": "c", "label": "c", "sub": "2", "shape": "square", "x": 0.55, "y": 1 },
+        { "id": "e", "label": "e", "sub": "2", "shape": "square", "x": 0.77, "y": 1 }
+      ],
+      "edges": [
+        { "from": "n13", "to": "n5", "label": "0" },
+        { "from": "n13", "to": "n8", "label": "1" },
+        { "from": "n5", "to": "n2", "label": "0" },
+        { "from": "n5", "to": "b", "label": "1" },
+        { "from": "n2", "to": "f", "label": "0" },
+        { "from": "n2", "to": "d", "label": "1" },
+        { "from": "n8", "to": "n4", "label": "0" },
+        { "from": "n8", "to": "a", "label": "1" },
+        { "from": "n4", "to": "c", "label": "0" },
+        { "from": "n4", "to": "e", "label": "1" }
+      ],
+      "table": {
+        "columns": ["Símbolo", "Frecuencia", "Código"],
+        "colW": [1.5, 1.7, 1.4],
+        "rows": [["a", "4", "11"], ["b", "3", "01"], ["c", "2", "100"], ["d", "1", "001"], ["e", "2", "101"], ["f", "1", "000"]],
+        "emphasisCol": 2
+      },
+      "callout": { "tone": "teal", "label": "Resultado:", "text": "`11010001101100111011001010010111` = **32 bits**; en ASCII serían 13 × 8 = 104 bits." },
+      "notes": "Ejercicio con solución; pida a la clase que lo resuelva en papel antes de avanzar a esta diapositiva (el enunciado está en el título). La cadena tiene 13 símbolos, así que en ASCII ocupa 13 × 8 = 104 bits. Frecuencias: a 4, b 3, c 2, e 2, d 1, f 1. Construcción: se unen d y f (1 + 1 = 2); luego c y e (2 + 2 = 4); después el nodo 2 con b (2 + 3 = 5); luego el 4 con a (4 + 4 = 8); por último 5 y 8 (raíz = 13). Hay empates (la frecuencia 2 la tienen c, e y el nodo d-f): otros desempates dan árboles distintos, pero siempre con el mismo total de 32 bits, porque todos son óptimos. Códigos (0 a la izquierda, 1 a la derecha): a = 11, b = 01, c = 100, e = 101, d = 001, f = 000. Resultado: 11010001101100111011001010010111 = 32 bits, cerca del 31 % de los 104 bits (con códigos fijos de 3 bits para 6 símbolos serían 39). Longitud media L = 32/13 ≈ 2.46 bits por símbolo frente a una entropía H ≈ 2.41: se cumple H ≤ L < H + 1 (diapositiva 19). Recuerde que la tabla de conversión también cuenta como parte del archivo comprimido."
+    },
+    {
+      "type": "diagram",
+      "kind": "bitstream",
+      "section": "Huffman",
+      "title": "Ejercicio resuelto: decodificar 011010110000",
+      "streamLabel": "Secuencia comprimida: 011010110000",
+      "top": 2.35,
+      "unit": 0.55,
+      "bitsSize": 28,
+      "symSize": 30,
+      "segments": [
+        { "bits": "011", "sym": "C" }, { "bits": "010", "sym": "A" }, { "bits": "11", "sym": "F" }, { "bits": "0000", "sym": "E" }
+      ],
+      "chips": {
+        "label": "Tabla de conversión",
+        "items": ["A = 010", "B = 10", "C = 011", "D = 0001", "E = 0000", "F = 11", "G = 001"]
+      },
+      "callout": { "tone": "teal", "label": "Cómo leer:", "text": "bit a bit; al completar un código, emita su símbolo. Ningún código es prefijo de otro." },
+      "notes": "Ejercicio con solución: la secuencia 011010110000 se decodifica como CAFE. Lectura bit a bit: 011 → C, 010 → A, 11 → F, 0000 → E. Es lo mismo que recorrer el árbol con 0 a la izquierda y 1 a la derecha hasta llegar a una hoja (no invierta la dirección). Como la tabla es un código prefijo, no hay ambigüedad: por ejemplo, 11 es F y ningún otro código empieza con 11. Ojo con E = 0000 y D = 0001: comparten el prefijo 000, por lo que hay que leer los cuatro bits antes de decidir. G = 001 no aparece en este mensaje. Para comprobar, codifique CAFE con la tabla: 011 010 11 0000."
+    },
+    {
+      "type": "compare",
+      "section": "Entropía y límite de Shannon",
+      "title": "Entropía de Shannon",
+      "panelHeight": 3.9,
+      "panels": [
+        {
+          "title": "Definición",
+          "tone": "teal",
+          "text": "Para una fuente cuyos símbolos aparecen con probabilidad `p_i`:",
+          "code": "H = -Σ p_i · log2(p_i)",
+          "codeSize": 22,
+          "note": "H se mide en bits por símbolo: es la cantidad promedio **mínima** de bits para representar la fuente sin pérdida."
+        },
+        {
+          "title": "Intuición",
+          "tone": "slate",
+          "items": [
+            "Símbolo muy probable: aporta **poca** información",
+            "Símbolo poco probable: aporta **mucha** información",
+            "H es **máxima** si todos son equiprobables y **mínima** si un símbolo domina"
+          ]
+        }
+      ],
+      "notes": "Cuando 0 < p_i ≤ 1, log2(p_i) es negativo; el signo menos al frente deja H como un valor positivo. Es la teoría de la información formulada por Claude Shannon en 1948, fundamento teórico de toda la compresión sin pérdida."
+    },
+    {
+      "type": "compare",
+      "section": "Entropía y límite de Shannon",
+      "title": "Teorema de codificación de la fuente",
+      "vs": true,
+      "panels": [
+        {
+          "title": "Shannon: límite inferior",
+          "tone": "amber",
+          "text": "Ningún código sin pérdida símbolo a símbolo usa, en promedio, menos de H bits.",
+          "code": "L ≥ H",
+          "codeSize": 26,
+          "note": "L = longitud media de código (promedio ponderado por frecuencia)."
+        },
+        {
+          "title": "Huffman: óptimo",
+          "tone": "teal",
+          "text": "Óptimo entre los códigos prefijo, pero usa un número entero de bits por símbolo.",
+          "code": "H ≤ L < H + 1",
+          "codeSize": 26,
+          "note": "Redundancia = L − H: nunca supera 1 bit por símbolo."
+        }
+      ],
+      "callout": { "tone": "slate", "text": "Si las probabilidades no son potencias de 2, Huffman queda por encima de H. La **codificación aritmética** y por rangos se acercan más al límite." },
+      "notes": "En el texto bcaadddccacacac, Huffman logró 28 bits para 15 símbolos (unos 1.87 bits por símbolo) frente a 8 bits por símbolo en ASCII: el código se acerca a la entropía de esa distribución. La codificación aritmética (diapositivas 21 a 23) no exige un número entero de bits por símbolo y por eso puede acercarse más a H (opcional: confirmar si entra en el alcance del curso)."
+    },
+    {
+      "type": "table",
+      "section": "Entropía y límite de Shannon",
+      "title": "Ejemplo numérico: Huffman alcanza la entropía",
+      "columns": ["Símbolo", "p", "log2(p)", "-p · log2(p)", "Código Huffman", "Bits"],
+      "colWeights": [1, 1.5, 1, 1.4, 1.6, 0.8],
+      "rows": [
+        ["A", "1/2 = 0.5", "-1", "0.500", "0", "1"],
+        ["B", "1/4 = 0.25", "-2", "0.500", "10", "2"],
+        ["C", "1/8 = 0.125", "-3", "0.375", "110", "3"],
+        ["D", "1/8 = 0.125", "-3", "0.375", "111", "3"]
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "**H** = 0.5 + 0.5 + 0.375 + 0.375 = **1.75** bits/símbolo" },
+        { "tone": "green", "text": "**L** = 0.5·1 + 0.25·2 + 0.125·3 + 0.125·3 = **1.75** bits/símbolo" }
+      ],
+      "notes": "L = H: Huffman es óptimo y alcanza exactamente el límite de Shannon, sin redundancia. Ocurre porque todas las probabilidades son potencias de 1/2: la longitud ideal -log2(p) es un número entero de bits para cada símbolo. Cuando no lo son, Huffman queda por encima de H; la codificación aritmética, que se ve a continuación, evita ese redondeo (opcional: confirmar si entra en el alcance del curso)."
+    },
+    {
+      "type": "cards",
+      "section": "Codificación aritmética",
+      "title": "Más allá de Huffman: codificación aritmética",
+      "intro": "Otra forma de acercarse al límite de Shannon, sin códigos de longitud entera.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "titleSize": 20,
+      "callout": { "tone": "teal", "text": "Los símbolos **frecuentes** reducen poco el intervalo, así que cuestan menos bits. Se usa en compresión con y sin pérdida." },
+      "cards": [
+        { "title": "Un solo número", "text": "Todo el mensaje se convierte en un número `n` con 0 ≤ n < 1.", "tone": "teal" },
+        { "title": "Subintervalos", "text": "[0, 1) se divide según las probabilidades; cada símbolo reduce el intervalo.", "tone": "teal" },
+        { "title": "Sin bits enteros", "text": "No exige un número entero de bits por símbolo: puede acercarse a H.", "tone": "teal" }
+      ],
+      "notes": "(Opcional: confirmar si entra en el alcance del curso.) En lugar de asignar un código a cada símbolo, la codificación aritmética representa el mensaje completo como un único número en [0, 1). Cada símbolo se queda con un subintervalo proporcional a su probabilidad y el intervalo se va estrechando: el ancho final es el producto de las probabilidades de los símbolos. Como el costo en bits es aproximadamente -log2(ancho), los símbolos frecuentes cuestan poco, y no hay que redondear cada símbolo a un número entero de bits: por eso puede acercarse a H, mientras que Huffman puede quedar hasta 1 bit por símbolo por encima. Se usa tanto en compresión sin pérdida como con pérdida; no es un tercer «tipo» de compresión, sino una técnica de codificación. Necesita el modelo de probabilidades y una condición de parada (la longitud del mensaje o un símbolo de fin)."
+    },
+    {
+      "type": "diagram",
+      "kind": "compresion-intervalos",
+      "section": "Codificación aritmética",
+      "title": "Ejemplo: codificar «BAC»",
+      "probs": [["A", 0.2], ["B", 0.5], ["C", 0.3]],
+      "path": ["B", "A", "C"],
+      "finalLabel": "«BAC» → ",
+      "callout": { "tone": "teal", "text": "Cualquier número de [0.27, 0.3) representa «BAC», por ejemplo **0.28**. Los intervalos son semiabiertos: incluyen el extremo izquierdo y no el derecho." },
+      "notes": "(Opcional: confirmar si entra en el alcance del curso.) Probabilidades: A = 20 %, B = 50 %, C = 30 %. El intervalo [0, 1) se reparte en A [0, 0.2), B [0.2, 0.7) y C [0.7, 1). Leer B: el intervalo pasa a [0.2, 0.7) (ancho 0.5) y se reparte en la misma proporción: A [0.2, 0.3), B [0.3, 0.55), C [0.55, 0.7). Leer A: pasa a [0.2, 0.3), que se reparte en A [0.2, 0.22), B [0.22, 0.27), C [0.27, 0.3). Leer C: el resultado es [0.27, 0.3). El ancho final, 0.03, es el producto 0.5 × 0.2 × 0.3; -log2(0.03) ≈ 5.06 bits, y el número binario 0.01001 (= 9/32 = 0.28125) cae dentro del intervalo, es decir, bastan 5 bits. Los intervalos son semiabiertos [a, b): el 0.2 pertenece a B y no a A. Ejemplo opcional más largo, con A, B y E = 20 % y R = 40 %: «ARBER» → [0.14432, 0.1456)."
+    },
+    {
+      "type": "diagram",
+      "kind": "compresion-intervalos",
+      "section": "Codificación aritmética",
+      "title": "Decodificar 0.718 y evaluar el método",
+      "probs": [["A", 0.2], ["B", 0.5], ["C", 0.3]],
+      "path": ["C", "A", "B"],
+      "marker": 0.718,
+      "labels": ["0.718 → «C»", "0.718 → «A»", "0.718 → «B»", "Mensaje"],
+      "finalLabel": "«CAB» → ",
+      "callouts": [
+        { "tone": "green", "label": "Ventajas:", "text": "flexible con cualquier modelo de probabilidades; casi óptima en la práctica." },
+        { "tone": "amber", "label": "Desventaja:", "text": "lenta: requiere multiplicaciones y divisiones por cada símbolo." }
+      ],
+      "notes": "(Opcional: confirmar si entra en el alcance del curso.) Decodificar es el mismo proceso al revés: en cada fila se pregunta en qué subintervalo cae el número. 0.718 está en C [0.7, 1); dentro de C, cae en A [0.7, 0.76); dentro de A, cae en B [0.712, 0.742). El mensaje es CAB, y su intervalo [0.712, 0.742) contiene 0.718. Equivalente con reescalado: (0.718 - 0.7) / 0.3 = 0.06 está en A [0, 0.2); 0.06 / 0.2 = 0.3 está en B [0.2, 0.7). El decodificador necesita las mismas probabilidades y saber cuándo parar (la longitud del mensaje o un símbolo de fin). Ventajas: flexible con cualquier modelo que dé probabilidades de los eventos; óptima en teoría y casi óptima en la práctica. Desventaja: lenta, porque la forma de precisión completa exige al menos una multiplicación por símbolo (y algunas implementaciones, hasta dos multiplicaciones y dos divisiones). Ejercicio opcional: con A, B y E = 20 % y R = 40 %, el número 0.331 se decodifica como «BRA»."
+    },
+    {
+      "type": "cards",
+      "section": "LZ77",
+      "title": "LZ77: ventana deslizante",
+      "intro": "Reemplaza secuencias repetidas por referencias anteriores: una tripleta (o, l, c) por paso.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "callout": { "tone": "slate", "text": "La ventana tiene un **diccionario** (ya procesado) y un **buffer** (por procesar), ambos de tamaño fijo. En cada paso se busca la secuencia **más larga** del diccionario que coincida con el inicio del buffer." },
+      "cards": [
+        { "badge": "o", "title": "Offset", "text": "Cuántos caracteres hacia atrás está la secuencia que coincide.", "tone": "teal" },
+        { "badge": "l", "title": "Length", "text": "Longitud de la secuencia que coincide.", "tone": "teal" },
+        { "badge": "c", "title": "Carácter", "text": "El siguiente carácter, el que no coincide.", "tone": "teal" }
+      ],
+      "notes": "Desarrollado por Abraham Lempel y Jacob Ziv en 1977. Pasos: buscar la secuencia más larga que coincida con la que inicia en la posición actual, generar la tripleta y avanzar la ventana deslizante. La ventana se divide en dos partes de tamaño fijo: el diccionario (lo ya procesado, donde se buscan las coincidencias) y el buffer de anticipación o lookahead (lo que falta por procesar, que empieza en el cursor). El offset se mide hacia atrás desde el cursor, y la coincidencia puede extenderse más allá del diccionario, hacia el buffer (se verá con la tripleta (3, 4, b)). Esos tamaños son parámetros que hay que ajustar para optimizar el desempeño: es la parametrización que LZ78 evita. Aplicación: LZ77 es la base de Deflate, que usan gzip, ZIP y PNG."
+    },
+    {
+      "type": "diagram",
+      "kind": "strips",
+      "section": "LZ77",
+      "title": "LZ77: ejemplo paso a paso",
+      "chars": ["a", "b", "a", "b", "c", "b", "a", "b", "a", "b", "a", "a"],
+      "rows": [
+        { "dict": null, "match": null, "next": 0, "out": "(0, 0, a)" },
+        { "dict": [0, 0], "match": null, "next": 1, "out": "(0, 0, b)" },
+        { "dict": [0, 1], "match": [2, 3], "next": 4, "out": "(2, 2, c)" },
+        { "dict": [0, 4], "match": [5, 7], "next": 8, "out": "(4, 3, a)" },
+        { "dict": [0, 8], "match": [9, 10], "next": 11, "out": "(2, 2, a)" }
+      ],
+      "callout": { "tone": "teal", "text": "Resultado: `(0, 0, a) (0, 0, b) (2, 2, c) (4, 3, a) (2, 2, a)`. No se necesita ninguna tabla." },
+      "notes": "Paso 1: el diccionario está vacío; no hay coincidencia para la primera 'a' → (0, 0, a). Paso 2: tampoco hay coincidencia para 'b' → (0, 0, b). Paso 3: 'ab' coincide con la secuencia 2 caracteres atrás (offset 2, longitud 2) y el siguiente carácter es 'c' → (2, 2, c). Paso 4: 'bab' coincide 4 atrás (longitud 3), sigue 'a' → (4, 3, a). Paso 5: 'ba' coincide 2 atrás (longitud 2), sigue 'a' → (2, 2, a)."
+    },
+    {
+      "type": "table",
+      "section": "LZ77",
+      "title": "LZ77: descomprimir",
+      "columns": ["Tripleta", "Buffer resultante"],
+      "colWeights": [1, 3],
+      "rowHeight": 0.55,
+      "rowPad": 0.2,
+      "rows": [
+        ["(0, 0, a)", "a"],
+        ["(0, 0, b)", "ab"],
+        ["(2, 2, c)", "ababc"],
+        ["(4, 3, a)", "ababcbaba"],
+        ["(2, 2, a)", "ababcbababaa"]
+      ],
+      "calloutY": 5.7,
+      "calloutH": 1.0,
+      "callouts": [
+        { "tone": "teal", "label": "Regla:", "text": "copie `l` caracteres desde `o` posiciones atrás y agregue `c`." },
+        { "tone": "green", "label": "Ventaja:", "text": "no requiere una pasada previa ni una tabla: sirve para comprimir un stream." }
+      ],
+      "notes": "El resultado de la compresión no requiere una tabla: (0, 0, a) (0, 0, b) (2, 2, c) (4, 3, a) (2, 2, a). Al comprimir un archivo grande se puede leer y comprimir conforme llegan los datos."
+    },
+    {
+      "type": "image",
+      "section": "LZ77",
+      "title": "LZ77: ¿por qué 4 coincidencias?",
+      "image": "image-08.png",
+      "alt": "Ejemplo de compresión LZ77 con diccionario de tamaño 6 y buffer de tamaño 4, con las tripletas (_,0,a), (1,1,c), (3,4,b), (3,3,a) y (1,2,c)",
+      "caption": "¿Puede explicar por qué la tripleta (3, 4, b) tiene 4 coincidencias?",
+      "notes": "Respuesta sugerida: con offset 3 se copia 'aac' desde el diccionario y la coincidencia continúa: la cuarta 'a' coincide con la primera 'a' de la propia secuencia copiada. Es decir, la coincidencia puede extenderse más allá del diccionario y solaparse con el texto que se está comprimiendo (al descomprimir se copia carácter por carácter). La imagen usa un diccionario de tamaño 6 y un buffer de tamaño 4. La siguiente diapositiva lo comprueba descomprimiendo estas cinco tripletas."
+    },
+    {
+      "type": "table",
+      "section": "LZ77",
+      "title": "LZ77: descomprimir con coincidencia solapada",
+      "columns": ["Tripleta", "Se copia", "Buffer resultante"],
+      "colWeights": [1, 1, 3],
+      "rowHeight": 0.55,
+      "rowPad": 0.2,
+      "highlightRows": [2],
+      "rows": [
+        ["(_, 0, a)", "nada", "a"],
+        ["(1, 1, c)", "a", "aac"],
+        ["(3, 4, b)", "aaca", "aacaacab"],
+        ["(3, 3, a)", "cab", "aacaacabcaba"],
+        ["(1, 2, c)", "aa", "aacaacabcabaaac"]
+      ],
+      "calloutY": 5.5,
+      "calloutH": 1.2,
+      "callouts": [
+        { "tone": "amber", "label": "Solapada:", "text": "en `(3, 4, b)` el buffer solo tiene 3 caracteres, pero se copian 4: la 4.ª «a» es la que se acaba de copiar." },
+        { "tone": "teal", "label": "Regla:", "text": "copie **carácter por carácter** `l` caracteres desde `o` posiciones atrás y agregue `c`." }
+      ],
+      "notes": "Responde la pregunta de la diapositiva anterior. Antes de (3, 4, b) el buffer es «aac» (3 caracteres). Copiar 4 desde 3 posiciones atrás obliga a leer caracteres que se acaban de escribir: se copian uno por uno la 1.ª «a», la 2.ª «a», la «c» y, por último, la 1.ª «a» recién copiada, lo que da «aaca»; luego se agrega «b». Si se copiara el bloque completo de una vez, no habría de dónde sacar la 4.ª «a». Lo mismo ocurre en (1, 2, c): con offset 1 se copia dos veces la última «a» («aa»). Regla: si o = 0 solo se escribe c; si o ≠ 0 se copian l caracteres desde o posiciones atrás y luego se escribe c. El «_» del primer offset significa «no aplica», porque no hay coincidencia. El resultado final es la cadena original, aacaacabcabaaac (15 caracteres)."
+    },
+    {
+      "type": "image",
+      "section": "LZ77",
+      "title": "LZ77 con diccionario inicial",
+      "image": "image-09.png",
+      "alt": "Ejemplo de LZ77 con el diccionario inicial cabraca y las tripletas (_,0,d), (7,4,r) y (3,5,d)",
+      "caption": "Con el diccionario inicial «cabraca»: tripletas (_, 0, d), (7, 4, r) y (3, 5, d).",
+      "notes": "Un diccionario inicial permite que desde el primer paso existan coincidencias posibles."
+    },
+    {
+      "type": "cards",
+      "section": "LZ78",
+      "title": "LZ78: diccionario explícito",
+      "intro": "Lempel y Ziv, 1978: construye un diccionario en lugar de usar una ventana deslizante.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "titleSize": 20,
+      "callout": { "tone": "slate", "text": "El **trie** es el mismo TDA que vimos en la lección de Estructuras de Datos Jerárquicas (CE-1103)." },
+      "cards": [
+        { "title": "Diccionario explícito", "text": "Se construye de forma incremental con un trie para guardar los prefijos conocidos.", "tone": "teal" },
+        { "title": "Sin ventana", "text": "Evita la parametrización que LZ77 requiere para optimizar su desempeño.", "tone": "teal" },
+        { "title": "Tupla (o, c)i", "text": "o: nodo padre · c: carácter nuevo · i: índice del nodo actual.", "tone": "teal" }
+      ],
+      "notes": "El trie es el mismo TDA visto en la lección de Estructuras de Datos Jerárquicas (CE-1103). LZ78 «puro» no es lo que usan GIF y TIFF: emplean LZW, una variante de LZ78 que se ve en la siguiente sección."
+    },
+    {
+      "type": "diagram",
+      "kind": "tree",
+      "section": "LZ78",
+      "title": "LZ78: el trie y las tuplas",
+      "arrows": true,
+      "treeWidth": 6.4,
+      "nodes": [
+        { "id": "0", "label": "0", "x": 0.5, "y": 0, "tone": "navy" },
+        { "id": "1", "label": "1", "x": 0.16, "y": 0.34 },
+        { "id": "2", "label": "2", "x": 0.55, "y": 0.34 },
+        { "id": "4", "label": "4", "x": 0.95, "y": 0.34 },
+        { "id": "3", "label": "3", "x": 0.04, "y": 0.68 },
+        { "id": "7", "label": "7", "x": 0.3, "y": 0.68 },
+        { "id": "5", "label": "5", "x": 0.55, "y": 0.68 },
+        { "id": "6", "label": "6", "x": 0.55, "y": 1 }
+      ],
+      "edges": [
+        { "from": "0", "to": "1", "label": "a" },
+        { "from": "0", "to": "2", "label": "b" },
+        { "from": "0", "to": "4", "label": "c" },
+        { "from": "1", "to": "3", "label": "b" },
+        { "from": "1", "to": "7", "label": "a" },
+        { "from": "2", "to": "5", "label": "a" },
+        { "from": "5", "to": "6", "label": "b" }
+      ],
+      "table": {
+        "columns": ["Tupla", "Cadena"],
+        "colW": [2.2, 2.4],
+        "rowH": 0.46,
+        "rows": [["(0,a)1", "a"], ["(0,b)2", "b"], ["(1,b)3", "ab"], ["(0,c)4", "c"], ["(2,a)5", "ba"], ["(5,b)6", "bab"], ["(1,a)7", "aa"]],
+        "emphasisCol": 1
+      },
+      "callout": { "tone": "teal", "text": "Cadena `a b a b c b a b a b a a`. Descomprimir: desde cada nodo se recorre hasta la raíz. Resultado: `ababcbababaa`." },
+      "notes": "La raíz (nodo 0) representa la cadena vacía. Cada vez que se procesa un carácter se busca la secuencia en el trie; si no existe, se agrega un nodo y se genera la tupla (o, c)i. Ejemplo: 'a' no está → (0, a)1; 'b' no está → (0, b)2; 'a' está, luego 'ab' no → (1, b)3; y así sucesivamente."
+    },
+    {
+      "type": "code",
+      "section": "LZ78",
+      "title": "LZ78: pseudocódigo y fin de la entrada",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Compresión",
+              "lang": "pseudo",
+              "code": "Diccionario = solo la cadena vacía (índice 0)\nP = cadena vacía\nMIENTRAS no sea el fin de la entrada\n    C = siguiente carácter\n    SI P + C está en el diccionario\n        P = P + C\n    SINO\n        emitir (índice de P, C)\n        agregar P + C al diccionario\n        P = cadena vacía\nFIN MIENTRAS\nSI P no es la cadena vacía\n    emitir (índice de P, EOF)"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "P · frase actual", "text": "La frase conocida que se va reconociendo; vuelve a quedar vacía tras cada tupla.", "tone": "teal", "h": 1.9 },
+            { "title": "(índice, EOF)", "text": "Si la entrada termina dentro de una frase conocida, no hay carácter nuevo: se emite su índice y `EOF`.", "tone": "amber", "h": 2.1 }
+          ]
+        }
+      ],
+      "notes": "Pseudocódigo de la compresión LZ78, con el caso del fin de la entrada. P es la frase que se va reconociendo en el trie; el índice 0 es la raíz (la cadena vacía). La tupla que se emite es (o, c); el índice i del nodo nuevo es implícito, porque se asigna en orden. Caso borde: si la entrada termina cuando P todavía es una frase conocida (no vacía), no hay un carácter nuevo que emitir; se emite (índice de P, EOF) y el decodificador solo escribe esa frase, sin carácter adicional. Ejemplo mínimo: «aba» da (0, a)(0, b)(1, EOF), porque la última «a» ya estaba en el diccionario con el índice 1. La cadena del ejemplo anterior (diapositiva 31) termina en una frase nueva, así que no necesita EOF. Descompresión: para cada tupla (i, c) se escribe la frase de índice i seguida de c y se agrega esa frase al diccionario; con (i, EOF) solo se escribe la frase de índice i."
+    },
+    {
+      "type": "cards",
+      "section": "LZW",
+      "title": "LZW: la mejora de LZ78",
+      "intro": "Terry Welch, 1984. Muy usado en formatos de archivo como GIF y TIFF.",
+      "columns": 3,
+      "cardHeight": 2.4,
+      "titleSize": 20,
+      "callout": { "tone": "teal", "text": "La tabla **no viaja** con el archivo: al descomprimir se **reconstruye** a partir de la tabla inicial (0 a 255)." },
+      "cards": [
+        { "title": "Tabla de códigos", "text": "Los códigos 0 a 255 representan los caracteres ASCII.", "tone": "teal" },
+        { "title": "Secuencias nuevas", "text": "Identifica secuencias repetidas y les crea un código nuevo.", "tone": "teal" },
+        { "title": "Salida", "text": "Emite únicamente códigos de la tabla.", "tone": "teal" }
+      ],
+      "notes": "LZW es una mejora de LZ78 y uno de los algoritmos de compresión sin pérdida más utilizados. A diferencia de Huffman, la tabla no se guarda en el archivo: el decodificador parte de la misma tabla inicial (0 a 255) y la reconstruye mientras lee los códigos. Eso es posible porque toda cadena nueva se forma agregando un solo carácter a una cadena que ya estaba en la tabla (por ejemplo, «John» solo se agrega si «Joh» ya estaba), de modo que el decodificador puede deducir cada entrada nueva con lo que ya ha leído. El código nuevo siempre sale de P + C, con P ya en la tabla. Aplicaciones: GIF y TIFF (también existe como filtro opcional en PDF)."
+    },
+    {
+      "type": "code",
+      "section": "LZW",
+      "title": "LZW: pseudocódigo",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Compresión",
+              "lang": "pseudo",
+              "code": "Inicializar la tabla con cadenas de un carácter\nP = primer carácter de la entrada\nMIENTRAS no sea el fin de la entrada\n    C = siguiente carácter\n    SI P + C está en la tabla\n        P = P + C\n    SINO\n        emitir el código de P\n        agregar P + C a la tabla\n        P = C\nFIN MIENTRAS\nemitir el código de P"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "P · prefijo", "text": "La cadena reconocida hasta ahora.", "tone": "teal", "h": 1.6 },
+            { "title": "C · carácter", "text": "El siguiente carácter de la entrada.", "tone": "teal", "h": 1.6 }
+          ]
+        }
+      ],
+      "notes": "Pseudocódigo de la compresión con LZW: P es el prefijo reconocido hasta ahora y C el siguiente carácter de la entrada."
+    },
+    {
+      "type": "table",
+      "section": "LZW",
+      "title": "LZW: ejemplo con la cadena abacabaca",
+      "columns": ["P", "C", "P + C", "¿Está en la tabla?", "Salida", "Nuevo código"],
+      "colWeights": [0.8, 0.8, 1.1, 1.9, 1.2, 2.2],
+      "fontSize": 15,
+      "rowHeight": 0.38,
+      "rowPad": 0.12,
+      "headerHeight": 0.5,
+      "highlightRows": [4, 6],
+      "rows": [
+        ["a", "b", "ab", "No", "97", "ab = 256"],
+        ["b", "a", "ba", "No", "98", "ba = 257"],
+        ["a", "c", "ac", "No", "97", "ac = 258"],
+        ["c", "a", "ca", "No", "99", "ca = 259"],
+        ["a", "b", "ab", "Sí", "—", "—"],
+        ["ab", "a", "aba", "No", "256", "aba = 260"],
+        ["a", "c", "ac", "Sí", "—", "—"],
+        ["ac", "a", "aca", "No", "258", "aca = 261"],
+        ["a", "—", "—", "Fin de la entrada", "97", "—"]
+      ],
+      "calloutY": 6.05,
+      "calloutH": 0.7,
+      "callout": { "tone": "teal", "label": "Salida:", "text": "**97 98 97 99 256 258 97**. Tabla inicial: a = 97, b = 98, c = 99." },
+      "notes": "Por simplicidad didáctica la tabla inicial solo incluye los caracteres presentes en la cadena (a, b, c). Las filas resaltadas son aquellas donde P + C ya está en la tabla: no se emite nada y P crece. La primera fila parte de P = 'a' (el primer carácter de la entrada)."
+    },
+    {
+      "type": "diagram",
+      "kind": "bitstream",
+      "section": "LZW",
+      "title": "LZW: descomprimir",
+      "streamLabel": "Códigos generados",
+      "top": 2.35,
+      "equalWidth": 1.35,
+      "bitsSize": 22,
+      "symSize": 24,
+      "segments": [
+        { "bits": "97", "sym": "a" }, { "bits": "98", "sym": "b" }, { "bits": "97", "sym": "a" }, { "bits": "99", "sym": "c" },
+        { "bits": "256", "sym": "ab" }, { "bits": "258", "sym": "ac" }, { "bits": "97", "sym": "a" }
+      ],
+      "chips": {
+        "label": "El decodificador reconstruye la tabla: código nuevo = cadena anterior + 1.er carácter de la actual",
+        "items": ["ab = 256 (a + b)", "ba = 257 (b + a)", "ac = 258 (a + c)", "ca = 259 (c + a)", "aba = 260 (ab + a)", "aca = 261 (ac + a)"]
+      },
+      "callout": { "tone": "teal", "text": "La tabla **no viaja** con el archivo: se reconstruye desde la tabla inicial mientras se leen los códigos. Resultado: `a b a c ab ac a` = `abacabaca`." },
+      "notes": "El decodificador no recibe la tabla: parte de la misma tabla inicial que el compresor (a = 97, b = 98, c = 99 en este ejemplo; en la práctica, 0 a 255) y la reconstruye. Se lee el primer código (97 → a) y se emite; con cada código siguiente se emite su cadena y se agrega a la tabla la cadena anterior más el primer carácter de la cadena actual. Traza: 98 → b, agrega ab = 256 (a + b); 97 → a, agrega ba = 257 (b + a); 99 → c, agrega ac = 258 (a + c); 256 → ab, agrega ca = 259 (c + a); 258 → ac, agrega aba = 260 (ab + a); 97 → a, agrega aca = 261 (ac + a). La salida es abacabaca y la tabla coincide con la del compresor. Caso especial: a veces el código leído todavía no está en la tabla (ocurre, por ejemplo, con aaaaaa → 97 256 257): la cadena es la anterior más su primer carácter. Contraste con Huffman, cuya tabla sí debe viajar en el archivo."
+    },
+    {
+      "type": "cards",
+      "section": "Práctica",
+      "title": "Practique: LZ78, LZW y codificación aritmética",
+      "intro": "Resuelva cada caso y compare su respuesta con un compañero:",
+      "columns": 3,
+      "cardHeight": 3.0,
+      "callout": { "tone": "teal", "label": "Verifique:", "text": "descomprima su resultado y compruebe que obtiene la cadena original." },
+      "cards": [
+        { "badge": "A", "title": "LZ78", "text": "Comprima `abracadabrarabarabara` y escriba el diccionario resultante.", "textSize": 17, "tone": "teal" },
+        { "badge": "B", "title": "LZW", "text": "Con la tabla inicial `a`, `c`, `w` (97, 99 y 119), comprima `waccawacca`.", "textSize": 17, "tone": "teal" },
+        { "badge": "C", "title": "Aritmética", "text": "Con A = 20\u00a0%, B = 50\u00a0% y C = 30\u00a0%: ¿qué intervalo representa «CAB»? ¿Contiene 0.718?", "textSize": 17, "tone": "teal" }
+      ],
+      "notes": "Todas las respuestas se verificaron con un programa. A) LZ78: (0, a)(0, b)(0, r)(1, c)(1, d)(1, b)(3, a)(7, b)(1, r)(6, a)(7, EOF). Diccionario: 1 a, 2 b, 3 r, 4 ac, 5 ad, 6 ab, 7 ra, 8 rab, 9 ar, 10 aba. La entrada termina en «ra», una frase que ya está en el diccionario (índice 7), por eso la última tupla es (7, EOF). B) LZW: 119 97 99 99 97 256 258 97. Tabla nueva: wa = 256, ac = 257, cc = 258, ca = 259, aw = 260, wac = 261, cca = 262. Traza: w + a no está → emite 119 y agrega wa; a + c → 97, ac; c + c → 99, cc; c + a → 99, ca; a + w → 97, aw; w + a sí está; wa + c → 256, wac; c + c sí está; cc + a → 258, cca; al final se emite 97. Para comprobar, descomprima: debe reconstruir la misma tabla y obtener waccawacca. C) (Opcional: confirmar si entra en el alcance del curso.) «CAB»: C = [0.7, 1); dentro de C, A = [0.7, 0.76); dentro de ese, B = [0.712, 0.742). Sí contiene 0.718, que es justo el número que se decodificó como CAB."
+    },
+    {
+      "type": "table",
+      "section": "Comparación",
+      "title": "Resumen comparativo",
+      "columns": ["", "Año", "Estructura", "Diccionario o tabla", "Característica", "Se usa en"],
+      "colWeights": [0.9, 0.65, 1.3, 2.1, 2.0, 2.05],
+      "fontSize": 15,
+      "rowPad": 0.15,
+      "calloutY": 5.6,
+      "calloutH": 0.85,
+      "rows": [
+        ["Huffman", "1952", "Árbol binario", "Tabla de códigos guardada en el archivo", "Códigos de longitud variable según la frecuencia", "JPEG; PNG y ZIP (Deflate)"],
+        ["LZ77", "1977", "Ventana deslizante", "Ninguna: tripletas (o, l, c)", "No requiere pasada previa", "gzip, ZIP y PNG (Deflate)"],
+        ["LZ78", "1978", "Trie", "Diccionario explícito que crece", "Sin ventana que parametrizar", "Base de LZW"],
+        ["LZW", "1984", "Tabla de códigos", "Tabla inicial 0 a 255; no viaja en el archivo", "La tabla se reconstruye al descomprimir", "GIF y TIFF"]
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Los cuatro son **sin pérdida**: los datos originales se recuperan exactamente." },
+        { "tone": "slate", "text": "**Deflate** = LZ77 + Huffman: lo usan ZIP, gzip y PNG." }
+      ],
+      "notes": "Diapositiva de síntesis de la lección. Huffman: la etapa final de JPEG usa códigos de Huffman, y PNG usa Deflate (LZ77 + Huffman). LZ77: es la base de Deflate (gzip, ZIP, PNG). LZ78: es la base de LZW; GIF no usa LZ78 «puro» sino LZW. LZW: GIF y TIFF (en PDF existe como filtro opcional). Contraste clave: la tabla de Huffman sí viaja en el archivo; la de LZW no, porque el decodificador la reconstruye."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 21,
+      "items": [
+        "Comprimir es usar menos bits: **con pérdida** (irreversible) o **sin pérdida** (reversible).",
+        "**Huffman** da códigos más cortos a los símbolos más frecuentes mediante un árbol binario.",
+        "La **entropía** H es el límite: L ≥ H, y Huffman cumple H ≤ L < H + 1.",
+        "La **codificación aritmética** codifica todo el mensaje como un solo número.",
+        "**LZ77** usa una ventana y tripletas (o, l, c); **LZ78**, un trie; **LZW**, una tabla de códigos.",
+        "La tabla de **Huffman** viaja en el archivo; los **LZ** construyen su diccionario sobre la marcha."
+      ],
+      "notes": "Cierre: Huffman, LZ77, LZ78 y LZW son algoritmos sin pérdida. La viñeta de codificación aritmética es opcional (confirmar si entra en el alcance del curso); es una técnica que se usa tanto con pérdida como sin ella. En LZW la tabla no se guarda: el decodificador la reconstruye a partir de la tabla inicial."
+    },
+    {
+      "type": "list",
+      "section": "Cierre",
+      "title": "Referencias",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 18,
+      "items": [
+        "https://www.geeksforgeeks.org/what-are-data-compression-techniques/",
+        "https://www.programiz.com/dsa/huffman-coding",
+        "https://hackernoon.com/how-lz77-data-compression-works-yk113te0",
+        "https://hackernoon.com/how-lz78-compression-algorithm-works-x7103tlm",
+        "https://www.geeksforgeeks.org/lzw-lempel-ziv-welch-compression-technique/"
+      ],
+      "notes": "Referencias de la lección: artículos de consulta sobre las técnicas de compresión."
+    }
+  ]
+}

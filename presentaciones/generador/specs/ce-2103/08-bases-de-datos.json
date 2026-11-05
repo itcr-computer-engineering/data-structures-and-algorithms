@@ -1,0 +1,817 @@
+{
+  "meta": {
+    "title": "Bases de Datos",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 08 · Bases de Datos",
+    "footer": "CE-2103 · Bases de Datos",
+    "assetsDir": "../../../../ce-2103/images/08-bases-de-datos",
+    "output": "../../../ce-2103/Lección 08 - Bases de Datos.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 08",
+      "title": "Bases de Datos",
+      "subtitle": "De los archivos a SQL y NoSQL",
+      "terminal": {
+        "file": "bases_de_datos.sql",
+        "lang": "sql",
+        "code": "-- Lección 08\nSELECT *\nFROM bases_de_datos\nWHERE tema IN ('SQL', 'NoSQL');"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Esta lección cierra el tema de almacenamiento externo. Hasta ahora vimos cómo se organizan los datos en disco (árboles B, hashing externo); hoy vemos cómo los sistemas reales los administran y los consultan."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "items": [
+        "Qué es un **DBMS** y por qué reemplazó a los archivos",
+        "Cómo se modelan los datos en el **modelo relacional**",
+        "Cómo los **índices** (árboles B+) aceleran las búsquedas",
+        "Cómo consultar y modificar datos con **SQL**",
+        "Cómo **diseñar** una base de datos relacional paso a paso",
+        "Qué ofrecen las bases de datos **NoSQL** y cuándo usarlas"
+      ],
+      "notes": "Seis objetivos, uno por bloque de la lección. Conectar con la lección de almacenamiento externo: los índices de bases de datos son árboles B+."
+    },
+    {
+      "type": "cards",
+      "section": "Introducción",
+      "title": "Bases de datos en la vida diaria",
+      "intro": "Usted usa bases de datos todos los días, casi sin notarlo:",
+      "columns": 4,
+      "cardHeight": 2.9,
+      "cards": [
+        { "title": "Banco", "text": "Depositar o retirar fondos y consultar el saldo.", "footer": "Cuentas · saldos", "tone": "teal" },
+        { "title": "Reservas", "text": "Reservar un hotel o un vuelo y ver la disponibilidad.", "footer": "Habitaciones · vuelos", "tone": "teal" },
+        { "title": "Biblioteca", "text": "Buscar un libro en el catálogo computarizado.", "footer": "Libros · préstamos", "tone": "teal" },
+        { "title": "Compra en línea", "text": "Elegir productos y pagar. Es el caso que seguiremos en la lección.", "footer": "Clientes · pedidos", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Propósito:", "text": "toda base de datos se **diseña, construye y puebla con datos** para un fin concreto, pensando en sus **usuarios y aplicaciones previstas**." },
+      "notes": "Gancho de motivación (un par de minutos). Pregunta para la clase: «¿cuántas bases de datos usó hoy?» (mensajería, banco, redes sociales, matrícula de cursos, mapas…). Cada ejemplo tiene usuarios y aplicaciones previstas: en el banco, clientes y cajeros que depositan, retiran y consultan; en la reserva, viajeros y agencias; en la biblioteca, lectores y bibliotecarios; en la tienda, compradores y administradores. La compra en línea es el caso que usaremos de principio a fin en la sección de diseño relacional (CLIENTE, PEDIDO, PRODUCTO). El catálogo de la biblioteca nos sirve además para la siguiente diapositiva: una base de datos no tiene que ser electrónica."
+    },
+    {
+      "type": "flow",
+      "section": "Fundamentos",
+      "title": "De un dato a un DBMS",
+      "steps": [
+        { "title": "Dato", "text": "Representación simbólica de un hecho o atributo. Ej.: la edad de una persona o el nombre de un producto." },
+        { "title": "Base de datos", "text": "Colección de datos organizada para un propósito específico, dentro de un dominio concreto." },
+        { "title": "DBMS", "text": "Software que permite crear, leer, actualizar y eliminar datos de una base de datos." }
+      ],
+      "callout": { "tone": "amber", "label": "Recuerde:", "text": "no hay bases de datos genéricas. Cada una describe un dominio (universo de discurso) específico." },
+      "notes": "Una base de datos no tiene que ser electrónica: el catálogo de tarjetas de una biblioteca también lo es. Aquí nos enfocamos en bases de datos electrónicas administradas por un DBMS (Database Management System)."
+    },
+    {
+      "type": "image",
+      "section": "Fundamentos",
+      "title": "Algunos DBMS populares",
+      "image": "image-01.png",
+      "alt": "Logotipos de DBMS populares: MySQL, PostgreSQL, MariaDB, MongoDB, SQLite, CockroachDB, Redis, CouchDB, Neo4j, FirebirdSQL, OrientDB y Cassandra",
+      "caption": "Cada DBMS adopta un enfoque: relacional, orientado a objetos o NoSQL.",
+      "notes": "Ejemplos: MySQL, PostgreSQL, MariaDB, SQLite, Oracle, SQL Server (relacionales); MongoDB, Redis, CouchDB, Neo4j, Cassandra (NoSQL). Algunos DBMS soportan más de un enfoque."
+    },
+    {
+      "type": "cards",
+      "section": "Enfoques de manejo de datos",
+      "title": "Antes de los DBMS: archivos",
+      "intro": "Cada programa leía y escribía sus propios archivos. Al crecer el sistema aparecen problemas:",
+      "columns": 3,
+      "cards": [
+        { "title": "Formatos inconsistentes", "text": "Cada archivo define su propio formato.", "tone": "red" },
+        { "title": "Redundancia", "text": "Los mismos datos duplicados en archivos separados.", "tone": "red" },
+        { "title": "Diseño ineficiente", "text": "Estructuras pensadas para un solo programa.", "tone": "red" },
+        { "title": "Inseguridad", "text": "Poco control sobre quién accede a los datos.", "tone": "red" },
+        { "title": "Acoplamiento alto", "text": "Cambiar un archivo obliga a cambiar los programas.", "tone": "red" },
+        { "title": "Integridad frágil", "text": "Un error en un programa puede corromper los datos.", "tone": "red" }
+      ],
+      "notes": "Bajo este enfoque cada programa era responsable de interpretar el formato de cada registro y de mantener la consistencia del archivo. Los datos se guardaban secuencialmente en registros compuestos por campos; los DBMS modernos conservan esa estructura de forma lógica."
+    },
+    {
+      "type": "diagram",
+      "kind": "dbms-architecture",
+      "section": "Enfoques de manejo de datos",
+      "title": "Enfoque de bases de datos: una capa de indirección",
+      "left": { "title": "Programas y usuarios", "text": "Envían consultas y comandos" },
+      "dbms": {
+        "title": "DBMS",
+        "components": [
+          "Lenguaje de consulta",
+          "Motor de base de datos",
+          "Gestor de transacciones",
+          "Gestor de seguridad",
+          "Gestor de almacenamiento"
+        ]
+      },
+      "right": { "title": "Datos", "text": "Almacenados en disco" },
+      "callout": { "tone": "teal", "label": "Independencia de los datos:", "text": "los programas no necesitan conocer la estructura interna. El DBMS es auto-descriptivo (guarda metadatos)." },
+      "notes": "El DBMS se interpone entre los programas y los datos. Componentes: lenguaje de consulta (SQL), motor que interpreta y ejecuta, gestor de transacciones (consistencia e integridad), gestor de seguridad (control de acceso) y gestor de almacenamiento (administra el disco)."
+    },
+    {
+      "type": "cards",
+      "section": "Enfoques de manejo de datos",
+      "title": "Ventajas del enfoque de bases de datos",
+      "columns": 3,
+      "cards": [
+        { "title": "Independencia de datos", "text": "Los programas no dependen de la estructura interna de los datos.", "tone": "green" },
+        { "title": "Integridad", "text": "Reglas que garantizan datos precisos y consistentes.", "tone": "green" },
+        { "title": "Seguridad", "text": "Control de acceso y protección contra accesos no autorizados.", "tone": "green" },
+        { "title": "Concurrencia", "text": "Acceso simultáneo de múltiples usuarios sin conflictos.", "tone": "green" },
+        { "title": "Escalabilidad", "text": "Maneja grandes volúmenes de datos y crece con la organización.", "tone": "green" },
+        { "title": "Datos compartidos", "text": "Varias aplicaciones usan los mismos datos sin duplicarlos.", "tone": "green" }
+      ],
+      "notes": "Cada ventaja resuelve uno de los problemas del enfoque de archivos: independencia contra acoplamiento, integridad contra fragilidad, seguridad contra inseguridad, datos compartidos contra redundancia."
+    },
+    {
+      "type": "cards",
+      "section": "Tipos de bases de datos",
+      "title": "Cada base de datos adopta un enfoque",
+      "intro": "Como los lenguajes de programación con sus paradigmas, las bases de datos siguen un enfoque:",
+      "columns": 3,
+      "cardHeight": 2.7,
+      "cards": [
+        { "badge": "1", "title": "Relacional", "text": "Tablas de filas y columnas relacionadas por claves. Modelo de Edgar Codd (1970).", "tone": "teal" },
+        { "badge": "2", "title": "Orientada a objetos", "text": "Los datos se modelan como objetos con atributos y métodos.", "tone": "teal" },
+        { "badge": "3", "title": "NoSQL", "text": "Alternativa flexible y escalable para datos no estructurados o semiestructurados.", "tone": "teal" }
+      ],
+      "callout": { "tone": "slate", "text": "Un DBMS puede soportar más de un enfoque (p. ej., Oracle: relacional y objetos). Por eso decimos que la **base de datos** sigue un enfoque, no el DBMS." },
+      "notes": "Hay otros tipos que se usaron en el pasado (jerárquicas, de red); se estudian en el curso de bases de datos. Nos concentramos en relacional y NoSQL. Aclaración sobre las bases de datos distribuidas (datos repartidos en varios servidores o sitios): no son un cuarto enfoque, porque describen dónde se guardan los datos y no cómo se modelan. Una base distribuida puede ser relacional (p. ej., CockroachDB, que aparece entre los logotipos) o NoSQL (p. ej., Cassandra). Por eso no aparecen en esta clasificación."
+    },
+    {
+      "type": "diagram",
+      "kind": "annotated-table",
+      "section": "Modelo relacional",
+      "title": "Anatomía de una tabla",
+      "table": {
+        "columns": ["ID", "NOMBRE", "EDAD", "CARRERA"],
+        "rows": [
+          ["1", "Juan", "20", "Ingeniería en Sistemas"],
+          ["2", "María", "22", "Ingeniería Civil"],
+          ["3", "Pedro", "21", "Ingeniería Industrial"]
+        ]
+      },
+      "labels": {
+        "relation": "Relación (tabla)",
+        "attribute": "Atributo (columna)",
+        "tuple": "Tupla (fila)",
+        "key": "Clave primaria (ID único)"
+      },
+      "termsTitle": "Otros términos",
+      "terms": [
+        "**Esquema:** estructura de la tabla (como una clase en POO).",
+        "**Clave foránea:** referencia a la clave primaria de otra tabla.",
+        "**Clave candidata:** atributo que podría ser clave primaria."
+      ],
+      "notes": "Tabla ESTUDIANTE. No puede haber dos filas con el mismo ID. El esquema describe la estructura (atributos y restricciones) y es análogo a una clase; las tuplas son análogas a las instancias."
+    },
+    {
+      "type": "diagram",
+      "kind": "m2m",
+      "section": "Modelo relacional",
+      "title": "Relaciones muchos-a-muchos",
+      "tables": [
+        { "name": "ESTUDIANTE", "columns": ["ID", "NOMBRE"], "colW": [0.8, 2.0], "rows": [["1", "Juan"], ["2", "María"], ["3", "Pedro"]] },
+        { "name": "MATRICULA (tabla intermedia)", "role": "fk", "columns": ["ESTUDIANTE_ID", "CURSO_ID"], "colW": [2.1, 1.6], "rows": [["1", "1"], ["1", "2"], ["2", "1"]] },
+        { "name": "CURSO", "columns": ["ID", "NOMBRE"], "colW": [0.8, 2.0], "rows": [["1", "Matemáticas"], ["2", "Física"], ["3", "Química"]] }
+      ],
+      "legend": { "pk": "PK  clave primaria", "fk": "FK  clave foránea" },
+      "callout": { "tone": "teal", "text": "Un estudiante matricula **muchos** cursos y un curso tiene **muchos** estudiantes. La **tabla intermedia** guarda solo las claves (sin duplicar datos del estudiante ni del curso)." },
+      "notes": "Una sola clave foránea no puede representar una relación muchos-a-muchos. Por eso se crea una tabla intermedia cuya clave primaria es compuesta (ESTUDIANTE_ID, CURSO_ID) y cuyas dos columnas son claves foráneas."
+    },
+    {
+      "type": "compare",
+      "section": "Modelo relacional",
+      "title": "Integridad referencial y normalización",
+      "vs": true,
+      "panelHeight": 3.4,
+      "panels": [
+        {
+          "title": "Integridad referencial",
+          "tone": "teal",
+          "textSize": 20,
+          "text": "Restricción que valida que cada clave foránea apunte a una clave primaria existente.",
+          "note": "Ej.: `MATRICULA.ESTUDIANTE_ID` debe existir en `ESTUDIANTE.ID`."
+        },
+        {
+          "title": "Normalización",
+          "tone": "navy",
+          "textSize": 20,
+          "text": "Proceso de diseño del esquema, basado en las formas normales, que reduce la redundancia de datos.",
+          "note": "Se aplica al diseñar las tablas."
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "la normalización **no** es consecuencia de la integridad referencial. Son conceptos distintos que se complementan." },
+      "notes": "Error frecuente: confundir ambos conceptos. La integridad referencial protege las referencias entre tablas; la normalización decide cómo se reparten los datos entre tablas para evitar redundancia."
+    },
+    {
+      "type": "cards",
+      "section": "Modelo relacional",
+      "title": "Transacciones ACID",
+      "intro": "Una transacción es una operación que modifica los datos y debe cumplir cuatro propiedades:",
+      "columns": 4,
+      "cardHeight": 3.4,
+      "cards": [
+        { "badge": "A", "title": "Atomicidad", "text": "Todo o nada: si una parte falla, se deshace la transacción completa.", "tone": "teal" },
+        { "badge": "C", "title": "Consistencia", "text": "Lleva la base de un estado consistente a otro, respetando las restricciones.", "tone": "teal" },
+        { "badge": "I", "title": "Aislamiento", "text": "Las transacciones concurrentes no interfieren entre sí.", "tone": "teal" },
+        { "badge": "D", "title": "Durabilidad", "text": "Los cambios confirmados persisten aun después de un fallo del sistema.", "tone": "teal" }
+      ],
+      "notes": "Ejemplo clásico: una transferencia bancaria debita una cuenta y acredita otra; si falla a la mitad, ambas operaciones se deshacen (atomicidad)."
+    },
+    {
+      "type": "diagram",
+      "kind": "scan",
+      "section": "Índices",
+      "title": "El problema: full table scan",
+      "query": "SELECT *\nFROM ESTUDIANTE\nWHERE NOMBRE = 'María';",
+      "cost": "O(n)",
+      "costText": "costo del recorrido completo",
+      "stripLabel": "Tabla ESTUDIANTE con n filas",
+      "rows": 12,
+      "match": 9,
+      "caption": "El DBMS revisa **todas** las filas, una por una, comparando `NOMBRE` con 'María'.",
+      "callout": { "tone": "amber", "text": "Sin índice, el DBMS no sabe dónde están las filas que cumplen la condición. Con millones de registros resulta prohibitivamente lento." },
+      "notes": "Si NOMBRE no está indexada, no hay forma de saber dónde están las filas buscadas. Un índice reduce el costo de la búsqueda de O(n) a O(log n)."
+    },
+    {
+      "type": "diagram",
+      "kind": "index-map",
+      "section": "Índices",
+      "title": "¿Qué es un índice?",
+      "intro": "Estructura auxiliar que asocia el valor de una columna (la **clave**) con la ubicación de sus filas.",
+      "index": {
+        "title": "Índice (por NOMBRE)",
+        "columns": ["NOMBRE", "Apunta a"],
+        "colW": [1.7, 1.4],
+        "rows": [["Juan", "fila 1"], ["María", "fila 2"], ["Pedro", "fila 3"]]
+      },
+      "table": {
+        "title": "Tabla ESTUDIANTE",
+        "columns": ["ID", "NOMBRE", "EDAD"],
+        "colW": [0.8, 1.4, 0.9],
+        "rows": [["1", "Juan", "20"], ["2", "María", "22"], ["3", "Pedro", "21"]]
+      },
+      "cards": [
+        { "title": "Árbol B+", "text": "Nodos con muchas claves: árbol poco profundo y pocos accesos a disco. Sus hojas enlazadas permiten recorrer rangos.", "tone": "teal", "h": 2.1 },
+        { "title": "Costo de búsqueda", "text": "`O(log n)` en vez de `O(n)`.", "tone": "green", "h": 1.5 }
+      ],
+      "callout": { "tone": "slate", "label": "Analogía:", "text": "el índice de un libro. En vez de leer todas las páginas, busca el término y va directo a la página." },
+      "notes": "La mayoría de los DBMS implementan sus índices con árboles B+, la misma familia de estructuras estudiada en almacenamiento externo: están diseñados para minimizar accesos a disco. Al declarar una clave primaria, el DBMS crea automáticamente un índice sobre ella."
+    },
+    {
+      "type": "compare",
+      "section": "Índices",
+      "title": "Árbol B+ vs. índice hash",
+      "vs": true,
+      "panelHeight": 3.7,
+      "panels": [
+        {
+          "title": "Árbol B+",
+          "tone": "teal",
+          "itemSize": 20,
+          "items": [
+            "Igualdad en `O(log n)`",
+            "Soporta rangos: `WHERE EDAD > 20`",
+            "Permite recorridos ordenados",
+            "Predeterminado en la mayoría de DBMS"
+          ]
+        },
+        {
+          "title": "Hash",
+          "tone": "slate",
+          "itemSize": 20,
+          "items": [
+            "Igualdad exacta en `O(1)` promedio",
+            "No soporta rangos",
+            "No preserva el orden de las claves",
+            "Útil solo para búsquedas exactas"
+          ]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "El árbol B+ es la misma familia de estructuras que estudiamos en almacenamiento externo." },
+      "notes": "La función hash dispersa las claves sin preservar el orden, por eso no sirve para WHERE EDAD > 20 ni para ORDER BY. El árbol B+ es el más versátil."
+    },
+    {
+      "type": "table",
+      "section": "Índices",
+      "title": "Clustered vs. non-clustered",
+      "columns": ["", "Clustered (agrupado)", "Non-clustered (secundario)"],
+      "colWeights": [1.2, 2.4, 2.4],
+      "rows": [
+        ["Almacenamiento", "La tabla se ordena físicamente según la clave; las filas son las hojas del árbol.", "Estructura separada con las claves ordenadas y un puntero a la fila real."],
+        ["Acceso al dato", "Directo, sin salto adicional.", "Un salto extra hasta la fila."],
+        ["Cantidad por tabla", "Uno solo.", "Varios."]
+      ],
+      "callout": { "tone": "teal", "text": "Al declarar una **clave primaria**, el DBMS suele crear un índice sobre ella (frecuentemente clustered)." },
+      "notes": "Solo puede haber un índice clustered porque la tabla solo se puede ordenar físicamente de una manera. Por eso WHERE ID = 2 es rápido sin configuración adicional."
+    },
+    {
+      "type": "cards",
+      "section": "Índices",
+      "title": "No conviene indexar todo",
+      "columns": 3,
+      "cardHeight": 2.5,
+      "cards": [
+        { "title": "Lecturas más rápidas", "text": "Evitan el full table scan en consultas con `WHERE`, `JOIN` u `ORDER BY`.", "tone": "green" },
+        { "title": "Escrituras más lentas", "text": "Cada `INSERT`, `UPDATE` o `DELETE` también actualiza los índices afectados.", "tone": "red" },
+        { "title": "Más espacio en disco", "text": "Cada índice es una estructura aparte que ocupa almacenamiento.", "tone": "red" }
+      ],
+      "callout": { "tone": "teal", "label": "Regla práctica:", "text": "indexe columnas de uso frecuente en `WHERE`, `JOIN` u `ORDER BY`. Evítelos en tablas con muchas escrituras o columnas que casi no se consultan." },
+      "notes": "Los índices no son gratuitos: mientras más índices tiene una tabla, más lentas son sus escrituras."
+    },
+    {
+      "type": "code",
+      "section": "Índices",
+      "title": "Crear un índice en SQL",
+      "codeSize": 17,
+      "columns": [
+        {
+          "weight": 1.35,
+          "blocks": [
+            { "label": "Crear el índice", "code": "CREATE INDEX idx_estudiante_nombre\nON ESTUDIANTE (NOMBRE);" },
+            { "label": "La misma consulta de antes", "code": "SELECT *\nFROM ESTUDIANTE\nWHERE NOMBRE = 'María';" }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Sin índice", "text": "Full table scan: revisa las n filas.", "footer": "O(n)", "footerSize": 22, "tone": "red", "h": 1.75 },
+            { "title": "Con índice", "text": "Búsqueda en el árbol B+ del índice.", "footer": "O(log n)", "footerSize": 22, "tone": "green", "h": 1.75 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "La diferencia es despreciable en tablas pequeñas, pero determinante cuando n es grande." }
+      ],
+      "notes": "El plan de ejecución de la consulta cambia: en lugar de recorrer toda la tabla, el DBMS busca en el árbol B+ y localiza directamente las filas con NOMBRE = 'María'. Crear un índice no cambia las tablas ni sus columnas (el diseño lógico), solo cómo el DBMS guarda y busca los datos: es una decisión de diseño físico, que depende del DBMS y de las consultas reales. Lo retomamos en las fases del diseño de una base de datos."
+    },
+    {
+      "type": "compare",
+      "section": "SQL",
+      "title": "SQL: DDL y DML",
+      "panelHeight": 3.2,
+      "panels": [
+        {
+          "title": "DDL · Data Definition Language",
+          "tone": "navy",
+          "textSize": 20,
+          "text": "Define y modifica las **estructuras** de la base de datos.",
+          "chips": ["CREATE", "ALTER", "DROP"]
+        },
+        {
+          "title": "DML · Data Manipulation Language",
+          "tone": "teal",
+          "textSize": 20,
+          "text": "Manipula los **datos** dentro de esas estructuras.",
+          "chips": ["SELECT", "INSERT", "UPDATE", "DELETE"]
+        }
+      ],
+      "callout": { "tone": "slate", "text": "SQL (Structured Query Language) es el lenguaje estandarizado para interactuar con bases de datos relacionales." },
+      "notes": "Los ejemplos de las siguientes diapositivas usan las tablas ESTUDIANTE, CURSO y MATRICULA."
+    },
+    {
+      "type": "code",
+      "section": "SQL",
+      "title": "DDL: CREATE TABLE",
+      "codeSize": 14,
+      "top": 2.1,
+      "columns": [
+        {
+          "weight": 3.2,
+          "blocks": [
+            { "label": "ESTUDIANTE", "code": "CREATE TABLE ESTUDIANTE (\n  ID INT PRIMARY KEY,\n  NOMBRE VARCHAR(50),\n  EDAD INT,\n  CARRERA VARCHAR(50)\n);" }
+          ]
+        },
+        {
+          "weight": 2.75,
+          "blocks": [
+            { "label": "CURSO", "code": "CREATE TABLE CURSO (\n  ID INT PRIMARY KEY,\n  NOMBRE VARCHAR(50)\n);" }
+          ]
+        },
+        {
+          "weight": 4.8,
+          "blocks": [
+            { "label": "MATRICULA (tabla intermedia)", "code": "CREATE TABLE MATRICULA (\n  ESTUDIANTE_ID INT,\n  CURSO_ID INT,\n  PRIMARY KEY (ESTUDIANTE_ID, CURSO_ID),\n  FOREIGN KEY (ESTUDIANTE_ID)\n    REFERENCES ESTUDIANTE(ID),\n  FOREIGN KEY (CURSO_ID)\n    REFERENCES CURSO(ID)\n);" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "slate", "text": "Los tipos de datos varían según el DBMS. Las restricciones también pueden agregarse después con `ALTER TABLE`." }
+      ],
+      "notes": "Hay que crear primero ESTUDIANTE y CURSO, porque MATRICULA las referencia con claves foráneas. Los tipos de datos de SQL son distintos a los de los lenguajes de programación. Esquema de referencia para las diapositivas SQL siguientes (conviene dejarlo a la vista, en la pizarra o en una esquina de la pantalla): ESTUDIANTE(ID, NOMBRE, EDAD, CARRERA) · CURSO(ID, NOMBRE) · MATRICULA(ESTUDIANTE_ID, CURSO_ID). Las herramientas gráficas (MySQL Workbench, DBeaver, pgAdmin) dibujan este esquema como un diagrama entre las tablas; según la herramienta, el lado «muchos» se marca con una pata de gallo o con el símbolo ∞ (Access usa 1 y ∞)."
+    },
+    {
+      "type": "code",
+      "section": "SQL",
+      "title": "DML: INSERT, UPDATE y DELETE",
+      "codeSize": 16,
+      "top": 2.1,
+      "calloutsY": 4.5,
+      "calloutsH": 1.1,
+      "columns": [
+        {
+          "weight": 1.3,
+          "blocks": [
+            { "label": "INSERT · agregar filas", "code": "INSERT INTO CURSO (ID, NOMBRE)\nVALUES (1, 'Matemáticas');" }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "UPDATE · modificar filas", "code": "UPDATE ESTUDIANTE\nSET EDAD = 21\nWHERE ID = 1;" }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "DELETE · eliminar filas", "code": "DELETE FROM CURSO\nWHERE ID = 1;" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "amber", "label": "Cuidado:", "size": 18, "text": "sin `WHERE`, `UPDATE` y `DELETE` afectan **todas** las filas de la tabla." },
+        { "tone": "teal", "label": "Integridad:", "size": 18, "text": "al borrar en una tabla «padre», los registros «hijos» se eliminan o actualizan (acción en cascada)." }
+      ],
+      "notes": "Los nuevos valores siempre se validan contra las restricciones de integridad de la tabla. La acción en cascada se define con restricciones de integridad en la base de datos. Demo en vivo con el esquema de referencia (ESTUDIANTE, CURSO, MATRICULA): 1) UPDATE de varias columnas, separadas por comas: UPDATE ESTUDIANTE SET EDAD = 21, CARRERA = 'Ingeniería Civil' WHERE ID = 1; solo cambia la fila 1. Sin WHERE, los tres estudiantes quedan con edad 21 y la misma carrera. 2) DELETE con y sin WHERE: DELETE FROM CURSO WHERE ID = 3; borra solo un curso; DELETE FROM CURSO; intenta borrarlos todos. 3) Pregunta para la clase: ¿qué pasa con DELETE FROM CURSO; si MATRICULA tiene filas? Respuesta: con el CREATE TABLE de la diapositiva anterior (sin ON DELETE), el DBMS rechaza el borrado y no elimina nada; lo mismo ocurre con WHERE ID = 1 mientras ese curso tenga matrículas (solo el curso 3, sin matrículas, se puede borrar). Si la clave foránea se declara con ON DELETE CASCADE, el borrado procede y elimina también las filas de MATRICULA. Si usa SQLite, active PRAGMA foreign_keys = ON; por defecto no revisa las claves foráneas. 4) INSERT con un subconjunto de columnas, en cualquier orden: INSERT INTO ESTUDIANTE (NOMBRE, ID) VALUES ('Luis', 4); el orden lo fija la lista de columnas y las omitidas (EDAD, CARRERA) quedan en NULL, salvo que tengan valor por defecto o sean NOT NULL."
+    },
+    {
+      "type": "code",
+      "section": "SQL",
+      "title": "DML: SELECT",
+      "codeSize": 16,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Estructura", "code": "SELECT columna1, columna2\nFROM tabla\nWHERE condición;" },
+            { "label": "Todos los estudiantes", "code": "SELECT *\nFROM ESTUDIANTE;" }
+          ]
+        },
+        {
+          "weight": 1.2,
+          "blocks": [
+            { "label": "Cursos de un estudiante específico", "code": "SELECT C.*\nFROM CURSO C\nJOIN MATRICULA M ON C.ID = M.CURSO_ID\nWHERE M.ESTUDIANTE_ID = 1;" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "`*` significa «todas las columnas». `C.*` son todas las columnas de `CURSO` (alias `C`)." }
+      ],
+      "notes": "SELECT es la operación más común. Introducir los alias (C, M) antes de la siguiente diapositiva, donde se une todo con JOIN."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "SQL",
+      "title": "JOIN: combinar tablas",
+      "queryLabel": "Consulta",
+      "query": "SELECT E.NOMBRE, C.NOMBRE\nFROM ESTUDIANTE E\nJOIN MATRICULA M\n    ON E.ID = M.ESTUDIANTE_ID\nJOIN CURSO C\n    ON C.ID = M.CURSO_ID;",
+      "resultLabel": "Resultado",
+      "result": {
+        "columns": ["E.NOMBRE", "C.NOMBRE"],
+        "colW": [2.1, 2.3],
+        "rows": [["Juan", "Matemáticas"], ["Juan", "Física"], ["María", "Matemáticas"]]
+      },
+      "callout": { "tone": "teal", "text": "La tabla intermedia `MATRICULA` conecta cada estudiante con sus cursos. Cada fila de `MATRICULA` produce una fila en el resultado." },
+      "notes": "Seguir con el dedo la ruta: ESTUDIANTE.ID -> MATRICULA.ESTUDIANTE_ID, MATRICULA.CURSO_ID -> CURSO.ID. Juan tiene dos matrículas y María una, por eso hay tres filas."
+    },
+    {
+      "type": "diagram",
+      "kind": "venn-grid",
+      "section": "SQL",
+      "title": "Tipos de JOIN",
+      "intro": "Combinan filas de dos tablas (A y B) según una condición `ON`. El área coloreada es lo que se devuelve.",
+      "items": [
+        { "type": "inner", "title": "INNER JOIN", "text": "Solo las filas con coincidencia en ambas tablas." },
+        { "type": "left", "title": "LEFT JOIN", "text": "Todas las filas de A, más las coincidencias de B." },
+        { "type": "right", "title": "RIGHT JOIN", "text": "Todas las filas de B, más las coincidencias de A." },
+        { "type": "full", "title": "FULL OUTER JOIN", "text": "Todas las filas de A y de B, coincidan o no." }
+      ],
+      "callout": { "tone": "slate", "text": "En la práctica, `JOIN` a secas equivale a `INNER JOIN`." },
+      "notes": "Las filas sin coincidencia aparecen con NULL en las columnas de la otra tabla. Hay variantes con WHERE ... IS NULL para obtener solo las filas sin pareja."
+    },
+    {
+      "type": "diagram",
+      "kind": "flat-table",
+      "section": "Diseño relacional",
+      "title": "Una sola tabla: ¿qué puede salir mal?",
+      "tableLabel": "PEDIDOS (todo junto)",
+      "table": {
+        "columns": ["PEDIDO", "FECHA", "CLIENTE", "CORREO", "PRODUCTO", "PRECIO", "CANTIDAD"],
+        "colW": [1.2, 1.3, 1.5, 2.8, 1.8, 1.6, 1.7],
+        "rows": [
+          ["1", "03/11", "Ana", "ana@mail.com", "Teclado", "25", "1"],
+          ["1", "03/11", "Ana", "ana@mail.com", "Mouse", "10", "2"],
+          ["2", "04/11", "Ana", "ana@mail.com", "Mouse", "10", "1"],
+          ["3", "04/11", "Luis", "luis@mail.com", "Teclado", "25", "1"]
+        ]
+      },
+      "highlight": [[0, 2], [0, 3], [1, 2], [1, 3], [2, 2], [2, 3], [1, 4], [1, 5], [2, 4], [2, 5]],
+      "cards": [
+        { "title": "Actualizar", "text": "Cambiar el correo de Ana obliga a editar 3 filas.", "tone": "red" },
+        { "title": "Insertar", "text": "No se puede registrar un cliente que aún no tiene pedidos.", "tone": "red" },
+        { "title": "Eliminar", "text": "Al borrar el pedido 3 se pierde también a Luis.", "tone": "red" }
+      ],
+      "notes": "Gancho para la sección de diseño: una tienda en línea guardada en una sola tabla. Los datos repetidos (en ámbar) son la señal de un mal diseño y provocan las anomalías de actualización, inserción y eliminación. Pregunta para la clase: ¿qué pasa si el correo de Ana cambia y solo actualizamos una fila?"
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Diseñar una base de datos en 6 pasos",
+      "intro": "Caso que usaremos de principio a fin: **una tienda en línea**.",
+      "columns": 3,
+      "textSize": 18,
+      "cards": [
+        { "title": "1 · Requisitos", "text": "¿Qué guarda el sistema y qué debe responder?", "tone": "teal" },
+        { "title": "2 · Entidades", "text": "Las «cosas» importantes y sus atributos.", "tone": "teal" },
+        { "title": "3 · Relaciones", "text": "¿Cómo se conectan? 1:1, 1:N o N:M.", "tone": "teal" },
+        { "title": "4 · Tablas y claves", "text": "Del modelo a tablas con claves primarias y foráneas.", "tone": "teal" },
+        { "title": "5 · Normalizar", "text": "Elimine la redundancia con las formas normales.", "tone": "teal" },
+        { "title": "6 · Crear y probar", "text": "Escriba el SQL, cargue datos y pruebe consultas.", "tone": "teal" }
+      ],
+      "callout": { "tone": "teal", "label": "Del mini-mundo al disco:", "text": "diseño **conceptual** (pasos 2-3, no depende del DBMS) → **lógico** (4-5, modelo de datos del DBMS) → **físico** (6, estructuras concretas, p. ej. índices).", "size": 17, "y": 5.95, "h": 0.85 },
+      "notes": "Este proceso es iterativo: al probar (paso 6) es normal volver a los pasos anteriores. Cada diapositiva siguiente muestra en la esquina superior derecha en qué paso estamos. Fases formales del diseño: se parte del «mini-mundo», la parte de la realidad que la base de datos describe (el universo de discurso); los requisitos del paso 1 lo describen. Diseño conceptual (pasos 2 y 3): entidades y relaciones en un esquema de alto nivel, independiente de cualquier DBMS. Diseño lógico (pasos 4 y 5): ese esquema se traduce al modelo de datos del DBMS elegido (aquí, el relacional: tablas, claves y normalización). Diseño físico o implementación (paso 6 y en adelante): estructuras de almacenamiento y acceso de un DBMS concreto, como los índices. Es una simplificación: según el enfoque o el libro, la normalización se ubica en el diseño lógico (como aquí) o ya al refinar el modelo conceptual. Pregunta para la clase: ¿en qué fase decidiría crear un índice sobre NOMBRE? Respuesta: en la fase física, porque depende del DBMS y de las consultas reales, no del modelo de entidades. Referencia sobre estas fases: Elmasri, R. y Navathe, S., Fundamentals of Database Systems."
+    },
+    {
+      "type": "compare",
+      "section": "Diseño relacional",
+      "title": "Paso 1 · Requisitos de la tienda",
+      "step": 1,
+      "panels": [
+        {
+          "title": "Lo que dice el negocio",
+          "tone": "teal",
+          "items": [
+            "Los **clientes** se registran con su nombre y su correo (único).",
+            "Un cliente puede hacer **muchos pedidos**; cada pedido es de un solo cliente.",
+            "Cada pedido tiene una **fecha** y varios **productos**.",
+            "De cada producto se guarda el **nombre** y el **precio**.",
+            "En cada pedido se anota la **cantidad** de cada producto."
+          ]
+        },
+        {
+          "title": "Cómo leerlo",
+          "tone": "slate",
+          "items": [
+            "**Sustantivos:** posibles entidades o atributos",
+            "**Verbos:** posibles relaciones (hace, contiene)",
+            "**Cuántos:** cardinalidad (1:1, 1:N, N:M)"
+          ],
+          "note": "Ej.: «Un **cliente** **hace** **pedidos**» → entidades CLIENTE y PEDIDO, y la relación «hace»."
+        }
+      ],
+      "notes": "Pida a los estudiantes que subrayen los sustantivos y los verbos del texto. Es la técnica más simple para empezar: casi todo requisito en lenguaje natural esconde entidades, atributos y relaciones."
+    },
+    {
+      "type": "diagram",
+      "kind": "entities",
+      "section": "Diseño relacional",
+      "title": "Paso 2 · Entidades y atributos",
+      "step": 2,
+      "entities": [
+        { "name": "CLIENTE", "attrs": [{ "name": "ID", "tag": "único" }, "NOMBRE", "CORREO"] },
+        { "name": "PEDIDO", "attrs": [{ "name": "ID", "tag": "único" }, "FECHA"] },
+        { "name": "PRODUCTO", "attrs": [{ "name": "ID", "tag": "único" }, "NOMBRE", "PRECIO"] }
+      ],
+      "puzzle": { "title": "¿Y la cantidad?", "tone": "amber", "text": "No es del pedido ni del producto: depende de **ambos**. La resolveremos en el paso 3." },
+      "callout": { "tone": "teal", "text": "**Entidad:** una «cosa» sobre la que guardamos datos. **Atributo:** una propiedad de esa cosa. Toda entidad necesita un **identificador único** (`ID`)." },
+      "notes": "Cada entidad se convertirá en una tabla y su identificador en la clave primaria. La cantidad es la pregunta clave: no pertenece a una sola entidad, sino a la relación entre pedido y producto."
+    },
+    {
+      "type": "diagram",
+      "kind": "er",
+      "section": "Diseño relacional",
+      "title": "Paso 3 · Relaciones y cardinalidad",
+      "step": 3,
+      "entities": [{ "name": "CLIENTE" }, { "name": "PEDIDO" }, { "name": "PRODUCTO" }],
+      "links": [
+        { "from": 0, "to": 1, "label": "hace", "fromCard": "1", "toCard": "N" },
+        { "from": 1, "to": 2, "label": "contiene", "fromCard": "N", "toCard": "M", "attr": "CANTIDAD" }
+      ],
+      "cards": [
+        { "title": "1:N · uno a muchos", "tone": "teal", "text": "Un cliente hace **muchos** pedidos. Cada pedido pertenece a **un solo** cliente." },
+        { "title": "N:M · muchos a muchos", "tone": "amber", "text": "Un pedido contiene **varios** productos y un producto aparece en **varios** pedidos. La `CANTIDAD` es un atributo de la relación." }
+      ],
+      "callout": { "tone": "slate", "text": "Cardinalidades posibles: **1:1** (uno a uno), **1:N** (uno a muchos) y **N:M** (muchos a muchos)." },
+      "notes": "Esta es la representación de un modelo entidad-relación simplificado: cajas para entidades, líneas para relaciones y cardinalidad en los extremos. Pregunta: ¿qué cardinalidad habría entre CLIENTE y PEDIDO si cada pedido pudiera ser compartido por varios clientes?"
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Paso 4 · De relaciones a tablas",
+      "step": 4,
+      "columns": 3,
+      "cardHeight": 3.3,
+      "cards": [
+        { "badge": "1:1", "title": "Uno a uno", "text": "Una clave foránea **única** en una de las dos tablas.", "footer": "p. ej., USUARIO y PERFIL", "tone": "teal" },
+        { "badge": "1:N", "title": "Uno a muchos", "text": "La clave foránea va en la tabla del lado **«muchos»**.", "footer": "PEDIDO.CLIENTE_ID", "tone": "teal" },
+        { "badge": "N:M", "title": "Muchos a muchos", "text": "Se crea una **tabla intermedia** con dos claves foráneas.", "footer": "DETALLE_PEDIDO", "tone": "amber" }
+      ],
+      "callout": { "tone": "slate", "text": "Además: cada entidad se convierte en una **tabla** y su `ID` en la **clave primaria**." },
+      "notes": "En nuestro caso no hay relaciones 1:1; se muestra solo como referencia (por ejemplo, un usuario y su perfil). La regla 1:N: la clave foránea siempre va del lado de los muchos."
+    },
+    {
+      "type": "diagram",
+      "kind": "schema",
+      "section": "Diseño relacional",
+      "title": "Paso 4 · El esquema relacional",
+      "step": 4,
+      "tables": [
+        { "name": "CLIENTE", "rows": [["ID", "PK"], ["NOMBRE", ""], ["CORREO", ""]] },
+        { "name": "PEDIDO", "rows": [["ID", "PK"], ["FECHA", ""], ["CLIENTE_ID", "FK"]] },
+        { "name": "DETALLE_PEDIDO", "rows": [["PEDIDO_ID", "PK, FK"], ["PRODUCTO_ID", "PK, FK"], ["CANTIDAD", ""]] },
+        { "name": "PRODUCTO", "rows": [["ID", "PK"], ["NOMBRE", ""], ["PRECIO", ""]] }
+      ],
+      "links": [
+        { "from": [1, 2], "to": [0, 0] },
+        { "from": [2, 0], "to": [1, 0] },
+        { "from": [2, 1], "to": [3, 0] }
+      ],
+      "highlight": [[2, 2]],
+      "legend": { "pk": "PK  clave primaria", "fk": "FK  clave foránea" },
+      "callout": { "tone": "teal", "text": "**1:N:** `PEDIDO.CLIENTE_ID` apunta a `CLIENTE.ID`. **N:M:** `DETALLE_PEDIDO` une pedidos y productos; su clave primaria es compuesta y `CANTIDAD` vive ahí." },
+      "notes": "Las flechas van de cada clave foránea hacia la clave primaria que referencia. CANTIDAD (resaltada) vive en la tabla intermedia porque describe la relación entre un pedido y un producto."
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Paso 5 · Revisar las formas normales",
+      "step": 5,
+      "intro": "Regla de oro: cada dato vive **en un solo lugar**. Nuestro esquema cumple estas tres formas normales:",
+      "columns": 3,
+      "cardHeight": 3.3,
+      "titleSize": 20,
+      "cards": [
+        { "badge": "1FN", "title": "Un valor por celda", "text": "**Mal:** `PRODUCTOS = 'Teclado, Mouse'`. **Bien:** una fila por cada producto.", "tone": "teal" },
+        { "badge": "2FN", "title": "Toda la clave", "text": "**Mal:** `NOMBRE_PRODUCTO` dentro de DETALLE_PEDIDO (depende solo del producto). **Bien:** en PRODUCTO.", "tone": "teal" },
+        { "badge": "3FN", "title": "Nada más que la clave", "text": "**Mal:** `CORREO_CLIENTE` dentro de PEDIDO (depende del cliente). **Bien:** en CLIENTE.", "tone": "teal" }
+      ],
+      "notes": "1FN: sin listas en una celda. 2FN: cada atributo debe depender de toda la clave primaria (importa cuando la clave es compuesta). 3FN: los atributos no clave no deben depender de otros atributos no clave. Nuestro esquema ya cumple 3FN. Existen más formas normales, que se estudian en el curso de bases de datos."
+    },
+    {
+      "type": "code",
+      "section": "Diseño relacional",
+      "title": "Paso 6 · Crear las tablas",
+      "step": 6,
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "PEDIDO · relación 1:N", "code": "CREATE TABLE PEDIDO (\n  ID INT PRIMARY KEY,\n  FECHA DATE NOT NULL,\n  CLIENTE_ID INT NOT NULL,\n  FOREIGN KEY (CLIENTE_ID)\n    REFERENCES CLIENTE(ID)\n);" }
+          ],
+          "cards": [
+            { "title": "Restricciones útiles", "text": "`NOT NULL` obliga a dar un valor. `UNIQUE` evita repetidos (p. ej., el correo).", "tone": "teal", "h": 1.8 }
+          ]
+        },
+        {
+          "weight": 1.25,
+          "blocks": [
+            { "label": "DETALLE_PEDIDO · relación N:M", "code": "CREATE TABLE DETALLE_PEDIDO (\n  PEDIDO_ID INT,\n  PRODUCTO_ID INT,\n  CANTIDAD INT NOT NULL,\n  PRIMARY KEY (PEDIDO_ID, PRODUCTO_ID),\n  FOREIGN KEY (PEDIDO_ID)\n    REFERENCES PEDIDO(ID),\n  FOREIGN KEY (PRODUCTO_ID)\n    REFERENCES PRODUCTO(ID)\n);" }
+          ]
+        }
+      ],
+      "notes": "CLIENTE y PRODUCTO se crean igual que ESTUDIANTE y CURSO (ver diapositivas anteriores); la tabla CLIENTE puede declarar CORREO VARCHAR(120) UNIQUE. Orden de creación: primero las tablas que no dependen de otras (CLIENTE, PRODUCTO), luego PEDIDO y por último DETALLE_PEDIDO."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "Diseño relacional",
+      "title": "Paso 6 · Probar con consultas",
+      "step": 6,
+      "queryLabel": "¿Qué compró cada cliente?",
+      "query": "SELECT C.NOMBRE, P.NOMBRE, D.CANTIDAD\nFROM CLIENTE C\nJOIN PEDIDO O ON O.CLIENTE_ID = C.ID\nJOIN DETALLE_PEDIDO D ON D.PEDIDO_ID = O.ID\nJOIN PRODUCTO P ON P.ID = D.PRODUCTO_ID;",
+      "resultLabel": "Resultado",
+      "result": {
+        "columns": ["C.NOMBRE", "P.NOMBRE", "D.CANTIDAD"],
+        "colW": [1.4, 1.5, 1.7],
+        "rows": [["Ana", "Teclado", "1"], ["Ana", "Mouse", "2"], ["Ana", "Mouse", "1"], ["Luis", "Teclado", "1"]]
+      },
+      "callout": { "tone": "teal", "text": "El `JOIN` recorre el esquema siguiendo las claves foráneas y reconstruye la información de la tabla única, ahora sin redundancia." },
+      "notes": "Es el mismo contenido de la tabla plana del inicio, pero ahora cada dato vive en un solo lugar. Si el esquema no permite responder una pregunta con consultas razonables, hay que volver a los pasos anteriores."
+    },
+    {
+      "type": "cards",
+      "section": "Diseño relacional",
+      "title": "Ahora usted: extienda el modelo",
+      "intro": "Aplique los 6 pasos a cada requisito nuevo: dibuje, defina tablas y claves, y escriba el SQL.",
+      "columns": 3,
+      "cardHeight": 3.5,
+      "cards": [
+        { "badge": "A", "title": "Categorías", "text": "Cada producto pertenece a una categoría. ¿Qué cardinalidad hay? ¿Dónde va la clave foránea?", "tone": "teal" },
+        { "badge": "B", "title": "Reseñas", "text": "Los clientes califican productos con estrellas y un comentario. ¿Qué tabla nueva aparece?", "tone": "teal" },
+        { "badge": "C", "title": "Precio histórico", "text": "El precio cambia con el tiempo. ¿Cómo conservar lo que pagó cada cliente?", "tone": "teal" }
+      ],
+      "notes": "Respuestas sugeridas. A: relación 1:N entre CATEGORIA y PRODUCTO; la clave foránea CATEGORIA_ID va en PRODUCTO. B: relación N:M entre CLIENTE y PRODUCTO con atributos propios (CALIFICACION, COMENTARIO); tabla intermedia RESENA. C: guardar PRECIO_UNITARIO en DETALLE_PEDIDO al momento de la compra, en lugar de depender del precio actual de PRODUCTO."
+    },
+    {
+      "type": "diagram",
+      "kind": "timeline-cards",
+      "section": "NoSQL",
+      "title": "NoSQL: origen y características",
+      "events": [
+        { "year": "1998", "title": "Primer uso del nombre", "text": "Carlo Strozzi llamó «NoSQL» a su base de datos ligera, que literalmente no usaba SQL." },
+        { "year": "2009", "title": "Nuevo significado", "text": "Se reinterpreta como «Not Only SQL»: existen alternativas al modelo relacional." }
+      ],
+      "cards": [
+        { "title": "Estructura flexible", "text": "No requiere un esquema fijo.", "tone": "teal" },
+        { "title": "Escalabilidad horizontal", "text": "Reparte la carga entre varios servidores o nodos.", "tone": "teal" },
+        { "title": "Modelos diversos", "text": "Documentos, grafos, columnas y clave-valor.", "tone": "teal" }
+      ],
+      "notes": "Hoy NoSQL no significa «sin SQL», sino «no solo SQL»: son bases de datos que pueden usar otros modelos de datos y lenguajes de consulta."
+    },
+    {
+      "type": "cards",
+      "section": "NoSQL",
+      "title": "Tipos de bases de datos NoSQL",
+      "columns": 4,
+      "cardHeight": 3.3,
+      "callout": { "tone": "slate", "text": "Cada tipo está optimizado para un tipo distinto de aplicación y carga de trabajo." },
+      "cards": [
+        { "title": "Documentos", "text": "Documentos JSON o BSON agrupados en colecciones (similares a tablas).", "footer": "MongoDB · CouchDB", "tone": "navy" },
+        { "title": "Grafos", "text": "Nodos y relaciones entre ellos. Ideales para relaciones complejas.", "footer": "Neo4j · Neptune", "tone": "navy" },
+        { "title": "Columnas", "text": "Datos por columnas en vez de filas. Eficientes en análisis y agregaciones.", "footer": "Cassandra · HBase", "tone": "navy" },
+        { "title": "Clave-valor", "text": "Pares clave-valor con claves únicas. Lecturas y escrituras muy rápidas.", "footer": "Redis · DynamoDB", "tone": "navy" }
+      ],
+      "notes": "Otros ejemplos: Couchbase (documentos), ArangoDB (grafos), Google Bigtable (columnas), Riak (clave-valor)."
+    },
+    {
+      "type": "compare",
+      "section": "NoSQL",
+      "title": "Una misma información, dos modelos",
+      "vs": true,
+      "panels": [
+        {
+          "title": "Relacional",
+          "tone": "navy",
+          "items": ["Datos repartidos en varias tablas", "Se reconstruyen con `JOIN`", "Esquema fijo y definido de antemano"],
+          "code": "SELECT E.NOMBRE, C.NOMBRE\nFROM ESTUDIANTE E\nJOIN MATRICULA M ON E.ID = M.ESTUDIANTE_ID\nJOIN CURSO C ON C.ID = M.CURSO_ID;",
+          "codeSize": 13
+        },
+        {
+          "title": "Documentos",
+          "tone": "teal",
+          "text": "Todo en un solo documento; su estructura puede variar entre documentos.",
+          "code": "{\n  \"id\": 1,\n  \"nombre\": \"Juan\",\n  \"edad\": 20,\n  \"carrera\": \"Ingeniería en Sistemas\",\n  \"cursos\": [\"Matemáticas\", \"Física\"]\n}",
+          "codeLang": "json",
+          "codeSize": 14
+        }
+      ],
+      "notes": "En una base de documentos, los cursos del estudiante pueden vivir dentro de su propio documento. Se evita el JOIN, pero se duplica información si varios estudiantes comparten el mismo curso."
+    },
+    {
+      "type": "diagram",
+      "kind": "scale",
+      "section": "NoSQL",
+      "title": "Escalar hacia arriba o hacia afuera",
+      "up": {
+        "title": "Escalar hacia arriba (scale up)",
+        "subtitle": "Se mejora un solo servidor: más CPU, memoria y disco.",
+        "caption": "Más simple, pero con límite de hardware"
+      },
+      "out": {
+        "title": "Escalar hacia afuera (scale out)",
+        "subtitle": "Se agregan más servidores que trabajan en conjunto.",
+        "caption": "NoSQL: crece agregando nodos"
+      },
+      "callout": { "tone": "teal", "text": "Las bases NoSQL están pensadas para **escalar horizontalmente**: basta con agregar más servidores." },
+      "notes": "Rendimiento: algunas bases NoSQL (p. ej. Redis) operan principalmente en memoria, lo que reduce los tiempos de lectura y escritura. Otras, como MongoDB, Cassandra o HBase, persisten los datos en disco."
+    },
+    {
+      "type": "table",
+      "section": "NoSQL",
+      "title": "Relacional vs. NoSQL",
+      "columns": ["", "Relacional", "NoSQL"],
+      "colWeights": [1.1, 2, 2.4],
+      "rows": [
+        ["Esquema", "Rígido, definido de antemano", "Flexible"],
+        ["Modelo", "Tablas, filas y columnas", "Documentos, grafos, columnas, clave-valor"],
+        ["Consistencia", "Transacciones ACID", "Algunas sacrifican consistencia (eventual)"],
+        ["Escalabilidad", "Normalmente vertical", "Horizontal, agregando nodos"],
+        ["Ecosistema", "Muy maduro", "En crecimiento, menos maduro"]
+      ],
+      "callout": { "tone": "teal", "label": "Casos de uso NoSQL:", "text": "aplicaciones web escalables y análisis de datos en tiempo real (p. ej., Elasticsearch)." },
+      "notes": "No es una competencia: se elige según el problema. Kafka suele integrarse en escenarios de análisis en tiempo real para la ingesta de datos, pero es una plataforma de streaming y cola de mensajes, no una base de datos NoSQL. Sobre la fila «Escalabilidad»: «normalmente vertical» es una tendencia, no una regla. Un DBMS relacional también puede escalar hacia afuera (replicación, particionamiento o bases distribuidas como CockroachDB); lo que distingue a muchas bases NoSQL es que nacieron pensadas para crecer agregando nodos. «Distribuida» no es sinónimo de NoSQL: es otra dimensión (dónde se guardan los datos), independiente del modelo de datos."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 21,
+      "items": [
+        "Un **DBMS** gestiona los datos y aporta independencia, integridad, seguridad y concurrencia.",
+        "El **modelo relacional** organiza los datos en tablas unidas por claves primarias y foráneas.",
+        "Los **índices** (árboles B+) aceleran las lecturas de `O(n)` a `O(log n)`, a costa de escrituras y espacio.",
+        "**SQL** define (DDL) y manipula (DML) los datos; `JOIN` combina tablas.",
+        "**Diseñar** es un proceso por fases: conceptual (entidades y relaciones), lógico (tablas y normalización) y físico (SQL e índices).",
+        "**NoSQL** ofrece esquemas flexibles y escalabilidad horizontal."
+      ],
+      "footnote": "Referencias: Gillenson, M. (2012). Fundamentals of Database Management Systems. John Wiley & Sons. · Sullivan, M. (2019). NoSQL for Mere Mortals. Addison-Wesley. · Elmasri, R. y Navathe, S. (2016). Fundamentals of Database Systems (7.ª ed.). Pearson.",
+      "notes": "Cierre: los DBMS relacionales y NoSQL no se excluyen; el curso de bases de datos profundiza en modelado, normalización y diseño."
+    }
+  ]
+}

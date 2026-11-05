@@ -1,0 +1,1013 @@
+{
+  "meta": {
+    "title": "Diseño de Algoritmos",
+    "author": "CE-2103",
+    "company": "Instituto Tecnológico de Costa Rica",
+    "subject": "CE-2103 · Lección 05 · Diseño de Algoritmos",
+    "footer": "CE-2103 · Diseño de Algoritmos",
+    "theme": "dark",
+    "codeLang": "java",
+    "assetsDir": "../../../../ce-2103/images",
+    "output": "../../../ce-2103/Lección 05 - Diseño de Algoritmos.pptx"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "tag": "CE-2103 · Lección 05",
+      "title": "Diseño de Algoritmos",
+      "subtitle": "Paradigmas para resolver nuevos problemas",
+      "terminal": {
+        "file": "paradigmas.txt",
+        "lang": "plain",
+        "code": "1. divide y vencerás\n2. programación dinámica\n3. backtracking\n4. algoritmos ávidos\n5. probabilísticos y genéticos"
+      },
+      "meta": "Instituto Tecnológico de Costa Rica · Ingeniería en Computadores",
+      "notes": "Esta lección explora paradigmas de diseño que aparecen en muchos de los algoritmos conocidos y usados hoy. Analizarlos permite aplicar técnicas similares a problemas nuevos de ingeniería de software. Orden de la lección: divide y vencerás, programación dinámica, backtracking, algoritmos ávidos, algoritmos probabilísticos (incluido el filtro de Bloom) y algoritmos genéticos."
+    },
+    {
+      "type": "list",
+      "section": "Introducción",
+      "title": "¿Qué aprenderemos hoy?",
+      "titleSize": 22,
+      "items": [
+        "Aplicar **divide y vencerás** con Merge Sort y búsqueda binaria",
+        "Evitar subproblemas repetidos con **programación dinámica** (mochila, monedas)",
+        "Resolver problemas con **backtracking** y algoritmos **ávidos**",
+        "Diferenciar **Monte Carlo** de **Las Vegas** y usar filtros de **Bloom**",
+        "Describir cómo funciona un **algoritmo genético** (ejemplo: la mochila)"
+      ],
+      "notes": "Cinco objetivos, uno por bloque de la lección. Pregunta de apertura: ¿cuántos de estos nombres ya habían escuchado? Idea para la clase: cada paradigma es una «estrategia» distinta para atacar un problema, y conocerlas ayuda a escoger la adecuada. Proceso de diseño de un algoritmo: 1) formular el problema con la precisión suficiente; 2) diseñar un algoritmo para resolverlo; 3) analizarlo, para verificar que es correcto y evaluar su eficiencia (vea la lección de Análisis de Algoritmos). Los paradigmas de hoy son las herramientas del paso 2: conocerlas es un proceso gradual y, con la práctica, se asocia cada problema con su categoría. Hilo conductor: un mismo problema se puede atacar con varios paradigmas (monedas: ávido o programación dinámica; mochila: programación dinámica, backtracking o algoritmo genético)."
+    },
+    {
+      "type": "flow",
+      "section": "Divide y vencerás",
+      "title": "Divide y vencerás: tres fases",
+      "steps": [
+        { "title": "Dividir", "text": "Parte el problema en subproblemas más pequeños, hasta llegar al caso base." },
+        { "title": "Conquistar", "text": "Resuelve cada subproblema por separado; los pequeños, de forma directa." },
+        { "title": "Combinar", "text": "Une las soluciones parciales para obtener la solución del problema original." }
+      ],
+      "callout": { "tone": "teal", "label": "Eficiencia:", "text": "mejora cuando combinar toma menos tiempo que resolver los subproblemas." },
+      "notes": "Es uno de los paradigmas que ya vieron en cursos introductorios. Fase de división: los subproblemas son de la misma forma que el original, pero más pequeños, y se divide hasta el caso base. Fase de conquista: el objetivo es resolverlos de forma independiente. Fase de combinación: se mezclan las soluciones parciales para obtener la solución final. Ventajas: los subproblemas son independientes (se pueden resolver en paralelo) y el código recursivo suele ser simple, claro y fácil de depurar. Costos: la versión recursiva puede ser más lenta que una iterativa y usa la pila de llamadas. Que el paradigma sea «muy eficiente» depende del costo de combinar, como indica el recuadro."
+    },
+    {
+      "type": "image",
+      "section": "Divide y vencerás",
+      "title": "Ejemplo: Merge Sort",
+      "image": "03-diseno-algoritmos/image-01.png",
+      "alt": "Diagrama de Merge Sort: el arreglo 70, 20, 30, 50, 60, 10, 40 se divide en mitades hasta tener un elemento y luego se mezcla en orden hasta obtener 10, 20, 30, 40, 50, 60, 70",
+      "caption": "`log2(n)` niveles de división × `O(n)` por nivel de merge = `O(n log n)`",
+      "notes": "Idea: dividir el arreglo en dos mitades, ordenar cada mitad y combinar las dos mitades ordenadas. En la fase de división se generan log2(n) niveles; en la fase de merge, combinar cada nivel toma O(n). Por lo tanto la complejidad de tiempo de Merge Sort es O(n log n). Recorra la figura: arriba se divide (Divide), abajo se mezcla (Merge)."
+    },
+    {
+      "type": "code",
+      "section": "Divide y vencerás",
+      "title": "Ejemplo: búsqueda binaria",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Búsqueda binaria recursiva",
+              "lang": "c",
+              "code": "int binary_search(item_type s[], item_type key,\n                  int low, int high) {\n    if (low > high) return -1;\n    int middle = (low + high) / 2;\n    if (s[middle] == key) return middle;\n    if (s[middle] > key)\n        return binary_search(s, key, low, middle - 1);\n    else\n        return binary_search(s, key, middle + 1, high);\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "En cada paso", "text": "El problema se reduce a la mitad y no hay resultados que mezclar.", "tone": "teal", "h": 1.9 },
+            { "title": "Complejidad", "text": "Un paso por cada mitad descartada.", "footer": "O(log n)", "footerSize": 26, "tone": "green", "h": 1.9 }
+          ]
+        }
+      ],
+      "notes": "Se compara el elemento buscado con el valor medio y se decide en qué mitad continuar. Es divide y vencerás sin fase de combinación: la respuesta sale de una sola mitad. Complejidad de tiempo: O(log n)."
+    },
+    {
+      "type": "code",
+      "section": "Divide y vencerás",
+      "title": "Encontrar el máximo de un arreglo",
+      "codeSize": 15,
+      "calloutsY": 5.55,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Solución trivial · O(n)",
+              "code": "int findMax(int[] a, int n) {\n    int max = Integer.MIN_VALUE;\n    for (int i = 0; i < n; i++) {\n        if (a[i] > max) {\n            max = a[i];\n        }\n    }\n    return max;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1.4,
+          "blocks": [
+            {
+              "label": "Divide y vencerás · O(n)",
+              "code": "static int findMax(int[] a, int lo, int hi) {\n    if (lo > hi) return Integer.MIN_VALUE;\n    if (lo == hi) return a[lo];\n    int mid = (lo + hi) / 2;\n    int leftMax = findMax(a, lo, mid);\n    int rightMax = findMax(a, mid + 1, hi);\n    return Math.max(leftMax, rightMax);\n}"
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "amber", "label": "Investigar:", "text": "¿por qué la versión recursiva es `O(n)` y no `O(log n)`?" },
+        { "tone": "teal", "label": "En la práctica:", "text": "ambas son `O(n)`; la recursiva no es más rápida (llamadas y pila)." }
+      ],
+      "notes": "Ambas soluciones son O(n). Se suele decir que la versión recursiva «realiza menos comparaciones»: es cierto, pero solo por una (n − 1 comparaciones entre máximos parciales frente a n comparaciones a[i] > max en el ciclo; con n = 8 son 7 frente a 8). Esa diferencia es despreciable y se paga con unas 2n − 1 llamadas recursivas (15 con n = 8) y una pila de llamadas de profundidad O(log n), así que en la práctica la versión recursiva NO es más rápida; aquí se usa para practicar el paradigma, no porque sea mejor. Divide y vencerás rinde cuando dividir reduce el trabajo (búsqueda binaria) o permite paralelizar (Merge Sort). RESPUESTA a la pregunta «Investigar» (para la clase): la recurrencia es T(n) = 2T(n/2) + O(1). A diferencia de la búsqueda binaria, que sigue una sola mitad, aquí se procesan las dos mitades, así que el árbol de recursión tiene n hojas y n-1 nodos internos (unas 2n llamadas, cada una con trabajo constante): T(n) = O(n). Por ejemplo, con n = 4 hay 4 hojas y 7 llamadas en total."
+    },
+    {
+      "type": "cards",
+      "section": "Divide y vencerás",
+      "title": "Paralelismo en divide y vencerás",
+      "columns": 2,
+      "cardHeight": 3.1,
+      "textSize": 20,
+      "callout": { "tone": "amber", "label": "Investigar:", "text": "¿cómo se puede implementar paralelismo en la búsqueda binaria y en Merge Sort?" },
+      "cards": [
+        { "badge": "1", "title": "Computación paralela", "text": "Realiza varias tareas a la vez, aprovechando múltiples núcleos de procesamiento.", "tone": "teal" },
+        { "badge": "2", "title": "En divide y vencerás", "text": "Cada partición del problema se asigna a un núcleo, lo que reduce el tiempo de ejecución.", "tone": "teal" }
+      ],
+      "notes": "Pistas para la discusión: en Merge Sort las dos mitades son independientes, así que se pueden ordenar en hilos distintos (fork/join) y luego mezclar. En la búsqueda binaria cada paso depende del anterior, por lo que el paralelismo es limitado; una opción es dividir el arreglo en p segmentos y buscar en cada uno en paralelo."
+    },
+    {
+      "type": "cards",
+      "section": "Programación dinámica",
+      "title": "Programación dinámica (DP)",
+      "intro": "«Programar» significa planificar: lo acuñó Richard Bellman en los años 50. No se refiere a escribir código.",
+      "columns": 3,
+      "cardHeight": 2.9,
+      "textSize": 19,
+      "callout": { "tone": "slate", "text": "**Memoización:** optimizar recordando resultados. **Memorización:** poner algo en la memoria." },
+      "cards": [
+        { "title": "Divide", "text": "Parte el problema en subproblemas, como divide y vencerás.", "tone": "teal" },
+        { "title": "Memoiza", "text": "Recuerda la solución de cada subproblema para resolverlo una sola vez.", "tone": "teal" },
+        { "title": "Se translapan", "text": "El resultado de un subproblema puede ayudar a resolver otros.", "tone": "teal" }
+      ],
+      "notes": "Bellman usó «programar» en el sentido de planificar óptimamente procesos de múltiples etapas. DP comparte similitudes con divide y vencerás, pero se diferencia en que los subproblemas se translapan (se repiten), así que conviene guardar sus resultados. Aclare la diferencia entre «memoización» (de memo: recordar para optimizar) y «memorización» (poner algo en la memoria)."
+    },
+    {
+      "type": "image",
+      "section": "Programación dinámica",
+      "title": "Fibonacci con el enfoque tradicional",
+      "image": "programacion-dinamica-1.png",
+      "alt": "Árbol de recursión de fib(4): fib(2) aparece dos veces y fib(1) tres veces, con fib(0) dos veces",
+      "caption": "Se calcula `fib(2)` dos veces y `fib(1)` tres veces: un claro desperdicio de recursos.",
+      "notes": "Para calcular fib(4) con recursión tradicional se genera este árbol. Hay un claro traslape de subproblemas: fib(2) se resuelve dos veces, fib(1) tres veces y fib(0) dos veces. Pregunta: ¿cómo crece el número de llamadas si pedimos fib(40)? (Crece exponencialmente: O(2^n))."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-matriz",
+      "section": "Programación dinámica",
+      "title": "Fibonacci con programación dinámica",
+      "code": {
+        "w": 5.7,
+        "label": "Se guarda cada resultado en `mem`",
+        "size": 15,
+        "code": "int fib(n) {\n    mem[n + 2];  // por si n es 0 o 1\n    mem[0] = 0;\n    mem[1] = 1;\n    for (i = 2; i < n + 1; i++) {\n        mem[i] = mem[i - 1] + mem[i - 2];\n    }\n    return mem[n];\n}"
+      },
+      "label": "El arreglo `mem` para n = 4",
+      "corner": "i",
+      "colHeaders": ["0", "1", "2", "3", "4"],
+      "rowHeaders": ["mem"],
+      "headW": 1.1,
+      "cellW": 0.8,
+      "cells": [[0, 1, 1, 2, 3]],
+      "highlight": [[0, 4, "green"]],
+      "cards": [
+        { "title": "Divide y vencerás", "titleSize": 18, "text": "Recalcula los mismos subproblemas.",         "footer": "O(2^n)", "footerSize": 22, "tone": "red", "h": 2.4 },
+                { "title": "Con DP", "titleSize": 18, "text": "Cada subproblema se resuelve una vez.", "footer": "O(n)", "footerSize": 22, "tone": "green", "h": 2.4 }
+      ],
+      "notes": "El código usa internamente un arreglo con los valores mem[0]=0, mem[1]=1, mem[2]=1, mem[3]=2, mem[4]=3. Con el enfoque de divide y vencerás, Fibonacci tiene complejidad de tiempo O(2^n); con DP se reduce a O(n). Esta forma de llenar el arreglo de menor a mayor se conoce como enfoque «de abajo hacia arriba»."
+    },
+    {
+      "type": "image",
+      "section": "Programación dinámica",
+      "title": "Divide y vencerás vs. programación dinámica",
+      "image": "programacion-dinamica-2.png",
+      "alt": "A la izquierda, árbol de divide y vencerás con subproblemas independientes; a la derecha, grafo de programación dinámica donde los subproblemas se comparten entre varios resultados",
+      "caption": "En D&V los subproblemas son independientes; en DP se comparten y se reutilizan.",
+      "notes": "En el diagrama de la izquierda cada subproblema alimenta a un único problema padre (estructura de árbol). A la derecha, un mismo subproblema contribuye a varios problemas mayores: por eso conviene resolverlo una sola vez y reutilizarlo."
+    },
+    {
+      "type": "cards",
+      "section": "Programación dinámica",
+      "title": "¿Cuándo sirve la programación dinámica?",
+      "columns": 2,
+      "cardHeight": 1.6,
+      "titleSize": 22,
+      "textSize": 18,
+      "callout": { "tone": "teal", "label": "Contraste:", "text": "en Merge Sort los subproblemas no se repiten; por eso le basta divide y vencerás." },
+      "cards": [
+        { "title": "Subestructura óptima", "text": "La solución óptima se arma con soluciones óptimas de subproblemas.", "tone": "teal" },
+        { "title": "Subproblemas repetidos", "text": "Pocos subproblemas distintos que se translapan: se resuelven una y otra vez.", "tone": "teal" },
+        { "title": "Memoización (top-down)", "text": "Recursión con una tabla: antes de calcular, se consulta si ya está guardado.", "tone": "navy" },
+        { "title": "Tabulación (bottom-up)", "text": "Se llena la tabla de menor a mayor, sin recursión, como el arreglo `mem`.", "tone": "navy" }
+      ],
+      "notes": "Dos propiedades que debe tener el problema. 1) Subestructura óptima: la solución óptima del problema se obtiene combinando soluciones óptimas de sus subproblemas; la veremos en LCS, en la mochila y en el cambio de monedas. Ojo: Fibonacci no es un problema de optimización, así que sirve para ver el traslape de subproblemas, no la subestructura óptima. 2) Subproblemas que se translapan: el espacio de subproblemas es pequeño y se repiten; en fib(10), fib(7) se calcula 3 veces (y fib(1), 55 veces). Dos formas de implementarlo. Memoización (top-down): se escribe la recursión natural y, antes de calcular un subproblema, se consulta una tabla; si ya está, se reutiliza. Por ejemplo: int fib(int n, int[] memo) { if (n < 2) return n; if (memo[n] != 0) return memo[n]; return memo[n] = fib(n - 1, memo) + fib(n - 2, memo); }. Con fib(10) hace 19 llamadas en lugar de 177. Tabulación (bottom-up): se llena la tabla de menor a mayor, que es lo que hace el arreglo mem de la diapositiva de Fibonacci. Ambas dan la misma complejidad asintótica; la memoización solo calcula los subproblemas que hacen falta y la tabulación evita la recursión. Contraste: en Merge Sort cada subproblema (una mitad distinta del arreglo) se resuelve una sola vez, así que memoizar no ahorraría nada y basta divide y vencerás."
+    },
+    {
+      "type": "code",
+      "section": "Programación dinámica",
+      "title": "LCS: subsecuencia común más larga",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.3,
+          "blocks": [
+            {
+              "label": "Enfoque tradicional (recursivo)",
+              "code": "int lcs(String X, String Y, int m, int n) {\n    if (m == 0 || n == 0)\n        return 0;\n    if (X.charAt(m - 1) == Y.charAt(n - 1))\n        return 1 + lcs(X, Y, m - 1, n - 1);\n    else\n        return max(lcs(X, Y, m, n - 1),\n                   lcs(X, Y, m - 1, n));\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            { "label": "Dos cadenas de ejemplo", "code": "S1 = \"BCDAACD\"\nS2 = \"ACDBAC\"", "lang": "plain" }
+          ],
+          "cards": [
+            { "title": "No es contigua", "text": "Puede saltar letras, a diferencia de una subcadena: `BC`, `CDAC`, `DAC`…", "tone": "teal", "h": 1.6 },
+            { "title": "Sin memoización", "text": "Repite subproblemas: `O(2^(n+m))`.", "tone": "red", "h": 1.4 }
+          ]
+        }
+      ],
+      "notes": "LCS (Longest Common Subsequence): la cadena más larga común entre dos strings, no necesariamente contigua. Para S1 = BCDAACD y S2 = ACDBAC hay subsecuencias comunes como BC, CDAC y DAC; la más larga tiene longitud 4 (CDAC). El código recursivo compara los últimos caracteres: si coinciden suma 1 y retrocede en ambas cadenas; si no, toma el máximo de descartar el último carácter de una u otra cadena. Terminología: una subsecuencia (subsequence) conserva el orden pero puede saltar caracteres; una subcadena (substring) es contigua. La subcadena común más larga (longest common substring) es otro problema: en su tabla D[i, j], cuando los caracteres no coinciden la celda se reinicia en 0 en lugar de tomar el máximo de arriba e izquierda (por ejemplo, «abcdxyz» y «xyzabcd» tienen como subcadena común más larga «abcd»). Esta lección resuelve la versión de subsecuencia."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-arbol",
+      "section": "Programación dinámica",
+      "title": "LCS recursivo: subproblemas repetidos",
+      "top": 1.95,
+      "treeHeight": 3.2,
+      "nodeW": 2.4,
+      "nodeH": 0.65,
+      "size": 18,
+      "calloutY": 6.0,
+      "nodes": [
+        { "id": "r", "label": "(BCDA, ACDB)", "x": 0.5, "y": 0 },
+        { "id": "a", "label": "(BCD, ACDB)", "x": 0.167, "y": 0.5 },
+        { "id": "b", "label": "(BCDA, ACD)", "x": 0.833, "y": 0.5 },
+        { "id": "a1", "label": "(BC, ACDB)", "x": 0, "y": 1 },
+        { "id": "a2", "label": "(BCD, ACD)", "x": 0.333, "y": 1, "tone": "amber" },
+        { "id": "b1", "label": "(BCD, ACD)", "x": 0.667, "y": 1, "tone": "amber" },
+        { "id": "b2", "label": "(BCDA, AC)", "x": 1, "y": 1 }
+      ],
+      "edges": [
+        { "from": "r", "to": "a" },
+        { "from": "r", "to": "b" },
+        { "from": "a", "to": "a1" },
+        { "from": "a", "to": "a2" },
+        { "from": "b", "to": "b1" },
+        { "from": "b", "to": "b2" }
+      ],
+      "legend": [{ "label": "Subproblema repetido", "tone": "amber" }],
+      "note": "Se muestran solo los primeros niveles.",
+      "callout": { "tone": "red", "text": "`(BCD, ACD)` se resuelve dos veces, y cada nivel duplica el trabajo: `O(2^(n+m))`." },
+      "notes": "Para las cadenas BCDA y ACDB, la llamada raíz se bifurca en dos subproblemas (descartar el último carácter de Y o el de X). Ya en el tercer nivel aparece dos veces el mismo subproblema (BCD, ACD). En árboles más grandes esto se repite una y otra vez, y el costo es O(2^(n+m)). Ese es el motivo para pasar a una tabla."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-matriz",
+      "section": "Programación dinámica",
+      "title": "LCS con programación dinámica",
+      "top": 2.0,
+      "code": {
+        "w": 6.2,
+        "label": "Se llena una matriz (m+1) × (n+1)",
+        "size": 14,
+        "code": "static int lcs(String X, String Y, int m, int n) {\n  int[,] L = new int[m + 1, n + 1];\n  for (int i = 0; i <= m; i++) {\n    for (int j = 0; j <= n; j++) {\n      if (i == 0 || j == 0)\n        L[i, j] = 0;\n      else if (X[i - 1] == Y[j - 1])\n        L[i, j] = L[i - 1, j - 1] + 1;\n      else\n        L[i, j] = max(L[i - 1, j], L[i, j - 1]);\n    }\n  }\n  return L[m, n];\n}"
+      },
+      "label": "`L` para `BCDA` (filas) y `ACDB` (columnas)",
+      "corner": "",
+      "colHeaders": ["", "A", "C", "D", "B"],
+      "rowHeaders": ["", "B", "C", "D", "A"],
+      "headW": 0.6,
+      "cellW": 0.7,
+      "cellH": 0.5,
+      "cells": [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1],
+        [0, 0, 1, 1, 1],
+        [0, 0, 1, 2, 2],
+        [0, 1, 1, 2, 2]
+      ],
+      "tones": [
+        [null, null, null, null, null],
+        [null, null, null, null, "teal"],
+        [null, null, "teal", null, null],
+        [null, null, null, "teal", null],
+        [null, "teal", null, null, null]
+      ],
+      "highlight": [[4, 4, "green"]],
+      "calloutY": 6.1,
+      "calloutH": 0.7,
+      "callout": { "tone": "green", "text": "Las celdas en teal son letras iguales. Resultado: `L[m, n] = 2` (p. ej. `CD`) en tiempo `O(nm)`." },
+      "notes": "La primera fila y la primera columna (cadena vacía) valen 0. Si los caracteres coinciden, la celda es la diagonal + 1; si no, el máximo entre la celda de arriba y la de la izquierda. Para BCDA y ACDB, la subsecuencia común más larga tiene longitud 2 (por ejemplo CD). La complejidad temporal pasa de O(2^(n+m)) a O(nm), porque cada celda se calcula una sola vez."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-matriz",
+      "section": "Programación dinámica",
+      "title": "Mochila 0/1: ¿qué comer con 800 kcal?",
+      "top": 2.05,
+      "code": {
+        "w": 2.9,
+        "label": "Productos",
+        "size": 14,
+        "lang": "plain",
+        "code": "   kcal  saciedad\nA   100         2\nB   200         5\nC   400         6\nD   500        10\nE   700        13\nF   800        16"
+      },
+      "label": "Saciedad máxima según las kcal",
+      "legend": [{ "label": "Mejora la fila anterior", "tone": "teal" }, { "label": "Óptimo", "tone": "green" }],
+      "corner": "Con",
+      "colHeaders": ["100", "200", "300", "400", "500", "600", "700", "800"],
+      "rowHeaders": ["A", "A–B", "A–C", "A–D", "A–E", "A–F"],
+      "headW": 1.1,
+      "cellW": 0.8,
+      "cellH": 0.46,
+      "size": 18,
+      "headerSize": 16,
+      "cells": [
+        [2, 2, 2, 2, 2, 2, 2, 2],
+        [2, 5, 7, 7, 7, 7, 7, 7],
+        [2, 5, 7, 7, 8, 11, 13, 13],
+        [2, 5, 7, 7, 10, 12, 15, 17],
+        [2, 5, 7, 7, 10, 12, 15, 17],
+        [2, 5, 7, 7, 10, 12, 15, 17]
+      ],
+      "tones": [
+        [null, null, null, null, null, null, null, null],
+        [null, "teal", "teal", "teal", "teal", "teal", "teal", "teal"],
+        [null, null, null, null, "teal", "teal", "teal", "teal"],
+        [null, null, null, null, "teal", "teal", "teal", "teal"],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null]
+      ],
+      "highlight": [[5, 7, "green"]],
+      "calloutY": 5.9,
+      "calloutH": 0.85,
+      "callouts": [
+        { "tone": "teal", "label": "Cada celda:", "text": "el mayor entre copiar la de arriba y tomar el producto más la celda de arriba con las kcal restantes." },
+        { "tone": "amber", "label": "Óptimo: 17 (A + B + D).", "text": "¿Por qué las filas E y F no cambian nada?" }
+      ],
+      "notes": "Problema: elegir entre los productos A–F (kcal 100, 200, 400, 500, 700 y 800; saciedad 2, 5, 6, 10, 13 y 16) sin pasar de 800 kcal y maximizando la saciedad. «0/1» significa que cada producto se toma entera o no se toma. Tabla: la fila i considera los productos A hasta i y la columna c es la capacidad en kcal (todas las kcal son múltiplos de 100, así que se avanza de 100 en 100). Cada celda V[i][c] es la mejor saciedad posible: V[i][c] = max(V[i-1][c], saciedad_i + V[i-1][c - kcal_i]); la primera opción es no tomar el producto i y la segunda es tomarlo (solo si cabe). Es subestructura óptima: la mejor mochila se arma con la mejor mochila de un problema más pequeño. Las celdas en teal son las que mejoran respecto a la fila de arriba. Cómo se recupera la respuesta: V[D][800] = 10 + V[C][300] (D pesa 500, quedan 300 kcal); V[C][300] = 7 = V[B][300] = 5 + V[A][100] = 5 + 2. Es decir, D + B + A: saciedad 17 con 800 kcal. RESPUESTA a la pregunta: las filas E y F no cambian nada porque ningún producto de 700 u 800 kcal supera lo que ya se logra con A–D: con 700 kcal, B + D vale 15 y E vale 13; con 800 kcal, A + B + D vale 17, mientras que A + E vale 15 y F vale 16. Costo: una celda por producto y capacidad, O(n × capacidad): aquí 6 × 8 = 48 celdas, en lugar de probar las 2^6 = 64 combinaciones (con muchos productos la diferencia es enorme). Tarea: resolver la mochila con backtracking."
+    },
+    {
+      "type": "code",
+      "section": "Backtracking",
+      "title": "Backtracking: probar y retroceder",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Estructura general",
+              "code": "backtrack(x) {\n    if (x == solucion) {\n        return true;\n    }\n    for (nodo in x.nodos) {\n        if (backtrack(nodo)) {\n            return true;\n        }\n    }\n    return false;  // retroceder\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1.15,
+          "cards": [
+            { "title": "Idea", "text": "Probar secuencias de decisiones hasta que una funcione.", "footer": "Popularizado por Derrick H. Lehmer", "footerSize": 15, "tone": "teal", "h": 1.85 },
+            { "title": "Árbol de decisiones", "text": "Cada nodo solo ve a sus hijos. Si uno lleva a error, se regresa y se prueba otro.", "tone": "amber", "h": 1.85 }
+          ]
+        }
+      ],
+      "calloutsY": 5.95,
+      "callouts": [
+        { "tone": "teal", "text": "Si ningún hijo lleva a la solución, `return false` hace que el nodo anterior pruebe con otro hijo." }
+      ],
+      "notes": "Backtracking es una forma metódica de probar distintas secuencias de decisiones hasta encontrar una que funcione; fue popularizado por Derrick Henry Lehmer, matemático estadounidense. NOTA SOBRE EL CÓDIGO: dentro del ciclo no basta con escribir «return backtrack(nodo)», pues solo exploraría el primer hijo; se retorna true únicamente si la llamada recursiva tuvo éxito y, si ninguna alternativa funciona, se retorna false para que el nodo anterior pruebe otro hijo. Dato histórico: SNOBOL pudo haber sido el primer lenguaje en ofrecer retroceso (backtracking) como facilidad, y Prolog lo utiliza de forma extensiva."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-tablero",
+      "section": "Backtracking",
+      "title": "El problema de las N-reinas",
+      "boardSize": 4.0,
+      "boardsW": 4.6,
+      "boards": [
+        {
+          "title": "Tablero de 4 × 4",
+          "n": 4,
+          "queens": [[1, 1]],
+          "attacked": [[1, 0], [1, 2], [1, 3], [0, 1], [2, 1], [3, 1], [0, 0], [2, 2], [3, 3], [0, 2], [2, 0]]
+        }
+      ],
+      "cards": [
+        { "title": "Objetivo", "text": "Colocar N reinas en un tablero de N × N sin que se ataquen entre sí.", "tone": "teal", "h": 1.6 },
+        { "title": "Una reina ataca…", "text": "Cualquier pieza en su misma fila, columna o diagonal.", "tone": "amber", "h": 1.5 },
+        { "title": "En la figura", "text": "R es la reina; las casillas con × son las que ataca.", "tone": "navy", "h": 1.5 }
+      ],
+      "notes": "Dado un tablero de ajedrez de NxN, colocar N reinas de modo que ninguna ataque a otra. Una reina puede atacar a otra si están en la misma fila, columna o diagonal. En la figura, la reina en la casilla (fila 1, columna 1) ataca 11 casillas de un tablero de 4x4. Para N = 4 existen exactamente dos soluciones. Dato: con N = 8 hay 92 soluciones (12 distintas si se consideran iguales las que son rotaciones o reflexiones de otra)."
+    },
+    {
+      "type": "code",
+      "section": "Backtracking",
+      "title": "N-reinas con backtracking",
+      "codeSize": 14,
+      "columns": [
+        {
+          "weight": 1.2,
+          "blocks": [
+            {
+              "label": "Se coloca una reina por columna",
+              "code": "boolean solve(int[][] board, int col) {\n    if (col == N) {\n        return true;\n    }\n    for (int i = 0; i < N; i++) {\n        if (isSafe(board, i, col)) {\n            board[i][col] = 1;\n            if (solve(board, col + 1)) {\n                return true;\n            }\n            board[i][col] = 0;\n        }\n    }\n    return false;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Avanzar", "text": "Si la fila `i` es segura, se coloca la reina y se resuelve la columna siguiente.", "tone": "teal", "h": 1.95 },
+            { "title": "Retroceder", "text": "Si la siguiente falla, se quita la reina (`board[i][col] = 0`) y se prueba otra fila.", "tone": "amber", "h": 2.1 }
+          ]
+        }
+      ],
+      "notes": "Caso base: col == N significa que las N reinas ya están colocadas, así que se retorna true. N es el tamaño del tablero y board es una matriz de 0 y 1 (1 = hay una reina). isSafe revisa que no haya otra reina en la misma fila ni en las diagonales de las columnas ya llenas; se muestra en la siguiente diapositiva. Si ninguna fila de la columna actual funciona, el método retorna false y quien lo llamó (la columna anterior) quita su reina y prueba la fila siguiente: eso es retroceder."
+    },
+    {
+      "type": "code",
+      "section": "Backtracking",
+      "title": "isSafe: ¿es segura esta casilla?",
+      "codeSize": 14,
+      "calloutsY": 5.85,
+      "columns": [
+        {
+          "weight": 1.5,
+          "blocks": [
+            {
+              "label": "Revisa fila y diagonales, hacia la izquierda",
+              "code": "boolean isSafe(int[][] board, int row, int col) {\n    for (int j = 0; j < col; j++)\n        if (board[row][j] == 1) return false;\n    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)\n        if (board[i][j] == 1) return false;\n    for (int i = row, j = col; i < N && j >= 0; i++, j--)\n        if (board[i][j] == 1) return false;\n    return true;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "Misma fila", "text": "¿Hay una reina a la izquierda en la fila `row`?", "tone": "teal", "h": 1.6 },
+            { "title": "Dos diagonales", "text": "Una sube y otra baja, una fila por cada columna que retrocede.", "tone": "amber", "h": 1.6 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Solo se mira a la izquierda: la columna actual y las siguientes todavía no tienen reinas." }
+      ],
+      "notes": "isSafe se llama antes de colocar la reina en (row, col). Como las reinas se colocan de izquierda a derecha, una por columna, en la columna actual y en las siguientes aún no hay reinas: basta revisar hacia la izquierda. 1) La misma fila: el primer ciclo recorre las columnas 0 a col - 1. 2) La diagonal que sube hacia la izquierda: se decrementan fila y columna. 3) La diagonal que baja hacia la izquierda: se incrementa la fila y se decrementa la columna. No hace falta revisar la columna porque solo hay una reina por columna. Cada llamada cuesta O(N). Ejemplo con N = 4 y una reina en (0,0): en la columna 1, isSafe es false para las filas 0 (misma fila) y 1 (diagonal) y true para las filas 2 y 3; por eso la traza de la siguiente diapositiva coloca primero (2,1) y, al retroceder, prueba (3,1)."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-tablero",
+      "section": "Backtracking",
+      "title": "4 reinas: avanzar, retroceder, resolver",
+      "boardSize": 2.8,
+      "boards": [
+        {
+          "title": "1 · Callejón sin salida",
+          "n": 4,
+          "queens": [[0, 0], [2, 1]],
+          "attacked": [[0, 2], [1, 2], [2, 2], [3, 2]],
+          "caption": "Ninguna fila es segura en la columna 2"
+        },
+        {
+          "title": "2 · Retroceder",
+          "n": 4,
+          "queens": [[1, 0]],
+          "caption": "Se agotan las opciones y la primera reina cambia de fila"
+        },
+        {
+          "title": "3 · Solución",
+          "n": 4,
+          "queens": [[1, 0], [3, 1], [0, 2], [2, 3]],
+          "caption": "Se llega a `col == N`"
+        }
+      ],
+      "calloutY": 6.05,
+      "callout": { "tone": "teal", "text": "Retroceder descarta toda una rama del árbol de decisiones sin explorarla completa." },
+      "notes": "Recorrido real del algoritmo con N = 4 (filas y columnas desde 0; en cada columna se prueban las filas en orden 0, 1, 2, 3; verificado ejecutando el backtracking). 1) Reina en (0,0). En la columna 1 las filas 0 y 1 están atacadas (fila y diagonal); la primera fila segura es la 2 (la fila 3 también es segura, y se prueba al retroceder). Se coloca (2,1). En la columna 2 todas las filas están atacadas (fila 0 por la primera reina, filas 1 y 3 por la diagonal de la segunda y fila 2 por su fila): no hay opción, se retrocede. 2) Se quita (2,1) y se prueba la fila 3 en la columna 1: se coloca (3,1) y en la columna 2 solo es segura la fila 1, así que se coloca (1,2). En la columna 3 todas las filas están atacadas: se retrocede dos veces y se agotan las opciones de la primera reina, que pasa a la fila 1. 3) Con la primera reina en (1,0) se colocan (3,1), (0,2) y (2,3): solución."
+    },
+    {
+      "type": "cards",
+      "section": "Algoritmos ávidos",
+      "title": "Algoritmos ávidos (greedy)",
+      "intro": "Construyen la solución parte por parte, eligiendo siempre la pieza con el beneficio más obvio e inmediato.",
+      "columns": 3,
+      "cardHeight": 2.8,
+      "textSize": 20,
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "no siempre dan la solución óptima, aunque en muchos casos es suficiente." },
+      "cards": [
+        { "title": "Simples", "text": "Son sencillos de implementar.", "tone": "teal" },
+        { "title": "Eficientes", "text": "Devuelven el resultado en poco tiempo.", "tone": "teal" },
+        { "title": "No reconsideran", "text": "Nunca vuelven atrás sobre las opciones ya elegidas.", "tone": "amber" }
+      ],
+      "notes": "Contraste con backtracking: allí se puede deshacer una decisión; en un algoritmo ávido, una vez elegida una pieza no se reconsidera. Ventaja: simplicidad y velocidad. Desventaja: la elección «localmente mejor» puede no llevar al óptimo global."
+    },
+    {
+      "type": "table",
+      "section": "Algoritmos ávidos",
+      "title": "Ejemplo: cambio de 39 colones",
+      "columns": ["Cambio restante", "Moneda elegida", "Nuevo restante"],
+      "colWeights": [1, 1, 1],
+      "rowHeight": 0.42,
+      "rowPad": 0.1,
+      "headerHeight": 0.5,
+      "fontSize": 17,
+      "highlightRows": [5],
+      "rows": [
+        ["39", "10", "29"],
+        ["29", "10", "19"],
+        ["19", "10", "9"],
+        ["9", "5", "4"],
+        ["4", "2", "2"],
+        ["2", "2", "0"]
+      ],
+      "calloutY": 5.4,
+      "calloutH": 1.15,
+      "callouts": [
+        { "tone": "teal", "label": "Regla:", "text": "elegir la moneda más grande que no supere el cambio restante, restarla y repetir." },
+        { "tone": "green", "label": "Resultado:", "text": "10 + 10 + 10 + 5 + 2 + 2 = **6 monedas**." }
+      ],
+      "notes": "Enunciado: con un conjunto infinito de monedas de 1, 2, 5 y 10 colones, ¿cuál es el número mínimo de monedas para dar 39 colones de cambio? El proceso ávido: seleccionar la denominación más grande menor o igual al cambio restante (10), restarla del cambio restante y agregarla al resultado, y repetir hasta que el cambio restante sea 0. Con estas denominaciones la solución ávida sí es óptima. Terminología opcional: un algoritmo ávido tiene cinco componentes; aquí, el conjunto de candidatos son las monedas disponibles; la función de selección escoge la moneda más grande; la función de factibilidad exige que no supere el cambio restante; la función objetivo es minimizar el número de monedas y la función de solución indica que se terminó cuando el cambio restante es 0."
+    },
+    {
+      "type": "compare",
+      "section": "Algoritmos ávidos",
+      "title": "El enfoque ávido no siempre es óptimo",
+      "vs": true,
+      "panelHeight": 3.2,
+      "callout": { "tone": "amber", "label": "Cuidado:", "text": "«lo mejor ahora» no siempre es «lo mejor al final»." },
+      "panels": [
+        {
+          "title": "Ávido: 5 monedas",
+          "tone": "red",
+          "textSize": 20,
+          "text": "Cambio de 14 con monedas de 1, 7 y 10. Toma siempre la mayor:",
+          "chips": ["10", "1", "1", "1", "1"]
+        },
+        {
+          "title": "Óptimo: 2 monedas",
+          "tone": "green",
+          "textSize": 20,
+          "text": "Dos monedas de 7 suman exactamente 14:",
+          "chips": ["7", "7"]
+        }
+      ],
+      "notes": "Con monedas de 1, 7 y 10 y un cambio de 14, la solución ávida da 10, 1, 1, 1 y 1 (cinco monedas), cuando la solución óptima sería dos monedas de 7. Moraleja: un algoritmo ávido es rápido y simple, pero hay que verificar que sea correcto para el problema (en muchos casos la solución ávida es suficiente). Para encontrar siempre el óptimo en este problema se puede usar programación dinámica, como se muestra en la siguiente diapositiva."
+    },
+          {
+            "type": "diagram",
+            "kind": "diseno-matriz",
+            "section": "Programación dinámica",
+            "title": "Cuando el ávido falla: monedas con DP",
+            "top": 2.05,
+            "label": "Mínimo de monedas para cada monto",
+            "legend": [{ "label": "Mejora la fila anterior", "tone": "teal" }, { "label": "Resultado", "tone": "green" }],
+            "corner": "Monedas",
+            "colHeaders": ["0", "1", "2", "3", "4", "5", "6", "7", "8"],
+            "rowHeaders": ["{1}", "{1, 4}", "{1, 4, 6}"],
+            "headW": 1.7,
+            "cellW": 0.8,
+            "cellH": 0.5,
+            "size": 18,
+            "cells": [
+              [0, 1, 2, 3, 4, 5, 6, 7, 8],
+              [0, 1, 2, 3, 1, 2, 3, 4, 2],
+              [0, 1, 2, 3, 1, 2, 1, 2, 2]
+            ],
+            "tones": [
+              [null, null, null, null, null, null, null, null, null],
+              [null, null, null, null, "teal", "teal", "teal", "teal", "teal"],
+              [null, null, null, null, null, null, "teal", "teal", null]
+            ],
+            "highlight": [[2, 8, "green"]],
+            "cards": [
+              { "title": "Ávido: 3 monedas", "text": "6 + 1 + 1", "textSize": 20, "tone": "red", "h": 1.3 },
+              { "title": "DP: 2 monedas", "text": "4 + 4", "textSize": 20, "tone": "green", "h": 1.3 },
+              { "title": "Costo", "text": "`O(monedas × monto)`", "textSize": 18, "tone": "navy", "h": 1.3 }
+            ],
+            "calloutY": 5.95,
+            "calloutH": 0.7,
+            "callout": { "tone": "teal", "label": "Cada celda:", "text": "el menor entre la celda de arriba y `1 +` la celda de su fila a «moneda» columnas a la izquierda." },
+            "notes": "Problema: dar el cambio de 8 colones con el mínimo de monedas, con denominaciones de 1, 4 y 6. El ávido toma 6 y luego 1 + 1: 3 monedas; el óptimo es 4 + 4: 2 monedas. Con programación dinámica se construye una tabla: la fila d usa solo las primeras d denominaciones y la columna a es el monto. Fila {1}: el mínimo es a (a monedas de 1). Fila {1, 4}: 0, 1, 2, 3, 1, 2, 3, 4, 2. Fila {1, 4, 6}: 0, 1, 2, 3, 1, 2, 1, 2, 2. Cada celda sale de otras ya calculadas (subestructura óptima y subproblemas que se repiten): M[d][a] = min(M[d-1][a], 1 + M[d][a - moneda_d]), con M[d][0] = 0; es decir, «no uso la moneda d» o «uso una moneda d y resuelvo el monto restante». Ejemplo: M[{1,4,6}][8] = min(M[{1,4}][8], 1 + M[{1,4,6}][2]) = min(2, 1 + 2) = 2. Las celdas en teal son las que mejoran respecto a la fila de arriba. Para saber qué monedas se usaron se recorre la tabla hacia atrás: el 2 del monto 8 ya aparece en la fila {1, 4} (no hace falta el 6) y sale de 1 + M[{1,4}][4] = 1 + 1: una moneda de 4 más la solución del monto 4, que es otra moneda de 4. Costo: una celda por denominación y monto, O(denominaciones × monto). DP siempre da el mínimo; el ávido es más rápido pero no siempre es correcto. Con el ejemplo de la diapositiva anterior (monedas de 1, 7 y 10, cambio de 14) la tabla termina en 2 (7 + 7), frente a las 5 monedas del ávido."
+          },
+    {
+      "type": "cards",
+      "section": "Probabilísticos",
+      "title": "Algoritmos probabilísticos",
+      "intro": "Usan aleatoriedad para mejorar el desempeño, sacrificando la confiabilidad. Pueden:",
+      "columns": 3,
+      "cardHeight": 2.3,
+      "titleSize": 20,
+      "callout": { "tone": "slate", "text": "Ejecuciones distintas pueden producir respuestas distintas." },
+      "cards": [
+        { "badge": "1", "title": "No dar resultado", "text": "No se produce ningún resultado.", "tone": "amber" },
+        { "badge": "2", "title": "Resultado incorrecto", "text": "Se produce una respuesta equivocada.", "tone": "amber" },
+        { "badge": "3", "title": "Respuesta aproximada", "text": "Se produce un resultado aproximado.", "tone": "amber" }
+      ],
+      "notes": "A cambio de ese sacrificio se gana desempeño: son algoritmos más rápidos o más simples. Se clasifican en Monte Carlo y Las Vegas, que se ven a continuación."
+    },
+    {
+      "type": "compare",
+      "section": "Probabilísticos",
+      "title": "Monte Carlo vs. Las Vegas",
+      "vs": true,
+      "panelHeight": 3.9,
+      "callout": { "tone": "slate", "text": "Monte Carlo arriesga la **corrección**; Las Vegas arriesga **no obtener resultado**." },
+      "panels": [
+        {
+          "title": "Monte Carlo",
+          "tone": "amber",
+          "itemSize": 19,
+          "items": [
+            "**Siempre** retorna un resultado",
+            "Puede **no ser correcto**",
+            "Se intenta minimizar la probabilidad de error",
+            "Más ejecuciones reducen esa probabilidad"
+          ]
+        },
+        {
+          "title": "Las Vegas",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "**Siempre** retorna un resultado correcto",
+            "Puede **no producir resultado**",
+            "Sin cota superior de tiempo de ejecución",
+            "Más ejecuciones reducen la probabilidad de no obtener resultado"
+          ]
+        }
+      ],
+      "notes": "Monte Carlo: siempre da un resultado, pero puede ser incorrecto; se minimiza la probabilidad de error y múltiples ejecuciones la reducen. Las Vegas: si da un resultado, es correcto, pero a veces no produce ninguno y no tiene un upper-bound en tiempo de ejecución; se usan para explorar un espacio de soluciones donde algunas son correctas, moviéndose con random."
+    },
+    {
+      "type": "compare",
+      "section": "Probabilísticos",
+      "title": "Aleatoriedad en el computador",
+      "vs": true,
+      "panelHeight": 3.9,
+      "callout": { "tone": "slate", "text": "Una fuente de aleatoriedad física es la desintegración radiactiva (otra: el ruido térmico)." },
+      "panels": [
+        {
+          "title": "Pseudo-aleatorio",
+          "tone": "teal",
+          "itemSize": 19,
+          "items": [
+            "Parece aleatorio, pero es **determinista**",
+            "Parte de un valor inicial: la **semilla** (seed)",
+            "Cada número se genera a partir del anterior",
+            "Puede haber ciclos: un número se repite"
+          ]
+        },
+        {
+          "title": "Cuadrado medio",
+          "tone": "navy",
+          "text": "Eleve la semilla (d dígitos) al cuadrado, complete a 2d dígitos y tome los d del medio.",
+          "textSize": 17,
+          "codeSize": 15,
+          "code": "1234^2 = 01522756 -> 5227\n5227^2 = 27321529 -> 3215\n3215^2 = 10336225 -> 3362",
+          "codeLang": "plain"
+        }
+      ],
+      "notes": "Los generadores pseudo-aleatorios producen una secuencia dentro de un rango que parece aleatoria; requieren una semilla y cada número se calcula a partir del anterior. Como un número puede repetirse, la secuencia puede entrar en un ciclo. Método del cuadrado medio con semilla 1234 (d = 4): 1234 al cuadrado es 01522756 (se rellena a 8 dígitos) y los 4 dígitos del medio son 5227; 5227 al cuadrado es 27321529, y el medio es 3215; 3215 al cuadrado es 10336225 y el medio es 3362, y así sucesivamente. Según la semilla, la secuencia puede ser cíclica muy rápido."
+    },
+    {
+      "type": "code",
+      "section": "Probabilísticos",
+      "title": "Monte Carlo: elemento mayoritario",
+      "codeSize": 15,
+      "calloutsY": 5.95,
+      "columns": [
+        {
+          "weight": 1.2,
+          "blocks": [
+            {
+              "label": "Se prueba un elemento elegido al azar",
+              "code": "boolean tieneElementoMayoritario(array, n) {\n    i = random(0, n - 1);\n    x = array[i];\n    k = 0;\n    for (j = 0; j < n; j++) {\n        if (array[j] == x) {\n            k++;\n        }\n    }\n    return k > n / 2;\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "cards": [
+            { "title": "El problema", "text": "¿Algún elemento aparece más de `N/2` veces? La solución trivial es `O(N^2)`.", "tone": "navy", "h": 1.8 },
+            { "title": "Probabilidad de error", "text": "Una ejecución: menor a `1/2`. Después de `k` ejecuciones: `1/2^k`.", "tone": "amber", "h": 1.8 }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "amber", "text": "Puede devolver `false` aunque exista un mayoritario, si el índice al azar no lo contiene." }
+      ],
+      "notes": "Requerimiento: dado un array de N elementos, determinar si hay un elemento mayoritario (que aparezca más de N/2 veces). Solución trivial: contar cuántas veces aparece cada elemento, O(N^2). Con Monte Carlo se escoge un índice al azar y se cuenta cuántas veces aparece ese valor: O(N). El elemento mayoritario ocupa más de la mitad de las posiciones, así que la probabilidad de escogerlo es mayor a 1/2 y la de error es menor a 1/2. Ejecutar varias veces reduce el error (si el pseudo-random es bueno): después de k ejecuciones, es 1/2^k. Por ejemplo, con k = 10 es menos de 0,1 %. Pregunta para la clase: aunque un algoritmo sea determinista, ¿garantiza ser exacto? No necesariamente: un fallo de hardware (por ejemplo, un bit que se corrompe en memoria) también puede producir un resultado incorrecto, así que aceptar un error diminuto es razonable; con k = 30 ejecuciones el error es menor que una en mil millones (2^30 = 1 073 741 824)."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-tablero",
+      "section": "Probabilísticos",
+      "title": "Las Vegas: N-reinas al azar",
+      "boardSize": 3.3,
+      "boardsW": 4.2,
+      "top": 2.45,
+      "boards": [
+        {
+          "title": "Un intento al azar",
+          "n": 4,
+          "queens": [[1, 0], [3, 1], [0, 2], [0, 3]],
+          "conflicts": [[0, 2], [0, 3]]
+        }
+      ],
+      "steps": [
+        "Colocar una reina al azar en cada columna.",
+        "Verificar si hay colisiones.",
+        "Si no hay colisiones: retornar la solución.",
+        "Si las hay: repetir el proceso."
+      ],
+      "calloutY": 6.0,
+      "callout": { "tone": "amber", "text": "Siempre es correcto, pero sin cota de tiempo; si hay muchas soluciones, se encuentra una pronto." },
+      "notes": "La solución clásica de las n-reinas es con backtracking, pero un algoritmo de Las Vegas puede colocar las reinas en posiciones aleatorias (una por columna) y verificar colisiones; si no hay, retorna la solución, y si hay, repite. En la figura las dos reinas en rojo están en la misma fila (colisión). Si hay muchas soluciones correctas, la probabilidad de encontrar una en poco tiempo es alta; por eso Las Vegas se usa para explorar espacios con muchas soluciones."
+    },
+    {
+      "type": "cards",
+      "section": "Probabilísticos",
+      "title": "Estructuras de datos probabilísticas",
+      "columns": 3,
+      "cardHeight": 2.8,
+      "textSize": 20,
+      "callout": { "tone": "amber", "label": "Diferencia clave:", "text": "los algoritmos probabilísticos pueden devolver resultados correctos; estas estructuras no dan respuestas definitivas." },
+      "cards": [
+        { "title": "Aproximadas", "text": "Responden consultas sobre grandes conjuntos de datos con respuestas aproximadas.", "tone": "teal" },
+        { "title": "Eficiencia", "text": "Sacrifican precisión para ganar eficiencia temporal.", "tone": "teal" },
+        { "title": "Hashing y azar", "text": "Los usan para reducir la complejidad espacial y temporal.", "tone": "teal" }
+      ],
+      "notes": "Una diferencia clave con los algoritmos probabilísticos: estos últimos no necesariamente se comportan de forma impredecible para el usuario, es decir, pueden devolver resultados correctos; las estructuras de datos probabilísticas no dan respuestas definitivas. El ejemplo más conocido es el filtro de Bloom."
+    },
+    {
+      "type": "compare",
+      "section": "Probabilísticos",
+      "title": "Filtros de Bloom: ¿existe el username?",
+      "vs": true,
+      "panelHeight": 3.5,
+      "callout": { "tone": "teal", "text": "«No existe» siempre es cierto; «ya existe» puede ser un falso positivo." },
+      "panels": [
+        {
+          "title": "Soluciones simples",
+          "tone": "slate",
+          "itemSize": 19,
+          "items": [
+            "Búsqueda secuencial: `O(N)`, muy lenta con millones de usuarios",
+            "Búsqueda binaria: mejor, pero exige usuarios ordenados y en memoria"
+          ]
+        },
+        {
+          "title": "Filtro de Bloom",
+          "tone": "teal",
+          "itemSize": 18,
+          "items": [
+            "Un array de bits de tamaño fijo representa todo el conjunto",
+            "Hay falsos positivos, **nunca** falsos negativos",
+            "Agregar nunca falla; al llenarse, aumentan los falsos positivos",
+            "No se pueden eliminar elementos"
+          ]
+        }
+      ],
+      "notes": "Escenario: la página de registro de un sitio permite escoger un username y no se permiten duplicados; ¿cómo verificar si ya existe? La búsqueda secuencial es O(N); la binaria es mucho mejor pero requiere tener ordenados y cargados en memoria a los usuarios. Un filtro de Bloom determina si un elemento pertenece a un conjunto o no; al ser probabilístico puede dar falsos positivos (dice que sí está) pero no falsos negativos."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-bloom",
+      "section": "Probabilísticos",
+      "title": "Filtro de Bloom: agregar «TEC»",
+      "intro": "Un arreglo de `m = 9` bits (todos en 0) y `k = 3` funciones de hash.",
+      "bits": [0, 1, 0, 1, 0, 1, 0, 0, 0],
+      "set": [1, 3, 5],
+      "word": "TEC",
+      "hashes": [1, 3, 5],
+      "formulas": ["h1(TEC) % m = 1", "h2(TEC) % m = 3", "h3(TEC) % m = 5"],
+      "card": { "title": "Agregar", "text": "Se calculan las k funciones de hash y esos bits se ponen en 1.", "tone": "teal" },
+      "notes": "Se utiliza un arreglo de bits de largo m (aquí 9) y k funciones de hash (aquí 3). Para agregar un elemento se calculan las k funciones de hash y se ponen en 1 los bits correspondientes. Al insertar «TEC»: h1(TEC) % m = 1, h2(TEC) % m = 3 y h3(TEC) % m = 5."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-bloom",
+      "section": "Probabilísticos",
+      "title": "Filtro de Bloom: agregar «QUIZ»",
+      "intro": "Los bits 3 y 5 ya estaban en 1: «QUIZ» solo activa el bit 4.",
+      "bits": [0, 1, 0, 1, 1, 1, 0, 0, 0],
+      "set": [4],
+      "shared": [3, 5],
+      "word": "QUIZ",
+      "hashes": [3, 5, 4],
+      "formulas": ["h1(QUIZ) % m = 3", "h2(QUIZ) % m = 5", "h3(QUIZ) % m = 4"],
+      "card": { "title": "Bits compartidos", "text": "El conjunto se va llenando y activa bits que no son de elementos distintos.", "tone": "amber" },
+      "notes": "TEC y QUIZ tuvieron resultados de hash similares (3 y 5). Conforme el set se llena, se activan bits que no necesariamente corresponden a elementos diferentes; de ahí que los falsos positivos aumenten."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-bloom",
+      "section": "Probabilísticos",
+      "title": "Filtro de Bloom: buscar «PERRO»",
+      "intro": "Los tres bits consultados ya están en 1, aunque «PERRO» nunca se agregó.",
+      "bits": [0, 1, 0, 1, 1, 1, 0, 0, 0],
+      "probe": [1, 4, 5],
+      "word": "PERRO",
+      "wordTone": "amber",
+      "hashes": [1, 4, 5],
+      "formulas": ["h1(PERRO) % m = 1", "h2(PERRO) % m = 4", "h3(PERRO) % m = 5"],
+      "card": { "title": "Falso positivo", "text": "El filtro dice «sí está», pero no es cierto. Si un bit fuera 0, la respuesta sería «no está».", "tone": "red", "h": 1.9 },
+      "notes": "Estos índices ya están en 1, por lo que el filtro dirá que el elemento está en el set cuando en realidad no lo está: un falso positivo. Según la aplicación puede ser aceptable. En la verificación de usernames, si el filtro dice que ya existe se puede hacer una verificación adicional para confirmar; si dice que no existe, no hay que hacer nada más y se ahorra tiempo considerable."
+    },
+    {
+      "type": "cards",
+      "section": "Probabilísticos",
+      "title": "Filtro de Bloom: complejidad",
+      "columns": 4,
+      "cardHeight": 3.0,
+      "callout": { "tone": "amber", "label": "Falso positivo con n elementos:", "text": "`(1 - (1 - 1/m)^(k·n))^k`", "size": 18 },
+      "cards": [
+        { "title": "Inserción", "text": "Calcular k hashes.", "footer": "O(k)", "footerSize": 24, "tone": "teal" },
+        { "title": "Búsqueda", "text": "Calcular k hashes.", "footer": "O(k)", "footerSize": 24, "tone": "teal" },
+        { "title": "Espacio", "text": "Un arreglo de m bits.", "footer": "O(m)", "footerSize": 24, "tone": "teal" },
+        { "title": "Función hash", "text": "Deben ser rápidas; las criptográficas son estables pero lentas.", "tone": "navy" }
+      ],
+      "notes": "Insertar y buscar cuestan O(k) (k funciones de hash) y el espacio es O(m). La probabilidad de un falso positivo es (1 - (1 - 1/m)^(k·n))^k, donde n es el número de elementos insertados. Selección de la función de hash: deben ser rápidas; usar un hash criptográfico da mayor estabilidad, pero tiene un costo de desempeño muy importante."
+    },
+    {
+      "type": "cards",
+      "section": "Probabilísticos",
+      "title": "Aplicaciones de los filtros de Bloom",
+      "columns": 2,
+      "cardHeight": 2.3,
+      "textSize": 20,
+      "cards": [
+        { "title": "Medium.com", "text": "Identifica los posts que el usuario ya vio.", "tone": "teal" },
+        { "title": "Cloudflare", "text": "Identifica direcciones IP maliciosas.", "tone": "teal" },
+        { "title": "Google Chrome", "text": "Identifica URLs maliciosas.", "tone": "teal" },
+        { "title": "Apache Cassandra", "text": "Busca registros inexistentes en disco.", "tone": "teal" }
+      ],
+      "notes": "En todos estos casos un falso positivo ocasional es barato de resolver (por ejemplo, una verificación adicional), mientras que el «no» del filtro ahorra un acceso costoso (a disco o a la red)."
+    },
+    {
+      "type": "cards",
+      "section": "Algoritmos genéticos",
+      "title": "¿Qué es un algoritmo genético?",
+      "intro": "Basados en el trabajo de John Holland (1962) y en la evolución de Darwin.",
+      "columns": 3,
+      "cardHeight": 2.5,
+      "callout": { "tone": "teal", "label": "Heurística:", "text": "en griego significa «encontrar», la raíz de «eureka»." },
+      "cards": [
+        { "title": "Búsqueda", "text": "Técnica para optimización y aprendizaje automático que simula la selección natural.", "tone": "teal" },
+        { "title": "Heurístico", "text": "No garantiza el óptimo; suele dar buenas soluciones en un tiempo razonable, sin garantía formal.", "tone": "amber" },
+        { "title": "Inspiración", "text": "Selección natural, reproducción y mutación.", "tone": "teal" }
+      ],
+      "notes": "Historia: John Holland publicó en 1975 el libro «Adaptation in Natural and Artificial Systems»; en 1980 los algoritmos genéticos se aplican en problemas de optimización y en 1989 en problemas de aprendizaje automático. Heurística: búsqueda de soluciones de forma rápida y eficiente, pero no necesariamente óptima. Matiz: un heurístico suele dar buenas soluciones, pero no ofrece garantías formales de qué tan cerca queda del óptimo; esa garantía sí la dan los algoritmos de aproximación. Dato: la teoría de la evolución de Darwin se publicó en 1859."
+    },
+    {
+      "type": "cards",
+      "section": "Algoritmos genéticos",
+      "title": "Definiciones esenciales",
+      "columns": 3,
+      "cardHeight": 2.3,
+      "cards": [
+        { "title": "Individuo", "text": "Una solución al problema. Suele ser un bit-vector.", "tone": "teal" },
+        { "title": "Población", "text": "Conjunto de individuos o soluciones posibles.", "tone": "teal" },
+        { "title": "Fitness", "text": "Función que evalúa la calidad de un individuo.", "tone": "amber" },
+        { "title": "Características", "text": "Propiedades del individuo; pueden ser sus genes.", "tone": "teal" },
+        { "title": "Genoma", "text": "Conjunto de características. En un bit-vector: 1 = presente, 0 = ausente.", "tone": "teal" },
+        { "title": "Cromosomas", "text": "Según el problema, un individuo puede usar varios cromosomas.", "tone": "navy" }
+      ],
+      "notes": "Un individuo puede ser una cadena de bits, un vector de números, una estructura de datos, etc. Representación: el objetivo es optimizar el espacio de búsqueda escogiendo una representación adecuada; usualmente se recomiendan bit-vectors, donde cada entrada indica si cierta característica está presente o no."
+    },
+          {
+            "type": "diagram",
+            "kind": "diseno-matriz",
+            "section": "Algoritmos genéticos",
+            "title": "GA sobre la mochila: bit-vector y fitness",
+            "top": 2.05,
+            "code": {
+              "w": 2.9,
+              "label": "Productos",
+              "size": 14,
+              "lang": "plain",
+              "code": "   kcal  saciedad\nA   100         2\nB   200         5\nC   400         6\nD   500        10\nE   700        13\nF   800        16"
+            },
+            "label": "Cuatro individuos de la población",
+            "corner": "Lleva",
+            "colHeaders": ["A", "B", "C", "D", "E", "F", "kcal", "fitness"],
+            "rowHeaders": ["A+B+D", "F", "A+B", "A+C+D"],
+            "headW": 1.3,
+            "colW": [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.95, 1.2],
+            "cellH": 0.58,
+            "size": 18,
+            "headerSize": 16,
+            "cells": [
+              [1, 1, 0, 1, 0, 0, 800, 17],
+              [0, 0, 0, 0, 0, 1, 800, 16],
+              [1, 1, 0, 0, 0, 0, 300, 7],
+              [1, 0, 1, 1, 0, 0, 1000, 0]
+            ],
+            "tones": [
+              ["teal", "teal", null, "teal", null, null, null, null],
+              [null, null, null, null, null, "teal", null, null],
+              ["teal", "teal", null, null, null, null, null, null],
+              ["teal", null, "teal", "teal", null, null, "red", null]
+            ],
+            "highlight": [[0, 7, "green"], [3, 7, "red"]],
+            "calloutY": 5.5,
+            "calloutH": 0.9,
+            "callouts": [
+              { "tone": "teal", "label": "Fitness:", "text": "la saciedad total si las kcal no pasan de 800; si pasan, 0 (individuo inválido)." },
+              { "tone": "amber", "label": "Sin garantía:", "text": "la tabla de DP asegura el 17; el GA solo busca valores cercanos." }
+            ],
+            "notes": "Retomamos la mochila (6 productos y tope de 800 kcal), ahora con un algoritmo genético. Individuo: un bit-vector de 6 posiciones, una por producto (A a F); 1 = el producto va en la mochila y 0 = no. Ejemplo: 110100 = A + B + D, con 800 kcal y saciedad 17. Fitness: la saciedad total del individuo si no pasa del tope de 800 kcal; si lo pasa, 0 (otra opción es penalizarlo). Ejemplos de la tabla: 110100 → 800 kcal, fitness 17; 000001 (solo F) → 800 kcal, fitness 16; 110000 (A + B) → 300 kcal, fitness 7; 101100 (A + C + D) → 1000 kcal: su saciedad sería 18, pero se pasa del tope, así que es inválido y su fitness es 0. Población inicial: bit-vectors al azar; luego se repite el ciclo de la siguiente diapositiva (calcular el fitness, seleccionar, recombinar y mutar). Comparación con programación dinámica: la tabla garantiza el óptimo (17 = A + B + D); el GA es un heurístico: busca valores cercanos sin garantía, pero no necesita llenar la tabla. Aquí hay solo 2^6 = 64 individuos posibles, así que se podrían probar todos; con 40 productos serían 2^40 (más de 10^12 combinaciones), y ahí un GA es una opción. Nota sobre bit-vectors: en C o Java un bit-vector de hasta 32 posiciones cabe en un int (por ejemplo int bit_vector = 0;) y se manipula con operaciones bit a bit (&, |, ^, desplazamientos); ahorra espacio y se usa en compresión y cifrado."
+          },
+    {
+      "type": "diagram",
+      "kind": "diseno-ciclo",
+      "section": "Algoritmos genéticos",
+      "title": "Funcionamiento de un algoritmo genético",
+      "top": 1.9,
+      "boxH": 2.9,
+      "steps": [
+        { "title": "Población inicial", "text": "Individuos aleatorios (random).", "tone": "navy" },
+        { "title": "Calcular fitness", "text": "Se evalúa la calidad de cada individuo.", "tone": "teal" },
+        { "title": "Seleccionar", "text": "Se escogen los mejores como padres.", "tone": "teal" },
+        { "title": "Nueva población", "text": "Hijos por recombinación y mutación; reemplazan a la anterior.", "tone": "teal" }
+      ],
+      "loop": { "from": 3, "to": 1, "label": "se repite en cada generación" },
+      "callout": { "tone": "amber", "label": "¿Cuándo se detiene?", "text": "Al llegar a un máximo de generaciones, a un fitness mínimo o máximo, o cuando la población ya no cambia. Una población inicial muy pequeña puede quedar en un óptimo local." },
+      "notes": "Se inicia con una población de individuos aleatorios. En cada generación se evalúa el fitness de cada individuo, se seleccionan los mejores y se reproducen para generar una nueva generación; la nueva población reemplaza a la anterior y se repite hasta que se cumple un criterio de parada (número máximo de generaciones, fitness mínimo, fitness máximo, etc.). Selección de padres: después de aplicar el fitness se obtiene un grupo de posibles padres, que pueden emparejarse en secuencia (1-2, 3-4…) o al azar. En la práctica: la población inicial se genera al azar procurando cubrir bien el espacio de búsqueda; su tamaño depende del problema (si es muy pequeña, puede quedar atrapada en un óptimo local; si es enorme, requiere demasiado cómputo). Otra forma común de escoger padres es con probabilidad proporcional al fitness: los individuos más aptos se reproducen más. Criterios de parada: un máximo de generaciones o la convergencia (la población ya no cambia). Un algoritmo genético puede no encontrar una solución adecuada: no hay garantía."
+    },
+    {
+      "type": "diagram",
+      "kind": "diseno-matriz",
+      "section": "Algoritmos genéticos",
+      "title": "Recombinación y mutación",
+      "top": 2.15,
+      "corner": "",
+      "colHeaders": ["0", "1", "2", "3", "4", "5"],
+      "rowHeaders": ["P1", "P2", "H1", "H2", "H1 mutado"],
+      "headW": 1.9,
+      "cellW": 0.85,
+      "cellH": 0.5,
+      "cells": [
+        [0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 1, 1, 1],
+        [1, 1, 1, 0, 0, 0],
+        [0, 1, 0, 1, 1, 1]
+      ],
+      "tones": [
+        ["teal", "teal", "teal", "teal", "teal", "teal"],
+        ["amber", "amber", "amber", "amber", "amber", "amber"],
+        ["teal", "teal", "teal", "amber", "amber", "amber"],
+        ["amber", "amber", "amber", "teal", "teal", "teal"],
+        ["teal", null, "teal", "amber", "amber", "amber"]
+      ],
+      "highlight": [[4, 1, "red"]],
+      "vline": { "after": 2, "label": "Punto de cruce (cross-over)" },
+      "rowTags": [
+        { "row": 2, "label": "recombinación", "tone": "teal" },
+        { "row": 4, "label": "mutación (flip)", "tone": "red" }
+      ],
+      "callout": { "tone": "teal", "text": "Recombinar mezcla los genes de los padres; mutar invierte bits al azar, según una probabilidad." },
+      "notes": "Recombinación: se mezclan los genes de los padres para generar nuevos individuos. Con P1 = 000000 y P2 = 111111 y el punto de cruce entre las posiciones 2 y 3, los hijos son H1 = 000111 y H2 = 111000. Mutación: con base en alguna probabilidad determinada, se hace flip a algunos bits aleatorios de cada bit-vector de los hijos generados. La fila «H1 mutado» es un ejemplo ilustrativo (se invirtió el bit 1). Estas dos operaciones introducen variabilidad en la población."
+    },
+    {
+      "type": "summary",
+      "section": "Cierre",
+      "title": "Resumen",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 20,
+      "items": [
+        "**Divide y vencerás:** dividir, conquistar y combinar (Merge Sort, búsqueda binaria).",
+        "**Programación dinámica:** reutilizar subproblemas que se translapan (LCS, mochila, monedas).",
+        "**Backtracking:** probar decisiones y retroceder si fallan (N-reinas).",
+        "**Algoritmos ávidos:** elegir lo mejor en cada paso, sin reconsiderar (monedas).",
+        "**Probabilísticos:** Monte Carlo, Las Vegas y filtros de Bloom.",
+        "**Genéticos:** población, fitness, selección, recombinación y mutación (mochila)."
+      ],
+      "notes": "Cada paradigma es una estrategia distinta: divide y vencerás reduce el problema; DP reutiliza subproblemas (subestructura óptima y subproblemas que se translapan, con memoización o tabulación); backtracking explora y deshace; los ávidos deciden y no vuelven atrás (y cuando fallan, como en las monedas de 1, 4 y 6, DP da el óptimo); los probabilísticos usan azar para ganar velocidad a cambio de certeza; los genéticos buscan soluciones aceptables simulando la evolución, por ejemplo en la mochila."
+    },
+    {
+      "type": "list",
+      "section": "Cierre",
+      "title": "Para investigar y referencias",
+      "marker": "dot",
+      "bold": false,
+      "titleSize": 22,
+      "items": [
+        { "title": "¿Por qué `findMax` por divide y vencerás es `O(n)` y no `O(log n)`?", "text": "Pista: cuente cuántas llamadas recursivas se generan para n = 4 y para n = 8." },
+        { "title": "¿Cómo se puede implementar paralelismo en la búsqueda binaria y en Merge Sort?", "text": "Pista: ¿qué partes del problema son independientes entre sí?" },
+        { "title": "Resuelva la mochila (800 kcal) con backtracking.", "text": "Pista: en cada nivel del árbol, ¿lleva o no el producto? ¿Cuándo retrocede?" },
+        { "title": "¿Qué paradigmas sirven para la mochila, las N-reinas y las monedas?", "text": "Pista: un mismo problema admite varios paradigmas; compare su corrección, tiempo y simplicidad." }
+      ],
+      "footnote": "Referencias: GeeksforGeeks. «Introduction to Divide and Conquer Algorithm» (geeksforgeeks.org/introduction-to-divide-and-conquer-algorithm). GeeksforGeeks. «Introduction to Greedy Algorithm: Data Structures and Algorithm Tutorials» (geeksforgeeks.org/introduction-to-greedy-algorithm-data-structures-and-algorithm-tutorials).",
+      "notes": "Las dos primeras preguntas «Investigar» tienen respuestas sugeridas en las notas de las diapositivas «Encontrar el máximo de un arreglo» y «Paralelismo en divide y vencerás». Las otras dos son práctica adicional. Mochila con backtracking: se prueba, producto por producto, llevarlo o no llevarlo; se retrocede cuando las kcal pasan de 800 (y se guarda la mejor saciedad encontrada). Un mismo problema, varios paradigmas: mochila → programación dinámica (óptimo), backtracking (prueba todas las combinaciones factibles) y algoritmo genético (aproximado); N-reinas → backtracking (determinista) y Las Vegas (aleatorio); monedas → ávido (rápido, no siempre óptimo) y programación dinámica (óptimo). Más problemas para practicar, por paradigma: divide y vencerás: Quicksort, multiplicación de Karatsuba, multiplicación de matrices de Strassen; backtracking: el recorrido del caballo, laberintos, coloreado de grafos, subconjuntos de números primos que suman S; programación dinámica: costo mínimo de un camino en una matriz, números feos (ugly numbers), LCS de tres cadenas; ávidos: Kruskal y Prim (árboles de expansión mínima), Dijkstra (vea la lección de Algoritmos de Búsqueda), Huffman (vea la lección de Algoritmos de Compresión), el viajante con una heurística ávida; genéticos: el viajante y el cambio de monedas. Próximos pasos: practicar con los ejemplos de código y tratar de reconocer qué paradigma usa cada algoritmo que ya conocen."
+    }
+  ]
+}
