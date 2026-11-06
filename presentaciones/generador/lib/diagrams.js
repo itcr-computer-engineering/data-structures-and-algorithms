@@ -221,13 +221,12 @@ function venn(ctx, { cx, y, type }) {
   const fillB = base === 'right' || base === 'full';
   circle(ax, { fill: { color: fillA ? colors.teal : colors.panel }, line: { type: 'none' } });
   circle(bx, { fill: { color: fillB ? colors.teal : colors.panel }, line: { type: 'none' } });
-  if (type === 'inner' || excl) {
-    const lens = lensPoints(r, d);
-    ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
-      x: bx, y: y + r - lens.h / 2, w: lens.w, h: lens.h, points: lens.pts,
-      fill: { color: excl ? colors.panel : colors.teal }, line: { type: 'none' },
-    });
-  }
+  // La intersección se pinta al final: en teal para los JOIN normales (si no, el círculo B la borra en LEFT) y vacía en los «-excl».
+  const lens = lensPoints(r, d);
+  ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
+    x: bx, y: y + r - lens.h / 2, w: lens.w, h: lens.h, points: lens.pts,
+    fill: { color: excl ? colors.panel : colors.teal }, line: { type: 'none' },
+  });
   circle(ax, { line: { color: colors.heading, width: 2 } });
   circle(bx, { line: { color: colors.heading, width: 2 } });
   const label = (t, x, on) =>
