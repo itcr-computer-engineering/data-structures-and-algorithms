@@ -54,12 +54,15 @@
       "notes": "La búsqueda secuencial (también llamada lineal) revisa o procesa cada elemento hasta encontrar el deseado. Cuando la colección está desordenada es la única opción. En inglés, a la coincidencia se le llama «match»."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "busqueda-recorrido",
       "section": "Búsqueda secuencial",
       "title": "Ejemplo: buscar el 20",
-      "image": "search-algo-1.png",
-      "alt": "Array de 9 elementos (10, 50, 30, 70, 80, 60, 20, 90, 40) con flechas que van de un elemento al siguiente hasta llegar al 20, en el índice 6",
-      "caption": "Se comparan 7 elementos (índices 0 a 6) hasta encontrar el `20` en el índice 6.",
+      "algoritmo": "secuencial",
+      "values": [10, 50, 30, 70, 80, 60, 20, 90, 40],
+      "target": 20,
+      "legend": [["Comparado", "amber"], ["Encontrado", "green"], ["Sin revisar", "slate"]],
+      "callout": { "tone": "teal", "text": "Se comparan **7 elementos** (índices 0 a 6) hasta encontrar el `20` en el índice 6." },
       "notes": "Recorra la figura con la clase: se compara 10, 50, 30, 70, 80, 60 y finalmente 20. Pregunta: ¿cuántas comparaciones habría hecho si buscáramos el 40? (9, porque es el último elemento)."
     },
     {
@@ -232,13 +235,16 @@
       "notes": "Normalmente se utiliza sqrt(n) como tamaño de bloque, donde n es el tamaño del array."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "busqueda-recorrido",
       "section": "Búsqueda por salto",
       "title": "Jump Search: ejemplo con n = 16",
-      "image": "search-algo-2.png",
-      "alt": "Array con los 16 primeros números de Fibonacci y flechas que saltan de 4 en 4 (índices 0, 4, 8 y 12); en el índice 12 el valor 144 es mayor que 55 y una flecha regresa al bloque anterior",
-      "caption": "n = 16 y √n = 4: se salta de 4 en 4 hasta pasar el valor (144 > 55) y se retrocede.",
-      "notes": "Con n = 16 el bloque es de 4 elementos: se salta a los índices 0, 4, 8 y 12. Al llegar a 144 (mayor que 55) se regresa al bloque anterior. Dentro de ese bloque se busca secuencialmente (21, 34, 55), que es como funciona Jump Search en general; la figura solo muestra los saltos."
+      "algoritmo": "salto",
+      "values": [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610],
+      "target": 55,
+      "legend": [["Salto", "amber"], ["Se pasó", "red"], ["Secuencial", "teal"], ["Encontrado", "green"]],
+      "callout": { "tone": "teal", "text": "n = 16 y √n = 4: se salta de 4 en 4 hasta pasar el valor (`144 > 55`), se retrocede al bloque anterior y se busca de forma secuencial." },
+      "notes": "Con n = 16 el bloque es de 4 elementos: se salta a los índices 0, 4, 8 y 12. Al llegar a 144 (mayor que 55) se regresa al bloque anterior (índice 8). Dentro de ese bloque se busca secuencialmente (21, 34, 55), que es como funciona Jump Search en general; la figura muestra los saltos (amarillo), el paso de 144 (rojo) y la búsqueda secuencial (verde azulado) hasta hallar el 55 en el índice 10. Los valores son los 16 primeros números de Fibonacci."
     },
     {
       "type": "table",
@@ -325,16 +331,29 @@
         {
           "title": "Pathfinding básico",
           "tone": "amber",
-          "image": "04-algoritmos-de-busqueda/image-01.png",
-          "alt": "Un triángulo (origen) llega a un círculo (destino) con un tramo diagonal y luego uno horizontal",
+          "figure": {
+            "type": "escena", "w": 100, "h": 50,
+            "items": [
+              { "t": "basico", "from": [12, 42], "to": [80, 10], "tone": "amber", "width": 3.5, "head": true },
+              { "t": "circle", "x": 86, "y": 10, "r": 6, "solid": false },
+              { "t": "tri", "x": 12, "y": 42, "r": 6, "tone": "green", "rot": 45 }
+            ]
+          },
           "caption": "Movimiento poco natural"
         },
         {
           "title": "Línea de visión",
           "tone": "teal",
-          "image": "04-algoritmos-de-busqueda/image-02.png",
-          "alt": "Un triángulo avanza en línea recta hacia el círculo; el camino del método básico aparece punteado",
-          "caption": "Movimiento esperado"
+          "figure": {
+            "type": "escena", "w": 100, "h": 50,
+            "items": [
+              { "t": "basico", "from": [12, 42], "to": [80, 10], "tone": "slate", "width": 2, "dash": "dash" },
+              { "t": "line", "pts": [[12, 42], [80.5, 12.4]], "tone": "teal", "width": 3.5, "head": true },
+              { "t": "circle", "x": 86, "y": 10, "r": 6, "solid": false },
+              { "t": "tri", "x": 12, "y": 42, "r": 6, "tone": "green", "rot": 67 }
+            ]
+          },
+          "caption": "Movimiento esperado (punteado: método básico)"
         }
       ],
       "callout": { "tone": "teal", "text": "Prefiera la línea de visión (u otros enfoques más sofisticados) cuando sea posible; el método simple es solo una **aproximación**." },
@@ -351,8 +370,19 @@
           "title": "Camino bloqueado",
           "tone": "red",
           "weight": 1.1,
-          "image": "04-algoritmos-de-busqueda/image-03.png",
-          "alt": "Un triángulo y un círculo separados por una pared; las líneas rectas entre ellos chocan con la pared",
+          "figure": {
+            "type": "escena", "w": 195, "h": 175,
+            "items": [
+              { "t": "rect", "x": 0, "y": 0, "w": 85, "h": 10, "tone": "slate" },
+              { "t": "rect", "x": 110, "y": 0, "w": 10, "h": 85, "tone": "slate" },
+              { "t": "rect", "x": 110, "y": 115, "w": 85, "h": 10, "tone": "slate" },
+              { "t": "line", "pts": [[28, 143], [108, 71]], "tone": "red", "width": 3 },
+              { "t": "line", "pts": [[121, 60], [143, 40]], "tone": "slate", "width": 2.5, "dash": "dash", "head": true },
+              { "t": "x", "x": 115, "y": 66, "r": 7, "tone": "red" },
+              { "t": "circle", "x": 160, "y": 25, "r": 16, "solid": false },
+              { "t": "tri", "x": 20, "y": 150, "r": 13, "tone": "green", "rot": 48 }
+            ]
+          },
           "caption": "La línea recta choca con la pared"
         },
         {
@@ -380,8 +410,24 @@
           "title": "Esquivar al enemigo",
           "tone": "slate",
           "weight": 1,
-          "image": "04-algoritmos-de-busqueda/image-04.png",
-          "alt": "Captura de un juego con árboles y un camino de piedra; una flecha indica el movimiento aleatorio del personaje para evitar al enemigo",
+          "figure": {
+            "type": "escena", "w": 480, "h": 275,
+            "items": [
+              { "t": "rect", "x": 128, "y": 0, "w": 14, "h": 125, "tone": "slate" },
+              { "t": "rect", "x": 128, "y": 111, "w": 126, "h": 14, "tone": "slate" },
+              { "t": "rect", "x": 240, "y": 111, "w": 14, "h": 135, "tone": "slate" },
+              { "t": "rect", "x": 240, "y": 232, "w": 78, "h": 14, "tone": "slate" },
+              { "t": "rect", "x": 304, "y": 232, "w": 14, "h": 43, "tone": "slate" },
+              { "t": "trees", "r": 11, "tone": "green", "pts": [[40, 50], [72, 38], [104, 68], [184, 50], [375, 15], [407, 130], [407, 180], [104, 160], [263, 180], [152, 258], [262, 255], [280, 252], [24, 258], [440, 262]] },
+              { "t": "line", "pts": [[176, 178], [226, 150]], "tone": "slate", "width": 2.5, "dash": "dash", "head": true },
+              { "t": "line", "pts": [[178, 196], [238, 207]], "tone": "slate", "width": 2.5, "dash": "dash", "head": true },
+              { "t": "line", "pts": [[160, 197], [110, 186]], "tone": "amber", "width": 4, "head": true },
+              { "t": "circle", "x": 24, "y": 150, "r": 16, "tone": "red" },
+              { "t": "tri", "x": 168, "y": 190, "r": 16, "tone": "teal", "rot": 0 },
+              { "t": "text", "x": 28, "y": 190, "w": 150, "text": "Enemigo", "tone": "red" },
+              { "t": "text", "x": 175, "y": 230, "w": 150, "text": "Personaje", "tone": "teal" }
+            ]
+          },
           "caption": "Un movimiento aleatorio puede bastar"
         },
         {
@@ -413,24 +459,57 @@
       "kind": "busqueda-paneles",
       "section": "Pathfinding",
       "title": "Rodeo con línea de visión en cada paso",
+      "panelHeight": 4.0,
       "panels": [
         {
           "title": "Rodeo de obstáculos",
           "tone": "amber",
-          "image": "04-algoritmos-de-busqueda/image-05.png",
-          "alt": "Cuadrícula con un obstáculo negro; una ruta de puntos lo rodea desde el triángulo de inicio hasta el cuadrado de destino",
-          "caption": "Sigue el borde del obstáculo"
+          "figure": {
+            "type": "rejilla", "dotTone": "amber", "side": "Sigue el borde del obstáculo", "sideW": 1.7, "sideH": 0.85, "legendSide": true,
+            "legend": [{ "k": "start", "label": "Inicio" }, { "k": "goal", "label": "Meta" }, { "k": "wall", "label": "Obstáculo" }, { "k": "dot", "label": "Ruta" }],
+            "map": [
+              "###............",
+              ".#...........G.",
+              "......ooo...o..",
+              ".....o###o.o...",
+              "....o#####o....",
+              "#...o#######...",
+              "#....o#######..",
+              "......o######..",
+              "......o..####..",
+              ".....o...####..",
+              "....o.....###..",
+              "...S...........",
+              "..............."
+            ]
+          }
         },
         {
           "title": "Con línea de visión",
           "tone": "teal",
-          "image": "04-algoritmos-de-busqueda/image-06.png",
-          "alt": "Cuadrícula con un obstáculo negro; la ruta rodea el obstáculo y luego va en línea recta hasta el cuadrado de destino",
-          "caption": "Va recto en cuanto ve el objetivo"
+          "figure": {
+            "type": "rejilla", "dotTone": "teal", "side": "Va recto en cuanto ve el objetivo", "sideW": 1.7, "sideH": 0.85, "legendSide": true,
+            "legend": [{ "k": "start", "label": "Inicio" }, { "k": "goal", "label": "Meta" }, { "k": "wall", "label": "Obstáculo" }, { "k": "dot", "label": "Ruta" }],
+            "map": [
+              "###............",
+              ".#........oooG.",
+              "......oooo.....",
+              ".....o###......",
+              "....o#####.....",
+              "#...o#######...",
+              "#....o#######..",
+              "......o######..",
+              "......o..####..",
+              ".....o...####..",
+              "....o.....###..",
+              "...S...........",
+              "..............."
+            ]
+          }
         }
       ],
       "callout": { "tone": "teal", "text": "En cada paso: si el personaje **ve el objetivo**, avanza en línea recta; si no, sigue rodeando el obstáculo." },
-      "notes": "Para hacer el movimiento más natural se puede intentar la línea de visión en cada paso. Si el personaje puede ver el objetivo, se mueve en línea recta hacia él; si no, continúa rodeando el obstáculo."
+      "notes": "Para hacer el movimiento más natural se puede intentar la línea de visión en cada paso. Si el personaje puede ver el objetivo, se mueve en línea recta hacia él; si no, continúa rodeando el obstáculo. En la figura el triángulo es el inicio, el cuadrado la meta y los puntos la ruta; a la izquierda la ruta sigue todo el borde del obstáculo y a la derecha sale del borde en cuanto ve la meta y va recto."
     },
     {
       "type": "diagram",
@@ -442,8 +521,29 @@
         {
           "title": "Mapas y sus grafos",
           "weight": 2.2,
-          "image": "04-algoritmos-de-busqueda/image-07.png",
-          "alt": "Dos mapas, uno de interior con paredes y otro con un río y un puente; sobre cada uno hay un grafo de nodos conectados por aristas"
+          "figure": {
+            "type": "mapa", "w": 991, "h": 499, "nodeR": 14, "edgeW": 3.5,
+            "layers": [
+              { "tone": "navy", "fill": "soft", "rects": [[8, 8, 635, 490]] },
+              { "tone": "green", "rects": [[643, 8, 343, 490]] },
+              { "tone": "amber", "polys": [[[803,230],[643,375],[643,497],[986,497],[986,178],[873,185],[863,230],[813,230]]] },
+              { "tone": "navy", "fill": "accent", "polys": [[[703,8],[743,8],[763,30],[793,50],[803,70],[823,95],[833,110],[843,80],[843,50],[833,30],[823,8],[863,8],[873,30],[883,50],[883,180],[873,190],[863,210],[863,260],[843,275],[833,290],[833,310],[823,330],[813,350],[803,370],[793,390],[793,460],[803,497],[743,497],[743,390],[753,350],[763,310],[773,290],[793,270],[803,250],[813,230],[813,130],[803,110],[783,90],[763,70],[743,50],[723,30]]] },
+              { "tone": "slate", "fill": "accent", "rects": [[717, 400, 98, 23]] },
+              {
+                "tone": "slate", "fill": "accent", "unit": 8,
+                "rects": [
+                  [1,1,79,3],[1,59,79,3],[1,4,3,55],[77,4,3,55],
+                  [7,13,16,3],[7,16,3,19],[7,38,3,9],[19,16,4,13],[19,29,13,3],[7,44,25,3],[13,7,3,6],
+                  [29,4,3,3],[29,10,3,9],[29,19,11,4],[35,23,6,3],[29,32,3,12],[29,35,12,3],[38,38,3,21],
+                  [47,4,3,6],[47,13,3,13],[47,32,3,21],[47,56,3,3],[44,22,12,4],[47,35,24,3],
+                  [60,22,5,4],[62,4,3,3],[62,10,3,12],[62,38,3,12],[62,53,3,6],[65,16,6,4],[74,16,3,4],[74,35,3,3],
+                  [19,47,4,6],[19,56,4,3]
+                ]
+              }
+            ],
+            "nodes": [[118,45],[179,69],[240,69],[509,69],[45,81],[570,81],[338,94],[387,94],[460,94],[582,142],[216,203],[118,216],[338,240],[460,240],[582,240],[45,289],[106,289],[582,289],[289,338],[338,338],[570,374],[45,399],[252,411],[509,411],[350,423],[448,423],[167,435],[387,435],[790,32],[735,118],[936,155],[680,240],[912,301],[692,399],[851,399],[765,411]],
+            "edges": [[0,1],[0,4],[1,2],[1,10],[2,6],[3,5],[3,8],[4,15],[5,9],[6,7],[6,12],[7,8],[8,13],[9,14],[10,12],[11,16],[12,13],[12,19],[13,14],[14,17],[15,16],[15,21],[17,20],[18,19],[18,22],[19,24],[20,23],[21,26],[22,26],[23,25],[24,27],[25,27],[29,31],[30,32],[31,33],[32,34],[33,35],[34,35]]
+          }
         },
         {
           "title": "Elementos",
@@ -457,7 +557,7 @@
           ]
         }
       ],
-      "notes": "En este enfoque el mapa se representa como un grafo: los nodos son las posiciones en el mapa y las aristas son las conexiones entre ellas. Cada arista tiene un costo asociado, que puede ser la distancia entre los nodos o el tiempo que toma recorrerla."
+      "notes": "En este enfoque el mapa se representa como un grafo: los nodos son las posiciones en el mapa y las aristas son las conexiones entre ellas. Cada arista tiene un costo asociado, que puede ser la distancia entre los nodos o el tiempo que toma recorrerla. En la figura: el mapa de interior (izquierda) tiene 28 nodos y 32 aristas, con un nodo por puerta o habitación; el del río (derecha) tiene 8 nodos y 6 aristas: el puente es la única conexión entre las dos orillas y el nodo de arriba queda aislado entre los brazos del río."
     },
     {
       "type": "diagram",
@@ -467,15 +567,13 @@
       "panels": [
         {
           "title": "El mapa como grid",
-          "image": "04-algoritmos-de-busqueda/image-08.png",
-          "alt": "Mapa dividido en una rejilla de celdas cuadradas",
+          "figure": { "type": "rejilla-grafo", "cols": 10, "rows": 5, "modo": "celdas" },
           "caption": "Un mapa modelado como rejilla"
         },
         {
           "title": "El grid es un grafo",
           "tone": "teal",
-          "image": "04-algoritmos-de-busqueda/image-09.png",
-          "alt": "La misma rejilla con un nodo en cada celda y aristas que conectan las celdas vecinas",
+          "figure": { "type": "rejilla-grafo", "cols": 10, "rows": 5, "modo": "grafo" },
           "caption": "Cada celda es un nodo unido a sus vecinas"
         }
       ],
@@ -492,9 +590,28 @@
         {
           "title": "Búsqueda en amplitud",
           "weight": 1.7,
-          "image": "04-algoritmos-de-busqueda/image-10.png",
-          "alt": "Rejilla con una zona en forma de rombo que se expande alrededor del personaje en todas direcciones, bordeando dos muros",
-          "caption": "Expansión en todas las direcciones"
+          "figure": {
+            "type": "rejilla",
+            "explore": { "algo": "bfs", "radius": 4 },
+            "legend": [{ "k": "start", "label": "Inicio" }, { "k": "wall", "label": "Obstáculo" }, { "k": "closed", "label": "Explorado" }, { "k": "open", "label": "Frontera" }],
+            "map": [
+              ".....................##.......",
+              ".....................##.......",
+              ".....................##.......",
+              "...##................##.......",
+              "...##........##......##.......",
+              "...##........##......#####....",
+              "...##........##......#####....",
+              "...##...S....##...............",
+              "...##........##...............",
+              "...##........##...............",
+              "...##........##...............",
+              "...##........##...............",
+              ".............##...............",
+              ".............##...............",
+              ".............##..............."
+            ]
+          }
         },
         {
           "title": "Cómo funciona",
@@ -508,7 +625,7 @@
           ]
         }
       ],
-      "notes": "El algoritmo BFS (búsqueda en amplitud) es un algoritmo de búsqueda de grafos que comienza en un nodo raíz y explora todos los nodos vecinos antes de avanzar a los vecinos de estos.       Es el algoritmo que se vio en el curso de Estructuras de Datos 1; el pseudocódigo de la siguiente diapositiva es un recordatorio. Garantía: en un grafo sin pesos (todos los pasos cuestan igual), BFS sí encuentra el camino con menos aristas; si los costos son distintos, ya no es óptimo (por eso existe Dijkstra). No confundir con «Best-First», que se verá más adelante."
+      "notes": "El algoritmo BFS (búsqueda en amplitud) es un algoritmo de búsqueda de grafos que comienza en un nodo raíz y explora todos los nodos vecinos antes de avanzar a los vecinos de estos.       Es el algoritmo que se vio en el curso de Estructuras de Datos 1; el pseudocódigo de la siguiente diapositiva es un recordatorio. En la figura el inicio es el triángulo y el BFS lleva 4 pasos: las celdas de color verde azulado están a menos de 4 pasos y las amarillas (la frontera), a exactamente 4; los muros (gris) bloquean la expansión. Datos verificados con un programa: 25 celdas exploradas y 15 de frontera (el rombo tendría 16, pero un muro bloquea una). Garantía: en un grafo sin pesos (todos los pasos cuestan igual), BFS sí encuentra el camino con menos aristas; si los costos son distintos, ya no es óptimo (por eso existe Dijkstra). No confundir con «Best-First», que se verá más adelante."
     },
     {
       "type": "code",
@@ -576,10 +693,33 @@
       "panelHeight": 4.9,
       "panels": [
         {
-          "title": "BFS y Dijkstra en acción",
+          "title": "",
           "weight": 2.2,
-          "image": "04-algoritmos-de-busqueda/image-11.png",
-          "alt": "Dos rejillas lado a lado: a la izquierda Breadth First Search y a la derecha Dijkstra's Algorithm, con las zonas exploradas desde el personaje hacia la X de destino"
+          "figure": {
+            "type": "rejillas",
+            "legend": [{ "k": "start", "label": "Inicio" }, { "k": "goal", "label": "Meta" }, { "k": "tree", "label": "Bosque" }, { "k": "closed", "label": "Explorado" }, { "k": "open", "label": "Frontera" }],
+            "map": [
+              "fff............",
+              "fff............",
+              "ff....ffff.....",
+              "ff....ffff.....",
+              "ff...ffffff....",
+              "f....ffffff....",
+              ".....ffff.f..G.",
+              ".....ff.fff....",
+              "..S..ffff.f....",
+              ".....ff.fff....",
+              ".....ffffff....",
+              "......ffff.....",
+              "f.....ffff.....",
+              "fff............",
+              "ffff..........."
+            ],
+            "grids": [
+              { "title": "BFS", "explore": { "algo": "bfs", "steps": 70 } },
+              { "title": "Dijkstra", "explore": { "algo": "dijkstra", "steps": 70, "forestCost": 5 } }
+            ]
+          }
         },
         {
           "title": "La diferencia",
@@ -593,7 +733,7 @@
           ]
         }
       ],
-      "notes": "En muchos escenarios las distintas posiciones del mapa tienen distintos costos o pesos; por ejemplo, en juegos de estrategia el tipo de terreno afecta la velocidad de los personajes. La figura es una captura de la animación de Red Blob Games: https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search"
+      "notes": "En muchos escenarios las distintas posiciones del mapa tienen distintos costos o pesos; por ejemplo, en juegos de estrategia el tipo de terreno afecta la velocidad de los personajes. La figura reproduce con formas nativas la animación de Red Blob Games (https://www.redblobgames.com/pathfinding/a-star/introduction.html#breadth-first-search): mismo mapa de 15 × 15, el bosque (círculos verdes) cuesta 5 y el resto 1, y ambos algoritmos llevan 70 expansiones desde el inicio (triángulo) hacia la meta (cuadrado). Datos verificados con un programa: BFS expande 70 celdas (22 de bosque) y llega a 7 pasos de distancia; Dijkstra expande 70 celdas (solo 10 de bosque) y llega a costo 10, porque deja el bosque para después y avanza más por el terreno barato. BFS solo cuenta pasos y por eso entra al bosque como si fuera terreno normal."
     },
     {
       "type": "code",

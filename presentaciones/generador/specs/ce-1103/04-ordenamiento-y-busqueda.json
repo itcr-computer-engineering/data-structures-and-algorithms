@@ -158,13 +158,25 @@
       "notes": "Código abreviado (se quitaron `public` y las líneas en blanco). Versión completa de la binaria: int left = 0; int right = arr.length - 1; while (left <= right) { int mid = left + (right - left) / 2; if (arr[mid] == target) { return mid; } if (arr[mid] < target) { left = mid + 1; } else { right = mid - 1; } } return -1; La binaria también puede escribirse de forma recursiva. Se calcula mid como left + (right - left) / 2 en lugar de (left + right) / 2 para evitar un desbordamiento de int con arreglos muy grandes. Los costos O(n) y O(log n) se justifican así: la lineal recorre hasta n elementos; la binaria descarta la mitad en cada paso."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-universo",
       "section": "Búsqueda hash",
       "title": "Tabla hash: de la llave al índice",
-      "image": "hashing-1.png",
-      "alt": "Diagrama: el universo de llaves contiene las llaves k1 a k5; la función h lleva cada llave a una posición de la tabla T, y h(k3) = h(k4) es una colisión.",
+      "universe": { "label": "Universo", "others": ["k₈", "k₇"] },
+      "keysLabel": "llaves",
+      "keys": [
+        { "name": "k₂", "slot": 1 },
+        { "name": "k₁", "slot": 3 },
+        { "name": "k₃", "slot": 4 },
+        { "name": "k₄", "slot": 4 },
+        { "name": "k₅", "slot": 6 }
+      ],
+      "slots": 7,
+      "indexLabel": "índice",
+      "tableLabel": "T",
+      "collisionLabel": "Colisión",
       "caption": "La llave k entra a la función h(k), que produce el índice i donde se guarda el valor.",
-      "notes": "Una tabla hash almacena pares llave-valor. La llave es única y identifica a un valor; el valor es el dato asociado. La función de hash h(k) transforma una o más características del elemento en un número que corresponde a un índice del arreglo T. En la imagen (en inglés: «Universe» = universo de llaves posibles, «keys» = llaves usadas) las llaves k3 y k4 producen el mismo índice: h(k3) = h(k4). Eso es una colisión; la veremos en un momento. Por eso el reto de una función de hash es generar un índice único para cada llave."
+      "notes": "Una tabla hash almacena pares llave-valor. La llave es única y identifica a un valor; el valor es el dato asociado. La función de hash h(k) transforma una o más características del elemento en un número que corresponde a un índice del arreglo T. En la figura, el «universo» son todas las llaves posibles y «llaves» son las que realmente se usan. Las llaves k3 y k4 producen el mismo índice: h(k3) = h(k4). Eso es una colisión; la veremos en un momento. Por eso el reto de una función de hash es generar un índice único para cada llave. Las posiciones marcadas con «/» están vacías."
     },
     {
       "type": "diagram",
@@ -217,13 +229,25 @@
       "notes": "Separate chaining: cada índice de la tabla hash almacena una lista enlazada con los elementos que colisionan. Aquí el índice 9 guarda la lista Juan → Ana. «Ana» y su cédula son un ejemplo inventado para la lección. Para buscar 111111119: h = 9; se recorre la lista del índice 9 comparando cédulas hasta encontrarla. Mientras las listas sean cortas, la búsqueda sigue siendo muy rápida."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-universo",
       "section": "Búsqueda hash",
       "title": "Separate chaining: la lista de cada índice",
-      "image": "hashing-2.png",
-      "alt": "Diagrama de una tabla hash con separate chaining: cada posición de la tabla T apunta a una lista enlazada; el índice de h(k3) y h(k4) contiene dos nodos, k3 y k4.",
-      "caption": "Los elementos que colisionan (k3 y k4) se encadenan en una lista enlazada.",
-      "notes": "La imagen muestra el mismo caso en general: k3 y k4 comparten índice y por eso quedan encadenados en una lista; los demás índices ocupados tienen un solo nodo, y los marcados con «/» están vacíos."
+      "universe": { "label": "Universo", "others": ["k₈", "k₇"] },
+      "keysLabel": "llaves",
+      "keys": [
+        { "name": "k₂", "slot": 1 },
+        { "name": "k₁", "slot": 3 },
+        { "name": "k₃", "slot": 4 },
+        { "name": "k₄", "slot": 4 },
+        { "name": "k₅", "slot": 6 }
+      ],
+      "slots": 7,
+      "indexLabel": "índice",
+      "tableLabel": "T",
+      "chains": true,
+      "caption": "Los elementos que colisionan (k₃ y k₄) se encadenan en una lista enlazada.",
+      "notes": "La figura muestra el mismo caso en general: k3 y k4 comparten índice y por eso quedan encadenados en una lista; los demás índices ocupados tienen un solo nodo, y los marcados con «/» están vacíos. En cada nodo, la «/» indica que no hay nodo anterior o siguiente."
     },
     {
       "type": "diagram",
@@ -308,13 +332,26 @@
       "notes": "Un algoritmo de ordenamiento recibe una colección en desorden y la ordena ascendente o descendentemente. Mantener los datos ordenados facilita la búsqueda (por ejemplo, la binaria exige un arreglo ordenado); por eso interesa tener buenos algoritmos de ordenamiento. Para compararlos se usa la misma idea del inicio: la operación central es comparar dos valores y el costo se expresa según el número de elementos n. Los nombres de las cuatro agrupaciones («simples», «recursivos», «incrementos», «por dígitos») son una organización de esta presentación. Radix sort, a diferencia de los demás, considera cada elemento como una secuencia de dígitos y no como un todo."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-franjas",
       "section": "Ordenamiento por selección",
       "title": "Selección: parte ordenada y parte desordenada",
-      "image": "04-ordenamiento-y-busqueda/image-01.png",
-      "alt": "Arreglo values dividido en dos partes lógicas: la parte ordenada, de la posición 0 a current-1, y la parte desordenada, de current a SIZE-1.",
+      "heading": "values",
+      "segments": [
+        { "label": "[0]", "tone": "green" },
+        { "label": "[1]", "tone": "green" },
+        { "tone": "green", "weight": 2, "dots": true },
+        { "label": "[current-1]", "tone": "green" },
+        { "label": "[current]", "tone": "amber" },
+        { "weight": 2, "dots": true },
+        { "label": "[SIZE-1]" }
+      ],
+      "braces": [
+        { "from": 0, "to": 3, "tone": "green", "title": "Parte ordenada", "text": "`values[0]..values[current-1]` están ordenados y son menores o iguales que cualquier valor de `values[current]..values[SIZE-1]`." },
+        { "from": 4, "to": 6, "tone": "slate", "title": "Parte desordenada", "text": "Aquí se busca el menor; va en `values[current]`." }
+      ],
       "caption": "Cada pasada mueve el menor de la parte desordenada al final de la parte ordenada.",
-      "notes": "Es el algoritmo más sencillo de implementar. Pasos: 1) buscar el elemento más pequeño (o el más grande si el orden es descendente); 2) intercambiarlo con el primer elemento; 3) buscar el segundo más pequeño; 4) intercambiarlo con el segundo elemento; 5) repetir hasta que el arreglo esté ordenado. El arreglo se «divide» en dos arreglos lógicos: en la imagen, values[0]..values[current-1] están ordenados y son menores o iguales que cualquier valor de values[current]..values[SIZE-1]. Analogía para la clase: una lista de nombres en desorden que debe quedar en orden alfabético. Se busca el nombre que va primero, se escribe en una hoja nueva y se tacha de la lista original; se repite hasta tachar todos. Eso usa una segunda lista, es decir, más memoria. La mejora es intercambiar: al «tachar» un elemento queda un espacio libre en la lista original, y ahí se coloca (se intercambia) el elemento de la posición actual. Por eso selección no necesita memoria adicional significativa."
+      "notes": "Es el algoritmo más sencillo de implementar. Pasos: 1) buscar el elemento más pequeño (o el más grande si el orden es descendente); 2) intercambiarlo con el primer elemento; 3) buscar el segundo más pequeño; 4) intercambiarlo con el segundo elemento; 5) repetir hasta que el arreglo esté ordenado. El arreglo se «divide» en dos arreglos lógicos: en la figura, values[0]..values[current-1] están ordenados y son menores o iguales que cualquier valor de values[current]..values[SIZE-1]. Analogía para la clase: una lista de nombres en desorden que debe quedar en orden alfabético. Se busca el nombre que va primero, se escribe en una hoja nueva y se tacha de la lista original; se repite hasta tachar todos. Eso usa una segunda lista, es decir, más memoria. La mejora es intercambiar: al «tachar» un elemento queda un espacio libre en la lista original, y ahí se coloca (se intercambia) el elemento de la posición actual. Por eso selección no necesita memoria adicional significativa."
     },
     {
       "type": "diagram",
@@ -382,13 +419,18 @@
             "notes": "Cada pasada del ciclo externo compara el mínimo actual con todos los elementos de la parte desordenada: la pasada 1 hace n − 1 comparaciones, la 2 hace n − 2, … y la última, 1. Suma: (n − 1) + (n − 2) + … + 1 = n(n − 1)/2. Con el ejemplo de la traza, n = 5: 4 + 3 + 2 + 1 = 10 (se verificó contando las comparaciones al ejecutar el código). Las celdas muestran el valor que se compara con el mínimo actual: pasada 1 sobre [5, 3, 8, 6, 2] compara 3, 8, 6 y 2; pasada 2 sobre [2, 3, 8, 6, 5] compara 8, 6 y 5; pasada 3 sobre [2, 3, 8, 6, 5] compara 6 y 5; pasada 4 sobre [2, 3, 5, 6, 8] compara 8. Tabla (valores verificados): n = 10 → 45; n = 100 → 4 950; n = 1 000 → 499 500; n = 10 000 → 49 995 000. Si n se multiplica por 10, el costo se multiplica por ≈ 100: es O(n²). Es el mismo conteo de burbuja con el código que veremos (el ciclo interno hace n − i − 1 comparaciones por pasada) y el peor caso de inserción. Como selección siempre hace estas comparaciones, no importa si el arreglo ya estaba ordenado."
           },
           {
-            "type": "image",
-            "section": "Ordenamiento de burbuja",
+      "type": "diagram",
+      "kind": "ordenamiento-estaturas",
+      "section": "Ordenamiento de burbuja",
       "title": "Burbuja: comparar elementos vecinos",
-      "image": "04-ordenamiento-y-busqueda/image-02.png",
-      "alt": "Dos filas de siluetas de personas de distintas alturas: arriba se intercambian dos vecinos (Swap) porque el primero es más alto; abajo no hay intercambio (No Swap).",
-      "caption": "Si el primero es mayor que el segundo se intercambian (Swap); si no, no se hace nada (No Swap).",
-      "notes": "Algoritmo: 1) comparar el primer elemento con el segundo y, si el primero es mayor, intercambiarlos; 2) comparar el segundo con el tercero e intercambiar si hace falta; 3) repetir hasta que el arreglo esté ordenado. En la imagen las personas se ordenan por estatura. Analogía para la clase: una fila de niños que se debe ordenar por estatura, pero solo se pueden ver dos vecinos a la vez; por eso el algoritmo solo compara pares contiguos."
+      "heights": [140, 100, 185, 90, 115, 160, 125, 105, 150, 175],
+      "compare": [[0, 1], [1, 2]],
+      "labels": {
+        "swap": "El primero es más alto: **se intercambian**",
+        "noSwap": "El primero es más bajo: **no se hace nada**"
+      },
+      "caption": "Si el primero es mayor que el segundo se intercambian; si no, no se hace nada.",
+      "notes": "Algoritmo: 1) comparar el primer elemento con el segundo y, si el primero es mayor, intercambiarlos; 2) comparar el segundo con el tercero e intercambiar si hace falta; 3) repetir hasta que el arreglo esté ordenado. En la figura las personas (siluetas de distinta estatura) se ordenan por estatura: arriba la persona 0 es más alta que la 1 y se intercambian; abajo, ya intercambiadas, la persona de la posición 1 es más baja que la 2 y no se hace nada. Analogía para la clase: una fila de niños que se debe ordenar por estatura, pero solo se pueden ver dos vecinos a la vez; por eso el algoritmo solo compara pares contiguos."
     },
     {
       "type": "diagram",
@@ -436,13 +478,28 @@
       "notes": "Dos ciclos anidados: el externo cuenta las pasadas y el interno compara vecinos. El intercambio usa una variable temporal. Pregunta para la clase: si el arreglo ya está ordenado, ¿cuántas comparaciones hace este código? (las mismas, porque no tiene una bandera que detecte que no hubo intercambios)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-array",
       "section": "Ordenamiento por inserción",
       "title": "Inserción: insertar en la parte ordenada",
-      "image": "04-ordenamiento-y-busqueda/image-05.png",
-      "alt": "Arreglo 23, 1, 10, 5, 2 ordenado por inserción en cuatro pasadas; en cada una el siguiente elemento se inserta en su posición dentro de la parte ordenada de la izquierda.",
-      "caption": "Cada elemento se inserta, de atrás hacia adelante, en su lugar dentro de la lista ordenada.",
-      "notes": "Funciona así: 1) se empieza con el segundo elemento; el primero se considera la lista lógica de elementos ordenados y el resto, la lista de desordenados; 2) se toma cada elemento de la lista de desordenados y se inserta en la lista de ordenados, en la posición correcta, de atrás hacia adelante; 3) la lista de ordenados crece y la de desordenados disminuye. Imagen en inglés: Initially = inicio; First/Second/Third/Fourth Pass = primera a cuarta pasada. Ejemplo: [23, 1, 10, 5, 2] → [1, 2, 5, 10, 23]. Analogía para la clase: una fila de niños en la que se toma el siguiente de la parte desordenada y se retira; se corren una posición a la derecha los niños más altos de la parte ordenada para abrirle espacio, y el desplazamiento se detiene al llegar al último niño más alto que él; ahí se coloca. Se repite hasta insertar a todos."
+      "legend": [["Elemento a insertar", "amber"], ["Parte ordenada", "green"]],
+      "groupMark": true,
+      "groupGap": 0.5,
+      "cellHeight": 0.52,
+      "rowPad": 0.07,
+      "cellWidth": 0.62,
+      "labelW": 1.5,
+      "noteMin": 3.4,
+      "rows": [
+        { "label": "Inicio", "cells": ["23", "1", "10", "5", "2", "23", "1", "10", "5", "2"], "groups": [5, 5], "states": "g . . . . g . . . .", "note": "El 23 es la lista ordenada" },
+        { "label": "Pasada 1", "cells": ["23", "1", "10", "5", "2", "1", "23", "10", "5", "2"], "groups": [5, 5], "states": "g a . . . a g . . .", "note": "1 < 23: se corre el 23" },
+        { "label": "Pasada 2", "cells": ["1", "23", "10", "5", "2", "1", "10", "23", "5", "2"], "groups": [5, 5], "states": "g g a . . g a g . .", "note": "10 < 23: se corre el 23; 10 > 1" },
+        { "label": "Pasada 3", "cells": ["1", "10", "23", "5", "2", "1", "5", "10", "23", "2"], "groups": [5, 5], "states": "g g g a . g a g g .", "note": "5 < 23 y 5 < 10: se corren; 5 > 1" },
+        { "label": "Pasada 4", "cells": ["1", "5", "10", "23", "2", "1", "2", "5", "10", "23"], "groups": [5, 5], "states": "g g g g a g a g g g",         "note": "2 < 23, 10 y 5: se corren; 2 > 1" }
+      ],
+              "callout": { "tone": "teal", "text": "Cada fila muestra el arreglo **antes → después** de la pasada: el elemento se compara de atrás hacia adelante y los mayores se corren a la derecha hasta que uno ya no es mayor." },
+      "calloutH": 0.75,
+      "notes": "Funciona así: 1) se empieza con el segundo elemento; el primero se considera la lista lógica de elementos ordenados y el resto, la lista de desordenados; 2) se toma cada elemento de la lista de desordenados y se inserta en la lista de ordenados, en la posición correcta, de atrás hacia adelante; 3) la lista de ordenados crece y la de desordenados disminuye. En la figura, cada fila muestra el arreglo antes y después de la pasada. Ejemplo: [23, 1, 10, 5, 2] → [1, 2, 5, 10, 23]. Analogía para la clase: una fila de niños en la que se toma el siguiente de la parte desordenada y se retira; se corren una posición a la derecha los niños más altos de la parte ordenada para abrirle espacio, y el desplazamiento se detiene al llegar al último niño más alto que él; ahí se coloca. Se repite hasta insertar a todos."
     },
     {
       "type": "code",
@@ -641,21 +698,25 @@
       "notes": "Es el mismo paradigma de quick sort (dividir, resolver recursivamente), pero aquí el trabajo está en la fase de combinar (mezclar), mientras que en quick sort el trabajo está en la partición."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-merge",
       "section": "Merge sort",
       "title": "Merge sort: fase de división",
-      "image": "04-ordenamiento-y-busqueda/image-06.png",
-      "alt": "El arreglo 14, 7, 3, 12, 9, 11, 6, 2 se divide en dos mitades de cuatro, luego en cuatro partes de dos y finalmente en ocho elementos individuales.",
+      "phase": "dividir",
+      "values": [14, 7, 3, 12, 9, 11, 6, 2],
+      "legend": [["Arreglo por dividir", "."], ["Un elemento: ya está ordenado", "green"]],
       "caption": "El arreglo se divide en mitades hasta quedar con elementos individuales.",
       "notes": "Arreglo del ejemplo: [14, 7, 3, 12, 9, 11, 6, 2] → [14, 7, 3, 12] y [9, 11, 6, 2] → [14, 7], [3, 12], [9, 11], [6, 2] → ocho arreglos de un solo elemento, que ya están ordenados (caso base)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "ordenamiento-merge",
       "section": "Merge sort",
       "title": "Merge sort: fase de unión",
-      "image": "04-ordenamiento-y-busqueda/image-07.png",
-      "alt": "Los ocho elementos se mezclan por parejas en arreglos ordenados de dos, luego de cuatro (3, 7, 12, 14 y 2, 6, 9, 11) y finalmente en el arreglo completo 2, 3, 6, 7, 9, 11, 12, 14.",
-      "caption": "Las mitades ordenadas se mezclan, de abajo hacia arriba, hasta formar el arreglo ordenado.",
+      "phase": "mezclar",
+      "values": [14, 7, 3, 12, 9, 11, 6, 2],
+      "legend": [["Un elemento: ya está ordenado", "green"], ["Mezcla ordenada", "teal"]],
+      "caption": "Las mitades ordenadas se mezclan por parejas, nivel por nivel, hasta formar el arreglo ordenado.",
       "notes": "Al mezclar dos mitades ya ordenadas basta comparar sus primeros elementos y pasar el menor al arreglo resultado, avanzando solo en la mitad de donde salió. Resultado: [2, 3, 6, 7, 9, 11, 12, 14]."
     },
     {
@@ -678,7 +739,7 @@
             ],
             "callout": { "tone": "teal", "text": "**3 niveles** con mezcla (log₂ 8) × **8** elementos por nivel = 24 ≈ n log₂ n. Con n = 1 024: 10 240 frente a 1 048 576 de n²." },
             "calloutH": 0.95,
-            "notes": "Se divide a la mitad hasta tener n subarreglos de un elemento: con n = 8 son tres divisiones sucesivas (8 → 4 → 2 → 1), es decir, log₂ 8 = 3 niveles con mezcla (los niveles de las imágenes anteriores). Mezclar todos los subarreglos de un nivel recorre los n elementos una sola vez, así que cada nivel cuesta O(n): el nivel 0 hace una mezcla de 8 elementos; el nivel 1, dos mezclas de 4; el nivel 2, cuatro mezclas de 2; el nivel 3 son los casos base y no se mezcla. Total: n · log₂ n. Con n = 8 son 3 × 8 = 24 elementos copiados (se verificó contándolos al ejecutar el código corregido de la diapositiva siguiente: coincide con n log₂ n cuando n es potencia de 2, p. ej. 10 240 con n = 1 024). Con n = 1 024, n² = 1 048 576: unas 100 veces más (102,4). Es siempre O(n log n), también en el peor caso, a cambio de un arreglo auxiliar de hasta n elementos."
+            "notes": "Se divide a la mitad hasta tener n subarreglos de un elemento: con n = 8 son tres divisiones sucesivas (8 → 4 → 2 → 1), es decir, log₂ 8 = 3 niveles con mezcla (los niveles de las figuras anteriores). Mezclar todos los subarreglos de un nivel recorre los n elementos una sola vez, así que cada nivel cuesta O(n): el nivel 0 hace una mezcla de 8 elementos; el nivel 1, dos mezclas de 4; el nivel 2, cuatro mezclas de 2; el nivel 3 son los casos base y no se mezcla. Total: n · log₂ n. Con n = 8 son 3 × 8 = 24 elementos copiados (se verificó contándolos al ejecutar el código corregido de la diapositiva siguiente: coincide con n log₂ n cuando n es potencia de 2, p. ej. 10 240 con n = 1 024). Con n = 1 024, n² = 1 048 576: unas 100 veces más (102,4). Es siempre O(n log n), también en el peor caso, a cambio de un arreglo auxiliar de hasta n elementos."
           },
           {
             "type": "code",

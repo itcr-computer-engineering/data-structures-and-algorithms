@@ -1,6 +1,10 @@
 // Diagramas del tema «Grafos» (CE-1103): grafos con estados de algoritmo y paneles con estructuras auxiliares.
 // kinds: grafos-graph (grafo a la izquierda + bloques a la derecha), grafos-panels (2-3 grafos en paneles)
-// y grafos-matrices (grafo opcional + matrices n × n con celdas resaltadas + bloques a la derecha + avisos abajo).
+// y grafos-matrices (grafo opcional + matrices n × n con celdas resaltadas + bloques a la derecha + avisos abajo;
+// una matriz con `fromGraph` se calcula con las aristas del grafo y admite `rowLabels` / `colLabels`),
+// grafos-lista (grafo + su lista de adyacencia, calculada con las aristas),
+// grafos-floyd (grafo + matrices D y Q de los pasos `steps` de Floyd, calculadas con el algoritmo) y
+// grafos-warshall (grafo + matrices T(k) de Warshall en fila + tabla con las celdas que cambian).
 const C = require('./components');
 
 const { text, chip, callout, codeBlock, table, paragraphs, surface } = C;
@@ -131,7 +135,7 @@ function resolveGraph(spec) {
     const tg = spec.tags && spec.tags[n.id];
     if (tg !== undefined) n.tag = typeof tg === 'string' || typeof tg === 'number' ? { text: String(tg) } : tg;
   });
-  return { directed, nodes, edges, nodeSize: spec.nodeSize, weightSize: spec.weightSize };
+  return { directed, nodes, edges, nodeSize: spec.nodeSize, weightSize: spec.weightSize, padX: spec.padX, padY: spec.padY };
 }
 
 // ------------------------------------------------------------------ estilos
@@ -181,8 +185,8 @@ function drawGraph(ctx, g, rect, { panel = true } = {}) {
   const d = g.nodeSize || 0.64;
   const r = d / 2;
   if (panel) surface(ctx, null, rect);
-  const padX = r + 0.28;
-  const padY = r + (g.nodes.some((n) => n.tag) ? 0.4 : 0.2);
+  const padX = g.padX !== undefined ? g.padX : r + 0.28;
+  const padY = g.padY !== undefined ? g.padY : r + (g.nodes.some((n) => n.tag) ? 0.4 : 0.2);
   const pos = {};
   g.nodes.forEach((n) => {
     pos[n.id] = { x: rect.x + padX + n.x * (rect.w - 2 * padX), y: rect.y + padY + n.y * (rect.h - 2 * padY) };
@@ -446,7 +450,8 @@ function bottomCallouts(ctx, s) {
 }
 
 // ------------------------------------------------------------------ matriz n × n con encabezados vi / vj y celdas resaltadas
-// m: { label, tone, rows[[...]], labels[] (por defecto v1…vn), cellW, headW, rowH, hl: [[fila, columna, tono?]] }
+// m: { label, tone, rows[[...]], labels[] (por defecto v1…vn), rowLabels[], colLabels[], cellW, headW, rowH, fontSize,
+// compact (rótulo y márgenes más bajos), hl: [[fila, columna, tono?]] }
 function matrixBlock(ctx, m, x, y) {
   const { colors } = ctx.theme;
   const T = ctx.T;
@@ -455,22 +460,111 @@ function matrixBlock(ctx, m, x, y) {
   const hw = m.headW || 0.6;
   const rh = m.rowH || 0.52;
   const labels = m.labels || Array.from({ length: nCols }, (_, i) => `v${i + 1}`);
+  const rowLabels = m.rowLabels || labels;
+  const colLabels = m.colLabels || labels;
   const tw = hw + nCols * cw;
   const lt = T[m.tone || 'teal'];
-  text(ctx, m.label, { x, y, w: tw + 0.3, h: 0.35, fontSize: 17, bold: true, color: lt.text, valign: 'middle' });
+  const labH = m.compact ? 0.32 : 0.35;
+  const gap = m.compact ? 0.38 : 0.42;
+  text(ctx, m.label, { x, y, w: tw + 0.3, h: labH, fontSize: m.compact ? 16 : 17, bold: true, color: lt.text, valign: 'middle' });
   const marks = new Map((m.hl || []).map(([r, c, tone]) => [`${r}:${c}`, tone || 'teal']));
-  const rows = m.rows.map((r, i) => [labels[i] || '', ...r]);
+  const rows = m.rows.map((r, i) => [rowLabels[i] || '', ...r]);
   const tb = table(ctx, {
-    x, y: y + 0.42, colW: [hw, ...Array.from({ length: nCols }, () => cw)], header: ['', ...labels], rows,
+    x, y: y + gap, colW: [hw, ...Array.from({ length: nCols }, () => cw)], header: ['', ...colLabels], rows,
     rowH: Array.from({ length: rows.length + 1 }, () => rh), fontSize: m.fontSize || 18,
-    align: Array.from({ length: nCols + 1 }, () => 'center'),
+    align: Array.from({ length: nCols + 1 }, (_, c) => (c === 0 && m.rowLabels ? 'left' : 'center')),
     cellStyle: (r, c) => {
       if (c === 0) return { bold: true, color: colors.heading, fill: colors.tealLight };
       const tone = marks.get(`${r}:${c - 1}`);
       return tone ? { fill: T[tone].soft, color: T[tone].text, bold: true } : {};
     },
   });
-  return { w: tw, h: 0.42 + tb.h };
+  return { w: tw, h: gap + tb.h };
+}
+
+// ------------------------------------------------------------------ matrices calculadas con las aristas del grafo
+const show = (v) => (Number.isFinite(v) ? String(v) : '∞');
+const indexOf = (g) => Object.fromEntries(g.nodes.map((n, i) => [n.id, i]));
+
+// Arcos como pares [origen, destino, peso]; en un grafo no dirigido (o con `bi`) se agrega también el sentido contrario.
+function arcs(g) {
+  const idx = indexOf(g);
+  const out = [];
+  g.edges.forEach((e) => {
+    const a = idx[e.a];
+    const b = idx[e.b];
+    out.push([a, b, e.w]);
+    if (!g.directed || e.bi) out.push([b, a, e.w]);
+  });
+  return out;
+}
+
+// Matriz de adyacencia (1) o de pesos (el peso de la arista); `zero` es el valor donde no hay arco.
+function edgeMatrix(g, zero = 0) {
+  const n = g.nodes.length;
+  const rows = Array.from({ length: n }, () => Array.from({ length: n }, () => zero));
+  arcs(g).forEach(([a, b, w]) => { rows[a][b] = w === undefined || w === null ? 1 : w; });
+  return rows;
+}
+
+// Celdas distintas de `zero`, para resaltarlas.
+function filledCells(rows, zero, tone) {
+  const out = [];
+  rows.forEach((r, i) => r.forEach((v, j) => { if (v !== zero) out.push([i, j, tone]); }));
+  return out;
+}
+
+// Floyd: devuelve las matrices D y Q de los pasos 0…last, con las celdas que cambian en cada paso.
+function floydSequence(g, last) {
+  const n = g.nodes.length;
+  const D = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 0 : Infinity)));
+  arcs(g).forEach(([a, b, w]) => {
+    if (w === undefined || w === null) throw new Error('Floyd necesita aristas con peso');
+    if (a !== b && w < D[a][b]) D[a][b] = w;
+  });
+  const Q = D.map((r, i) => r.map((v, j) => (i !== j && Number.isFinite(v) ? i + 1 : 0)));
+  const seq = [{ k: 0, D, Q, changed: [] }];
+  for (let k = 1; k <= last; k++) {
+    const p = seq[k - 1];
+    const D2 = p.D.map((r) => r.slice());
+    const Q2 = p.Q.map((r) => r.slice());
+    const changed = [];
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        const alt = p.D[i][k - 1] + p.D[k - 1][j];
+        if (alt < p.D[i][j]) {
+          D2[i][j] = alt;
+          Q2[i][j] = p.Q[k - 1][j];
+          changed.push([i, j]);
+        }
+      }
+    }
+    seq.push({ k, D: D2, Q: Q2, changed });
+  }
+  return seq;
+}
+
+// Warshall: matrices T(0)…T(last) (1 en la diagonal y en cada arco) con las celdas que pasan de 0 a 1.
+function warshallSequence(g, last) {
+  const n = g.nodes.length;
+  const T0 = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)));
+  arcs(g).forEach(([a, b]) => { T0[a][b] = 1; });
+  const seq = [{ k: 0, T: T0, changed: [] }];
+  for (let k = 1; k <= last; k++) {
+    const p = seq[k - 1];
+    const T = p.T.map((r) => r.slice());
+    const changed = [];
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (!p.T[i][j] && p.T[i][k - 1] && p.T[k - 1][j]) {
+          T[i][j] = 1;
+          changed.push([i, j]);
+        }
+      }
+    }
+    seq.push({ k, T, changed });
+  }
+  return seq;
 }
 
 // ------------------------------------------------------------------ grafo opcional + matrices + bloques a la derecha
@@ -478,15 +572,22 @@ function matricesSlide(ctx, s) {
   const { mx, w } = ctx.theme.page;
   const top = s.top || 1.85;
   let x = mx;
+  let g = null;
   if (s.graph) {
-    const g = resolveGraph(s.graph);
+    g = resolveGraph(s.graph);
     const gw = s.graph.width || 4.4;
     const gh = s.graph.height || 3.12;
     drawGraph(ctx, g, { x, y: top + 0.42, w: gw, h: gh });
     if (s.graphLabel) text(ctx, s.graphLabel, { x, y: top, w: gw, h: 0.35, fontSize: 17, bold: true, color: ctx.T.slate.text, valign: 'middle' });
     x += gw + 0.3;
   }
-  s.matrices.forEach((m) => {
+  s.matrices.forEach((m0) => {
+    let m = m0;
+    if (m0.fromGraph) {
+      if (!g) throw new Error('`fromGraph` necesita `graph`');
+      const rows = edgeMatrix(g, 0);
+      m = { ...m0, rows, hl: [...filledCells(rows, 0, m0.fromGraph === true ? 'teal' : m0.fromGraph), ...(m0.hl || [])] };
+    }
     const b = matrixBlock(ctx, m, x, top);
     x += b.w + 0.25;
   });
@@ -497,8 +598,154 @@ function matricesSlide(ctx, s) {
   bottomCallouts(ctx, s);
 }
 
+// ------------------------------------------------------------------ grafo + lista de adyacencia (calculada con las aristas)
+// Campos: graph (como grafos-graph, con width/height), graphLabel, listLabel, callout(s).
+// Cada fila: celda del nodo (con puntero) → nodos destino enlazados → null.
+function ptrCell(ctx, x, y, w, h, str, tone, pf, size = 22) {
+  const { colors, fonts } = ctx.theme;
+  const t = ctx.T[tone];
+  C.box(ctx, { x, y, w, h, fill: t.soft, line: t.accent, shape: 'rect', lineWidth: 2 });
+  const dx = x + w * (1 - pf);
+  ctx.slide.addShape(ctx.pptx.ShapeType.line, { x: dx, y, w: 0, h, line: { color: t.accent, width: 1.5 } });
+  text(ctx, String(str), { x, y, w: w * (1 - pf), h, fontSize: size, bold: true, color: colors.heading, fontFace: fonts.heading, align: 'center', valign: 'middle' });
+  const cx = dx + (w * pf) / 2;
+  ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: cx - 0.07, y: y + h / 2 - 0.07, w: 0.14, h: 0.14, fill: { color: colors.slate }, line: { type: 'none' } });
+  return cx;
+}
+
+function listaSlide(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const T = ctx.T;
+  const { mx, w } = ctx.theme.page;
+  const top = s.top || 1.85;
+  const g = resolveGraph(s.graph);
+  const gw = s.graph.width || 4.8;
+  const gh = s.graph.height || 3.9;
+  const y0 = top + 0.42;
+  if (s.graphLabel) text(ctx, s.graphLabel, { x: mx, y: top, w: gw, h: 0.35, fontSize: 17, bold: true, color: T.slate.text, valign: 'middle' });
+  drawGraph(ctx, g, { x: mx, y: y0, w: gw, h: gh });
+  const px = mx + gw + 0.3;
+  const pw = w - mx - px;
+  if (s.listLabel) text(ctx, s.listLabel, { x: px, y: top, w: pw, h: 0.35, fontSize: 17, bold: true, color: T.amber.text, valign: 'middle' });
+  surface(ctx, null, { x: px, y: y0, w: pw, h: gh });
+
+  const lists = g.nodes.map(() => []);
+  arcs(g).forEach(([a, b]) => { if (!lists[a].includes(b)) lists[a].push(b); });
+  lists.forEach((l) => l.sort((a, b) => a - b));
+  const n = g.nodes.length;
+  const maxLen = Math.max(1, ...lists.map((l) => l.length));
+  const GAP = 0.5;
+  const need = 0.95 + maxLen * (GAP + 0.95) + 0.45 + 0.65;
+  const k = Math.min(1, (pw - 0.5) / need);
+  const hw = 0.95 * k;
+  const nw = 0.95 * k;
+  const gx = GAP * k;
+  const rh = Math.min(0.58, (gh - 0.5) / (n * 1.3));
+  const gy = n > 1 ? (gh - 0.5 - n * rh) / (n - 1) : 0;
+  const x0 = px + 0.3;
+  const nullTxt = (x, cy) => text(ctx, 'null', { x, y: cy - 0.2, w: 0.7, h: 0.4, fontSize: 16, color: colors.slate, fontFace: fonts.code, valign: 'middle' });
+  g.nodes.forEach((nd, i) => {
+    const y = y0 + 0.25 + i * (rh + gy);
+    const cy = y + rh / 2;
+    let dotX = ptrCell(ctx, x0, y, hw, rh, nd.label || nd.id, 'amber', 0.36);
+    let nx = x0 + hw + gx;
+    lists[i].forEach((j) => {
+      C.arrow(ctx, { x1: dotX, y1: cy, x2: nx - 0.02, y2: cy, color: colors.slate, width: 2.25 });
+      const t = g.nodes[j];
+      dotX = ptrCell(ctx, nx, y, nw, rh, t.label || t.id, 'teal', 0.34);
+      nx += nw + gx;
+    });
+    C.arrow(ctx, { x1: dotX, y1: cy, x2: nx - gx + 0.42, y2: cy, color: colors.slate, width: 2.25 });
+    nullTxt(nx - gx + 0.47, cy);
+  });
+  bottomCallouts(ctx, s);
+}
+
+// ------------------------------------------------------------------ Floyd: grafo + matrices D y Q de los pasos indicados
+// Campos: graph (width/height del panel del grafo), formula (código plano), legend [{ label, tone, solid }],
+// steps [0, 1, …] (cada paso es una fila: D a la izquierda, Q a la derecha), labels [[rótulo D, rótulo Q], …],
+// cellW, headW, rowH, fontSize y callout(s). Las matrices se calculan con el algoritmo; las celdas que cambian
+// en el paso k van en ámbar y las que se usan para calcularlas (fila y columna de vk en el paso anterior), en verde azulado.
+function floydSlide(ctx, s) {
+  const { mx } = ctx.theme.page;
+  const top = s.top || 1.8;
+  const g = resolveGraph(s.graph);
+  const lw = s.graph.width || 4.1;
+  const gh = s.graph.height || 2.9;
+  drawGraph(ctx, g, { x: mx, y: top, w: lw, h: gh });
+  let y = top + gh + 0.15;
+  if (s.formula) y += codeBlock(ctx, { x: mx, y, w: lw, code: s.formula, lang: 'plain', fontSize: s.formulaSize || 14 }) + 0.12;
+  if (s.legend) legend(ctx, s.legend, mx, y);
+
+  const steps = s.steps || [0, 1];
+  const seq = floydSequence(g, Math.max(...steps));
+  const opts = { cellW: s.cellW || 0.6, headW: s.headW || 0.55, rowH: s.rowH || 0.29, fontSize: s.fontSize || 15, compact: true };
+  const mw = opts.headW + g.nodes.length * opts.cellW;
+  const mh = 0.38 + (g.nodes.length + 1) * opts.rowH;
+  const x0 = mx + lw + 0.3;
+  steps.forEach((k, r) => {
+    const cur = seq[k];
+    const next = steps.includes(k + 1) ? seq[k + 1] : null;
+    const hlD = cur.changed.map(([i, j]) => [i, j, 'amber']);
+    const hlQ = cur.changed.map(([i, j]) => [i, j, 'amber']);
+    if (next) {
+      next.changed.forEach(([i, j]) => {
+        hlD.push([i, next.k - 1, 'teal'], [next.k - 1, j, 'teal']);
+        hlQ.push([next.k - 1, j, 'teal']);
+      });
+    }
+    const lbl = (s.labels && s.labels[r]) || [`D${k}`, `Q${k}`];
+    const dRows = cur.D.map((row) => row.map(show));
+    const y1 = top + r * (mh + 0.12);
+    matrixBlock(ctx, { ...opts, label: lbl[0], rows: dRows, hl: hlD }, x0, y1);
+    matrixBlock(ctx, { ...opts, label: lbl[1], rows: cur.Q, hl: hlQ }, x0 + mw + 0.3, y1);
+  });
+  bottomCallouts(ctx, s);
+}
+
+// ------------------------------------------------------------------ Warshall: grafo + tabla de cambios + matrices T(0)…T(n) en fila
+// Campos: graph, tableLabel, matrixLabel (prefijo, por defecto «T»), labels[] (nombres de nodo en las matrices),
+// cellW, headW, rowH, fontSize y callout(s). Las matrices se calculan con el algoritmo y las celdas que pasan de 0 a 1 van en ámbar.
+function warshallSlide(ctx, s) {
+  const { mx, w } = ctx.theme.page;
+  const top = s.top || 1.8;
+  const g = resolveGraph(s.graph);
+  const gw = s.graph.width || 4.4;
+  const gh = s.graph.height || 2.25;
+  drawGraph(ctx, g, { x: mx, y: top, w: gw, h: gh });
+  const n = g.nodes.length;
+  const seq = warshallSequence(g, n);
+  const names = s.labels || g.nodes.map((nd) => nd.label || nd.id);
+  const cell = ([i, j]) => `[${i + 1},${j + 1}]`;
+  drawSide(ctx, [{
+    type: 'table',
+    label: s.tableLabel || 'Celdas que pasan de 0 a 1 (ámbar en las matrices)',
+    columns: ['Paso', 'Celdas nuevas'],
+    colWeights: [1, 3],
+    rows: seq.slice(1).map((p) => [`k = ${p.k}`, p.changed.length ? p.changed.map(cell).join(' · ') : 'Ninguna']),
+    rowH: 0.36,
+    fontSize: 16,
+  }], mx + gw + 0.4, top, w - mx - (mx + gw + 0.4));
+
+  const cw = s.cellW || 0.45;
+  const hw = s.headW || 0.45;
+  const gapX = (w - 2 * mx - seq.length * (hw + n * cw)) / (seq.length - 1);
+  const y = top + gh + 0.2;
+  const prefix = s.matrixLabel || 'T';
+  seq.forEach((p, i) => {
+    matrixBlock(ctx, {
+      label: `${prefix}(${p.k})`, rows: p.T, labels: names, cellW: cw, headW: hw, rowH: s.rowH || 0.32, fontSize: s.fontSize || 16, compact: true,
+      hl: p.changed.map(([r, c]) => [r, c, 'amber']),
+    }, mx + i * (hw + n * cw + gapX), y);
+  });
+  bottomCallouts(ctx, s);
+}
+
 module.exports = {
   'grafos-graph': graphSide,
   'grafos-panels': graphPanels,
   'grafos-matrices': matricesSlide,
+  'grafos-lista': listaSlide,
+  'grafos-floyd': floydSlide,
+  'grafos-warshall': warshallSlide,
 };

@@ -84,20 +84,72 @@
       "notes": "Los algoritmos lossy usan métodos de codificación que generan representaciones inexactas de los datos originales. La calidad se mide según la cantidad de información que se pierde."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "compresion-pixeles",
       "section": "Tipos de compresión",
       "title": "Con pérdida: el parámetro de calidad",
-      "image": "image-01.png",
-      "alt": "Fotografía de un niño con casco de aviador comprimida con calidades de 50 %, 33 % y 5 %",
+      "scene": {
+        "palette": { "n": "navy", "w": "heading", "a": "amber", "r": "red", "s": "slateFill", "g": "green" },
+        "rows": [
+          "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+          "nnnnnwwwnnnnnnnnnnnnnnnnnnaaannn",
+          "nnnnwwwwwnnnnnnnnnnnnnnnnaaaaann",
+          "nnnnnnnnnnnnnnnrnnnnnnnnnaaaaann",
+          "nnnnnnnnnnnnnnrrnnnnrnnnnnaaannn",
+          "nnnnnnnnnnnnnrrrrrrrrrrnnnnnnnnn",
+          "nnnnnnnnnnnnnnrrrrrrrrrraannnnnn",
+          "nnnnnnnnnnnnnnnnnrnnnnnnnnnnnnnn",
+          "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+          "nnnnnnnnnssnnnnnnnnnnnnnnnssnnnn",
+          "nnnnnnnnsssssnnnnnnnnnnnnsssssnn",
+          "nnnnnnsssssssssnnnnnnnnnsssssssn",
+          "nnnnsssssssssssssnnnnnsssssssssn",
+          "gggggggggggggggggggggggggggggggg",
+          "gggggggggggggggggggggggggggggggg",
+          "gggggggggggggggggggggggggggggggg"
+        ]
+      },
+      "panelH": 3.9,
+      "levels": [
+        { "label": "Calidad 50 %", "block": 1, "tone": "green", "quality": 50, "note": "Se conserva casi todo el detalle." },
+        { "label": "Calidad 33 %", "block": 2, "tone": "amber", "quality": 33, "note": "Se pierde detalle: los bordes se ven escalonados." },
+        { "label": "Calidad 5 %", "block": 4, "tone": "red", "quality": 5, "note": "Bloques grandes: ya no se reconocen los detalles." }
+      ],
       "caption": "Un parámetro de calidad equilibra la tasa de compresión y la degradación visible (50 %, 33 %, 5 %).",
       "notes": "Los algoritmos lossy normalmente exponen parámetros de calidad que permiten ajustar el balance entre la tasa de compresión y la degradación que nota el usuario final. Pregunta: ¿en qué punto empieza a molestar la degradación?"
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "compresion-pixeles",
       "section": "Tipos de compresión",
       "title": "¿Por qué usar compresión con pérdida?",
-      "image": "image-02.png",
-      "alt": "Fotografía de un gato: original a la izquierda y versión con compresión con pérdida, más pixelada, a la derecha",
+      "scene": {
+        "palette": { "n": "navy", "w": "heading", "o": "amberMid", "p": "red", "g": "green", "k": "codeBg" },
+        "rows": [
+          "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+          "nnnnnnonnnnnnnnnnnnnnnnnnonnnnnn",
+          "nnnnnnooonnnnnnnnnnnnnnooonnnnnn",
+          "nnnnnnoppoonnnnnnnnnnoopponnnnnn",
+          "nnnnnnoppooonnnnnnnnooopponnnnnn",
+          "nnnnnnoooooooooooooooooooonnnnnn",
+          "nnnnnoooooooooooooooooooooonnnnn",
+          "nnnnnooooooooowwwwooooooooonnnnn",
+          "nnnnnoooggooowwwwwwoooggooonnnnn",
+          "nnnnnooogkooowwwwwwoookgooonnnnn",
+          "nnnnnoooooooowwwwwwoooooooonnnnn",
+          "nnnnnoooowwwwwppppwwwwwoooonnnnn",
+          "nnnnnnooowwwwwwkkwwwwwwooonnnnnn",
+          "nnnnnnnooowwwwwwwwwwwwooonnnnnnn",
+          "nnnnnnnnnoowwwwwwwwwwoonnnnnnnnn",
+          "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+        ]
+      },
+      "levels": [
+        { "label": "Original", "sub": "Alta fidelidad (raw)", "block": 1, "tone": "green", "note": "Archivo enorme: conserva todos los detalles." },
+        { "label": "Con pérdida", "sub": "Compresión lossy", "block": 2, "tone": "amber", "note": "Mucho más pequeño, a cambio de algo de degradación." }
+      ],
+      "between": { "label": "Compresión con pérdida" },
+      "panelH": 4.0,
       "caption": "Los formatos de alta fidelidad (raw) son enormes: sin compresión lossy, el streaming de audio y video no sería posible.",
       "notes": "Se usa donde la calidad no es crítica, como la transmisión de video y audio en línea."
     },
@@ -513,13 +565,17 @@
       "notes": "El resultado de la compresión no requiere una tabla: (0, 0, a) (0, 0, b) (2, 2, c) (4, 3, a) (2, 2, a). Al comprimir un archivo grande se puede leer y comprimir conforme llegan los datos."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "compresion-lz77",
       "section": "LZ77",
       "title": "LZ77: ¿por qué 4 coincidencias?",
-      "image": "image-08.png",
-      "alt": "Ejemplo de compresión LZ77 con diccionario de tamaño 6 y buffer de tamaño 4, con las tripletas (_,0,a), (1,1,c), (3,4,b), (3,3,a) y (1,2,c)",
+      "text": "aacaacabcabaaac",
+      "dict": 6,
+      "buffer": 4,
+      "nextInBuffer": false,
+      "highlight": [2],
       "caption": "¿Puede explicar por qué la tripleta (3, 4, b) tiene 4 coincidencias?",
-      "notes": "Respuesta sugerida: con offset 3 se copia 'aac' desde el diccionario y la coincidencia continúa: la cuarta 'a' coincide con la primera 'a' de la propia secuencia copiada. Es decir, la coincidencia puede extenderse más allá del diccionario y solaparse con el texto que se está comprimiendo (al descomprimir se copia carácter por carácter). La imagen usa un diccionario de tamaño 6 y un buffer de tamaño 4. La siguiente diapositiva lo comprueba descomprimiendo estas cinco tripletas."
+      "notes": "Respuesta sugerida: con offset 3 se copia 'aac' desde el diccionario y la coincidencia continúa: la cuarta 'a' coincide con la primera 'a' de la propia secuencia copiada. Es decir, la coincidencia puede extenderse más allá del diccionario y solaparse con el texto que se está comprimiendo (al descomprimir se copia carácter por carácter). La figura usa un diccionario de tamaño 6 y un buffer de tamaño 4: el buffer marca hasta dónde puede llegar una coincidencia, y el carácter siguiente queda justo después. La siguiente diapositiva lo comprueba descomprimiendo estas cinco tripletas."
     },
     {
       "type": "table",
@@ -546,11 +602,17 @@
       "notes": "Responde la pregunta de la diapositiva anterior. Antes de (3, 4, b) el buffer es «aac» (3 caracteres). Copiar 4 desde 3 posiciones atrás obliga a leer caracteres que se acaban de escribir: se copian uno por uno la 1.ª «a», la 2.ª «a», la «c» y, por último, la 1.ª «a» recién copiada, lo que da «aaca»; luego se agrega «b». Si se copiara el bloque completo de una vez, no habría de dónde sacar la 4.ª «a». Lo mismo ocurre en (1, 2, c): con offset 1 se copia dos veces la última «a» («aa»). Regla: si o = 0 solo se escribe c; si o ≠ 0 se copian l caracteres desde o posiciones atrás y luego se escribe c. El «_» del primer offset significa «no aplica», porque no hay coincidencia. El resultado final es la cadena original, aacaacabcabaaac (15 caracteres)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "compresion-lz77",
       "section": "LZ77",
       "title": "LZ77 con diccionario inicial",
-      "image": "image-09.png",
-      "alt": "Ejemplo de LZ77 con el diccionario inicial cabraca y las tripletas (_,0,d), (7,4,r) y (3,5,d)",
+      "text": "cabracadabrarrarrad",
+      "start": 7,
+      "dict": 7,
+      "buffer": 6,
+      "rowStep": 0.95,
+      "cellH": 0.66,
+      "callout": { "tone": "teal", "text": "`(7, 4, r)`: retroceder 7, copiar «abra» y agregar «r». `(3, 5, d)`: copiar «rarra», que se solapa con el buffer, y agregar «d»." },
       "caption": "Con el diccionario inicial «cabraca»: tripletas (_, 0, d), (7, 4, r) y (3, 5, d).",
       "notes": "Un diccionario inicial permite que desde el primer paso existan coincidencias posibles."
     },

@@ -66,13 +66,67 @@
       "notes": "Pregunta para la clase: ¿qué pasa con un procedimiento que nunca termina? No cumple la característica de finitud, así que no es un algoritmo."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-representaciones",
       "section": "Algoritmos",
       "title": "Representaciones de un algoritmo",
-      "image": "02-analisis-algoritmos/image-00.png",
-      "alt": "Cuatro representaciones del algoritmo del factorial: pseudocódigo, lenguaje natural, definición formal y diagrama de flujo",
-      "caption": "Pseudocódigo, lenguaje natural, definición formal y diagrama de flujo (ejemplo: factorial).",
-      "notes": "Un mismo algoritmo se puede representar de varias formas: pseudocódigo, lenguaje natural, definición formal y diagramas de flujo. El ejemplo de la figura es el factorial de un entero no negativo."
+      "panels": [
+        {
+          "title": "Pseudocódigo",
+          "tone": "teal",
+          "type": "code",
+          "lang": "pseudo",
+          "code": "LEER n\np ← 1\nMIENTRAS n ≠ 0 HACER\n    p ← p · n\n    n ← n − 1\nFIN MIENTRAS\nRETORNAR p",
+          "weight": 3
+        },
+        {
+          "title": "Lenguaje natural",
+          "tone": "amber",
+          "type": "text",
+          "text": "«El factorial de un entero no negativo n, denotado n!, es el producto de todos los enteros positivos menores o iguales que n.»",
+          "size": 17,
+          "weight": 3.6
+        },
+        {
+          "title": "Definición formal",
+          "tone": "green",
+          "type": "lines",
+          "lines": [
+            "factorial : N → N",
+            "Para todo i en N:",
+            "     factorial(0) = 1",
+            "     factorial(i + 1) = (i + 1) · factorial(i)"
+          ],
+          "size": 16,
+          "weight": 4.8
+        }
+      ],
+      "topH": 2.4,
+      "flow": {
+        "title": "Diagrama de flujo",
+        "tone": "slate",
+        "cols": 6,
+        "rowGap": 1.1,
+        "nodes": [
+          { "id": "ini", "label": "Inicio", "shape": "terminal", "col": 0, "row": 0, "tone": "slate" },
+          { "id": "leer", "label": "Leer n", "shape": "process", "col": 1, "row": 0, "tone": "teal" },
+          { "id": "p1", "label": "p ← 1", "shape": "process", "col": 2, "row": 0, "tone": "teal" },
+          { "id": "dec", "label": "¿n ≠ 0?", "shape": "decision", "col": 3, "row": 0, "tone": "amber" },
+          { "id": "cuerpo", "label": "p ← p · n\nn ← n − 1", "shape": "process", "col": 3, "row": 1, "tone": "teal" },
+          { "id": "ret", "label": "Retornar p", "shape": "process", "col": 4, "row": 0, "tone": "green" },
+          { "id": "fin", "label": "Fin", "shape": "terminal", "col": 5, "row": 0, "tone": "slate" }
+        ],
+        "edges": [
+          { "from": "ini", "to": "leer" },
+          { "from": "leer", "to": "p1" },
+          { "from": "p1", "to": "dec" },
+          { "from": "dec", "to": "ret", "label": "No" },
+          { "from": "dec", "to": "cuerpo", "label": "Sí" },
+          { "from": "cuerpo", "to": "dec", "join": ["p1", "dec"] },
+          { "from": "ret", "to": "fin" }
+        ]
+      },
+      "notes": "Un mismo algoritmo se puede representar de varias formas: pseudocódigo, lenguaje natural, definición formal y diagramas de flujo. El ejemplo de la figura es el factorial de un entero no negativo: en las cuatro representaciones se calcula n! como el producto de todos los enteros positivos menores o iguales que n (p acumula el producto y n se reduce hasta llegar a 0)."
     },
     {
       "type": "cards",
@@ -160,11 +214,35 @@
       "notes": "Con el modelo computacional encontramos una función f(n) del tamaño de la entrada. Línea por línea: la asignación inicial cuesta 3T; el for cuesta T + 2nT; en el peor caso (arreglo creciente) la condición del if se cumple siempre, así que el if y la asignación interna cuestan 2T(n-1) cada uno; el return cuesta T. Suma: 3T + T + 2nT + 4nT - 4T + T = 6nT + T. Imagínese el trabajo de una función como f(n) = 12754n^2 + 4353n + 834 lg2(n) + 13546: por eso conviene el análisis asintótico. Reglas para contar en el peor caso: una secuencia suma el costo de sus instrucciones; un if cuesta la condición más el máximo entre sus ramas; un for cuesta la inicialización (una sola vez) más la condición, el incremento y n veces el cuerpo. Sobre el conteo del for: la condición se evalúa n veces (n-1 veces verdadera y una falsa) y el incremento n-1 veces; contando con más finura el for cuesta 2nT y el total es 6nT. La diapositiva usa T + 2nT (total 6nT + T), una aproximación que se diferencia en una sola T: las constantes aditivas no importan, en ambos casos f(n) = O(n)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-ventajas",
       "section": "Análisis teórico",
       "title": "Empírico vs. teórico",
-      "image": "02-analisis-algoritmos/image-01.png",
-      "alt": "Comparación entre análisis empírico y teórico: definición, ventajas y desventajas de cada uno",
+      "leftW": 6.0,
+      "bandH": 2.05,
+      "labels": { "pro": "Ventaja", "con": "Desventaja" },
+      "rows": [
+        {
+          "title": "Análisis empírico",
+          "tone": "amber",
+          "text": "Consiste en ejecutar un programa, un conjunto de programas u otras operaciones para evaluar el desempeño relativo de un objeto, normalmente con una serie de pruebas estándar. También se conoce como **benchmark**.",
+          "items": [
+            { "kind": "pro", "text": "Muy fácil de entender y calcular." },
+            { "kind": "con", "text": "Los resultados pueden variar según el hardware." },
+            { "kind": "con", "text": "Requiere ejecutar el código." }
+          ]
+        },
+        {
+          "title": "Análisis teórico de algoritmos",
+          "tone": "teal",
+          "text": "Es una parte importante de la teoría de complejidad computacional: estima los recursos que necesita un algoritmo para resolver un problema específico.",
+          "items": [
+            { "kind": "pro", "text": "Independiente de la plataforma: predice mejor el desempeño." },
+            { "kind": "con", "text": "Difícil de calcular y de entender." },
+            { "kind": "pro", "text": "Se calcula con solo mirar el código." }
+          ]
+        }
+      ],
       "caption": "Empírico: depende del hardware · Teórico: independiente de la plataforma.",
       "notes": "Empírico (benchmark): muy fácil de entender y calcular, pero los resultados varían según el hardware y requiere ejecutar el código. Teórico: independiente de la plataforma y brinda una mejor forma de predecir el desempeño; se calcula con solo mirar el código, aunque es más difícil de calcular y de entender. Es una parte importante de la teoría de complejidad computacional."
     },
@@ -227,22 +305,72 @@
       "notes": "Si el elemento está en la posición i se ejecutan i operaciones. La suma de comparaciones sobre todas las posiciones es 1 + 2 + 3 + ... + n = n(n+1)/2. El promedio por elemento es n(n+1)/2 / n = (n+1)/2: en promedio se revisa cerca de la mitad del arreglo. En el diagrama se muestra el caso promedio con el elemento en la posición 4 solo como ejemplo de una posición intermedia. Hipótesis del cálculo: el elemento está en el arreglo y la probabilidad de que esté en cada posición es la misma, p(i) = 1/n (distribución uniforme). Con eso, el caso promedio es el valor esperado del número de comparaciones: la suma de i · p(i) para i de 1 a n, es decir, (1/n)(1 + 2 + ... + n) = (n+1)/2. Si el elemento puede no estar, o las posiciones no son igual de probables, el resultado cambia: por eso el caso promedio casi no se calcula."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-grafica",
       "section": "Mejor, peor y promedio",
       "title": "Pasos vs. tamaño del problema",
-      "image": "02-analisis-algoritmos/image-02.png",
-      "alt": "Gráfica de número de pasos contra tamaño del problema con tres curvas: peor caso en azul, caso promedio en verde y mejor caso en rojo",
-      "caption": "Peor caso (azul), caso promedio (verde) y mejor caso (rojo).",
-      "notes": "Para cada tamaño de problema n hay muchas entradas posibles (los puntos negros); cada una requiere una cantidad distinta de pasos. El mejor caso es la curva inferior, el peor caso la superior y el promedio queda entre ambas."
+      "charts": [
+        {
+          "xLabel": "Tamaño del problema",
+          "yLabel": "Número de pasos",
+          "xMin": 0,
+          "xMax": 6,
+          "yMin": 0,
+          "yMax": 32,
+          "xTicks": [1, 2, 3, 4, { "at": 4.95, "label": "…" }, { "at": 5.9, "label": "n" }],
+          "padR": 0.3,
+          "dotTone": "heading",
+          "columns": [
+            { "x": 1, "ys": [8.5] },
+            { "x": 2, "ys": [14.2, 9.9] },
+            { "x": 3, "ys": [18.6, 16.6, 14.3, 12.8, 11.3, 8.0] },
+            { "x": 4, "ys": [26.8, 25.8, 24.4, 23.1, 21.8, 20.4, 19.1, 17.7, 16.7, 14.7, 13.2, 12.6, 11.4, 10.4, 9.4, 7.0] }
+          ],
+          "series": [
+            { "stat": "max", "smooth": true, "extend": { "to": 4.7, "slope": 0.55 }, "tone": "red", "arrow": true, "label": "Peor caso", "labelFont": "body" },
+            { "stat": "mean", "smooth": true, "extend": { "to": 4.7, "slope": 0.55 }, "tone": "amber", "arrow": true, "label": "Caso promedio", "labelFont": "body" },
+            { "stat": "min", "smooth": true, "extend": { "to": 4.7, "slope": 0.55 }, "tone": "green", "arrow": true, "label": "Mejor caso", "labelFont": "body" }
+          ]
+        }
+      ],
+      "chartH": 4.5,
+      "legend": [
+        { "label": "Peor caso", "tone": "red", "text": "Máximo de pasos entre las entradas de tamaño n." },
+        { "label": "Caso promedio", "tone": "amber", "text": "Promedio de pasos de esas entradas." },
+        { "label": "Mejor caso", "tone": "green", "text": "Mínimo de pasos entre esas entradas." },
+        { "label": "Cada punto", "color": "heading", "swatch": "dot", "text": "Una entrada posible de ese tamaño." }
+      ],
+      "notes": "Para cada tamaño de problema n hay muchas entradas posibles (los puntos); cada una requiere una cantidad distinta de pasos. El mejor caso es la curva inferior (el mínimo de pasos para cada n), el peor caso la superior (el máximo) y el promedio queda entre ambas. Las tres curvas coinciden en n = 1 porque solo existe una entrada posible. La gráfica es un esquema: los valores son ilustrativos."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-grafica",
       "section": "Análisis asintótico",
       "title": "¿Correo/FTP o llevarlo a Guanacaste?",
-      "image": "03-analisis-teorico-1.png",
-      "alt": "Gráfica con una línea horizontal O(3h) para llevar el archivo en persona y una recta ascendente O(T) para enviarlo por red",
-      "caption": "Por red el tiempo crece con el archivo, O(n); en persona siempre son 3 h, O(1).",
-      "notes": "Suponga que debe enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiendo que ir a Guanacaste sin presas siempre tarda 3 horas: no importa qué tan grande sea el archivo, llevarlo físicamente tarda lo mismo, O(1). Por medio electrónico el tiempo depende del tamaño del archivo, O(n), y en algún momento será mayor que las 3 horas. El análisis asintótico busca la función que representa el crecimiento con respecto a n."
+      "charts": [
+        {
+          "xLabel": "Tamaño del archivo",
+          "yLabel": "Tiempo",
+          "xMin": 0,
+          "xMax": 8,
+          "yMin": 0,
+          "yMax": 6,
+          "yTicks": [{ "at": 3, "label": "3 h" }],
+          "padR": 0.9,
+          "series": [
+            { "fn": "n", "scale": 0.55, "offset": 0.6, "tone": "teal", "label": "O(n)", "arrow": true },
+            { "fn": "n", "scale": 0, "offset": 3, "tone": "amber", "label": "O(1)", "arrow": true }
+          ],
+          "vlines": [{ "cross": [0, 1], "marker": true, "tone": "heading", "label": "cruce" }]
+        }
+      ],
+      "chartH": 4.5,
+      "legend": [
+        { "label": "Por red: O(n)", "tone": "teal", "text": "El tiempo crece con el tamaño del archivo." },
+        { "label": "En persona: O(1)", "tone": "amber", "text": "Siempre son 3 h, sin importar el tamaño." },
+        { "label": "Cruce", "color": "heading", "swatch": "ring", "text": "Desde aquí, llevarlo en persona es más rápido." }
+      ],
+      "notes": "Suponga que debe enviar un archivo a un amigo en Guanacaste. ¿Qué es más rápido, enviarlo por correo/FTP o llevarlo personalmente? Asumiendo que ir a Guanacaste sin presas siempre tarda 3 horas: no importa qué tan grande sea el archivo, llevarlo físicamente tarda lo mismo, O(1). Por medio electrónico el tiempo depende del tamaño del archivo, O(n), y en algún momento será mayor que las 3 horas (el cruce de la gráfica). El análisis asintótico busca la función que representa el crecimiento con respecto a n."
     },
     {
       "type": "diagram",
@@ -294,8 +422,21 @@
       "cards": [
         { "title": "Complejidad", "text": "Trabajo constante por cada elemento del vector.", "footer": "O(n)", "footerSize": 22, "tone": "teal", "h": 1.95 }
       ],
-      "image": "02-analisis-algoritmos/image-03.png",
-      "alt": "Gráfica de la cantidad de operaciones contra el tamaño de la entrada: una recta ascendente",
+      "chart": {
+        "xLabel": "Tamaño de la entrada",
+        "yLabel": "Cantidad de operaciones",
+        "xMin": 0,
+        "xMax": 24,
+        "yMin": 0,
+        "yMax": 50,
+        "xTicks": { "from": 1, "to": 23, "step": 2 },
+        "yTicks": { "from": 0, "to": 50, "step": 10 },
+        "grid": true,
+        "padR": 0.3,
+        "series": [
+          { "fn": "n", "scale": 2, "offset": 0.1, "from": 1, "to": 23, "tone": "teal", "dots": { "from": 1, "to": 23, "step": 1, "d": 0.11, "tone": "amber" } }
+        ]
+      },
       "callout": { "tone": "amber", "text": "Si cambia la constante, cambia la pendiente, pero la **tendencia** sigue siendo lineal." },
       "calloutY": 5.95,
       "notes": "La gráfica de la cantidad de operaciones contra el tamaño de la entrada es una recta. En caso de que la constante cambie, la función seguirá siendo lineal: la pendiente cambia, pero la tendencia del algoritmo sigue siendo la misma."
@@ -333,13 +474,59 @@
       "notes": "Big O: f(n) = O(g(n)) significa que existe una constante c tal que f(n) <= c * g(n) para todo n mayor que un n0 dado. Con f(n) = 3n^2 - 100n + 6 y g(n) = n^2 se escoge c = 3: al graficar 3n^2 y f(n), 3n^2 siempre es mayor. Big Omega: existe c tal que f(n) >= c * g(n); con c = 2 se cumple 2n^2 < f(n) cuando n > 100. Big Theta: existen c1 y c2 tales que c1 * g(n) <= f(n) <= c2 * g(n); como O(n^2) y Ω(n^2) aplican, f(n) = Θ(n^2)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-grafica",
       "section": "Notaciones",
       "title": "Visualización de O, Ω y Θ",
-      "image": "02-analisis-algoritmos/image-04.png",
-      "alt": "Tres gráficas: (a) f(n) por debajo de c·g(n) a partir de n0; (b) f(n) por encima de c·g(n); (c) f(n) entre c1·g(n) y c2·g(n)",
-      "caption": "(a) f(n) = O(g(n)) · (b) f(n) = Ω(g(n)) · (c) f(n) = Θ(g(n))",
-      "notes": "(a) A partir de n0, c·g(n) queda por encima de f(n): cota superior. (b) A partir de n0, c·g(n) queda por debajo de f(n): cota inferior. (c) f(n) queda atrapada entre c1·g(n) y c2·g(n): cota ajustada. Lo que pasa antes de n0 no importa: solo interesa el comportamiento para n grande."
+      "chartH": 3.3,
+      "calloutY": 6.05,
+      "charts": [
+        {
+          "title": "(a) f(n) = O(g(n))",
+          "titleTone": "teal",
+          "subtitle": "Cota superior: desde n_0, c·g(n) queda por encima de f(n).",
+          "xMax": 1,
+          "yMax": 1,
+          "padR": 1.1,
+          "labelFont": "body",
+          "series": [
+            { "pts": [[0, 0.3], [0.04, 0.36], [0.1, 0.21], [0.2, 0.58], [0.3, 0.46], [0.38, 0.27], [0.46, 0.31], [0.62, 0.4], [0.8, 0.49], [1, 0.58]], "smooth": true, "color": "heading", "width": 3, "label": "f(n)" },
+            { "pts": [[0, 0.24], [0.25, 0.42], [0.5, 0.56], [0.75, 0.72], [1, 0.9]], "smooth": true, "tone": "teal", "arrow": true, "label": "c·g(n)" }
+          ],
+          "vlines": [{ "cross": [0, 1], "label": "n_0" }]
+        },
+        {
+          "title": "(b) f(n) = Ω(g(n))",
+          "titleTone": "amber",
+          "subtitle": "Cota inferior: desde n_0, c·g(n) queda por debajo de f(n).",
+          "xMax": 1,
+          "yMax": 1,
+          "padR": 1.1,
+          "labelFont": "body",
+          "series": [
+            { "pts": [[0, 0.3], [0.04, 0.36], [0.1, 0.21], [0.2, 0.58], [0.3, 0.46], [0.38, 0.27], [0.46, 0.31], [0.62, 0.4], [0.8, 0.49], [1, 0.58]], "smooth": true, "color": "heading", "width": 3, "label": "f(n)", "labelDy": -0.06 },
+            { "pts": [[0, 0.2], [0.15, 0.3], [0.4, 0.32], [0.7, 0.36], [1, 0.42]], "smooth": true, "tone": "amber", "arrow": true, "label": "c·g(n)", "labelDy": 0.08 }
+          ],
+          "vlines": [{ "cross": [0, 1], "label": "n_0" }]
+        },
+        {
+          "title": "(c) f(n) = Θ(g(n))",
+          "titleTone": "green",
+          "subtitle": "Cota ajustada: desde n_0, f(n) queda entre c_1·g(n) y c_2·g(n).",
+          "xMax": 1,
+          "yMax": 1,
+          "padR": 1.1,
+          "labelFont": "body",
+          "series": [
+            { "pts": [[0, 0.3], [0.04, 0.36], [0.1, 0.21], [0.2, 0.58], [0.3, 0.46], [0.38, 0.27], [0.46, 0.31], [0.62, 0.4], [0.8, 0.49], [1, 0.58]], "smooth": true, "color": "heading", "width": 3, "label": "f(n)" },
+            { "pts": [[0, 0.24], [0.25, 0.42], [0.5, 0.56], [0.75, 0.72], [1, 0.9]], "smooth": true, "tone": "teal", "arrow": true, "label": "c_2·g(n)" },
+            { "pts": [[0, 0.2], [0.15, 0.3], [0.4, 0.32], [0.7, 0.36], [1, 0.42]], "smooth": true, "tone": "amber", "arrow": true, "label": "c_1·g(n)", "labelDy": 0.1 }
+          ],
+          "vlines": [{ "cross": [0, 1, 2], "label": "n_0" }]
+        }
+      ],
+      "callout": { "tone": "teal", "text": "Lo que pasa antes de `n0` no importa: solo interesa el comportamiento para **n grande**." },
+      "notes": "(a) A partir de n0, c·g(n) queda por encima de f(n): cota superior. (b) A partir de n0, c·g(n) queda por debajo de f(n): cota inferior. (c) f(n) queda atrapada entre c1·g(n) y c2·g(n), con c1·g(n) por debajo y c2·g(n) por encima: cota ajustada. Las gráficas son esquemas; el valor de n0 es la última abscisa donde f(n) cruza la cota. Lo que pasa antes de n0 no importa: solo interesa el comportamiento para n grande."
     },
     {
       "type": "code",
@@ -366,13 +553,42 @@
       "notes": "Lo visto hasta ahora se enfoca en complejidad en tiempo, pero la cantidad de memoria que un algoritmo requiere también se describe con Big-O, Big-Omega y Big-Theta. En sum(n) cada llamada recursiva queda en la pila hasta que se resuelve la siguiente: n llamadas en la pila, O(n). En foo(n) cada llamada a bar termina antes de la siguiente: no hay llamadas anidadas, O(1)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "analisis-grafica",
       "section": "Big-O conocidas",
       "title": "Complejidades comunes (Big-O conocidas)",
-      "image": "03-analisis-teorico-2.png",
-      "alt": "Gráfica de complejidad contra tamaño de la entrada con las curvas O(log n), O(n), O(n log n), O(n^2), O(2^n) y O(n!)",
+      "charts": [
+        {
+          "xLabel": "Tamaño de la entrada",
+          "yLabel": "Complejidad",
+          "xMin": 1,
+          "xMax": 8,
+          "yMin": 0,
+          "yMax": 64,
+          "padR": 1.45,
+          "labelSize": 14,
+          "series": [
+            { "fn": "fact", "tone": "red", "label": "O(n!)", "labelDx": -0.15 },
+            { "fn": "2n", "tone": "amber", "label": "O(2^n)" },
+            { "fn": "n2", "color": "codeNum", "label": "O(n^2)" },
+            { "fn": "nlogn", "color": "codeType", "label": "O(n log n)" },
+            { "fn": "n", "color": "codeStr", "label": "O(n)", "labelDy": -0.08 },
+            { "fn": "log", "tone": "green", "label": "O(log n)", "labelDy": 0.12 }
+          ]
+        }
+      ],
+      "chartH": 4.35,
       "caption": "De menor a mayor crecimiento: logarítmica, lineal, n log n, cuadrática, exponencial y factorial.",
-      "notes": "Estas son las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos. Además de las que aparecen en la gráfica, O(1) (constante) es la de menor crecimiento. Nombres: O(1) constante, O(log n) logarítmica, O(n) lineal, O(n log n) lineal-logarítmica, O(n^2) cuadrática, O(n^3) cúbica, O(2^n) exponencial y O(n!) factorial. La cuadrática y la cúbica son polinómicas (O(n^k) con k fijo); la exponencial no lo es. Las curvas se separan más conforme crece el tamaño de la entrada: por eso escalar un algoritmo O(2^n) o O(n!) es inviable."
+      "legendW": 3.7,
+      "legend": [
+        { "label": "O(n!)", "tone": "red", "text": "factorial" },
+        { "label": "O(2^n)", "tone": "amber", "text": "exponencial" },
+        { "label": "O(n^2)", "color": "codeNum", "text": "cuadrática" },
+        { "label": "O(n log n)", "color": "codeType", "text": "lineal-logarítmica" },
+        { "label": "O(n)", "color": "codeStr", "text": "lineal" },
+        { "label": "O(log n)", "tone": "green", "text": "logarítmica" }
+      ],
+      "notes": "Estas son las complejidades comunes con las que se clasifican muchos de los algoritmos conocidos. Además de las que aparecen en la gráfica, O(1) (constante) es la de menor crecimiento. Nombres: O(1) constante, O(log n) logarítmica, O(n) lineal, O(n log n) lineal-logarítmica, O(n^2) cuadrática, O(n^3) cúbica, O(2^n) exponencial y O(n!) factorial. La cuadrática y la cúbica son polinómicas (O(n^k) con k fijo); la exponencial no lo es. Las curvas se separan más conforme crece el tamaño de la entrada: por eso escalar un algoritmo O(2^n) o O(n!) es inviable. La gráfica se calcula con las funciones reales (log en base 2, n! con la función gamma) y se corta al llegar al borde superior."
     },
     {
       "type": "code",
@@ -493,19 +709,19 @@
     },
     {
       "type": "diagram",
-      "kind": "analisis-imagen-tabla",
+      "kind": "analisis-arbol-tabla",
       "section": "Determinar la complejidad",
       "title": "Árbol de llamadas: se duplican por nivel",
-      "image": "02-analisis-algoritmos/image-05.png",
-      "alt": "Árbol de llamadas recursivas f(4) con dos llamadas f(3), cuatro f(2) y ocho f(1)",
-      "imageHeight": 2.3,
-      "table": {
-        "columns": ["Nivel", "0", "1", "2", "3", "4"],
-        "colW": [1.9, 1.5, 1.5, 1.5, 1.5, 1.5],
-        "rows": [["# de nodos", "1", "2", "4", "8", "16"], ["Potencia", "2^0", "2^1", "2^2", "2^3", "2^4"]]
-      },
+      "fn": "f",
+      "root": 4,
+      "branches": 2,
+      "table": { "columns": ["Nivel", "Nodos", "Potencia"], "colW": [0.85, 1.05, 1.3], "totalLabel": "Total" },
+      "legend": [
+        { "label": "llamada recursiva", "tone": "teal" },
+        { "label": "caso base (n ≤ 0)", "tone": "slate" }
+      ],
       "callout": { "tone": "teal", "text": "Hay `2^(n+1) - 1` nodos: la complejidad es **O(2^n)**. En general: `O(ramas^profundidad)`." },
-      "notes": "La cantidad de llamadas se duplica en cada nivel de la recursión. Sumando 2^0 + 2^1 + ... + 2^n hay 2^(n+1) - 1 nodos, así que la complejidad es O(2^n). En muchos casos la complejidad recursiva se generaliza como O(ramas^profundidad), donde las ramas son el número de llamadas recursivas y la profundidad es la profundidad de la recursión. La figura muestra solo hasta f(1); la tabla incluye el último nivel (las llamadas con n <= 0, el caso base), que también cuenta."
+      "notes": "La cantidad de llamadas se duplica en cada nivel de la recursión. Sumando 2^0 + 2^1 + ... + 2^n hay 2^(n+1) - 1 nodos, así que la complejidad es O(2^n). En muchos casos la complejidad recursiva se generaliza como O(ramas^profundidad), donde las ramas son el número de llamadas recursivas y la profundidad es la profundidad de la recursión. El árbol baja hasta las llamadas con n = 0 (el caso base, en gris), que también cuentan: por eso el nivel 4 tiene 16 nodos y el total es 31 = 2^5 - 1."
     },
     {
       "type": "code",

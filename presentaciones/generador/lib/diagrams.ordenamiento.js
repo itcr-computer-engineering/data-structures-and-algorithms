@@ -4,9 +4,19 @@
 //                        callout o callouts[] (varios lado a lado). Si dos llaves de entrada se pisan, la segunda baja una fila.
 //   ordenamiento-escalera : filas de comparaciones (una celda por comparación) que forman una escalera, con una tabla a la derecha.
 //                        Campos: legend, stairs[{label, cells[], note}], total, table{title, columns, rows, colW, highlight}, callout.
+//   ordenamiento-universo : el universo de llaves, el subconjunto usado y la función h que las lleva a una tabla T (con colisión o
+//                        con separate chaining). Campos: universe{label, others[]}, keysLabel, keys[{name, slot}] (las llaves con el
+//                        mismo slot colisionan), slots, indexLabel, tableLabel, collisionLabel, chains (true: lista enlazada por slot), caption.
+//   ordenamiento-franjas : arreglo vertical por tramos con llaves (braces) que lo agrupan en partes (p. ej. ordenada/desordenada).
+//                        Campos: heading, segments[{label, tone, weight, dots}], braces[{from, to, tone, title, text}], caption.
+//   ordenamiento-estaturas : filas de siluetas (barras con cabeza) que se comparan de dos en dos; el intercambio se calcula con las alturas.
+//                        Campos: heights[], compare[[a, b]…] (una fila por comparación), labels{swap, noSwap}, caption.
+//   ordenamiento-merge : árbol de merge sort en una de sus dos fases; las mezclas se calculan en código.
+//                        Campos: values[], phase ('dividir' | 'mezclar'), legend, caption.
+//   `ordenamiento-array` también acepta groupMark (true: una flecha entre grupos; usar con groupGap ≥ 0.45).
 const C = require('./components');
 
-const { text, box, chip, arrow, callout } = C;
+const { text, box, chip, arrow, callout, cellBox, rich } = C;
 
 const chipW = (label, size = 14) => label.length * (size * 0.0072) + 0.45;
 
@@ -40,6 +50,31 @@ function cellRuns(ctx, str, tone, st) {
   });
 }
 
+function drawLegend(ctx, legend, y) {
+  const { colors } = ctx.theme;
+  let lx = ctx.theme.page.mx;
+  legend.forEach(([label, tone]) => {
+    const st = cellStyle(ctx, STATE[tone] || tone);
+    ctx.slide.addShape(ctx.pptx.ShapeType.rect, { x: lx, y: y + 0.04, w: 0.3, h: 0.3, fill: { color: st.fill }, line: { color: st.line, width: 1.25 } });
+    text(ctx, label, { x: lx + 0.4, y, w: label.length * 0.1 + 0.3, h: 0.38, fontSize: 15, color: colors.slate, valign: 'middle', wrap: false });
+    lx += 0.4 + label.length * 0.1 + 0.55;
+  });
+}
+
+function drawCell(ctx, str, { x, y, w, h, tone, size = 18 }) {
+  const st = cellStyle(ctx, STATE[tone] || tone || 'neutral');
+  ctx.slide.addText(String(str), {
+    shape: ctx.pptx.ShapeType.rect, x, y, w, h,
+    fill: { color: st.fill }, line: { color: st.line, width: 1.25 }, color: st.color,
+    bold: true, fontSize: size, fontFace: ctx.theme.fonts.code, align: 'center', valign: 'middle', margin: 0,
+  });
+}
+
+function captionLine(ctx, s) {
+  const { mx, w } = ctx.theme.page;
+  if (s.caption) text(ctx, s.caption, { x: mx, y: 6.3, w: w - 2 * mx, h: 0.5, fontSize: 18, color: ctx.theme.colors.slate, align: 'center', valign: 'middle' });
+}
+
 function arrayRows(ctx, s) {
   const { colors, fonts } = ctx.theme;
   const { mx, w } = ctx.theme.page;
@@ -66,13 +101,7 @@ function arrayRows(ctx, s) {
   // leyenda
   let y = s.legendY || 1.85;
   if (s.legend) {
-    let lx = mx;
-    s.legend.forEach(([label, tone]) => {
-      const st = cellStyle(ctx, STATE[tone] || tone);
-      ctx.slide.addShape(ctx.pptx.ShapeType.rect, { x: lx, y: y + 0.04, w: 0.3, h: 0.3, fill: { color: st.fill }, line: { color: st.line, width: 1.25 } });
-      text(ctx, label, { x: lx + 0.4, y, w: label.length * 0.1 + 0.3, h: 0.38, fontSize: 15, color: colors.slate, valign: 'middle', wrap: false });
-      lx += 0.4 + label.length * 0.1 + 0.55;
-    });
+    drawLegend(ctx, s.legend, y);
     y += 0.6;
   }
 
@@ -124,6 +153,10 @@ function arrayRows(ctx, s) {
           });
         }
         gx += cw + gapS;
+      }
+      if (s.groupMark && k < r.cells.length) {
+        const ax = gx - gapS;
+        arrow(ctx, { x1: ax + 0.08, y1: cy + cellH / 2, x2: ax + gapB - 0.08, y2: cy + cellH / 2, color: colors.slate, width: 2.5 });
       }
       gx += gapB - gapS;
     });
@@ -283,8 +316,225 @@ function escalera(ctx, s) {
   }
 }
 
+// ------------------------------------------------------------------ universo de llaves → tabla T
+function universo(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx } = ctx.theme.page;
+  const T = ctx.T;
+  const n = s.slots;
+  const top = 2.3, bottom = 6.1;
+  const sh = Math.min(0.58, (bottom - top) / n);
+  const tw = 1.1, tx = s.tableX || 7.4;
+  const hx = tx - 1.15;
+  const slotY = (i) => top + i * sh;
+  const slotC = (i) => slotY(i) + sh / 2;
+  const bySlot = {};
+  s.keys.forEach((k) => (bySlot[k.slot] = bySlot[k.slot] || []).push(k));
+
+  // el universo y el subconjunto de llaves usadas
+  const U = s.universe || {};
+  const ux = mx, uy = 2.1, uw = 4.7, uh = 4.0;
+  ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: ux, y: uy, w: uw, h: uh, fill: { color: T.navy.accent }, line: { color: colors.border, width: 1.5 } });
+  text(ctx, U.label || '', { x: ux, y: uy + 0.3, w: uw, h: 0.45, fontSize: 22, bold: true, color: T.navy.on, align: 'center', valign: 'middle' });
+  (U.others || []).forEach((name, i) => {
+    text(ctx, name, { x: ux + 0.85 + (i % 2) * -0.25, y: uy + 1.15 + i * 0.6, w: 0.6, h: 0.4, fontSize: 20, bold: true, color: T.navy.on, valign: 'middle' });
+  });
+  const r = 1.3;
+  const icx = ux + uw / 2 + 0.55, icy = uy + uh / 2 + 0.1;
+  ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: icx - r, y: icy - r, w: 2 * r, h: 2 * r, fill: { color: T.teal.soft }, line: { color: T.teal.accent, width: 2.5 } });
+  text(ctx, s.keysLabel || '', { x: icx - r + 0.2, y: icy - 0.25, w: 1.2, h: 0.5, fontSize: 20, bold: true, color: T.teal.text, valign: 'middle' });
+
+  // llaves dentro del círculo y flechas hacia h(k) junto a la tabla
+  const m = s.keys.length;
+  const span = Math.min(1.9, 0.45 * (m - 1));
+  const seen = {};
+  s.keys.forEach((k, i) => {
+    const ky = m > 1 ? icy - span / 2 + (i * span) / (m - 1) : icy;
+    const edge = icx + Math.sqrt(r * r - (ky - icy) * (ky - icy));
+    text(ctx, k.name, { x: edge - 0.65, y: ky - 0.2, w: 0.5, h: 0.4, fontSize: 20, bold: true, color: T.teal.text, valign: 'middle', wrap: false });
+    const cnt = bySlot[k.slot].length;
+    const j = (seen[k.slot] = (seen[k.slot] || 0) + 1) - 1;
+    const hy = slotC(k.slot) + (j - (cnt - 1) / 2) * 0.3;
+    text(ctx, `h(${k.name})`, { x: hx, y: hy - 0.15, w: 1.0, h: 0.3, fontSize: 18, color: colors.ink, valign: 'middle', wrap: false });
+    arrow(ctx, { x1: edge + 0.02, y1: ky, x2: hx - 0.08, y2: hy, color: colors.teal, width: 2 });
+  });
+
+  // tabla T
+  text(ctx, s.indexLabel || '', { x: hx, y: 1.8, w: 1.0, h: 0.4, fontSize: 18, bold: true, color: colors.slate, valign: 'middle' });
+  text(ctx, s.tableLabel || '', { x: tx, y: 1.8, w: tw, h: 0.4, fontSize: 20, bold: true, color: colors.heading, align: 'center', valign: 'middle' });
+  for (let i = 0; i < n; i++) {
+    const cnt = (bySlot[i] || []).length;
+    const tone = cnt === 0 ? undefined : cnt > 1 ? (s.chains ? 'amber' : 'red') : 'teal';
+    cellBox(ctx, cnt === 0 ? '/' : '', { x: tx, y: slotY(i), w: tw, h: sh, tone, size: 18 });
+  }
+
+  Object.keys(bySlot).forEach((sl) => {
+    const list = bySlot[sl];
+    const yc = slotC(Number(sl));
+    if (s.chains) {
+      const cws = [0.4, 0.6, 0.4], nw = 1.4, nh = Math.min(0.5, sh - 0.06), gapN = 0.5;
+      let nx = tx + tw + 0.6;
+      arrow(ctx, { x1: tx + tw / 2, y1: yc, x2: nx - 0.02, y2: yc, color: colors.teal, width: 2 });
+      list.forEach((k, i) => {
+        const vals = [i === 0 ? '/' : '', k.name, i === list.length - 1 ? '/' : ''];
+        let cx = nx;
+        vals.forEach((v, c) => {
+          cellBox(ctx, v, { x: cx, y: yc - nh / 2, w: cws[c], h: nh, tone: 'teal', size: 18 });
+          cx += cws[c];
+        });
+        if (i < list.length - 1) {
+          arrow(ctx, { x1: nx + cws[0] + cws[1] + cws[2] / 2, y1: yc, x2: nx + nw + gapN - 0.02, y2: yc, color: colors.teal, width: 2 });
+          nx += nw + gapN;
+        }
+      });
+    } else if (list.length > 1) {
+      const eq = list.map((k) => `h(${k.name})`).join(' = ');
+      text(ctx, `${s.collisionLabel || ''}: ${eq}`, { x: tx + tw + 0.35, y: yc - 0.25, w: 4.4, h: 0.5, fontSize: 20, bold: true, color: T.red.text, valign: 'middle' });
+    }
+  });
+  captionLine(ctx, s);
+}
+
+// ------------------------------------------------------------------ arreglo vertical por tramos con llaves
+function franjas(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const T = ctx.T;
+  const top = 2.3;
+  const total = s.segments.reduce((a, g) => a + (g.weight || 1), 0);
+  const u = Math.min(0.46, (s.height || 3.8) / total);
+  const ax = s.arrayX || 3.4, aw = s.cellW || 2.4;
+  text(ctx, s.heading || '', { x: ax, y: 1.85, w: aw, h: 0.4, fontSize: 20, bold: true, fontFace: fonts.code, color: colors.slate, align: 'center', valign: 'middle' });
+
+  let y = top;
+  const pos = s.segments.map((g) => {
+    const h = (g.weight || 1) * u;
+    const p = { y, h };
+    drawCell(ctx, '', { x: ax, y, w: aw, h, tone: g.tone });
+    if (g.dots) {
+      for (let d = 0; d < 3; d++) ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: ax + aw / 2 - 0.05, y: y + h / 2 - 0.2 + d * 0.15, w: 0.1, h: 0.1, fill: { color: colors.slate }, line: { type: 'none' } });
+    }
+    if (g.label) text(ctx, g.label, { x: ax - 1.9, y, w: 1.75, h, fontSize: 16, fontFace: fonts.code, color: colors.slate, align: 'right', valign: 'middle', wrap: false });
+    y += h;
+    return p;
+  });
+
+  const bx = ax + aw + 0.12;
+  s.braces.forEach((b) => {
+    const t = T[b.tone || 'teal'];
+    const y1 = pos[b.from].y, y2 = pos[b.to].y + pos[b.to].h;
+    ctx.slide.addShape(ctx.pptx.ShapeType.rightBrace, { x: bx, y: y1 + 0.03, w: 0.3, h: y2 - y1 - 0.06, line: { color: t.accent, width: 2 } });
+    const runs = [{ text: b.title, options: { bold: true, fontSize: 20, color: t.text, breakLine: !!b.text } }];
+    if (b.text) runs.push(...rich(b.text, ctx, { fontSize: 16, color: colors.ink }));
+    text(ctx, runs, { x: bx + 0.5, y: y1, w: w - mx - (bx + 0.5), h: y2 - y1, valign: 'middle' });
+  });
+  captionLine(ctx, s);
+}
+
+// ------------------------------------------------------------------ siluetas que se comparan de dos en dos
+function estaturas(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const T = ctx.T;
+  const hs = [...s.heights];
+  const n = hs.length;
+  const sp = Math.min(1.1, (w - 2 * mx) / n);
+  const x0 = (w - n * sp) / 2;
+  const cx = (i) => x0 + (i + 0.5) * sp;
+  const maxH = s.maxHeight || 1.1, headD = 0.28, bw = 0.5;
+  const hmax = Math.max(...hs);
+  let y = 1.85;
+  s.compare.forEach(([a, b]) => {
+    const swap = hs[a] > hs[b];
+    const tone = swap ? 'amber' : 'teal';
+    const base = y + 0.5 + maxH;
+    const ph = (v) => (v / hmax) * maxH;
+    hs.forEach((v, i) => {
+      const hi = i === a || i === b;
+      const color = hi ? T[tone].accent : colors.slateFill;
+      const p = ph(v);
+      ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x: cx(i) - headD / 2, y: base - p, w: headD, h: headD, fill: { color }, line: { type: 'none' } });
+      box(ctx, { x: cx(i) - bw / 2, y: base - p + headD + 0.03, w: bw, h: p - headD - 0.03, fill: color, radius: 0.12 });
+      text(ctx, String(i), {
+        x: cx(i) - sp / 2, y: base + 0.1, w: sp, h: 0.28, fontSize: 14, bold: hi, fontFace: fonts.code, color: hi ? T[tone].text : colors.muted, align: 'center', valign: 'middle',
+      });
+    });
+    ctx.slide.addShape(ctx.pptx.ShapeType.line, { x: x0, y: base + 0.04, w: n * sp, h: 0, line: { color: colors.slate, width: 2.5 } });
+    // corchete sobre la pareja comparada y flechas hacia sus cabezas
+    const by = y + 0.22;
+    arrow(ctx, { x1: cx(a), y1: by, x2: cx(b), y2: by, color: T[tone].accent, width: 2.5, head: false });
+    [a, b].forEach((i) => arrow(ctx, { x1: cx(i), y1: by, x2: cx(i), y2: base - ph(hs[i]) - 0.04, color: T[tone].accent, width: 2.5 }));
+    text(ctx, swap ? s.labels.swap : s.labels.noSwap, { x: cx(b) + 0.4, y: by - 0.22, w: w - mx - cx(b) - 0.4, h: 0.44, fontSize: 18, color: T[tone].text, valign: 'middle' });
+    if (swap) [hs[a], hs[b]] = [hs[b], hs[a]];
+    y += 0.5 + maxH + 0.4 + 0.1;
+  });
+  captionLine(ctx, s);
+}
+
+// ------------------------------------------------------------------ merge sort: una fase del árbol
+function mergeTwo(a, b) {
+  const out = [];
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length) out.push(a[i] <= b[j] ? a[i++] : b[j++]);
+  return out.concat(a.slice(i), b.slice(j));
+}
+
+function mergeFase(ctx, s) {
+  const { mx, w } = ctx.theme.page;
+  const T = ctx.T;
+  const mezclar = s.phase === 'mezclar';
+  const build = (arr, depth) => {
+    const node = { arr, depth, kids: [] };
+    if (arr.length > 1) {
+      const mid = Math.ceil(arr.length / 2);
+      node.kids = [build(arr.slice(0, mid), depth + 1), build(arr.slice(mid), depth + 1)];
+      node.sorted = mergeTwo(node.kids[0].sorted, node.kids[1].sorted);
+    } else node.sorted = arr;
+    return node;
+  };
+  const root = build(s.values, 0);
+  const expected = [...s.values].sort((p, q) => p - q);
+  if (root.sorted.join() !== expected.join()) throw new Error(`ordenamiento-merge: la mezcla no coincide con el orden esperado (${root.sorted} ≠ ${expected})`);
+
+  let maxD = 0, leaves = 0;
+  const place = (n) => {
+    maxD = Math.max(maxD, n.depth);
+    if (!n.kids.length) n.slot = leaves++;
+    else n.kids.forEach(place);
+  };
+  place(root);
+  const slotW = s.slotW || 1.25, cw = s.cellW || 0.55, ch = 0.5;
+  const x0 = (w - leaves * slotW) / 2;
+  const cx = (n) => (n.kids.length ? (cx(n.kids[0]) + cx(n.kids[1])) / 2 : x0 + (n.slot + 0.5) * slotW);
+  let top = 1.95;
+  if (s.legend) {
+    drawLegend(ctx, s.legend, 1.8);
+    top = 2.45;
+  }
+  const pitch = Math.min(1.1, (5.95 - top - ch) / maxD);
+  const ry = (n) => top + (mezclar ? maxD - n.depth : n.depth) * pitch;
+  const draw = (n) => {
+    const arr = mezclar ? n.sorted : n.arr;
+    const bx = cx(n) - (arr.length * cw) / 2;
+    const tone = n.kids.length === 0 ? 'green' : mezclar ? 'teal' : undefined;
+    arr.forEach((v, i) => drawCell(ctx, v, { x: bx + i * cw + 0.025, y: ry(n), w: cw - 0.05, h: ch, tone, size: 18 }));
+    n.kids.forEach((k) => {
+      const off = (cx(k) < cx(n) ? -1 : 1) * Math.min(0.25, (n.arr.length * cw) / 4);
+      if (mezclar) arrow(ctx, { x1: cx(k), y1: ry(k) + ch + 0.05, x2: cx(n) + off, y2: ry(n) - 0.05, color: T.green.accent, width: 2 });
+      else arrow(ctx, { x1: cx(n) + off, y1: ry(n) + ch + 0.05, x2: cx(k), y2: ry(k) - 0.05, color: ctx.theme.colors.slate, width: 2 });
+      draw(k);
+    });
+  };
+  draw(root);
+  captionLine(ctx, s);
+}
+
 module.exports = {
   'ordenamiento-array': arrayRows,
   'ordenamiento-hash': hash,
   'ordenamiento-escalera': escalera,
+  'ordenamiento-universo': universo,
+  'ordenamiento-franjas': franjas,
+  'ordenamiento-estaturas': estaturas,
+  'ordenamiento-merge': mergeFase,
 };
