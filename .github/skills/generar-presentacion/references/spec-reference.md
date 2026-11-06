@@ -80,8 +80,8 @@ Lenguajes: `sql`, `json`, `c`, `cpp`, `java`, `csharp`, `rust`, `python`, `pseud
 | `m2m` | `tables[3]{name,columns[2],colW[2],rows[3 de 2],role:"fk"}`, `legend{pk,fk}`, `callout` | La tabla central (`role: "fk"`) se une con flechas a las laterales. |
 | `scan` | `query`, `cost`, `costText`, `stripLabel`, `rows` (n), `match`, `caption`, `callout` | Franja de n celdas recorridas una a una; sirve para búsqueda lineal. |
 | `index-map` | `intro`, `index{title,columns,colW,rows[3]}`, `table{…}`, `cards[{…,h}]`, `callout` | Dos tablas con flechas horizontales (mapa clave → ubicación). |
-| `join-result` | `queryLabel`, `query`, `queryLang`, `queryFontSize` (16), `resultLabel`, `result{columns,colW,rows}`, `callout` | Código/entrada a la izquierda y tabla de resultado a la derecha; útil para «entrada → salida» (consulta → filas, texto → frecuencias). |
-| `venn-grid` | `intro`, `items[{type:"inner|left|right|full",title,text}]`, `callout` | Diagramas de Venn de JOIN. |
+| `join-result` | `queryLabel`, `query`, `queryLang`, `queryFontSize` (16), `resultLabel`, `result{columns,colW,rows}`, `callout` | Código/entrada a la izquierda y tabla de resultado a la derecha; útil para «entrada → salida» (consulta → filas, texto → frecuencias). Las celdas con el texto `NULL` se resaltan en ámbar. |
+| `venn-grid` | `intro`, `items[{type:"inner|left|right|full|left-excl|right-excl|full-excl",title,text}]`, `callout` | Diagramas de Venn de JOIN. Los tipos `-excl` excluyen la intersección (solo A, solo B, A o B pero no ambas). |
 | `timeline-cards` | `events[{year,title,text}]` (2), `cards[]` (3) | Línea de tiempo arriba y tarjetas abajo. |
 | `scale` | `up{title,subtitle,caption}`, `out{…}`, `callout` | Servidores: escalar hacia arriba vs. afuera. |
 | `flat-table` | `tableLabel`, `table{columns,colW (suma ≈ 11.9),rows}`, `highlight[[fila,col]]`, `cards[]` | Tabla ancha con celdas resaltadas y 3 tarjetas debajo (anomalías, errores). |
