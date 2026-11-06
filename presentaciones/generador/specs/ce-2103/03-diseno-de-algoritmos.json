@@ -51,13 +51,14 @@
       "notes": "Es uno de los paradigmas que ya vieron en cursos introductorios. Fase de división: los subproblemas son de la misma forma que el original, pero más pequeños, y se divide hasta el caso base. Fase de conquista: el objetivo es resolverlos de forma independiente. Fase de combinación: se mezclan las soluciones parciales para obtener la solución final. Ventajas: los subproblemas son independientes (se pueden resolver en paralelo) y el código recursivo suele ser simple, claro y fácil de depurar. Costos: la versión recursiva puede ser más lenta que una iterativa y usa la pila de llamadas. Que el paradigma sea «muy eficiente» depende del costo de combinar, como indica el recuadro."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "diseno-mergesort",
       "section": "Divide y vencerás",
       "title": "Ejemplo: Merge Sort",
-      "image": "03-diseno-algoritmos/image-01.png",
-      "alt": "Diagrama de Merge Sort: el arreglo 70, 20, 30, 50, 60, 10, 40 se divide en mitades hasta tener un elemento y luego se mezcla en orden hasta obtener 10, 20, 30, 40, 50, 60, 70",
+      "values": [70, 20, 30, 50, 60, 10, 40],
+      "labels": { "unsorted": "Arreglo sin ordenar", "sorted": "Arreglo ordenado", "divide": "Dividir", "base": "Caso base", "merge": "Mezclar" },
       "caption": "`log2(n)` niveles de división × `O(n)` por nivel de merge = `O(n log n)`",
-      "notes": "Idea: dividir el arreglo en dos mitades, ordenar cada mitad y combinar las dos mitades ordenadas. En la fase de división se generan log2(n) niveles; en la fase de merge, combinar cada nivel toma O(n). Por lo tanto la complejidad de tiempo de Merge Sort es O(n log n). Recorra la figura: arriba se divide (Divide), abajo se mezcla (Merge)."
+      "notes": "Idea: dividir el arreglo en dos mitades, ordenar cada mitad y combinar las dos mitades ordenadas. En la fase de división se generan log2(n) niveles; en la fase de merge, combinar cada nivel toma O(n). Por lo tanto la complejidad de tiempo de Merge Sort es O(n log n). Recorra la figura: arriba se divide (Dividir), abajo se mezcla (Mezclar)."
     },
     {
       "type": "code",
@@ -148,12 +149,37 @@
       "notes": "Bellman usó «programar» en el sentido de planificar óptimamente procesos de múltiples etapas. DP comparte similitudes con divide y vencerás, pero se diferencia en que los subproblemas se translapan (se repiten), así que conviene guardar sus resultados. Aclare la diferencia entre «memoización» (de memo: recordar para optimizar) y «memorización» (poner algo en la memoria)."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "diseno-arbol",
       "section": "Programación dinámica",
       "title": "Fibonacci con el enfoque tradicional",
-      "image": "programacion-dinamica-1.png",
-      "alt": "Árbol de recursión de fib(4): fib(2) aparece dos veces y fib(1) tres veces, con fib(0) dos veces",
-      "caption": "Se calcula `fib(2)` dos veces y `fib(1)` tres veces: un claro desperdicio de recursos.",
+      "top": 1.95,
+      "treeHeight": 3.0,
+      "nodeW": 1.5,
+      "nodeH": 0.55,
+      "nodes": [
+        { "id": "f4", "label": "fib(4)", "x": 0.55, "y": 0 },
+        { "id": "f3", "label": "fib(3)", "x": 0.34, "y": 0.333 },
+        { "id": "f2b", "label": "fib(2)", "x": 0.76, "y": 0.333, "tone": "amber" },
+        { "id": "f2a", "label": "fib(2)", "x": 0.22, "y": 0.667, "tone": "amber" },
+        { "id": "f1c", "label": "fib(1)", "x": 0.46, "y": 0.667, "tone": "red" },
+        { "id": "f1d", "label": "fib(1)", "x": 0.68, "y": 0.667, "tone": "red" },
+        { "id": "f0b", "label": "fib(0)", "x": 0.84, "y": 0.667, "tone": "navy" },
+        { "id": "f1e", "label": "fib(1)", "x": 0.14, "y": 1, "tone": "red" },
+        { "id": "f0a", "label": "fib(0)", "x": 0.3, "y": 1, "tone": "navy" }
+      ],
+      "edges": [
+        { "from": "f4", "to": "f3" }, { "from": "f4", "to": "f2b" },
+        { "from": "f3", "to": "f2a" }, { "from": "f3", "to": "f1c" },
+        { "from": "f2b", "to": "f1d" }, { "from": "f2b", "to": "f0b" },
+        { "from": "f2a", "to": "f1e" }, { "from": "f2a", "to": "f0a" }
+      ],
+      "legend": [
+        { "label": "fib(2): 2 veces", "tone": "amber" },
+        { "label": "fib(1): 3 veces", "tone": "red" },
+        { "label": "fib(0): 2 veces", "tone": "navy" }
+      ],
+      "callout": { "tone": "amber", "text": "Se calcula `fib(2)` dos veces y `fib(1)` tres veces: un claro desperdicio de recursos." },
       "notes": "Para calcular fib(4) con recursión tradicional se genera este árbol. Hay un claro traslape de subproblemas: fib(2) se resuelve dos veces, fib(1) tres veces y fib(0) dos veces. Pregunta: ¿cómo crece el número de llamadas si pedimos fib(40)? (Crece exponencialmente: O(2^n))."
     },
     {
@@ -182,11 +208,34 @@
       "notes": "El código usa internamente un arreglo con los valores mem[0]=0, mem[1]=1, mem[2]=1, mem[3]=2, mem[4]=3. Con el enfoque de divide y vencerás, Fibonacci tiene complejidad de tiempo O(2^n); con DP se reduce a O(n). Esta forma de llenar el arreglo de menor a mayor se conoce como enfoque «de abajo hacia arriba»."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "diseno-subproblemas",
       "section": "Programación dinámica",
       "title": "Divide y vencerás vs. programación dinámica",
-      "image": "programacion-dinamica-2.png",
-      "alt": "A la izquierda, árbol de divide y vencerás con subproblemas independientes; a la derecha, grafo de programación dinámica donde los subproblemas se comparten entre varios resultados",
+      "panels": [
+        {
+          "title": "Divide y vencerás",
+          "tone": "teal",
+          "text": "Cada subproblema se resuelve una vez y alimenta a un solo problema padre.",
+          "nodes": [
+            { "id": "t", "x": 0.5, "y": 0 },
+            { "id": "m1", "x": 0.25, "y": 0.5 }, { "id": "m2", "x": 0.75, "y": 0.5 },
+            { "id": "l1", "x": 0, "y": 1 }, { "id": "l2", "x": 0.333, "y": 1 }, { "id": "l3", "x": 0.667, "y": 1 }, { "id": "l4", "x": 1, "y": 1 }
+          ],
+          "edges": [["t", "m1"], ["t", "m2"], ["m1", "l1"], ["m1", "l2"], ["m2", "l3"], ["m2", "l4"]]
+        },
+        {
+          "title": "Programación dinámica",
+          "tone": "amber",
+          "text": "Un mismo subproblema (en ámbar) contribuye a varios problemas y se reutiliza.",
+          "nodes": [
+            { "id": "t", "x": 0.5, "y": 0 },
+            { "id": "m1", "x": 0.25, "y": 0.5 }, { "id": "m2", "x": 0.75, "y": 0.5 },
+            { "id": "l1", "x": 0, "y": 1 }, { "id": "l2", "x": 0.333, "y": 1, "shared": true }, { "id": "l3", "x": 0.667, "y": 1, "shared": true }, { "id": "l4", "x": 1, "y": 1 }
+          ],
+          "edges": [["l1", "m1"], ["l2", "m1"], ["l3", "m1"], ["l2", "m2"], ["l3", "m2"], ["l4", "m2"], ["m1", "t"], ["m2", "t"]]
+        }
+      ],
       "caption": "En D&V los subproblemas son independientes; en DP se comparten y se reutilizan.",
       "notes": "En el diagrama de la izquierda cada subproblema alimenta a un único problema padre (estructura de árbol). A la derecha, un mismo subproblema contribuye a varios problemas mayores: por eso conviene resolverlo una sola vez y reutilizarlo."
     },

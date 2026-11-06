@@ -178,8 +178,15 @@
       "kind": "memoria-imagen",
       "section": "Evolución de la memoria",
       "title": "Sin abstracción de memoria",
-      "image": "image.png",
-      "alt": "Tres organizaciones posibles de la memoria sin abstracción: (a) sistema operativo en RAM, (b) sistema operativo en ROM, (c) drivers de dispositivos en ROM; en todas el programa de usuario ocupa el resto de la memoria",
+      "figure": {
+       "type": "mapas",
+       "top": "0xFFF…",
+       "columns": [
+        { "label": "(a)", "blocks": [{ "t": "Programa de usuario", "tone": "teal", "h": 2 }, { "t": "SO en RAM", "tone": "navy", "h": 1 }] },
+        { "label": "(b)", "blocks": [{ "t": "SO en ROM", "tone": "amber", "h": 1 }, { "t": "Programa de usuario", "tone": "teal", "h": 2 }] },
+        { "label": "(c)", "blocks": [{ "t": "Drivers en ROM", "tone": "amber", "h": 0.9 }, { "t": "Programa de usuario", "tone": "teal", "h": 1.5 }, { "t": "SO en RAM", "tone": "navy", "h": 1 }] }
+       ]
+      },
       "caption": "(a) SO en RAM · (b) SO en ROM · (c) drivers en ROM",
       "leftW": 5.3,
       "left": {
@@ -198,8 +205,28 @@
       "kind": "memoria-imagen",
       "section": "Evolución de la memoria",
       "title": "El problema de la re-ubicación",
-      "image": "image-01.png",
-      "alt": "(a) Programa de 16 KB con JMP 24; (b) otro programa con JMP 28; (c) ambos cargados en memoria, el segundo a partir de la dirección 16384, donde su JMP 28 salta a una dirección del primer programa",
+      "figure": {
+       "type": "reubicacion",
+       "columns": [
+        { "label": "(a)", "w": 1.05, "rows": [{ "addr": "28", "t": "ADD" }, { "addr": "24", "t": "MOV" }, { "t": "…" }, { "addr": "0", "t": "JMP 24" }] },
+        { "label": "(b)", "w": 1.05, "rows": [{ "addr": "28", "t": "CMP" }, { "t": "…" }, { "addr": "0", "t": "JMP 28" }] },
+        {
+         "label": "(c)", "w": 1.3, "chan": 0.4,
+         "rows": [
+          { "addr": "16 412", "t": "CMP", "tone": "green" },
+          { "t": "…" },
+          { "addr": "16 384", "t": "JMP 28", "tone": "red" },
+          { "gap": true },
+          { "addr": "28", "t": "ADD", "tone": "red" },
+          { "addr": "24", "t": "MOV" },
+          { "t": "…" },
+          { "addr": "0", "t": "JMP 24" }
+         ]
+        }
+       ],
+       "arrow": { "col": 2, "from": 2, "to": 4 }
+      },
+      "caption": "En (c), `JMP 28` salta a 28 (rojo, programa A); debía ir a 16 412 (verde).",
       "leftW": 5.3,
       "left": {
         "cards": [
@@ -370,8 +397,10 @@
       "kind": "memoria-imagen",
       "section": "Evolución de la memoria",
       "title": "El MMU: de virtual a física",
-      "image": "image-02.png",
-      "alt": "La CPU, dentro del paquete de CPU junto al MMU, envía direcciones virtuales al MMU; el MMU envía direcciones físicas a la memoria a través del bus, al que también se conecta el controlador de disco",
+      "figure": {
+       "type": "mmu",
+       "labels": { "package": "Paquete de CPU", "cpu": "CPU", "mmu": "MMU", "memory": "Memoria", "disk": "Controlador de disco", "bus": "Bus", "virtual": "virtual", "physical": "física" }
+      },
       "leftW": 5.2,
       "left": {
         "cards": [
@@ -386,8 +415,12 @@
       "kind": "memoria-imagen",
       "section": "Evolución de la memoria",
       "title": "Tabla de páginas y reemplazo de páginas",
-      "image": "image-03.png",
-      "alt": "Páginas virtuales de 4 KB, de 0K a 64K, mapeadas con flechas a los frames de la memoria física; las páginas marcadas con X no están cargadas",
+      "figure": {
+       "type": "paginas",
+       "frames": 8,
+       "headers": { "virtual": "Espacio de direcciones virtual", "physical": "Memoria física" },
+       "pages": ["2", "1", "6", "0", "4", "3", "X", "X", "X", "5", "X", "7", "X", "X", "X", "X"]
+      },
       "caption": "",
       "leftW": 5.2,
       "left": {
@@ -869,16 +902,28 @@
           "title": "Shallow-copy",
           "tone": "amber",
           "code": "int* counterPtr = malloc(sizeof(int));\n*counterPtr = 5;\nint* counterPtr_2 = counterPtr;",
-          "image": "image-14.png",
-          "alt": "counterPtr y counterPtr_2 guardan la misma dirección 0x000A y apuntan a una sola celda con el valor 5",
+          "diagram": {
+           "pointers": [
+            { "name": "counterPtr", "addr": "0x000A" },
+            { "name": "counterPtr_2", "addr": "0x000A" }
+           ],
+           "targets": [{ "v": "5", "addr": "0x000A" }],
+           "links": [[0, 0], [1, 0]]
+          },
           "text": "Se copia el puntero: un solo valor"
         },
         {
           "title": "Deep-copy",
           "tone": "teal",
           "code": "int* counterPtr_2 = malloc(sizeof(int));\n*counterPtr_2 = *counterPtr;\n",
-          "image": "image-15.png",
-          "alt": "counterPtr guarda 0x000A y counterPtr_2 guarda 0x000B; cada uno apunta a su propia celda con el valor 5",
+          "diagram": {
+           "pointers": [
+            { "name": "counterPtr", "addr": "0x000A" },
+            { "name": "counterPtr_2", "addr": "0x000B" }
+           ],
+           "targets": [{ "v": "5", "addr": "0x000A" }, { "v": "5", "addr": "0x000B" }],
+           "links": [[0, 0], [1, 1]]
+          },
           "text": "Se copia el valor: dos espacios"
         }
       ],

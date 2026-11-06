@@ -189,21 +189,86 @@
       "notes": "Sea G = {V, A} con V = {v0, v1, …, vn-1}. Los nodos se representan con una matriz A de n × n; cada elemento aij vale 0 si no hay arco entre (vi, vj) y 1 si lo hay. Con los nodos {D, F, K, L, R} la matriz es la de la diapositiva. Ejemplo: la fila de K es de ceros porque K no tiene arcos salientes, y su columna tiene tres unos porque K recibe arcos de D, F y L. En un grafo no dirigido la matriz es simétrica."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "grafos-matrices",
       "section": "Representación",
       "title": "Matriz de un grafo ponderado",
-      "image": "image-6.png",
-      "alt": "Matriz P de 5 por 5 con los pesos de un grafo de cinco ciudades (Alicante, Barcelona, Cartagena, Murcia y Reus) y el grafo dirigido y ponderado correspondiente",
-      "caption": "Si el grafo es ponderado, cada celda guarda el peso del arco (0 = no hay arco)",
+      "graphLabel": "Grafo dirigido y ponderado",
+      "graph": {
+        "directed": true,
+        "width": 6.0,
+        "height": 3.54,
+        "nodeSize": 0.6,
+        "padX": 0.85,
+        "padY": 0.78,
+        "nodes": [["1", 0.0, 0.0], ["2", 0.55, 0.0], ["3", 0.0, 1.0], ["4", 0.55, 1.0], ["5", 1.0, 1.0]],
+        "tags": {
+          "1": { "text": "Alicante", "at": "n", "tone": "navy" },
+          "2": { "text": "Barcelona", "at": "n", "tone": "navy" },
+          "3": { "text": "Cartagena", "at": "s", "tone": "navy" },
+          "4": { "text": "Murcia", "at": "s", "tone": "navy" },
+          "5": { "text": "Reus", "at": "s", "tone": "navy" }
+        },
+        "edges": [
+          { "a": "1", "b": "2", "w": 4 },
+          { "a": "1", "b": "3", "w": 5, "shift": 0.1, "off": 0.3 },
+          { "a": "3", "b": "1", "w": 3, "shift": 0.1, "off": 0.3 },
+          { "a": "2", "b": "3", "w": 3, "t": 0.7 },
+          { "a": "4", "b": "1", "w": 5, "t": 0.3 },
+          { "a": "2", "b": "4", "w": 6, "shift": 0.1, "off": 0.3 },
+          { "a": "4", "b": "2", "w": 2, "shift": 0.1, "off": 0.3 },
+          { "a": "2", "b": "5", "w": 3, "shift": 0.1, "off": 0.3 },
+          { "a": "5", "b": "2", "w": 1, "shift": 0.1, "off": 0.3 }
+        ],
+        "edgeStates": { "1>2": "active" }
+      },
+      "matrices": [
+        {
+          "label": "Matriz P de pesos",
+          "tone": "teal",
+          "fromGraph": "teal",
+          "rowLabels": ["1 · Alicante", "2 · Barcelona", "3 · Cartagena", "4 · Murcia", "5 · Reus"],
+          "colLabels": ["1", "2", "3", "4", "5"],
+          "headW": 1.75,
+          "cellW": 0.62,
+          "rowH": 0.59,
+          "hl": [[0, 1, "amber"]]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Si el grafo es **ponderado**, cada celda guarda el peso del arco (0 = no hay arco). Fila = origen, columna = destino." },
+        { "tone": "amber", "label": "Ejemplo:", "text": "Alicante → Barcelona está en la fila 1, columna 2 y vale `4`." }
+      ],
+      "calloutY": 6.0,
+      "calloutH": 0.85,
       "notes": "En un grafo ponderado la celda aij guarda el peso del arco de vi a vj en lugar de un 1. Por ejemplo, de Alicante a Barcelona el peso es 4 (fila 1, columna 2), y de Barcelona a Murcia es 6. Un 0 indica que no hay arco."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "grafos-lista",
       "section": "Representación",
       "title": "Lista de adyacencia",
-      "image": "image-7.png",
-      "alt": "Grafo dirigido de cinco nodos y su lista de adyacencia: el nodo 1 apunta a 3 y 4; el 2 a 3; el 3 a 1; el 4 no tiene destinos; el 5 apunta a 1, 2 y 4",
-      "caption": "Cada nodo guarda la lista de los nodos con los que se relaciona (él es el origen)",
+      "graphLabel": "Grafo dirigido",
+      "listLabel": "Lista de adyacencia (origen → destinos)",
+      "graph": {
+        "directed": true,
+        "width": 4.8,
+        "height": 3.7,
+        "nodeSize": 0.6,
+        "nodes": [["1", 0.0, 0.4], ["2", 1.0, 1.0], ["3", 0.0, 1.0], ["4", 0.5, 0.0], ["5", 1.0, 0.4]],
+        "edges": [
+          { "a": "1", "b": "3", "shift": 0.09 },
+          { "a": "3", "b": "1", "shift": 0.09 },
+          { "a": "1", "b": "4" },
+          { "a": "2", "b": "3" },
+          { "a": "5", "b": "1" },
+          { "a": "5", "b": "2" },
+          { "a": "5", "b": "4" }
+        ]
+      },
+      "callout": { "tone": "teal", "text": "Cada nodo guarda la lista de los nodos con los que se relaciona (él es el origen)." },
+      "calloutY": 6.1,
+      "calloutH": 0.7,
       "notes": "Una lista de adyacencia es una lista vinculada donde cada elemento representa un nodo del grafo. Cada elemento contiene una lista de relaciones con otros nodos, siendo el nodo del elemento el origen. Aquí: 1 → 3, 4; 2 → 3; 3 → 1; 4 no tiene salidas; 5 → 1, 2, 4. Solo se almacenan las aristas que existen, por eso conviene en grafos dispersos."
     },
     {
@@ -599,14 +664,31 @@
       "notes": "Pregunta de enganche: ¿cómo calcular el camino más corto de cada nodo a cada nodo? Una respuesta posible es ejecutar Dijkstra desde cada nodo, y funciona; pero para calcular el camino más corto entre todos los pares existe una solución más directa: el algoritmo de Floyd, que lo calcula mediante programación dinámica. Representa el grafo como una matriz ponderada: cada arco (vi, vj) tiene un peso cij; si el arco no existe el valor es infinito, y la diagonal vale cero. Se genera una matriz D de n × n donde cada Dij es el camino mínimo de vi a vj. Desde D0 se generan D1, D2, …, Dn; en cada paso se incluye un nuevo vértice para determinar si ese vértice mejora los caminos. Otra matriz Q (la matriz predecesora) se genera en cada paso desde Q0."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "grafos-floyd",
       "section": "Floyd y Warshall",
       "title": "Floyd: ejemplo con cinco vértices",
       "step": 1,
       "stepTotal": 3,
-      "image": "image-13.png",
-      "alt": "Grafo dirigido y ponderado de cinco vértices con las matrices de distancias D0 y D1 y las matrices de predecesores Q0 y Q1",
-      "caption": "D1[4,2] = mín(∞, D0[4,1] + D0[1,2]) = 6 + 1 = 7, y Q1[4,2] = 1",
+      "graph": {
+        "preset": "floyd5",
+        "width": 4.1,
+        "height": 2.75,
+        "nodeSize": 0.56,
+        "weightSize": 14,
+        "states": { "v1": "current" },
+        "edgeStates": { "v4>v1": "active", "v1>v2": "active" }
+      },
+      "formula": "Dk[i][j] = mín(\n    Dk-1[i][j],\n    Dk-1[i][k] + Dk-1[k][j])",
+      "legend": [
+        { "label": "Celda usada", "tone": "teal", "solid": false },
+        { "label": "Celda que cambia", "tone": "amber", "solid": false }
+      ],
+      "steps": [0, 1],
+      "labels": [["D0: pesos de los arcos", "Q0: predecesores iniciales"], ["D1: pasando por v1", "Q1: predecesores"]],
+      "callout": { "tone": "teal", "text": "**D1[4,2]** = mín(∞, D0[4,1] + D0[1,2]) = 6 + 1 = 7, y **Q1[4,2]** = 1" },
+      "calloutY": 6.35,
+      "calloutH": 0.5,
       "notes": "Ejemplo: D0 contiene los pesos de los arcos (∞ si no hay arco, 0 en la diagonal) y Q0 los predecesores iniciales. En D1 se prueba si pasar por V1 mejora algún camino. Caso destacado: de V4 a V2 no había arco (∞), pero V4 → V1 cuesta 6 y V1 → V2 cuesta 1, así que D1[4,2] = 7; como el camino pasa por V1, el predecesor Q1[4,2] pasa a ser 1.       Pida a la clase que verifique otra celda, por ejemplo D1[4,3]: sigue en ∞ porque V1 no llega a V3. Otra pregunta: ¿es más barato ir de V3 a V2 directo o pasando por V1? Directo cuesta 2; por V1 cuesta D0[3,1] + D0[1,2] = 3 + 1 = 4, así que D1[3,2] se queda en 2 y Q1[3,2] sigue siendo 3. Las siguientes diapositivas continúan este mismo ejemplo: los pasos k = 2 a 5 y el resultado final."
     },
           {
@@ -687,12 +769,27 @@
       "notes": "El algoritmo de Warshall es similar al de Floyd. Calcula la matriz de camino P (también llamada cierre transitivo) de un grafo G de n vértices, representado por su matriz de adyacencia A. Define una secuencia de matrices n × n: P0, P1, P2, …, Pn. P0[i,j] = 1 si hay un arco de vi a vj; P1[i,j] = 1 si hay un camino de vi a vj cuyo único vértice intermedio posible es v1 (el arco directo, o vi → v1 → vj); P2 permite v1 y v2 como intermedios, y así hasta Pn, que permite todos los vértices. Cuidado: no se trata de un «arco de vi a vj que no pasa por otro vértice», sino de un camino con vértices intermedios en {v1, …, vk}. Por ejemplo, en el grafo de la diapositiva «Warshall: el mismo grafo de Floyd», P2[1,4] = 1 por v1 → v2 → v4, que no es un arco. La regla de la diapositiva (hay camino de vi a vj en el paso k si ya lo había, o si había de vi a vk y de vk a vj) es la forma habitual de calcular cada matriz a partir de la anterior."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "grafos-warshall",
       "section": "Floyd y Warshall",
       "title": "Warshall: ejemplo con cuatro vértices",
-      "image": "image-15.png",
-      "alt": "Grafo dirigido de cuatro vértices y las matrices T(0) a T(4) del algoritmo de Warshall; T(4) es el cierre transitivo",
-      "caption": "T(0): arcos directos (1 en la diagonal) · T(4): cierre transitivo",
+      "graph": {
+        "directed": true,
+        "width": 4.4,
+        "height": 2.25,
+        "nodeSize": 0.56,
+        "nodes": [["1", 0.0, 0.0], ["2", 1.0, 0.0], ["3", 1.0, 1.0], ["4", 0.0, 1.0]],
+        "edges": [
+          { "a": "2", "b": "4" },
+          { "a": "4", "b": "1" },
+          { "a": "4", "b": "3" },
+          { "a": "2", "b": "3", "shift": 0.09 },
+          { "a": "3", "b": "2", "shift": 0.09 }
+        ]
+      },
+      "callout": { "tone": "teal", "text": "**T(0)**: arcos directos (1 en la diagonal) · **T(4)**: cierre transitivo" },
+      "calloutY": 6.35,
+      "calloutH": 0.5,
       "notes": "T(0) es la matriz de adyacencia con unos en la diagonal. Con cada paso k se incorporan los caminos que pasan por el vértice k. Por ejemplo, en T(4) la fila 2 es «1 1 1 1»: desde el vértice 2 se llega a todos (2 → 4 → 1 llega al 1). La fila 1 solo tiene un 1 en la diagonal porque el vértice 1 no tiene arcos de salida."
     },
           {

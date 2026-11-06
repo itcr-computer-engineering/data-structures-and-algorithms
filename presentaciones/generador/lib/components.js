@@ -419,7 +419,18 @@ function image(ctx, file, box_, altText) {
   return { w, h };
 }
 
+// Celda rectangular con texto; `tone` colorea relleno y borde, sin `tone` es una celda neutra.
+function cellBox(ctx, str, { x, y, w, h, tone, size = 14, code = false, bold = true, dashed = false }) {
+  const { colors, fonts } = ctx.theme;
+  const t = tone ? ctx.T[tone] : null;
+  ctx.slide.addText(String(str), {
+    shape: ctx.pptx.ShapeType.rect, x, y, w, h,
+    fill: { color: t ? t.soft : colors.codeBg }, line: { color: t ? t.accent : colors.slate, width: 1.5, dashType: dashed ? 'dash' : 'solid' },
+    color: colors.heading, bold, fontSize: size, fontFace: code ? fonts.code : fonts.heading, align: 'center', valign: 'middle', margin: 0,
+  });
+}
+
 module.exports = {
   rich, text, paragraphs, box, chip, circleLabel, arrow,
-  header, footer, card, surface, callout, codeBlock, codeHeight, highlightLine, table, image,
+  header, footer, card, surface, callout, codeBlock, codeHeight, highlightLine, table, image, cellBox,
 };

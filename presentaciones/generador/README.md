@@ -61,16 +61,16 @@ Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagr
 | Archivo | Presentación | `kind` |
 |---------|--------------|--------|
 | `diagrams.memoria.js` | CE-2103 · Administración de memoria | `memoria-imagen`, `memoria-tabla`, `memoria-layout`, `memoria-trace`, `memoria-pila-pasos`, `memoria-espacios`, `memoria-base-limite`, `memoria-celdas`, `memoria-copias`, `memoria-fragmentos` |
-| `diagrams.analisis.js` | CE-2103 · Análisis de algoritmos | `analisis-casos-busqueda`, `analisis-codigo-grafica`, `analisis-imagen-tabla`, `analisis-arbol-niveles`, `analisis-costos-push`, `analisis-tabla-terminos`, `analisis-traza-loops` |
-| `diagrams.diseno.js` | CE-2103 · Diseño de algoritmos | `diseno-matriz`, `diseno-tablero`, `diseno-arbol`, `diseno-bloom`, `diseno-ciclo` |
-| `diagrams.busqueda.js` | CE-2103 · Algoritmos de búsqueda | `busqueda-array-steps`, `busqueda-formula`, `busqueda-paneles`, `busqueda-grid` |
-| `diagrams.externo.js` | CE-2103 · Almacenamiento externo | `externo-image-side`, `externo-images`, `externo-timebar`, `externo-bars`, `externo-partitions`, `externo-cache-flow`, `externo-cache-trace`, `externo-runs`, `externo-btree`, `externo-raid`, `externo-paridad`, `externo-raid5`, `externo-bloques`, `externo-asignacion`, `externo-inodo`, `externo-layout` |
-| `diagrams.compresion.js` | CE-2103 · Algoritmos de compresión | `compresion-intervalos` |
-| `diagrams.poo.js` | CE-1103 · POO | `poo-code`, `poo-uml`, `poo-memoria`, `poo-ecuacion`, `poo-imagen-lado`, `poo-relaciones` |
+| `diagrams.analisis.js` | CE-2103 · Análisis de algoritmos | `analisis-casos-busqueda`, `analisis-codigo-grafica`, `analisis-grafica`, `analisis-arbol-tabla`, `analisis-representaciones`, `analisis-ventajas`, `analisis-arbol-niveles`, `analisis-costos-push`, `analisis-tabla-terminos`, `analisis-traza-loops` |
+| `diagrams.diseno.js` | CE-2103 · Diseño de algoritmos | `diseno-matriz`, `diseno-tablero`, `diseno-arbol`, `diseno-bloom`, `diseno-ciclo`, `diseno-mergesort`, `diseno-subproblemas` |
+| `diagrams.busqueda.js` | CE-2103 · Algoritmos de búsqueda | `busqueda-array-steps`, `busqueda-recorrido`, `busqueda-formula`, `busqueda-paneles`, `busqueda-grid` |
+| `diagrams.externo.js` | CE-2103 · Almacenamiento externo | `externo-hdd-partes`, `externo-hdd-pistas`, `externo-piramide`, `externo-merge`, `externo-image-side`, `externo-images`, `externo-timebar`, `externo-bars`, `externo-partitions`, `externo-cache-flow`, `externo-cache-trace`, `externo-runs`, `externo-btree`, `externo-raid`, `externo-paridad`, `externo-raid5`, `externo-bloques`, `externo-asignacion`, `externo-inodo`, `externo-layout` |
+| `diagrams.compresion.js` | CE-2103 · Algoritmos de compresión | `compresion-intervalos`, `compresion-pixeles`, `compresion-lz77` |
+| `diagrams.poo.js` | CE-1103 · POO | `poo-code`, `poo-uml`, `poo-memoria`, `poo-ecuacion`, `poo-imagen-lado`, `poo-relaciones`, `poo-ide` |
 | `diagrams.lineales.js` | CE-1103 · Estructuras lineales | `lineales-array`, `lineales-nodes`, `lineales-stack`, `lineales-ring`, `lineales-matrix-refs`, `lineales-doble-insertar` |
-| `diagrams.ordenamiento.js` | CE-1103 · Ordenamiento y búsqueda | `ordenamiento-array`, `ordenamiento-hash`, `ordenamiento-escalera` |
-| `diagrams.jerarquicas.js` | CE-1103 · Estructuras jerárquicas | `jerarquicas-trees`, `jerarquicas-imagegrid` |
-| `diagrams.grafos.js` | CE-1103 · Grafos | `grafos-graph`, `grafos-panels`, `grafos-matrices` |
+| `diagrams.ordenamiento.js` | CE-1103 · Ordenamiento y búsqueda | `ordenamiento-array`, `ordenamiento-hash`, `ordenamiento-escalera`, `ordenamiento-universo`, `ordenamiento-franjas`, `ordenamiento-estaturas`, `ordenamiento-merge` |
+| `diagrams.jerarquicas.js` | CE-1103 · Estructuras jerárquicas | `jerarquicas-trees`, `jerarquicas-imagegrid`, `jerarquicas-pila` |
+| `diagrams.grafos.js` | CE-1103 · Grafos | `grafos-graph`, `grafos-panels`, `grafos-matrices`, `grafos-lista`, `grafos-floyd`, `grafos-warshall` |
 
 Antes de crear un diagrama nuevo, mire estos: varios (arreglos con estados, nodos enlazados, árboles, grafos, trazas) se pueden reutilizar en otros temas. Sus campos están en la cabecera de cada archivo y en los specs que los usan.
 
@@ -78,6 +78,7 @@ Antes de crear un diagrama nuevo, mire estos: varios (arreglos con estados, nodo
 
 - `lib\postprocess.js` separa las letras griegas (Θ, Ω, ε…) en corridas con `Segoe UI Symbol`: sin eso, PowerPoint falla al exportar a imagen/PDF cuando una fuente normal las contiene.
 - Las celdas de tabla interpretan `**negrita**` y `` `código` ``; no hay cursiva.
+- **Figuras nativas:** los decks no usan imágenes de libro; cada figura se dibuja con formas del tema (datos en el spec, algoritmos calculados en código) para que sean editables y consistentes. Para añadir una, reutilice un `kind` de la tabla o cree uno en `lib\diagrams.<tema>.js`. Los `kind` basados en imagen (`memoria-imagen` con `image`, `externo-image-side`, `externo-images`, `jerarquicas-imagegrid`, `poo-imagen-lado`) siguen disponibles pero ya no se usan.
 
 ## Crear otra presentación
 

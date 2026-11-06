@@ -183,7 +183,10 @@ function joinResult(ctx, s) {
   const rw = s.result.colW.reduce((a, b) => a + b, 0);
   const rx = w - mx - rw;
   text(ctx, s.resultLabel, { x: rx, y: 1.8, w: 4, h: 0.4, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
-  const rt = table(ctx, { x: rx, y: 2.3, colW: s.result.colW, header: s.result.columns, rows: s.result.rows, rowH: 0.55, fontSize: 17, headerFill: colors.teal, headerColor: ctx.T.teal.on });
+  const rt = table(ctx, {
+    x: rx, y: 2.3, colW: s.result.colW, header: s.result.columns, rows: s.result.rows, rowH: 0.55, fontSize: 17, headerFill: colors.teal, headerColor: ctx.T.teal.on,
+    cellStyle: (r, c) => (String(s.result.rows[r][c]) === 'NULL' ? { color: ctx.T.amber.text, bold: true } : undefined),
+  });
   if (s.callout) callout(ctx, { x: mx, y: Math.max(5.2, 2.3 + rt.h + 0.3), w: w - 2 * mx, h: 1.0, ...s.callout });
 }
 
@@ -212,17 +215,18 @@ function venn(ctx, { cx, y, type }) {
   const ax = cx - (d + 2 * r) / 2;
   const bx = ax + d;
   const circle = (x, o) => ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, { x, y, w: 2 * r, h: 2 * r, ...o });
-  const fillA = type === 'left' || type === 'full';
-  const fillB = type === 'right' || type === 'full';
+  const excl = type.endsWith('-excl'); // «solo A», «solo B» o «A o B pero no ambas»: se excluye la intersección
+  const base = excl ? type.slice(0, -5) : type;
+  const fillA = base === 'left' || base === 'full';
+  const fillB = base === 'right' || base === 'full';
   circle(ax, { fill: { color: fillA ? colors.teal : colors.panel }, line: { type: 'none' } });
   circle(bx, { fill: { color: fillB ? colors.teal : colors.panel }, line: { type: 'none' } });
-  if (type === 'inner') {
-    const lens = lensPoints(r, d);
-    ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
-      x: bx, y: y + r - lens.h / 2, w: lens.w, h: lens.h, points: lens.pts,
-      fill: { color: colors.teal }, line: { type: 'none' },
-    });
-  }
+  // La intersección se pinta al final: en teal para los JOIN normales (si no, el círculo B la borra en LEFT) y vacía en los «-excl».
+  const lens = lensPoints(r, d);
+  ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
+    x: bx, y: y + r - lens.h / 2, w: lens.w, h: lens.h, points: lens.pts,
+    fill: { color: excl ? colors.panel : colors.teal }, line: { type: 'none' },
+  });
   circle(ax, { line: { color: colors.heading, width: 2 } });
   circle(bx, { line: { color: colors.heading, width: 2 } });
   const label = (t, x, on) =>

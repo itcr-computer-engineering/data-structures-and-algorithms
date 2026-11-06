@@ -30,7 +30,7 @@
         "Qué es un **DBMS** y por qué reemplazó a los archivos",
         "Cómo se modelan los datos en el **modelo relacional**",
         "Cómo los **índices** (árboles B+) aceleran las búsquedas",
-        "Cómo consultar y modificar datos con **SQL**",
+        "Cómo consultar y modificar datos con **SQL**, también desde **Python** y **Java**",
         "Cómo **diseñar** una base de datos relacional paso a paso",
         "Qué ofrecen las bases de datos **NoSQL** y cuándo usarlas"
       ],
@@ -65,12 +65,27 @@
       "notes": "Una base de datos no tiene que ser electrónica: el catálogo de tarjetas de una biblioteca también lo es. Aquí nos enfocamos en bases de datos electrónicas administradas por un DBMS (Database Management System)."
     },
     {
-      "type": "image",
+      "type": "cards",
       "section": "Fundamentos",
       "title": "Algunos DBMS populares",
-      "image": "image-01.png",
-      "alt": "Logotipos de DBMS populares: MySQL, PostgreSQL, MariaDB, MongoDB, SQLite, CockroachDB, Redis, CouchDB, Neo4j, FirebirdSQL, OrientDB y Cassandra",
-      "caption": "Cada DBMS adopta un enfoque: relacional, orientado a objetos o NoSQL.",
+      "columns": 4,
+      "intro": "Cada DBMS adopta un enfoque: **relacional** (verde azulado) o **NoSQL** (ámbar).",
+      "titleSize": 20,
+      "textSize": 16,
+      "cards": [
+        { "title": "MySQL", "text": "Relacional", "tone": "teal" },
+        { "title": "PostgreSQL", "text": "Objeto-relacional", "tone": "teal" },
+        { "title": "MariaDB", "text": "Relacional", "tone": "teal" },
+        { "title": "MongoDB", "text": "NoSQL: documentos", "tone": "amber" },
+        { "title": "SQLite", "text": "Relacional (embebido)", "tone": "teal" },
+        { "title": "CockroachDB", "text": "Relacional distribuido", "tone": "teal" },
+        { "title": "Redis", "text": "NoSQL: clave-valor", "tone": "amber" },
+        { "title": "CouchDB", "text": "NoSQL: documentos", "tone": "amber" },
+        { "title": "Neo4j", "text": "NoSQL: grafos", "tone": "amber" },
+        { "title": "FirebirdSQL", "text": "Relacional", "tone": "teal" },
+        { "title": "OrientDB", "text": "NoSQL: multimodelo", "tone": "amber" },
+        { "title": "Cassandra", "text": "NoSQL: columnas", "tone": "amber" }
+      ],
       "notes": "Ejemplos: MySQL, PostgreSQL, MariaDB, SQLite, Oracle, SQL Server (relacionales); MongoDB, Redis, CouchDB, Neo4j, Cassandra (NoSQL). Algunos DBMS soportan más de un enfoque."
     },
     {
@@ -485,12 +500,192 @@
       "intro": "Combinan filas de dos tablas (A y B) según una condición `ON`. El área coloreada es lo que se devuelve.",
       "items": [
         { "type": "inner", "title": "INNER JOIN", "text": "Solo las filas con coincidencia en ambas tablas." },
-        { "type": "left", "title": "LEFT JOIN", "text": "Todas las filas de A, más las coincidencias de B." },
-        { "type": "right", "title": "RIGHT JOIN", "text": "Todas las filas de B, más las coincidencias de A." },
+        { "type": "left", "title": "LEFT OUTER JOIN", "text": "Todas las filas de A, más las coincidencias de B." },
+        { "type": "right", "title": "RIGHT OUTER JOIN", "text": "Todas las filas de B, más las coincidencias de A." },
         { "type": "full", "title": "FULL OUTER JOIN", "text": "Todas las filas de A y de B, coincidan o no." }
       ],
-      "callout": { "tone": "slate", "text": "En la práctica, `JOIN` a secas equivale a `INNER JOIN`." },
-      "notes": "Las filas sin coincidencia aparecen con NULL en las columnas de la otra tabla. Hay variantes con WHERE ... IS NULL para obtener solo las filas sin pareja."
+      "callout": { "tone": "slate", "text": "`OUTER` es opcional: `LEFT JOIN` equivale a `LEFT OUTER JOIN`. Y `JOIN` a secas equivale a `INNER JOIN`." },
+      "notes": "Las filas sin coincidencia aparecen con NULL en las columnas de la otra tabla. La palabra OUTER es opcional: LEFT JOIN y LEFT OUTER JOIN son lo mismo, igual que RIGHT y FULL. RIGHT JOIN es un LEFT JOIN con las tablas en orden inverso, por eso muchos equipos solo usan LEFT. MySQL y MariaDB no tienen FULL OUTER JOIN: se simula uniendo (UNION) un LEFT JOIN con un RIGHT JOIN. Las siguientes diapositivas muestran LEFT OUTER JOIN con datos, cómo encontrar solo las filas sin pareja, y CROSS y SELF JOIN."
+    },
+    {
+      "type": "diagram",
+      "kind": "join-result",
+      "section": "SQL",
+      "title": "LEFT OUTER JOIN en acción",
+      "queryLabel": "Consulta",
+      "query": "SELECT E.NOMBRE, C.NOMBRE\nFROM ESTUDIANTE E\nLEFT OUTER JOIN MATRICULA M\n    ON E.ID = M.ESTUDIANTE_ID\nLEFT OUTER JOIN CURSO C\n    ON C.ID = M.CURSO_ID;",
+      "resultLabel": "Resultado",
+      "result": {
+        "columns": ["E.NOMBRE", "C.NOMBRE"],
+        "colW": [2.1, 2.3],
+        "rows": [["Juan", "Matemáticas"], ["Juan", "Física"], ["María", "Matemáticas"], ["Pedro", "NULL"]]
+      },
+      "callout": { "tone": "amber", "label": "Ojo:", "text": "Pedro no tiene matrículas, pero **sí aparece**, con `NULL` en el curso. Con `INNER JOIN` desaparecería." },
+      "notes": "Compare con la diapositiva JOIN: combinar tablas, que usa INNER JOIN y devuelve solo tres filas. Aquí LEFT OUTER JOIN conserva todas las filas de la tabla de la izquierda (ESTUDIANTE) y, donde no hay pareja, rellena las columnas de la derecha con NULL. Se encadenan dos LEFT JOIN: primero ESTUDIANTE con MATRICULA y luego el resultado con CURSO. Sin ORDER BY el orden de las filas no está garantizado. Pregunta para la clase: ¿qué pasaría con Química, que nadie cursa? No aparece, porque CURSO está a la derecha del último LEFT JOIN; para verla haría falta un FULL OUTER JOIN. Resultado verificado con SQLite 3.51."
+    },
+    {
+      "type": "diagram",
+      "kind": "venn-grid",
+      "section": "SQL",
+      "title": "JOIN para encontrar filas sin pareja",
+      "intro": "Para quedarse solo con lo que **no** coincide, se agrega `WHERE ... IS NULL` sobre la clave de la otra tabla.",
+      "items": [
+        { "type": "left-excl", "title": "Solo A", "text": "`LEFT JOIN` y `WHERE` clave de B `IS NULL`. Ej.: estudiantes sin matrícula." },
+        { "type": "right-excl", "title": "Solo B", "text": "`RIGHT JOIN` y `WHERE` clave de A `IS NULL`. Ej.: cursos sin estudiantes." },
+        { "type": "full-excl", "title": "A o B, no ambas", "text": "`FULL OUTER JOIN` y `WHERE` clave de A `IS NULL` o de B `IS NULL`." }
+      ],
+      "callout": { "tone": "teal", "text": "Ej.: `LEFT JOIN MATRICULA M … WHERE M.ESTUDIANTE_ID IS NULL` devuelve solo a **Pedro**." },
+      "notes": "Patrón «anti-join»: el LEFT JOIN conserva todas las filas de A y el WHERE IS NULL descarta las que sí encontraron pareja. Con los datos de la lección: estudiantes sin matrícula → Pedro (SELECT E.NOMBRE FROM ESTUDIANTE E LEFT JOIN MATRICULA M ON E.ID = M.ESTUDIANTE_ID WHERE M.ESTUDIANTE_ID IS NULL). Cursos sin estudiantes → Química (FROM CURSO C LEFT JOIN MATRICULA M ON C.ID = M.CURSO_ID WHERE M.CURSO_ID IS NULL; equivale a un RIGHT JOIN con las tablas al revés). Estudiantes sin curso o cursos sin estudiantes → (Pedro, NULL) y (NULL, Química), con FULL OUTER JOIN ... WHERE E.ID IS NULL OR C.ID IS NULL. Se pregunta IS NULL, nunca = NULL, porque nada es igual a NULL. Alternativas equivalentes: NOT EXISTS o NOT IN. Consultas verificadas con SQLite 3.51."
+    },
+    {
+      "type": "compare",
+      "section": "SQL",
+      "title": "CROSS JOIN y SELF JOIN",
+      "panelHeight": 3.95,
+      "panels": [
+        {
+          "title": "CROSS JOIN",
+          "tone": "navy",
+          "textSize": 18,
+          "text": "Combina **cada fila** de A con **cada fila** de B, sin condición `ON`.",
+          "code": "SELECT E.NOMBRE, C.NOMBRE\nFROM ESTUDIANTE E\nCROSS JOIN CURSO C;",
+          "codeSize": 15,
+          "note": "3 estudiantes × 3 cursos = **9 filas**."
+        },
+        {
+          "title": "SELF JOIN",
+          "tone": "teal",
+          "textSize": 18,
+          "text": "Una tabla se une **consigo misma**, con dos alias. Tabla: `EMPLEADO(ID, NOMBRE, JEFE_ID)`.",
+          "code": "SELECT E.NOMBRE AS EMPLEADO,\n       J.NOMBRE AS JEFE\nFROM EMPLEADO E\nJOIN EMPLEADO J\n    ON E.JEFE_ID = J.ID;",
+          "codeSize": 15
+        }
+      ],
+      "callout": { "tone": "amber", "label": "Cuidado:", "text": "`CROSS JOIN` crece como n × m: con 10 000 × 10 000 filas son 100 millones." },
+      "notes": "CROSS JOIN es el producto cartesiano: no lleva ON. Con los datos de la lección da 3 × 3 = 9 filas (verificado). Sirve para generar combinaciones (por ejemplo, todas las parejas talla-color), pero con tablas grandes es peligroso. Un error frecuente es olvidar la condición ON o el WHERE y obtener un producto cartesiano sin querer. SELF JOIN no es un tipo aparte de JOIN: es usar la misma tabla dos veces con alias distintos (E y J). El ejemplo EMPLEADO es ilustrativo y no pertenece al esquema de la lección: Elena (sin jefe), Diego y Laura (jefa: Elena) y Marco (jefe: Diego). El resultado son tres filas: Diego–Elena, Laura–Elena y Marco–Diego. Elena no aparece porque su JEFE_ID es NULL; con LEFT JOIN aparecería con JEFE en NULL. Verificado con SQLite 3.51."
+    },
+    {
+      "type": "flow",
+      "section": "Desde el código",
+      "title": "Conectar una aplicación a la base de datos",
+      "steps": [
+        { "title": "Conectar", "text": "Abrir la conexión con la URL, el usuario y el driver." },
+        { "title": "Preparar", "text": "Escribir el SQL con parámetros `?`." },
+        { "title": "Ejecutar", "text": "El DBMS devuelve filas o cuántas cambió." },
+        { "title": "Recorrer", "text": "Leer cada fila del resultado y cerrar la conexión." }
+      ],
+      "callout": { "tone": "teal", "label": "Driver:", "text": "**Python** usa la API DB-API (`sqlite3`, `psycopg2`…); **Java** usa **JDBC** (`java.sql`). El patrón es el mismo con cualquier DBMS." },
+      "notes": "Para que un programa hable con un DBMS se necesita un driver que implemente una API estándar: DB-API en Python (módulos sqlite3, psycopg2 para PostgreSQL, mysql-connector para MySQL...) y JDBC en Java (paquete java.sql más el .jar del driver del DBMS). Los ejemplos siguientes usan SQLite porque no requiere instalar un servidor: la base de datos es un archivo (universidad.db) con las tablas ESTUDIANTE, CURSO y MATRICULA de la lección. Python incluye sqlite3 en la biblioteca estándar; en Java hay que agregar el driver al proyecto (por ejemplo, la dependencia org.xerial:sqlite-jdbc). Con un servidor como PostgreSQL o MySQL solo cambian el módulo o driver y la cadena de conexión (host, puerto, base, usuario, contraseña); el resto del patrón no cambia."
+    },
+    {
+      "type": "code",
+      "section": "Desde el código",
+      "title": "Python: sqlite3 y la DB-API",
+      "codeSize": 15,
+      "columns": [
+        {
+          "weight": 1.7,
+          "blocks": [
+            {
+              "label": "Conectar y consultar",
+              "lang": "python",
+              "code": "import sqlite3\n\ncon = sqlite3.connect(\"universidad.db\")\ncur = con.cursor()\ncur.execute(\n    \"SELECT NOMBRE, EDAD FROM ESTUDIANTE WHERE ID = ?\",\n    (1,))\nfor nombre, edad in cur.fetchall():\n    print(nombre, edad)\ncon.close()"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Insertar y confirmar",
+              "lang": "python",
+              "code": "cur.execute(\n    \"INSERT INTO CURSO \"\n    \"VALUES (?, ?)\",\n    (4, \"Programación\"))\ncon.commit()"
+            },
+            { "label": "Salida de la consulta", "lang": "plain", "code": "Juan 20" }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Cada `?` es un parámetro: el valor viaja aparte, en la tupla `(1,)`. Sin `commit()`, los cambios no se guardan." }
+      ],
+      "notes": "Observe la coma de (1,): es una tupla de un solo elemento; sin la coma Python no la reconoce como tupla. fetchall() devuelve una lista de tuplas; también existen fetchone() (una fila) y fetchmany(n). En Python, sqlite3 abre una transacción al ejecutar INSERT, UPDATE o DELETE y no la confirma sola: sin commit() los cambios se pierden al cerrar la conexión. Otros módulos usan otro estilo de marcador de parámetro: psycopg2 y mysql-connector usan %s en lugar de ?. Para cerrar la conexión siempre, se puede usar try/finally o contextlib.closing (el with de sqlite3 confirma o revierte la transacción, pero no cierra la conexión). Actividad: ejecutar el ejemplo creando antes las tablas con el CREATE TABLE de la sección SQL."
+    },
+    {
+      "type": "code",
+      "section": "Desde el código",
+      "title": "Java: JDBC",
+      "codeSize": 13,
+      "columns": [
+        {
+          "weight": 1.55,
+          "blocks": [
+            {
+              "label": "Conectar y consultar",
+              "lang": "java",
+              "code": "String url = \"jdbc:sqlite:universidad.db\";\nString sql = \"SELECT NOMBRE, EDAD FROM ESTUDIANTE WHERE ID = ?\";\ntry (Connection con = DriverManager.getConnection(url);\n     PreparedStatement ps = con.prepareStatement(sql)) {\n    ps.setInt(1, 1);\n    ResultSet rs = ps.executeQuery();\n    while (rs.next()) {\n        String nombre = rs.getString(\"NOMBRE\");\n        int edad = rs.getInt(\"EDAD\");\n        System.out.println(nombre + \" \" + edad);\n    }\n}"
+            }
+          ]
+        },
+        {
+          "weight": 1,
+          "blocks": [
+            {
+              "label": "Insertar",
+              "lang": "java",
+              "code": "String ins = \"INSERT INTO CURSO \"\n    + \"(ID, NOMBRE) VALUES (?, ?)\";\ntry (PreparedStatement p =\n         con.prepareStatement(ins)) {\n    p.setInt(1, 4);\n    p.setString(2, \"Programación\");\n    p.executeUpdate();\n}"
+            }
+          ]
+        }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "`try-with-resources` cierra la conexión por usted. JDBC confirma cada sentencia sola (autocommit); en Python hay que llamar a `commit()`." }
+      ],
+      "notes": "try-with-resources cierra la Connection y el PreparedStatement automáticamente, aun si ocurre una excepción; al cerrar la sentencia también se cierra su ResultSet. En JDBC los índices de los parámetros y de las columnas empiezan en 1, no en 0 (setInt(1, ...), rs.getString(1)). rs.next() avanza a la siguiente fila y devuelve false cuando ya no hay más. Para SELECT se usa executeQuery(); para INSERT, UPDATE y DELETE, executeUpdate(), que devuelve el número de filas afectadas. El código va dentro de un método que declara throws SQLException (o dentro de un try/catch). JDBC tiene autocommit activado por defecto: con con.setAutoCommit(false) se agrupan varias sentencias en una transacción que se cierra con con.commit() o con.rollback(). Los drivers JDBC 4 modernos se registran solos: no hace falta Class.forName. El bloque «Insertar» supone una conexión con ya abierta."
+    },
+    {
+      "type": "compare",
+      "section": "Desde el código",
+      "title": "Nunca pegue la entrada del usuario en el SQL",
+      "vs": true,
+      "panelHeight": 3.9,
+      "panels": [
+        {
+          "title": "Concatenar (inseguro)",
+          "tone": "red",
+          "textSize": 18,
+          "text": "Se arma el SQL pegando lo que escribe el usuario.",
+          "code": "nombre = input(\"Nombre: \")\ncur.execute(\n    \"SELECT * FROM ESTUDIANTE \"\n    \"WHERE NOMBRE = '\" + nombre + \"'\")",
+          "codeLang": "python",
+          "codeSize": 14,
+          "note": "Con `x' OR '1'='1` devuelve **todas** las filas."
+        },
+        {
+          "title": "Parametrizar (seguro)",
+          "tone": "green",
+          "textSize": 18,
+          "text": "El SQL lleva un `?` y el valor se envía aparte.",
+          "code": "nombre = input(\"Nombre: \")\ncur.execute(\n    \"SELECT * FROM ESTUDIANTE \"\n    \"WHERE NOMBRE = ?\", (nombre,))",
+          "codeLang": "python",
+          "codeSize": 14,
+          "note": "La misma entrada no encuentra a nadie: es solo texto."
+        }
+      ],
+      "callout": { "tone": "amber", "label": "SQL injection:", "text": "es uno de los ataques más comunes. En Java use siempre `PreparedStatement` con `?`, nunca `Statement` con `+`." },
+      "notes": "Demostración con los datos de la lección: con la versión insegura y la entrada x' OR '1'='1 la consulta queda SELECT * FROM ESTUDIANTE WHERE NOMBRE = 'x' OR '1'='1', que es verdadera para todas las filas y devuelve a los tres estudiantes. En DBMS y drivers que aceptan varias sentencias, una entrada como x'; DROP TABLE ESTUDIANTE; -- podría borrar datos. Con parámetros, el DBMS recibe la consulta y el valor por separado: el texto siempre se trata como dato, así que la misma entrada devuelve 0 filas (verificado con SQLite). Los parámetros solo sustituyen valores, no nombres de tablas ni de columnas. En Java el equivalente seguro es PreparedStatement con ? y setString; evite Statement con concatenación."
+    },
+    {
+      "type": "cards",
+      "section": "Desde el código",
+      "title": "Buenas prácticas al conectarse",
+      "columns": 2,
+      "cardHeight": 1.95,
+      "cards": [
+        { "title": "Cierre los recursos", "text": "Cierre siempre la conexión: `try-with-resources` en Java, `close()` en Python.", "tone": "teal" },
+        { "title": "Credenciales fuera del código", "text": "Usuario, contraseña y URL van en variables de entorno o en configuración, nunca en el repositorio.", "tone": "amber" },
+        { "title": "Use transacciones", "text": "Agrupe operaciones relacionadas y confirme con `commit()` o deshaga con `rollback()` (ACID).", "tone": "navy" },
+        { "title": "Pool de conexiones y ORM", "text": "Abrir conexiones cuesta: se reutilizan con un pool. Un ORM mapea tablas a objetos.", "tone": "slate" }
+      ],
+      "notes": "Cierre de la sección. Credenciales: una contraseña escrita en el código termina en el historial de git. Transacciones: se relaciona con las propiedades ACID vistas antes; por ejemplo, una transferencia bancaria debe descontar y abonar, o ninguna de las dos. Abrir una conexión es costoso porque requiere red, autenticación y memoria en el servidor; por eso las aplicaciones usan un pool (en Java, por ejemplo, HikariCP). ORM (Object-Relational Mapping): SQLAlchemy en Python, Hibernate o JPA en Java; permiten trabajar con objetos en lugar de SQL, pero conviene dominar SQL primero porque el ORM lo genera por debajo."
     },
     {
       "type": "diagram",
@@ -806,7 +1001,7 @@
         "Un **DBMS** gestiona los datos y aporta independencia, integridad, seguridad y concurrencia.",
         "El **modelo relacional** organiza los datos en tablas unidas por claves primarias y foráneas.",
         "Los **índices** (árboles B+) aceleran las lecturas de `O(n)` a `O(log n)`, a costa de escrituras y espacio.",
-        "**SQL** define (DDL) y manipula (DML) los datos; `JOIN` combina tablas.",
+        "**SQL** define (DDL) y manipula (DML) los datos; los `JOIN` combinan tablas, y los programas (Python, Java) lo usan con consultas **parametrizadas**.",
         "**Diseñar** es un proceso por fases: conceptual (entidades y relaciones), lógico (tablas y normalización) y físico (SQL e índices).",
         "**NoSQL** ofrece esquemas flexibles y escalabilidad horizontal."
       ],

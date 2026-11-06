@@ -153,7 +153,7 @@
           }
         ]
       },
-      "notes": "Árbol de la figura (trees-1.png, con rótulos en inglés: root, parent, left child, level, path, subtree). Recorra la tabla señalando cada término en el árbol. Una hoja es un nodo sin hijos. En la siguiente diapositiva se amplía la terminología (arista, hermanos, longitud de camino, profundidad y altura)."
+      "notes": "Árbol de la figura, con la terminología rotulada: raíz, padre, hijo izquierdo, nivel, camino y subárbol. Recorra la tabla señalando cada término en el árbol. Una hoja es un nodo sin hijos. En la siguiente diapositiva se amplía la terminología (arista, hermanos, longitud de camino, profundidad y altura)."
     },
     {
       "type": "diagram",
@@ -587,13 +587,28 @@
             "notes": "Motivación del heap: en la lección de estructuras lineales se implementó una cola de prioridad con una lista enlazada ordenada: encolar recorre la lista hasta hallar la posición (O(n)), desencolar solo quita la cabeza (O(1)) y ver el primero es O(1). Con un heap, encolar (insert) y desencolar (delete) cuestan O(log n) porque cada operación sube o baja, a lo sumo, la altura del árbol completo; ver la raíz (get) es O(1). Para n encolar y n desencolar: la lista suma n operaciones O(n) más n operaciones O(1), es decir O(n²); el heap suma 2n operaciones O(log n), es decir O(n log n). Las complejidades se verificaron contra el código de ambas implementaciones.\n\nUn heap no sirve para buscar una llave cualquiera como un BST: solo se garantiza el orden entre un padre y sus hijos, no entre hermanos ni primos; buscar un valor arbitrario obliga a revisar el arreglo (O(n)). También conviene notar que subir es más simple que bajar: insertar compara el elemento con un único padre, mientras que eliminar compara con dos hijos y elige el mayor. Pregunta para la clase: ¿qué estructura elegiría para atender los pedidos más urgentes primero? (Heap.)"
           },
           {
-            "type": "image",
+            "type": "diagram",
+            "kind": "jerarquicas-trees",
             "section": "Heap",
             "title": "Heap mínimo y heap máximo",
-            "image": "heap-tree-1.png",
-            "alt": "Dos árboles heap: un min heap con raíz 10 a la izquierda y un max heap con raíz 100 a la derecha",
-            "caption": "Min heap (izquierda): cada nodo ≤ sus hijos · Max heap (derecha): cada nodo ≥ sus hijos",
-            "notes": "Figura con los rótulos «Min Heap» y «Max Heap» en inglés. Note que no hay relación de orden entre hermanos ni entre primos: solo entre cada padre y sus hijos; por eso un heap no es un BST. A partir de aquí se trabaja con el heap máximo."
+            "trees": [
+              {
+                "title": "Heap mínimo",
+                "titleTone": "teal",
+                "tree": "10(15(40,50),30(100,40))",
+                "marks": { "10": { "tone": "amber" } },
+                "caption": "Cada nodo ≤ sus hijos: la raíz es el menor"
+              },
+              {
+                "title": "Heap máximo",
+                "titleTone": "amber",
+                "tree": "100(40(10,15),50(50,40))",
+                "marks": { "100": { "tone": "amber" } },
+                "caption": "Cada nodo ≥ sus hijos: la raíz es el mayor"
+              }
+            ],
+            "callout": { "tone": "teal", "text": "Solo se ordenan el padre y sus hijos; entre hermanos y primos no hay relación, por eso un heap **no** es un BST." },
+            "notes": "Dos heaps de siete nodos: el heap mínimo (raíz 10) y el heap máximo (raíz 100). Note que no hay relación de orden entre hermanos ni entre primos: solo entre cada padre y sus hijos; por eso un heap no es un BST. A partir de aquí se trabaja con el heap máximo."
           },
           {
             "type": "diagram",
@@ -629,7 +644,7 @@
               ]
             },
             "callout": { "tone": "teal", "text": "Para `i = 1` (valor 88): los hijos están en `2·1+1 = 3` y `2·1+2 = 4`, es decir, 72 y 85." },
-            "notes": "Normalmente los heaps se implementan sobre un arreglo: la raíz se almacena en la posición 0 y los hijos de un nodo en la posición i se almacenan en las posiciones 2i + 1 y 2i + 2. Para el padre se usa (i − 1) / 2 con división entera, como en el código de heapifyUp. El arreglo y el árbol son los de la figura heap-tree-2.png."
+            "notes": "Normalmente los heaps se implementan sobre un arreglo: la raíz se almacena en la posición 0 y los hijos de un nodo en la posición i se almacenan en las posiciones 2i + 1 y 2i + 2. Para el padre se usa (i − 1) / 2 con división entera, como en el código de heapifyUp. El arreglo y el árbol son los de la figura."
           },
           {
             "type": "diagram",
@@ -1118,14 +1133,17 @@
           },
           {
             "type": "diagram",
-            "kind": "jerarquicas-imagegrid",
+            "kind": "jerarquicas-trees",
             "section": "Árboles de expresión",
             "title": "Del árbol a la notación infija: inorden",
-            "cardHeight": 3.45,
-            "images": [
-              { "file": "expression-tree-1.png", "alt": "Árbol de expresión de (x + y) * (a - b)", "caption": "`(x + y) * (a - b)`" },
-              { "file": "expression-tree-2.png", "alt": "Árbol de expresión de (x * (y - z)) * (a - f)", "caption": "`(x * (y - z)) * (a - f)`" },
-              { "file": "expression-tree-5.png", "alt": "Árbol de expresión de ((A * (X + Y)) * C)", "caption": "`((A * (X + Y)) * C)`" }
+            "legend": [
+              { "label": "Operador", "tone": "teal" },
+              { "label": "Operando", "tone": "navy" }
+            ],
+            "trees": [
+              { "type": "expr", "tree": "*(+(x,y),-(a,b))", "caption": "`(x + y) * (a - b)`" },
+              { "type": "expr", "tree": "*(*(x,-(y,z)),-(a,f))", "caption": "`(x * (y - z)) * (a - f)`" },
+              { "type": "expr", "tree": "*(*(A,+(X,Y)),C)", "caption": "`((A * (X + Y)) * C)`" }
             ],
             "callout": { "tone": "teal", "text": "Recorrer el árbol en **inorden** (izquierda, raíz, derecha) deja cada operador entre sus operandos." },
             "notes": "La notación infija es la forma tradicional de escribir expresiones, con los operadores entre los operandos. Para generar la expresión únicamente se requiere recorrer el árbol en inorden, con el mismo método inOrderRecursive visto para los BST. Observación: el inorden por sí solo no escribe los paréntesis; para conservar el orden de las operaciones hay que escribir un paréntesis de apertura antes de cada subárbol que no sea una hoja y uno de cierre después. Actividad: tape el pie de cada figura y pida a la clase escribir la expresión con un recorrido inorden con paréntesis; compare después con el pie. En la siguiente diapositiva se ve que un árbol de expresión también se puede leer en preorden y postorden."
@@ -1200,33 +1218,35 @@
           },
           {
             "type": "diagram",
-            "kind": "jerarquicas-imagegrid",
+            "kind": "jerarquicas-pila",
             "section": "Árboles de expresión",
             "title": "Construir el árbol desde la postfija (1/2)",
-            "cardHeight": 3.2,
-            "calloutY": 5.85,
-            "calloutH": 0.8,
-            "images": [
-              { "file": "expression-tree-10.png", "alt": "Cola de salida a b c * + d e * f + g * + y una pila con tres árboles de un solo nodo: a, b y c", "caption": "Se leen `a`, `b` y `c`: tres árboles de un nodo" },
-              { "file": "expression-tree-11.png", "alt": "Al leer el operador *, la pila queda con el árbol a y un árbol cuya raíz es * con hijos b y c", "caption": "Se lee `*`: une `b` y `c` bajo un nodo nuevo" }
+            "postfix": "a b c * + d e * f + g * +",
+            "queueLabel": "Cola de salida (postfija)",
+            "stackLabel": "Pila de árboles (cima a la derecha)",
+            "steps": [
+              { "upto": 3, "caption": "Se leen `a`, `b` y `c`: tres árboles de un nodo" },
+              { "upto": 4, "caption": "Se lee `*`: une `b` y `c` bajo un nodo nuevo" }
             ],
             "callout": { "tone": "teal", "text": "Cada **operando** se apila como un árbol de un nodo; cada **operador** desapila dos árboles y apila el nuevo." },
-            "notes": "Se recorre la cola de salida (la expresión postfija a b c * + d e * f + g * +) de izquierda a derecha. Operando: se apila un árbol de un solo nodo. Operador: se desapilan dos árboles (el primero que sale es el hijo derecho y el segundo el izquierdo), se crea un nodo con el operador como raíz y se apila el árbol resultante. Las dos figuras (expression-tree-10 y -11) tienen los rótulos «Output Queue» y «Stack» en inglés. En la segunda, el árbol *(b,c) queda en la cima de la pila, junto a a. Siguiente paso: `+` une a con *(b,c)."
+            "notes": "Se recorre la cola de salida (la expresión postfija a b c * + d e * f + g * +) de izquierda a derecha; la flecha marca el token que se acaba de leer. Operando: se apila un árbol de un solo nodo. Operador: se desapilan dos árboles (el primero que sale es el hijo derecho y el segundo el izquierdo), se crea un nodo con el operador como raíz y se apila el árbol resultante. En la segunda figura, el árbol *(b,c) queda en la cima de la pila, junto a a. Siguiente paso: `+` une a con *(b,c)."
           },
           {
             "type": "diagram",
-            "kind": "jerarquicas-imagegrid",
+            "kind": "jerarquicas-pila",
             "section": "Árboles de expresión",
             "title": "Construir el árbol desde la postfija (2/2)",
-            "cardHeight": 3.2,
-            "calloutY": 5.85,
-            "calloutH": 0.8,
-            "images": [
-              { "file": "expression-tree-12.png", "alt": "La flecha apunta a la e de la cola de salida; la pila tiene el árbol + con hijos a y *(b,c), y los árboles d y e", "caption": "Tras `+`, `d` y `e`: tres árboles en la pila" },
-              { "file": "expression-tree-13.png", "alt": "Árbol de expresión final con raíz + e hijos + (a, *(b,c)) y * (+(*(d,e),f), g)", "caption": "Árbol final de la expresión" }
+            "postfix": "a b c * + d e * f + g * +",
+            "queueLabel": "Cola de salida (postfija)",
+            "stackLabel": "Pila de árboles (cima a la derecha)",
+            "steps": [
+              { "upto": 7, "caption": "Tras `+`, `d` y `e`: tres árboles en la pila" },
+              { "upto": 13, "caption": "Último `+`: un único árbol, el árbol final" }
             ],
             "callout": { "tone": "teal", "text": "La raíz es el **último operador** de la postfija. El recorrido inorden (con paréntesis) devuelve la expresión infija." },
-            "notes": "Continúa el proceso: `+` une a con *(b,c); luego d y e se apilan; `*` forma *(d,e); f se apila y `+` forma +(*(d,e),f); g se apila y `*` forma *(+(*(d,e),f),g); finalmente el último `+` une los dos árboles que quedan y la pila termina con un único árbol: el árbol de expresión final (expression-tree-13.png). El subárbol izquierdo es a + (b * c) y el derecho es ((d * e) + f) * g. Para evaluarlo se recorre en postorden: primero los operandos de cada operador y luego el operador."
+            "calloutY": 6.2,
+            "calloutH": 0.65,
+            "notes": "Continúa el proceso: `+` une a con *(b,c); luego d y e se apilan (primera figura); `*` forma *(d,e); f se apila y `+` forma +(*(d,e),f); g se apila y `*` forma *(+(*(d,e),f),g); finalmente el último `+` une los dos árboles que quedan y la pila termina con un único árbol: el árbol de expresión final (segunda figura). El subárbol izquierdo es a + (b * c) y el derecho es ((d * e) + f) * g. Para evaluarlo se recorre en postorden: primero los operandos de cada operador y luego el operador. La pila de cada figura se calcula a partir de la postfija y se verificó con un programa."
           },
           {
             "type": "diagram",
@@ -1243,7 +1263,7 @@
               }
             ],
             "callout": { "tone": "teal", "text": "Entre las llaves **15** y **20** hay un hijo cuyas llaves son mayores que 15 y menores que 20." },
-            "notes": "Los árboles B son una variante de los N-arios para almacenar grandes cantidades de datos en disco; muy usados en bases de datos y sistemas de archivos. Descritos por Rudolf Bayer y Edward M. McCreight en 1972, son balanceados y cada nodo puede tener más de dos hijos. Cada nodo se compone de llaves y ramas; las llaves están ordenadas y dividen las ramas en el orden esperado. El árbol de la figura (b-tree-1.png) no repite ninguna llave, como corresponde a un árbol B."
+            "notes": "Los árboles B son una variante de los N-arios para almacenar grandes cantidades de datos en disco; muy usados en bases de datos y sistemas de archivos. Descritos por Rudolf Bayer y Edward M. McCreight en 1972, son balanceados y cada nodo puede tener más de dos hijos. Cada nodo se compone de llaves y ramas; las llaves están ordenadas y dividen las ramas en el orden esperado. El árbol de la figura no repite ninguna llave, como corresponde a un árbol B."
           },
           {
             "type": "compare",
@@ -1365,7 +1385,7 @@
               }
             ],
             "callout": { "tone": "teal", "text": "Orden 5: máximo 4 llaves por nodo. Con el 8 serían 5: la mediana (**6**) pasa a ser la nueva raíz." },
-            "notes": "Primera figura de inserción (b-tree-insertion-1 y -2): la raíz [4 5 6 11] está llena; al insertar el 8 las llaves ordenadas serían 4 5 6 8 11, la mediana es 6, que sube; las demás se reparten en dos nodos nuevos: [4 5] y [8 11]. Como la raíz se dividió, el árbol ganó un nivel."
+            "notes": "Primera figura de inserción: la raíz [4 5 6 11] está llena; al insertar el 8 las llaves ordenadas serían 4 5 6 8 11, la mediana es 6, que sube; las demás se reparten en dos nodos nuevos: [4 5] y [8 11]. Como la raíz se dividió, el árbol ganó un nivel."
           },
           {
             "type": "diagram",
@@ -1393,7 +1413,7 @@
                 ]
               }
             ],
-            "notes": "Las dos figuras de arriba (b-tree-insertion-3 y -4) son de orden 5. En la primera, el hijo derecho ya tiene 4 llaves (lleno): la siguiente inserción en él provocará otra división. En la segunda, después de varias divisiones la raíz tiene 4 llaves y cinco hijos, todos hojas al mismo nivel.\n\nTercer estado (la división en cascada hasta la raíz; el árbol resultante se calculó y verificó con un programa). Se inserta el 26: va a la hoja [21 28 32], que queda [21 26 28 32] (4 llaves, llena pero válida). Se inserta el 27: la hoja tendría 5 llaves (21 26 27 28 32), así que se divide: la mediana 27 sube al padre y quedan [21 26] y [28 32]. Ahora la raíz tiene 5 llaves (6 11 15 19 27), también se divide: la mediana 15 sube y se crea una raíz nueva; los nodos [6 11] y [19 27] son sus hijos. El árbol pasa de 2 a 3 niveles y todas las hojas siguen al mismo nivel. En amarillo, las llaves medianas que subieron. Idea clave: el árbol B no crece por las hojas sino por la raíz, y por eso queda siempre perfectamente balanceado."
+            "notes": "Las dos figuras de arriba son de orden 5. En la primera, el hijo derecho ya tiene 4 llaves (lleno): la siguiente inserción en él provocará otra división. En la segunda, después de varias divisiones la raíz tiene 4 llaves y cinco hijos, todos hojas al mismo nivel.\n\nTercer estado (la división en cascada hasta la raíz; el árbol resultante se calculó y verificó con un programa). Se inserta el 26: va a la hoja [21 28 32], que queda [21 26 28 32] (4 llaves, llena pero válida). Se inserta el 27: la hoja tendría 5 llaves (21 26 27 28 32), así que se divide: la mediana 27 sube al padre y quedan [21 26] y [28 32]. Ahora la raíz tiene 5 llaves (6 11 15 19 27), también se divide: la mediana 15 sube y se crea una raíz nueva; los nodos [6 11] y [19 27] son sus hijos. El árbol pasa de 2 a 3 niveles y todas las hojas siguen al mismo nivel. En amarillo, las llaves medianas que subieron. Idea clave: el árbol B no crece por las hojas sino por la raíz, y por eso queda siempre perfectamente balanceado."
           },
           {
             "type": "diagram",
@@ -1499,7 +1519,7 @@
                 { "card": { "title": "Para qué sirve", "text": "Diccionarios y motores de búsqueda.", "tone": "navy", "h": 1.5 } }
               ]
             },
-            "notes": "Trie viene de «reTRIEval» y se pronuncia como el inglés try. Cada nodo representa un carácter y cada rama corresponde a un carácter de la llave insertada; el último nodo de cada llave se conoce como EndOfWord (aquí, cuadrado). La raíz no tiene un valor asignado. Cada nodo se rotula con el prefijo que representa, y la letra de la rama es el último carácter. El ejemplo es el de la figura (trie-1.png): and, ant, dad y do."
+            "notes": "Trie viene de «reTRIEval» y se pronuncia como el inglés try. Cada nodo representa un carácter y cada rama corresponde a un carácter de la llave insertada; el último nodo de cada llave se conoce como EndOfWord (aquí, cuadrado). La raíz no tiene un valor asignado. Cada nodo se rotula con el prefijo que representa, y la letra de la rama es el último carácter. El ejemplo es el de la figura: and, ant, dad y do."
           },
           {
             "type": "code",

@@ -12,8 +12,9 @@ function estLines(str, fs, w) {
   return Math.max(1, Math.ceil(plain.length / cpl));
 }
 
-// ------------------------------------------------------------------ imagen + puntos clave
-function imageSide(ctx, s) {
+// ------------------------------------------------------------------ figura (imagen o dibujo) + puntos clave
+// `drawFigure(ctx, rect)` dibuja la figura en el rectángulo de la izquierda (o de la derecha con `imageSide: 'right'`).
+function sideLayout(ctx, s, drawFigure) {
   const { colors, fonts } = ctx.theme;
   const { mx, w } = ctx.theme.page;
   const top = 1.85;
@@ -24,8 +25,7 @@ function imageSide(ctx, s) {
   const ix = right ? w - mx - imgW : mx;
   const tx = right ? mx : mx + imgW + gap;
   const tw = w - 2 * mx - imgW - gap;
-  box(ctx, { x: ix, y: top, w: imgW, h: bottom - top, fill: WHITE, radius: 0.15 });
-  C.image(ctx, s.image, { x: ix + 0.15, y: top + 0.15, w: imgW - 0.3, h: bottom - top - 0.3 }, s.alt);
+  drawFigure(ctx, { x: ix, y: top, w: imgW, h: bottom - top });
 
   const tSize = s.titleSize || 22, dSize = s.textSize || 17;
   const items = s.items.map((it) => (typeof it === 'string' ? { title: it } : it));
@@ -44,6 +44,13 @@ function imageSide(ctx, s) {
     y += heights[i] + gapI;
   });
   if (s.callout) callout(ctx, { x: mx, y: 5.95, w: w - 2 * mx, h: 0.85, ...s.callout });
+}
+
+function imageSide(ctx, s) {
+  sideLayout(ctx, s, (c, r) => {
+    box(c, { x: r.x, y: r.y, w: r.w, h: r.h, fill: WHITE, radius: 0.15 });
+    C.image(c, s.image, { x: r.x + 0.15, y: r.y + 0.15, w: r.w - 0.3, h: r.h - 0.3 }, s.alt);
+  });
 }
 
 // ------------------------------------------------------------------ dos (o más) imágenes con pie
@@ -696,7 +703,361 @@ function layout(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.0, w: W, h: 0.82, size: 16, ...s.callout });
 }
 
+// ================================================================== figuras dibujadas con formas (sustituyen a las imágenes del libro)
+
+const rad = (deg) => (deg * Math.PI) / 180;
+// Punto a distancia `r` del centro, con el ángulo en grados medido en sentido horario desde las 12.
+const polar = (cx, cy, r, deg) => [cx + r * Math.sin(rad(deg)), cy - r * Math.cos(rad(deg))];
+
+function disc(ctx, cx, cy, r, { fill, line, lineWidth = 1 } = {}) {
+  ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, {
+    x: cx - r, y: cy - r, w: 2 * r, h: 2 * r,
+    fill: fill ? { color: fill } : { type: 'none' }, line: line ? { color: line, width: lineWidth } : { type: 'none' },
+  });
+}
+
+// Polígono relleno a partir de puntos absolutos (en pulgadas).
+function polygon(ctx, pts, { fill, line, lineWidth = 1 }) {
+  const x0 = Math.min(...pts.map((p) => p[0])), y0 = Math.min(...pts.map((p) => p[1]));
+  const pw = Math.max(...pts.map((p) => p[0])) - x0, ph = Math.max(...pts.map((p) => p[1])) - y0;
+  const points = pts.map(([x, y], i) => (i === 0 ? { x: x - x0, y: y - y0, moveTo: true } : { x: x - x0, y: y - y0 }));
+  points.push({ close: true });
+  ctx.slide.addShape(ctx.pptx.ShapeType.custGeom, {
+    x: x0, y: y0, w: Math.max(pw, 0.01), h: Math.max(ph, 0.01), points,
+    fill: fill ? { color: fill } : { type: 'none' }, line: line ? { color: line, width: lineWidth } : { type: 'none' },
+  });
+}
+
+// Sector anular: entre los radios r1 y r2 y los ángulos a1 y a2.
+function annularSector(ctx, cx, cy, r1, r2, a1, a2, style) {
+  const steps = Math.max(2, Math.ceil(Math.abs(a2 - a1) / 4));
+  const pts = [];
+  for (let i = 0; i <= steps; i++) pts.push(polar(cx, cy, r2, a1 + ((a2 - a1) * i) / steps));
+  for (let i = steps; i >= 0; i--) pts.push(polar(cx, cy, r1, a1 + ((a2 - a1) * i) / steps));
+  polygon(ctx, pts, style);
+}
+
+function figPanel(ctx, r) {
+  const { colors } = ctx.theme;
+  box(ctx, { x: r.x, y: r.y, w: r.w, h: r.h, fill: colors.panel, line: colors.border, radius: 0.12 });
+}
+
+// Rótulo con línea guía hacia (tx, ty). `y` es el centro del rótulo; `side`: 'left' (texto pegado a la derecha) o 'right'.
+function callLabel(ctx, str, { x, w, y, side, tx, ty, h = 0.34, size = 14 }) {
+  const { colors } = ctx.theme;
+  text(ctx, str, { x, y: y - h / 2, w, h, fontSize: size, bold: true, color: colors.heading, align: side === 'left' ? 'right' : 'left', valign: 'middle' });
+  arrow(ctx, { x1: side === 'left' ? x + w + 0.05 : x - 0.05, y1: y, x2: tx, y2: ty, color: colors.slate, width: 1.25 });
+}
+
+// ------------------------------------------------------------------ disco duro visto desde arriba: sus partes
+// Campos (figure): labels{ chasis, platos, eje, brazo, cabezal }, headRadius (distancia del cabezal al eje, en pulgadas)
+function figPartes(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const T = ctx.T, L = f.labels;
+  const colW = 1.3;
+  const chX = a.x + colW + 0.05, chW = a.w - 2 * colW - 0.1, chY = a.y + 0.05, chH = a.h - 0.1;
+  box(ctx, { x: chX, y: chY, w: chW, h: chH, fill: colors.codeBg, line: colors.slate, lineWidth: 2, radius: 0.12 });
+  const r = Math.min((chW - 0.3) / 2, (chH - 1.0) / 2);
+  const cx = chX + 0.15 + r, cy = chY + 0.2 + r;
+  disc(ctx, cx, cy, r, { fill: T.navy.accent, line: colors.slate, lineWidth: 1.5 });
+  [0.82, 0.64, 0.46].forEach((k) => disc(ctx, cx, cy, r * k, { line: colors.muted, lineWidth: 0.75 }));
+  disc(ctx, cx, cy, 0.3, { fill: T.slate.accent, line: colors.slate, lineWidth: 1 });
+  disc(ctx, cx, cy, 0.12, { fill: T.teal.accent });
+  // Actuador, brazo y cabezal: el brazo gira sobre un pivote y lleva el cabezal hasta el plato
+  const px = chX + chW - 0.5, py = chY + chH - 0.45;
+  const len = Math.hypot(cx - px, cy - py), ux = (cx - px) / len, uy = (cy - py) / len;
+  const hr = f.headRadius || 0.5;
+  const hx = cx - ux * hr, hy = cy - uy * hr;
+  box(ctx, { x: px - 0.38, y: py - 0.12, w: 0.76, h: 0.5, fill: T.amber.soft, line: T.amber.accent, lineWidth: 1.5, radius: 0.08 });
+  arrow(ctx, { x1: px, y1: py, x2: hx, y2: hy, color: T.amber.accent, width: 8, head: false });
+  disc(ctx, px, py, 0.14, { fill: T.amber.accent });
+  disc(ctx, hx, hy, 0.09, { fill: T.red.accent });
+
+  const lw = colW - 0.4, rx = chX + chW + 0.4, rw = a.x + a.w - rx;
+  callLabel(ctx, L.chasis, { x: a.x, w: lw, y: chY + 0.25, side: 'left', tx: chX + 0.05, ty: chY + 0.25 });
+  const py1 = chY + 0.95;
+  callLabel(ctx, L.platos, { x: a.x, w: lw, y: py1, side: 'left', tx: cx - Math.sqrt(r * r - (py1 - cy) ** 2) + 0.06, ty: py1 });
+  callLabel(ctx, L.eje, { x: a.x, w: lw, y: cy, side: 'left', tx: cx - 0.3, ty: cy });
+  callLabel(ctx, L.cabezal, { x: rx, w: rw, y: hy, side: 'right', tx: hx + 0.1, ty: hy });
+  const mx_ = (px + hx) / 2, my_ = (py + hy) / 2;
+  callLabel(ctx, L.brazo, { x: rx, w: rw, y: my_ + 0.1, h: 0.55, side: 'right', tx: mx_ + 0.07, ty: my_ });
+}
+
+// ------------------------------------------------------------------ plato visto desde arriba: pistas, sectores, cluster, cabezal
+// Campos (figure): tracks, sectors, hole (fracción del radio), track (pista resaltada, 0 = la más externa), sector (sector resaltado),
+// cluster{ track, from, to }, head (pista bajo el cabezal), armAngle (grados, 12 en punto = 0), labels{ plato, pista, sectorPista, sectorDisco, cluster, cabezal, brazo }
+function figPistas(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const T = ctx.T, L = f.labels;
+  const colW = 1.55;
+  const R = Math.min((a.w - 2 * colW - 0.2) / 2, (a.h - 0.1) / 2);
+  const cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+  const rin = R * f.hole, tw = (R - rin) / f.tracks, sa = 360 / f.sectors;
+  const band = (t) => [R - (t + 1) * tw, R - t * tw];
+  const mid = (t) => (band(t)[0] + band(t)[1]) / 2;
+  const sMid = (f.sector + 0.5) * sa;
+  disc(ctx, cx, cy, R, { fill: colors.codeBg, line: colors.slate, lineWidth: 1.5 });
+  annularSector(ctx, cx, cy, rin, R, f.sector * sa, (f.sector + 1) * sa, { fill: T.navy.accent });
+  const cl = f.cluster, [c1, c2] = band(cl.track);
+  annularSector(ctx, cx, cy, c1, c2, cl.from * sa, (cl.to + 1) * sa, { fill: T.green.accent });
+  disc(ctx, cx, cy, mid(f.track), { line: T.teal.accent, lineWidth: tw * 72 });
+  for (let k = 1; k < f.tracks; k++) disc(ctx, cx, cy, R - k * tw, { line: colors.muted, lineWidth: 0.75 });
+  for (let k = 0; k < f.sectors; k++) {
+    const [x1, y1] = polar(cx, cy, rin, k * sa), [x2, y2] = polar(cx, cy, R, k * sa);
+    arrow(ctx, { x1, y1, x2, y2, color: colors.muted, width: 0.75, head: false });
+  }
+  annularSector(ctx, cx, cy, band(f.track)[0], band(f.track)[1], f.sector * sa, (f.sector + 1) * sa, { fill: T.red.accent });
+  disc(ctx, cx, cy, rin, { fill: colors.panel, line: colors.muted, lineWidth: 1 });
+  // Brazo actuador con el cabezal sobre una pista interior
+  const ang = f.armAngle || 225;
+  const [px, py] = polar(cx, cy, R + 0.1, ang), [hx, hy] = polar(cx, cy, mid(f.head), ang);
+  arrow(ctx, { x1: px, y1: py, x2: hx, y2: hy, color: T.amber.accent, width: 7, head: false });
+  disc(ctx, px, py, 0.2, { fill: T.amber.accent });
+  disc(ctx, px, py, 0.08, { fill: colors.codeBg });
+  disc(ctx, hx, hy, 0.06, { fill: colors.heading });
+
+  const lw = colW - 0.3, lx = a.x, rx = a.x + a.w - colW + 0.3;
+  const onCircle = (r, dy) => Math.sqrt(r * r - dy * dy);
+  const ty1 = cy - 0.62 * R;
+  callLabel(ctx, L.plato, { x: lx, w: lw, y: ty1, side: 'left', tx: cx - onCircle(R, ty1 - cy) + 0.04, ty: ty1 });
+  const ty2 = cy - 0.3 * mid(f.track);
+  callLabel(ctx, L.pista, { x: lx, w: lw, y: ty2, side: 'left', tx: cx - onCircle(mid(f.track), ty2 - cy), ty: ty2 });
+  callLabel(ctx, L.cabezal, { x: lx, w: lw, y: hy, side: 'left', tx: hx - 0.08, ty: hy });
+  const qx = px + 0.2 * (hx - px), qy = py + 0.2 * (hy - py);
+  callLabel(ctx, L.brazo, { x: lx, w: lw, y: qy + 0.12, h: 0.5, side: 'left', tx: qx - 0.1, ty: qy });
+  const [dx, dy] = polar(cx, cy, 0.96 * R, sMid);
+  callLabel(ctx, L.sectorDisco, { x: rx, w: lw, y: dy, side: 'right', tx: dx + 0.05, ty: dy });
+  const [sx, sy] = polar(cx, cy, mid(f.track), sMid);
+  callLabel(ctx, L.sectorPista, { x: rx, w: lw, y: sy, side: 'right', tx: sx + 0.06, ty: sy });
+  const [kx, ky] = polar(cx, cy, mid(cl.track), ((cl.from + cl.to + 1) / 2) * sa);
+  callLabel(ctx, L.cluster, { x: rx, w: lw, y: ky, side: 'right', tx: kx + 0.06, ty: ky });
+}
+
+function hddPartes(ctx, s) {
+  sideLayout(ctx, s, (c, r) => {
+    figPanel(c, r);
+    figPartes(c, s.figure, { x: r.x + 0.15, y: r.y + 0.15, w: r.w - 0.3, h: r.h - 0.3 });
+  });
+}
+
+function hddPistas(ctx, s) {
+  sideLayout(ctx, s, (c, r) => {
+    figPanel(c, r);
+    figPistas(c, s.figure, { x: r.x + 0.15, y: r.y + 0.15, w: r.w - 0.3, h: r.h - 0.3 });
+  });
+}
+
+// ------------------------------------------------------------------ pirámide de la jerarquía de memoria
+// Campos: levels[{ level, label, tone }] (de arriba hacia abajo), axisUp, axisDown, groups[{ from, to, label, tone }], callout
+function piramide(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const n = s.levels.length, top = 1.9, bh = s.bandH || 0.6, gap = 0.05;
+  const H = n * bh + (n - 1) * gap;
+  const bottomW = s.bottomW || 6.2, topW = s.topW || 3.0, axW = 1.55;
+  const px = mx + axW + 0.25, cx = px + bottomW / 2;
+  const yTop = (i) => top + i * (bh + gap);
+  const widthAt = (y) => topW + ((bottomW - topW) * (y - top)) / H;
+  s.levels.forEach((lv, i) => {
+    const t = ctx.T[lv.tone || 'teal'];
+    const y1 = yTop(i), y2 = y1 + bh, w1 = widthAt(y1), w2 = widthAt(y2);
+    polygon(ctx, [[cx - w1 / 2, y1], [cx + w1 / 2, y1], [cx + w2 / 2, y2], [cx - w2 / 2, y2]], { fill: t.accent });
+    text(ctx, lv.label, { x: cx - w1 / 2 + 0.15, y: y1, w: w1 - 0.3, h: bh, fontSize: 17, bold: true, color: t.on, fontFace: fonts.heading, align: 'center', valign: 'middle' });
+    text(ctx, lv.level, { x: px + bottomW + 0.15, y: y1, w: 1.1, h: bh, fontSize: 17, bold: true, color: t.text, valign: 'middle' });
+  });
+  // Ejes: arriba más costo y velocidad; abajo más capacidad y tiempo de acceso
+  const ax1 = mx + 0.6, ax2 = mx + 1.4;
+  arrow(ctx, { x1: ax1, y1: top + H, x2: ax1, y2: top, color: ctx.T.teal.accent, width: 2.5 });
+  arrow(ctx, { x1: ax2, y1: top, x2: ax2, y2: top + H, color: ctx.T.amber.accent, width: 2.5 });
+  text(ctx, s.axisUp, { x: mx, y: top, w: 0.45, h: H, fontSize: 15, bold: true, color: ctx.T.teal.text, vert: 'vert270', align: 'center', valign: 'middle' });
+  text(ctx, s.axisDown, { x: mx + 0.8, y: top, w: 0.45, h: H, fontSize: 15, bold: true, color: ctx.T.amber.text, vert: 'vert270', align: 'center', valign: 'middle' });
+  // Llaves que agrupan niveles
+  const gx = px + bottomW + 1.35;
+  (s.groups || []).forEach((g) => {
+    const t = ctx.T[g.tone || 'teal'];
+    const y1 = yTop(g.from) + 0.04, y2 = yTop(g.to) + bh - 0.04;
+    arrow(ctx, { x1: gx, y1, x2: gx, y2, color: t.accent, width: 2.5, head: false });
+    arrow(ctx, { x1: gx - 0.1, y1, x2: gx, y2: y1, color: t.accent, width: 2.5, head: false });
+    arrow(ctx, { x1: gx - 0.1, y1: y2, x2: gx, y2, color: t.accent, width: 2.5, head: false });
+    text(ctx, g.label, { x: gx + 0.2, y: y1, w: w - mx - gx - 0.2, h: y2 - y1, fontSize: 17, bold: true, color: t.text, valign: 'middle' });
+  });
+  if (s.callout) callout(ctx, { x: mx, y: 5.95, w: w - 2 * mx, h: 0.85, size: 16, ...s.callout });
+}
+
+// ------------------------------------------------------------------ external merge: disco | buffer, paso a paso
+const chunk = (arr, n) => {
+  const out = [];
+  for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+  return out;
+};
+
+// Simula las acciones (read, merge, write) y devuelve una instantánea por estado (el 0 es el inicial).
+function mergeStates(m) {
+  const n = m.pageSize, K = m.lists.length;
+  const pages = m.lists.map((l) => chunk(l.data, n));
+  const consumed = Array(K).fill(0), inF = Array.from({ length: K }, () => []);
+  let outF = [], written = [];
+  const load = (i) => {
+    if (!inF[i].length && consumed[i] < pages[i].length) inF[i] = [...pages[i][consumed[i]++]];
+  };
+  const acts = {
+    read: () => { for (let i = 0; i < K; i++) load(i); },
+    merge: () => {
+      while (outF.length < n) {
+        for (let i = 0; i < K; i++) load(i);
+        let best = -1;
+        inF.forEach((f, i) => { if (f.length && (best < 0 || f[0] < inF[best][0])) best = i; });
+        if (best < 0) break;
+        outF.push(inF[best].shift());
+      }
+    },
+    write: () => { if (outF.length) { written.push(outF); outF = []; } },
+  };
+  const snap = (action) => ({ action, consumed: [...consumed], inF: inF.map((f) => [...f]), outF: [...outF], written: written.map((p) => [...p]) });
+  const states = [snap(null)];
+  (m.actions || []).forEach((a) => {
+    if (!acts[a]) throw new Error(`externo-merge: acción desconocida «${a}»`);
+    acts[a]();
+    states.push(snap(a));
+  });
+  return states;
+}
+
+// Medidas de la figura (las mismas en todos los estados, para que los recipientes no cambien de tamaño).
+function mergeMetrics(m, fs, padC) {
+  const n = m.pageSize, sep = m.sep || ', ';
+  const charW = fs * 0.0077, gapP = 0.1;
+  const pw = (arr) => Math.max(0.5, arr.join(sep).length * charW + 0.16);
+  const ph = (fs / 72) * 1.2 + 0.1;
+  const rows = [...m.lists.map((r, i) => ({ ...r, live: i })), ...(m.others || [])].map((r) => {
+    const pages = chunk(r.data, n);
+    const widths = pages.map(pw);
+    return { ...r, pages, widths, total: widths.reduce((a, b) => a + b, 0) + gapP * (widths.length - 1) };
+  });
+  const cw = Math.max(...rows.map((r) => r.total)) + 2 * padC;
+  const maxLen = Math.max(...[...m.lists, ...(m.others || [])].flatMap((r) => r.data).map((v) => String(v).length));
+  const fullW = (n * maxLen + (n - 1) * sep.length) * charW + 0.16;
+  const fLab = 0.36, fw = fullW + 0.12 + fLab;
+  const rowH = ph + 2 * padC, outRows = (m.output && m.output.rows) || 1;
+  const outH = outRows * ph + (outRows - 1) * gapP + 2 * padC;
+  const heights = [...rows.map(() => rowH), outH], rowGap = 0.1;
+  const rowTop = [];
+  let acc = 0;
+  heights.forEach((h) => { rowTop.push(acc); acc += h + rowGap; });
+  const lw = m.labelW || 1.0, mid = m.gapMid || 1.0, headH = 0.3;
+  return { fs, ph, padC, gapP, pw, sep, rows, cw, fw, fLab, rowH, outH, rowTop, lw, mid, headH, natW: lw + cw + mid + fw, natH: headH + 0.06 + acc - rowGap };
+}
+
+function drawMerge(ctx, m, M, st, rect) {
+  const { colors } = ctx.theme;
+  const T = ctx.T;
+  if (M.natW + 0.3 > rect.w + 0.01) throw new Error(`externo-merge: la figura (${(M.natW + 0.3).toFixed(2)}) no cabe en ${rect.w.toFixed(2)}`);
+  if (M.natH + 0.24 > rect.h + 0.01) throw new Error(`externo-merge: la figura (${(M.natH + 0.24).toFixed(2)}) no cabe en ${rect.h.toFixed(2)} de alto`);
+  figPanel(ctx, rect);
+  const x0 = rect.x + (rect.w - M.natW) / 2, y0 = rect.y + (rect.h - M.natH) / 2;
+  const cx0 = x0 + M.lw, fx = cx0 + M.cw + M.mid, top = y0 + M.headH + 0.06;
+  const L = m.labels;
+  text(ctx, L.disk, { x: cx0, y: y0, w: M.cw + M.mid - 0.1, h: M.headH, fontSize: 15, bold: true, color: colors.slate, valign: 'middle' });
+  text(ctx, L.buffer, { x: fx, y: y0, w: rect.x + rect.w - fx - 0.1, h: M.headH, fontSize: 15, bold: true, color: colors.slate, valign: 'middle' });
+  const divX = cx0 + M.cw + M.mid / 2;
+  arrow(ctx, { x1: divX, y1: y0, x2: divX, y2: y0 + M.natH, color: colors.muted, width: 1.25, head: false });
+
+  const dashed = (x, y, w, h) =>
+    ctx.slide.addShape(ctx.pptx.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.1, fill: { color: colors.bg }, line: { color: colors.slate, width: 1.25, dashType: 'dash' } });
+  const K = m.lists.length;
+  M.rows.forEach((r, i) => {
+    const y = top + M.rowTop[i];
+    const t = T[r.tone || 'slate'];
+    text(ctx, r.label, { x: x0, y, w: M.lw - 0.1, h: M.rowH, fontSize: 15, bold: true, color: t.text, valign: 'middle' });
+    dashed(cx0, y, M.cw, M.rowH);
+    let px = cx0 + M.padC;
+    r.pages.forEach((pg, j) => {
+      const gone = r.live !== undefined && j < st.consumed[r.live];
+      if (!gone) cell(ctx, { x: px, y: y + M.padC, w: r.widths[j], h: M.ph, label: pg.join(M.sep), tone: r.tone, size: M.fs });
+      px += r.widths[j] + M.gapP;
+    });
+  });
+  // Lista de salida: las páginas escritas se acomodan en filas
+  const oi = M.rows.length, oy = top + M.rowTop[oi], ot = T[m.output.tone || 'green'];
+  text(ctx, m.output.label, { x: x0, y: oy, w: M.lw - 0.1, h: M.outH, fontSize: 15, bold: true, color: ot.text, valign: 'middle' });
+  dashed(cx0, oy, M.cw, M.outH);
+  let px = cx0 + M.padC, py = oy + M.padC;
+  st.written.forEach((pg) => {
+    const pgw = M.pw(pg);
+    if (px + pgw > cx0 + M.cw - M.padC + 0.001) { px = cx0 + M.padC; py += M.ph + M.gapP; }
+    if (py + M.ph > oy + M.outH) throw new Error('externo-merge: la lista de salida no cabe');
+    cell(ctx, { x: px, y: py, w: pgw, h: M.ph, label: pg.join(M.sep), tone: m.output.tone || 'green', size: M.fs });
+    px += pgw + M.gapP;
+  });
+  // Frames del buffer: uno por lista de entrada y uno de salida
+  const frame = (y, name, data, tone) => {
+    dashed(fx, y, M.fw, M.rowH);
+    text(ctx, name, { x: fx + 0.08, y, w: M.fLab, h: M.rowH, fontSize: 13, bold: true, color: colors.slate, valign: 'middle' });
+    if (!data.length) return;
+    const cwid = M.pw(data), areaX = fx + M.fLab, areaW = M.fw - M.fLab;
+    cell(ctx, { x: areaX + (areaW - cwid) / 2, y: y + M.padC, w: cwid, h: M.ph, label: data.join(M.sep), tone, size: M.fs });
+  };
+  for (let i = 0; i < K; i++) frame(top + M.rowTop[i], `F${i + 1}`, st.inF[i], M.rows[i].tone);
+  frame(oy, `F${K + 1}`, st.outF, m.output.tone || 'green');
+  // Flechas de lectura y escritura; la acción del estado se resalta
+  const labW = Math.min(1.2, M.mid - 0.06);
+  const lab = (str, y, on) =>
+    text(ctx, str, { x: divX - labW / 2, y: y - 0.3, w: labW, h: 0.26, fontSize: 14, bold: true, color: on ? T.amber.text : colors.slate, align: 'center', valign: 'middle', fill: { color: colors.panel } });
+  const rx1 = cx0 + M.cw + 0.08, rx2 = fx - 0.08;
+  for (let i = 0; i < K; i++) {
+    const yc = top + M.rowTop[i] + M.rowH / 2;
+    arrow(ctx, { x1: rx1, y1: yc, x2: rx2, y2: yc, color: st.action === 'read' ? T.amber.accent : colors.slate, width: st.action === 'read' ? 3.5 : 2.5 });
+  }
+  lab(L.read, top + M.rowTop[0] + M.rowH / 2 - 0.02, st.action === 'read');
+  const wy = oy + M.rowH / 2;
+  arrow(ctx, { x1: rx2, y1: wy, x2: rx1, y2: wy, color: st.action === 'write' ? T.amber.accent : colors.slate, width: st.action === 'write' ? 3.5 : 2.5 });
+  lab(L.write, wy - 0.02, st.action === 'write');
+}
+
+// Campos: pageSize, sep, labels{ disk, buffer, read, write }, lists[{ label, tone, data[] }] (ordenadas, se mezclan),
+// others[{ label, tone, data[] }] (otros archivos en disco, fijos), output{ label, tone, rows }, actions[] (read | merge | write),
+// states[{ after (n.º de acciones aplicadas), caption, n }], arrange: side (un estado + items) | stack | columns, items, callout
+function merge(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const states = mergeStates(s);
+  const shown = s.states.map((x) => {
+    if (!states[x.after]) throw new Error(`externo-merge: no existe el estado ${x.after}`);
+    return { ...x, st: states[x.after] };
+  });
+  const arrange = s.arrange || (shown.length === 1 ? 'side' : 'stack');
+  const M = mergeMetrics(s, s.fontSize || 16, s.rowPad || 0.1);
+  if (arrange === 'side') {
+    sideLayout(ctx, s, (c, r) => drawMerge(c, s, M, shown[0].st, r));
+    return;
+  }
+  const top = 1.85, bottom = s.callout ? 5.7 : 6.75, n = shown.length;
+  const badge = (x, y, num) => circleLabel(ctx, { x, y, d: 0.46, label: String(num), fill: ctx.T.navy.accent, color: ctx.T.navy.on, size: 20 });
+  if (arrange === 'stack') {
+    const gap = 0.15, ph = (bottom - top - gap * (n - 1)) / n, capW = s.captionW || 3.3, fx = mx + capW + 0.3;
+    shown.forEach((x, i) => {
+      const y = top + i * (ph + gap);
+      badge(mx, y + ph / 2 - 0.23, x.n || i + 1);
+      text(ctx, x.caption, { x: mx + 0.65, y, w: capW - 0.65, h: ph, fontSize: 17, color: colors.ink, valign: 'middle' });
+      drawMerge(ctx, s, M, x.st, { x: fx, y, w: w - mx - fx, h: ph });
+    });
+  } else {
+    const gap = 0.3, pw = (w - 2 * mx - gap * (n - 1)) / n, ph = M.natH + 0.24;
+    shown.forEach((x, i) => {
+      const px = mx + i * (pw + gap);
+      drawMerge(ctx, s, M, x.st, { x: px, y: top, w: pw, h: ph });
+      badge(px, top + ph + 0.15, x.n || i + 1);
+      text(ctx, x.caption, { x: px + 0.6, y: top + ph + 0.1, w: pw - 0.6, h: 0.9, fontSize: 16, color: colors.ink, valign: 'middle' });
+    });
+  }
+  if (s.callout) callout(ctx, { x: mx, y: 5.9, w: w - 2 * mx, h: 0.85, size: 16, ...s.callout });
+}
+
 module.exports = {
+  'externo-hdd-partes': hddPartes,
+  'externo-hdd-pistas': hddPistas,
+  'externo-piramide': piramide,
+  'externo-merge': merge,
   'externo-image-side': imageSide,
   'externo-images': images,
   'externo-timebar': timebar,

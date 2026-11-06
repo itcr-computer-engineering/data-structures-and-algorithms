@@ -42,13 +42,26 @@
             "notes": "Siete objetivos, uno por bloque de la lección. Los dos últimos son los más importantes para el curso de algoritmos: ordenamiento externo y árboles B/B+."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "externo-piramide",
       "section": "Jerarquía de memoria",
       "title": "La jerarquía de memoria",
-      "image": "estructuras-almacenamiento-externo-01.png",
-      "alt": "Pirámide de la jerarquía de memoria: registros de la CPU, cache (SRAM), memoria principal (DRAM), disco magnético, disco óptico y cinta magnética",
-      "caption": "Arriba: poca capacidad, muy rápida y cara. Abajo: gran capacidad, más lenta y barata.",
-      "notes": "Conforme se «sube» en la jerarquía, la cantidad de memoria disminuye pero el costo y la velocidad aumentan. Conforme se desciende, el costo y la velocidad disminuyen pero la capacidad aumenta. Por eso el cache es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es lento pero de gran capacidad. Las etiquetas de la imagen están en inglés (Level 0 a Level 4). Esta lección se concentra en los niveles de abajo: el almacenamiento externo. Pregunta de apertura: ¿en qué se diferencian el almacenamiento primario y el secundario? Primario: memoria que el CPU accede directamente (registros, cache, RAM), rápida y volátil. Secundario: disco, SSD o memoria USB; persistente, más lento y de mayor capacidad, y el CPU no lo accede directamente (los datos se copian primero a la memoria principal)."
+      "levels": [
+        { "level": "Nivel 0", "label": "Registros de la CPU", "tone": "teal" },
+        { "level": "Nivel 1", "label": "Cache (SRAM)", "tone": "teal" },
+        { "level": "Nivel 2", "label": "Memoria principal (DRAM)", "tone": "teal" },
+        { "level": "Nivel 3", "label": "Disco magnético", "tone": "amber" },
+        { "level": "Nivel 4", "label": "Disco óptico", "tone": "amber" },
+        { "level": "Nivel 4", "label": "Cinta magnética", "tone": "amber" }
+      ],
+      "axisUp": "Más costo por bit y velocidad",
+      "axisDown": "Más capacidad y tiempo de acceso",
+      "groups": [
+        { "from": 0, "to": 2, "label": "Almacenamiento primario", "tone": "teal" },
+        { "from": 3, "to": 5, "label": "Almacenamiento externo", "tone": "amber" }
+      ],
+      "callout": { "tone": "teal", "text": "Arriba: poca capacidad, muy rápida y cara. Abajo: gran capacidad, más lenta y barata." },
+      "notes": "Conforme se «sube» en la jerarquía, la cantidad de memoria disminuye pero el costo y la velocidad aumentan. Conforme se desciende, el costo y la velocidad disminuyen pero la capacidad aumenta. Por eso el cache es una memoria muy rápida pero de poca capacidad, mientras que el disco duro es lento pero de gran capacidad. Los niveles van de 0 (registros de la CPU) a 4 (disco óptico y cinta magnética, ambos en el nivel 4). Esta lección se concentra en los niveles de abajo: el almacenamiento externo. Pregunta de apertura: ¿en qué se diferencian el almacenamiento primario y el secundario? Primario: memoria que el CPU accede directamente (registros, cache, RAM), rápida y volátil. Secundario: disco, SSD o memoria USB; persistente, más lento y de mayor capacidad, y el CPU no lo accede directamente (los datos se copian primero a la memoria principal)."
     },
     {
       "type": "cards",
@@ -66,11 +79,10 @@
     },
     {
       "type": "diagram",
-      "kind": "externo-image-side",
+      "kind": "externo-hdd-partes",
       "section": "Discos duros (HDD)",
       "title": "Componentes de un disco duro",
-      "image": "estructuras-almacenamiento-externo-03.jpeg",
-      "alt": "Interior de un disco duro: platos, brazo, actuador de cabezales, cabezal de lectura y escritura y chasis",
+      "figure": { "headRadius": 0.5, "labels": { "chasis": "Chasis", "platos": "Platos", "eje": "Eje", "brazo": "Brazo actuador", "cabezal": "Cabezal" } },
       "imageW": 5.9,
       "textSize": 16,
       "items": [
@@ -80,23 +92,25 @@
         { "title": "Cabezales", "text": "Leen y escriben los datos en los platos." }
       ],
       "callout": { "tone": "teal", "size": 16, "text": "Giro: 5400 / 7200 RPM (consumidor) y 10 000 / 15 000 RPM (servidores). **Más RPM** → más velocidad de E/S, pero más consumo y costo." },
-      "notes": "Un disco duro (HDD, hard-disk drive) es almacenamiento persistente: conserva la información sin electricidad. Los datos se guardan magnetizando partículas del material magnético de los platos, y el disco lee detectando esos patrones de magnetización. No debe confundirse con un SSD. La combinación de platos, eje, brazo actuador y cabezales se llama hard disk assembly. La velocidad de giro influye directamente en la velocidad de I/O. La imagen está en inglés (head actuator, head arm, disk platters, read/write head)."
+      "notes": "Un disco duro (HDD, hard-disk drive) es almacenamiento persistente: conserva la información sin electricidad. Los datos se guardan magnetizando partículas del material magnético de los platos, y el disco lee detectando esos patrones de magnetización. No debe confundirse con un SSD. La combinación de platos, eje, brazo actuador y cabezales se llama hard disk assembly. La velocidad de giro influye directamente en la velocidad de I/O. En la figura se ven el chasis, los platos (disk platters), el eje, el brazo actuador (head arm, movido por el head actuator) y el cabezal de lectura y escritura (read/write head)."
     },
     {
       "type": "diagram",
-      "kind": "externo-image-side",
+      "kind": "externo-hdd-pistas",
       "section": "Discos duros (HDD)",
       "title": "Pistas y sectores",
-      "image": "estructuras-almacenamiento-externo-04.jpg",
-      "alt": "Plato de un disco duro con pistas concéntricas, sectores, un cluster, el cabezal y el brazo actuador",
-      "imageW": 5.9,
+      "figure": {
+        "tracks": 9, "sectors": 12, "hole": 0.22, "track": 5, "sector": 1, "cluster": { "track": 1, "from": 4, "to": 5 }, "head": 7,
+        "labels": { "plato": "Plato", "pista": "Pista", "sectorPista": "Sector de pista", "sectorDisco": "Sector de disco", "cluster": "Cluster", "cabezal": "Cabezal", "brazo": "Brazo actuador" }
+      },
+      "imageW": 6.9,
       "items": [
         { "title": "Pistas", "text": "Círculos concéntricos en los que se escriben los datos." },
         { "title": "Sectores", "text": "Cada pista se divide en sectores." },
         { "title": "Unidad mínima", "text": "Un sector (generalmente 512 bytes) es la unidad mínima de almacenamiento." }
       ],
       "callout": { "tone": "amber", "text": "El disco no lee ni escribe bytes sueltos: trabaja con **sectores completos**." },
-      "notes": "Los datos se escriben en pistas (círculos concéntricos) y estas se dividen en sectores. En la imagen (en inglés) se distinguen la pista (track), el sector de pista (track sector), el sector de disco (disk sector), el cluster, el cabezal (head) y el brazo actuador (actuator arm). Un cluster es un grupo de sectores que usa el sistema de archivos. Ampliación (cilindros y bloques): un cilindro es el conjunto de pistas que ocupan la misma posición en todas las superficies; como el brazo mueve todos los cabezales a la vez, leer un cilindro completo no exige un nuevo seek. Por eso una dirección de sector se expresa como (cilindro, superficie o cabezal, sector): la pista queda determinada por el cilindro y la superficie. Ejemplo coherente: un disco de 5 platos tiene 10 superficies (0 a 9); si cada cara tiene 200 pistas, hay 200 cilindros. Idea práctica (derivación propia): los datos que se leen juntos conviene guardarlos en el mismo cilindro o en cilindros vecinos para evitar seeks. También se puede numerar cada sector con un solo número lineal. Distinga sector y bloque: el sector es la unidad física del disco; el bloque del sistema de archivos es un múltiplo del sector (siempre igual o mayor)."
+      "notes": "Los datos se escriben en pistas (círculos concéntricos) y estas se dividen en sectores. En la figura se distinguen el plato (platter), la pista (track), el sector de pista (track sector), el sector de disco (disk sector), el cluster, el cabezal (head) y el brazo actuador (actuator arm). Un cluster es un grupo de sectores que usa el sistema de archivos. Ampliación (cilindros y bloques): un cilindro es el conjunto de pistas que ocupan la misma posición en todas las superficies; como el brazo mueve todos los cabezales a la vez, leer un cilindro completo no exige un nuevo seek. Por eso una dirección de sector se expresa como (cilindro, superficie o cabezal, sector): la pista queda determinada por el cilindro y la superficie. Ejemplo coherente: un disco de 5 platos tiene 10 superficies (0 a 9); si cada cara tiene 200 pistas, hay 200 cilindros. Idea práctica (derivación propia): los datos que se leen juntos conviene guardarlos en el mismo cilindro o en cilindros vecinos para evitar seeks. También se puede numerar cada sector con un solo número lineal. Distinga sector y bloque: el sector es la unidad física del disco; el bloque del sistema de archivos es un múltiplo del sector (siempre igual o mayor)."
     },
     {
       "type": "diagram",
@@ -573,56 +587,70 @@
     },
     {
       "type": "diagram",
-      "kind": "externo-image-side",
+      "kind": "externo-merge",
       "section": "Ordenamiento externo",
       "title": "External merge: unir dos archivos ordenados",
-      "image": "05-estructuras-almacenamiento-externo/image-05.png",
-      "alt": "Esquema con dos listas ordenadas en disco (1,5 / 8,13 / 18,20 y 3,19 / 21,22 / 24,25), una lista de salida vacía y tres frames de buffer en memoria",
-      "imageW": 6.9,
+      "pageSize": 2,
+      "fontSize": 18,
+      "labels": { "disk": "Disco", "buffer": "Buffer (B = 3)", "read": "leer", "write": "escribir" },
+      "lists": [
+        { "label": "Lista 1", "tone": "teal", "data": [1, 5, 8, 13, 18, 20] },
+        { "label": "Lista 2", "tone": "amber", "data": [3, 19, 21, 22, 24, 25] }
+      ],
+      "output": { "label": "Lista mezclada", "tone": "green", "rows": 2 },
+      "actions": [],
+      "states": [{ "after": 0 }],
+      "imageW": 7.2,
       "items": [
         { "title": "Dos archivos ordenados", "text": "No caben en memoria: se procesan por bloques de tamaño n." },
         { "title": "Tres frames en memoria", "text": "Uno por archivo de entrada y uno temporal de salida." }
       ],
       "callout": { "tone": "teal", "text": "Los algoritmos de **ordenamiento externo** usan un enfoque híbrido: memoria principal y memoria secundaria." },
-      "notes": "Los algoritmos de ordenamiento externo sirven para ordenar grandes conjuntos de datos que no caben en la memoria principal; usualmente combinan memoria principal y secundaria. Hay dos: external merge y external merge-sort. En external merge se dividen los archivos en bloques que caben en memoria; si cada bloque es de tamaño n, en memoria se mantienen tres frames de tamaño n (B = 3 frames en la imagen). Las etiquetas de la imagen están en inglés: disk, buffer, list 1, list 2, merged list, read, write."
+      "notes": "Los algoritmos de ordenamiento externo sirven para ordenar grandes conjuntos de datos que no caben en la memoria principal; usualmente combinan memoria principal y secundaria. Hay dos: external merge y external merge-sort. En external merge se dividen los archivos en bloques que caben en memoria; si cada bloque es de tamaño n, en memoria se mantienen tres frames de tamaño n (B = 3 frames en la figura). En la figura: disco (disk), buffer, lista 1 y lista 2 (list 1, list 2), lista mezclada (merged list), leer (read) y escribir (write); las páginas de cada lista son [1,5] [8,13] [18,20] y [3,19] [21,22] [24,25]."
     },
     {
       "type": "diagram",
-      "kind": "externo-images",
+      "kind": "externo-merge",
       "section": "Ordenamiento externo",
       "title": "External merge: leer y mezclar",
-      "images": [
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-06.png",
-          "alt": "Se lee la primera página de cada lista a los frames de entrada: 1,5 y 3,19",
-          "caption": "1. Se lee la primera página de cada lista en un frame de entrada."
-        },
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-07.png",
-          "alt": "Se mezclan las dos páginas en el frame de salida, que contiene 1,3",
-          "caption": "2. Se mezclan en el frame temporal hasta que se llena (aquí: 1, 3)."
-        }
+      "arrange": "stack",
+      "pageSize": 2,
+      "fontSize": 15,
+      "rowPad": 0.07,
+      "labels": { "disk": "Disco", "buffer": "Buffer (B = 3)", "read": "leer", "write": "escribir" },
+      "lists": [
+        { "label": "Lista 1", "tone": "teal", "data": [1, 5, 8, 13, 18, 20] },
+        { "label": "Lista 2", "tone": "amber", "data": [3, 19, 21, 22, 24, 25] }
       ],
-      "notes": "Se leen los primeros bloques de ambos archivos en memoria. Usando el frame temporal se van comparando los elementos de ambos bloques y se ordenan en dicho frame. Cuando el frame temporal se llena, se escribe en el archivo de salida. Ejemplo: list 1 = [1,5] [8,13] [18,20]; list 2 = [3,19] [21,22] [24,25]. Primero salen 1 y 3 (los menores de cada frame). Textos de las imágenes: «read 1 page from each list» y «merge from the 2 pages until a new page is filled»."
+      "output": { "label": "Lista mezclada", "tone": "green" },
+      "actions": ["read", "merge"],
+      "states": [
+        { "after": 1, "caption": "Se lee la primera página de cada lista en un frame de entrada." },
+        { "after": 2, "caption": "Se mezclan en el frame temporal hasta que se llena (aquí: 1, 3)." }
+      ],
+      "notes": "Se leen los primeros bloques de ambos archivos en memoria. Usando el frame temporal se van comparando los elementos de ambos bloques y se ordenan en dicho frame. Cuando el frame temporal se llena, se escribe en el archivo de salida. Ejemplo: lista 1 = [1,5] [8,13] [18,20]; lista 2 = [3,19] [21,22] [24,25]. Primero salen 1 y 3 (los menores de cada frame). En la figura, los pasos son «leer 1 página de cada lista» (read 1 page from each list) y «mezclar las 2 páginas hasta llenar una página nueva» (merge from the 2 pages until a new page is filled)."
     },
     {
       "type": "diagram",
-      "kind": "externo-images",
+      "kind": "externo-merge",
       "section": "Ordenamiento externo",
       "title": "External merge: escribir y continuar",
-      "images": [
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-08.png",
-          "alt": "La página llena [1,3] se escribe en la lista de salida en disco",
-          "caption": "3. La página llena se escribe en el archivo de salida."
-        },
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-10.png",
-          "alt": "Se sigue mezclando: el frame de salida contiene 5,8 y la lista de salida ya tiene 1,3",
-          "caption": "4. Se sigue mezclando; cuando un frame de entrada se vacía, se lee otra página."
-        }
+      "arrange": "stack",
+      "pageSize": 2,
+      "fontSize": 15,
+      "rowPad": 0.07,
+      "labels": { "disk": "Disco", "buffer": "Buffer (B = 3)", "read": "leer", "write": "escribir" },
+      "lists": [
+        { "label": "Lista 1", "tone": "teal", "data": [1, 5, 8, 13, 18, 20] },
+        { "label": "Lista 2", "tone": "amber", "data": [3, 19, 21, 22, 24, 25] }
       ],
-      "notes": "Al escribir la página llena en disco el frame temporal queda libre. Se sigue mezclando hasta que un frame de entrada se vacía; entonces se lee la siguiente página de esa lista (en el visualizador: «keep merging until one frame becomes empty» y «continue merging»). El proceso se repite («and so on…») hasta agotar ambas listas."
+      "output": { "label": "Lista mezclada", "tone": "green" },
+      "actions": ["read", "merge", "write", "merge"],
+      "states": [
+        { "after": 3, "n": 3, "caption": "La página llena se escribe en el archivo de salida." },
+        { "after": 4, "n": 4, "caption": "Se sigue mezclando; cuando un frame de entrada se vacía, se lee otra página." }
+      ],
+      "notes": "Al escribir la página llena en disco el frame temporal queda libre. Se sigue mezclando hasta que un frame de entrada se vacía; entonces se lee la siguiente página de esa lista (en el ejemplo, la página [8,13] de la lista 1 entra al frame F1). El proceso se repite hasta agotar ambas listas."
     },
     {
       "type": "cards",
@@ -678,22 +706,32 @@
     },
     {
       "type": "diagram",
-      "kind": "externo-images",
+      "kind": "externo-merge",
       "section": "Ordenamiento externo",
-      "title": "En el visualizador: división y mezcla",
-      "images": [
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-13.png",
-          "alt": "Captura del visualizador: cuatro runs de tamaño 1 en almacenamiento secundario y el buffer vacío en memoria principal",
-          "caption": "Tras la división: 4 runs de tamaño 1 en disco y 3 frames vacíos en memoria."
-        },
-        {
-          "file": "05-estructuras-almacenamiento-externo/image-14.png",
-          "alt": "Captura del visualizador: F1 y F2 contienen páginas de los dos primeros runs y F3 (OUT) acumula 6, 8, 10, 11, 12",
-          "caption": "Mezcla de los dos primeros runs: F1 y F2 alimentan a F3 (OUT)."
-        }
+      "title": "Ejemplo: división y mezcla de dos runs",
+      "arrange": "columns",
+      "pageSize": 5,
+      "sep": " ",
+      "fontSize": 14,
+      "rowPad": 0.08,
+      "gapMid": 0.75,
+      "labelW": 0.8,
+      "labels": { "disk": "Disco", "buffer": "Memoria principal", "read": "leer", "write": "escribir" },
+      "lists": [
+        { "label": "Run 1", "tone": "teal", "data": [8, 11, 12, 13, 15] },
+        { "label": "Run 2", "tone": "teal", "data": [6, 10, 14, 16, 18] }
       ],
-      "notes": "Capturas del visualizador https://valeriodiste.github.io/ExternalMergeSortVisualizer (en inglés: main memory, secondary storage, buffer, run, file for R). Cada vez que el buffer de salida se llena, se escribe en un nuevo run de tamaño 2. Se repite el proceso con los runs de tamaño 2 y así sucesivamente hasta ordenar todo el archivo."
+      "others": [
+        { "label": "Run 3", "tone": "amber", "data": [1, 2, 5, 7, 17] },
+        { "label": "Run 4", "tone": "amber", "data": [3, 4, 9] }
+      ],
+      "output": { "label": "Run nuevo", "tone": "green", "rows": 2 },
+      "actions": ["read", "merge"],
+      "states": [
+        { "after": 0, "caption": "Tras la división: 4 runs de tamaño 1 en disco y 3 frames vacíos en memoria." },
+        { "after": 2, "caption": "Mezcla de los dos primeros runs: F1 y F2 alimentan a F3, que escribirá un run nuevo de tamaño 2." }
+      ],
+      "notes": "Figura basada en el visualizador https://valeriodiste.github.io/ExternalMergeSortVisualizer (en inglés: main memory, secondary storage, buffer, run, file for R). Cada vez que el buffer de salida se llena, se escribe en un nuevo run de tamaño 2. Se repite el proceso con los runs de tamaño 2 y así sucesivamente hasta ordenar todo el archivo."
     },
     {
       "type": "compare",

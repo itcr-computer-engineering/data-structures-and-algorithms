@@ -407,6 +407,31 @@ function relaciones(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: top + ph + 0.2, w: w - 2 * mx, h: s.calloutH || 0.75, ...s.callout });
 }
 
+// ------------------------------------------------------------------ ventana de IDE con autocompletado
+// code (la última línea es la que se escribe; el cursor queda al final), codeW, fontSize, popup{items[], selected, w}, caption
+function ide(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const fs = s.fontSize || 18;
+  const cw = s.codeW || 8.2;
+  const x = (w - cw) / 2, y = s.top || 2.15;
+  const lines = s.code.split('\n');
+  const lh = (fs * 1.3) / 72;
+  csBlock(ctx, { x, y, w: cw, code: s.code, fontSize: fs });
+  const chars = lines[lines.length - 1].length;
+  const px = x + 0.25 + (chars * fs * 0.55) / 72, py = y + 0.2 + lines.length * lh + 0.05;
+  const rowH = 0.34, pw = s.popup.w || 3.3, items = s.popup.items;
+  const nav = ctx.T.navy;
+  box(ctx, { x: px, y: py, w: pw, h: items.length * rowH + 0.12, fill: colors.panel, line: colors.slate, lineWidth: 1.5, radius: 0.06 });
+  items.forEach((it, i) => {
+    const ry = py + 0.06 + i * rowH;
+    if (i === s.popup.selected) box(ctx, { x: px + 0.06, y: ry, w: pw - 0.12, h: rowH, fill: nav.soft, line: nav.accent, radius: 0.04 });
+    box(ctx, { x: px + 0.2, y: ry + (rowH - 0.17) / 2, w: 0.17, h: 0.17, fill: nav.accent, radius: 0.03 });
+    text(ctx, it, { x: px + 0.5, y: ry, w: pw - 0.6, h: rowH, fontSize: 15, fontFace: fonts.code, color: colors.heading, valign: 'middle' });
+  });
+  if (s.caption) text(ctx, s.caption, { x: mx, y: 6.3, w: w - 2 * mx, h: 0.5, fontSize: 18, color: colors.slate, align: 'center', valign: 'middle' });
+}
+
 module.exports = {
   'poo-code': pooCode,
   'poo-uml': uml,
@@ -414,4 +439,5 @@ module.exports = {
   'poo-ecuacion': ecuacion,
   'poo-imagen-lado': imagenLado,
   'poo-relaciones': relaciones,
+  'poo-ide': ide,
 };

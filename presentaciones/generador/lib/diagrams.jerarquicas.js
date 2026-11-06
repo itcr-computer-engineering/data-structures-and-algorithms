@@ -1,6 +1,11 @@
 // Diagramas de la lección «Estructuras de datos jerárquicas» (CE-1103, lección 05).
 // kinds: `jerarquicas-trees` (árboles binarios, de expresión, B y tries descritos con una cadena compacta)
 //        `jerarquicas-imagegrid` (varias imágenes en fila, con leyenda)
+//        `jerarquicas-pila` (construcción de un árbol de expresión desde la postfija: cola de salida + pila de árboles,
+//          un panel por paso; la pila se calcula a partir de `postfix` y `steps[].upto`)
+//
+// jerarquicas-pila: { postfix: "a b c * +", queueLabel, stackLabel, steps: [{ upto: nº de tokens leídos, caption }],
+//                     callout, calloutY, calloutH }
 //
 // Cadena de un árbol: `valor(hijo1,hijo2,...)`; un hijo vacío es «sin hijo» (`10(,14(13,))` = 10 sin hijo izquierdo).
 //   - binary / expr: máximo dos hijos (izquierdo, derecho).
@@ -408,7 +413,150 @@ function imageGrid(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 6.05, w: w - 2 * mx, h: s.calloutH || 0.75, size: 16, ...s.callout });
 }
 
+// ------------------------------------------------------------------ cola de salida postfija + pila de árboles
+const OPERATORS = new Set(['+', '-', '*', '/', '^']);
+
+// Pila de árboles tras leer los primeros `upto` tokens de la postfija (algoritmo de construcción del árbol de expresión).
+function buildForest(tokens, upto) {
+  const stack = [];
+  tokens.slice(0, upto).forEach((tk, i) => {
+    if (OPERATORS.has(tk)) {
+      if (stack.length < 2) throw new Error(`Postfija mal formada: el operador «${tk}» (posición ${i + 1}) necesita dos operandos`);
+      const r = stack.pop(), l = stack.pop();
+      stack.push({ label: tk, op: true, l, r });
+    } else stack.push({ label: tk, op: false });
+  });
+  return stack;
+}
+
+// Las hojas ocupan casillas consecutivas y cada operador queda centrado sobre sus dos hijos.
+function slotTree(n, depth, cur) {
+  n.depth = depth;
+  if (!n.l) {
+    n.slot = cur.i++;
+    return { levels: depth + 1 };
+  }
+  const a = slotTree(n.l, depth + 1, cur), b = slotTree(n.r, depth + 1, cur);
+  n.slot = (n.l.slot + n.r.slot) / 2;
+  return { levels: Math.max(a.levels, b.levels) };
+}
+
+function forestEdges(n, out) {
+  if (!n.l) return out;
+  out.push([n, n.l], [n, n.r]);
+  forestEdges(n.l, out);
+  forestEdges(n.r, out);
+  return out;
+}
+
+function forestNodes(n, out) {
+  out.push(n);
+  if (n.l) { forestNodes(n.l, out); forestNodes(n.r, out); }
+  return out;
+}
+
+function tokenCell(ctx, tk, x, y, w, h, state) {
+  const { colors, fonts } = ctx.theme;
+  const A = ctx.T.amber;
+  const cur = state === 'cur', pend = state === 'pend';
+  ctx.slide.addText(tk, {
+    shape: ctx.pptx.ShapeType.rect, x, y, w, h,
+    fill: { color: cur ? A.accent : colors.codeBg },
+    line: { color: cur ? A.accent : pend ? colors.muted : colors.slate, width: 1.25, dashType: pend ? 'dash' : 'solid' },
+    color: cur ? A.on : pend ? colors.muted : colors.heading,
+    bold: true, fontSize: 18, fontFace: fonts.code, align: 'center', valign: 'middle', margin: 0,
+  });
+}
+
+function drawBuildPanel(ctx, s, tokens, step, forest, rect, G) {
+  const { colors } = ctx.theme;
+  const n = tokens.length;
+  const upto = step.upto;
+  const labelH = 0.3, qBoxH = 0.56, pointH = 0.3, capH = 0.55;
+  let y = rect.y;
+  text(ctx, s.queueLabel, { x: rect.x, y, w: rect.w, h: labelH, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+  y += labelH + 0.02;
+  box(ctx, { x: rect.x, y, w: rect.w, h: qBoxH, fill: colors.panel, line: colors.border });
+  const tw = G.tw, qx = rect.x + (rect.w - n * tw) / 2;
+  tokens.forEach((tk, i) => {
+    tokenCell(ctx, tk, qx + i * tw + 0.02, y + 0.06, tw - 0.04, qBoxH - 0.12, i < upto - 1 ? 'read' : i === upto - 1 ? 'cur' : 'pend');
+  });
+  const px = qx + (upto - 0.5) * tw;
+  arrow(ctx, { x1: px, y1: y + qBoxH + pointH, x2: px, y2: y + qBoxH + 0.02, color: ctx.T.amber.accent, width: 3.5 });
+  y += qBoxH + pointH + 0.06;
+  text(ctx, s.stackLabel, { x: rect.x, y, w: rect.w, h: labelH, fontSize: 16, bold: true, color: colors.slate, valign: 'middle' });
+  y += labelH + 0.02;
+  const boxH = rect.y + rect.h - capH - y;
+  box(ctx, { x: rect.x, y, w: rect.w, h: boxH, fill: colors.panel, line: colors.border });
+
+  let left = rect.x + 0.25;
+  const top = y + (G.boxH - G.forestH) / 2 + G.d / 2;
+  const edgeW = G.d >= 0.5 ? 2.25 : 1.75;
+  forest.forEach((root, ti) => {
+    const pos = (n_) => ({ x: left + (n_.slot + 0.5) * G.s, y: top + n_.depth * G.stepY });
+    forestEdges(root, []).forEach(([a, b]) => {
+      const pa = pos(a), pb = pos(b);
+      arrow(ctx, { x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y, color: colors.slate, width: edgeW, head: false });
+    });
+    const isTop = ti === forest.length - 1;
+    forestNodes(root, []).forEach((nd) => {
+      const c = pos(nd);
+      drawNode(ctx, {
+        cx: c.x, cy: c.y, d: G.d, label: nd.label, square: !nd.op, size: G.d >= 0.5 ? 18 : 16, subSize: 14,
+        tone: isTop && nd === root ? 'amber' : nd.op ? 'teal' : 'navy',
+      });
+    });
+    left += root.leaves * G.s + G.gap;
+  });
+  text(ctx, step.caption, {
+    x: rect.x, y: rect.y + rect.h - capH + 0.05, w: rect.w, h: capH - 0.05,
+    fontSize: 17, bold: true, color: colors.ink, align: 'center', valign: 'middle',
+  });
+}
+
+function jBuild(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const tokens = s.postfix.trim().split(/\s+/);
+  const steps = s.steps;
+  const forests = steps.map((st) => {
+    if (!(st.upto >= 1 && st.upto <= tokens.length)) throw new Error(`jerarquicas-pila: «upto» fuera de rango (1-${tokens.length}): ${st.upto}`);
+    const f = buildForest(tokens, st.upto);
+    let levels = 1, leaves = 0;
+    f.forEach((root) => {
+      const cur = { i: 0 };
+      levels = Math.max(levels, slotTree(root, 0, cur).levels);
+      root.leaves = cur.i;
+      leaves += cur.i;
+    });
+    return { f, leaves, levels };
+  });
+  const gapW = 0.3, gap = 0.45;
+  const panelW = (w - 2 * mx - (steps.length - 1) * gap) / steps.length;
+  const top = s.top || 1.7;
+  const callY = s.calloutY || 6.1;
+  const H = callY - 0.1 - top;
+  const L = Math.max(2, ...forests.map((x) => x.levels));
+  // Escala común a todos los paneles: ancho de casilla, diámetro de nodo y paso vertical
+  const innerW = panelW - 0.5;
+  const sCol = Math.min(1.1, ...forests.map((x) => (innerW - gapW * Math.max(0, x.f.length - 1)) / x.leaves));
+  const stackBoxH = H - (0.3 + 0.02 + 0.56 + 0.3 + 0.06 + 0.3 + 0.02) - 0.55;
+  const dV = (stackBoxH - 0.24) / (1 + (L - 1) * 1.2);
+  const d = Math.max(0.34, Math.min(0.7, sCol * 0.95, dV));
+  const stepY = L > 1 ? Math.max(d * 1.05, Math.min(d * 1.5, (stackBoxH - 0.24 - d) / (L - 1))) : 0;
+  const G = {
+    s: sCol, d, stepY, gap: gapW, boxH: stackBoxH,
+    tw: Math.min(0.5, (panelW - 0.3) / tokens.length),
+    forestH: d + (L - 1) * stepY,
+  };
+  steps.forEach((st, i) => {
+    drawBuildPanel(ctx, s, tokens, st, forests[i].f, { x: mx + i * (panelW + gap), y: top, w: panelW, h: H }, G);
+  });
+  if (s.callout) callout(ctx, { x: mx, y: callY, w: w - 2 * mx, h: s.calloutH || 0.7, size: 16, ...s.callout });
+}
+
 module.exports = {
   'jerarquicas-trees': jTrees,
   'jerarquicas-imagegrid': imageGrid,
+  'jerarquicas-pila': jBuild,
 };
