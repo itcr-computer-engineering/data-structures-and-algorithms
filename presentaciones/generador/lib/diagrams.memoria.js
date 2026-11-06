@@ -371,8 +371,42 @@ function memCeldas(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 5.7, w: w - 2 * mx, h: 0.95, ...s.callout });
 }
 
-// ------------------------------------------------------------------ dos paneles con código e imagen (shallow vs deep copy)
-// panels[{title,tone,code,codeLang,image,alt,text}], panelHeight, callout
+// ------------------------------------------------------------------ esquema de punteros dibujado con formas (sin imagen)
+// d{ pointers[{name,addr}], targets[{v,addr}], links[[puntero,destino]] }: cada puntero muestra la dirección que guarda y una flecha a su celda destino.
+function ptrDiagram(ctx, d, area, tone) {
+  const { colors, fonts } = ctx.theme;
+  const t = ctx.T[tone || 'teal'];
+  const cellH = 0.4, nameW = 1.5, ptrW = 1.1, linkW = 0.85, tgtW = 0.8, labelW = 0.75;
+  const x0 = area.x + (area.w - (nameW + 0.1 + ptrW + linkW + tgtW + 0.05 + labelW)) / 2;
+  const px = x0 + nameW + 0.1, tx = px + ptrW + linkW;
+  const n = d.pointers.length;
+  const pitch = n > 1 ? Math.min(0.7, (area.h - cellH) / (n - 1)) : 0;
+  const yTop = area.y + Math.max(0, (area.h - cellH - pitch * (n - 1)) / 2);
+  const pc = (i) => yTop + i * pitch + cellH / 2;
+  const tc = (j) => {
+    const ys = d.links.filter((l) => l[1] === j).map((l) => pc(l[0]));
+    return ys.reduce((a, b) => a + b, 0) / ys.length;
+  };
+  d.pointers.forEach((p, i) => {
+    text(ctx, p.name, { x: x0, y: pc(i) - cellH / 2, w: nameW, h: cellH, fontSize: 15, fontFace: fonts.code, color: colors.heading, align: 'right', valign: 'middle' });
+    ctx.slide.addText(p.addr, {
+      shape: ctx.pptx.ShapeType.rect, x: px, y: pc(i) - cellH / 2, w: ptrW, h: cellH, fill: { color: colors.codeBg }, line: { color: t.accent, width: 1.5 },
+      color: t.text, bold: true, fontSize: 14, fontFace: fonts.code, align: 'center', valign: 'middle', margin: 0,
+    });
+  });
+  d.targets.forEach((g, j) => {
+    const yc = tc(j);
+    if (g.addr) text(ctx, g.addr, { x: tx + tgtW + 0.05, y: yc - cellH / 2, w: labelW, h: cellH, fontSize: 13, fontFace: fonts.code, color: colors.slate, align: 'left', valign: 'middle' });
+    ctx.slide.addText(String(g.v), {
+      shape: ctx.pptx.ShapeType.rect, x: tx, y: yc - cellH / 2, w: tgtW, h: cellH, fill: { color: t.accent }, line: { type: 'none' },
+      color: t.on, bold: true, fontSize: 20, fontFace: fonts.heading, align: 'center', valign: 'middle', margin: 0,
+    });
+  });
+  d.links.forEach(([i, j]) => arrow(ctx, { x1: px + ptrW, y1: pc(i), x2: tx, y2: tc(j), color: t.text, width: 2 }));
+}
+
+// ------------------------------------------------------------------ dos paneles con código y esquema (shallow vs deep copy)
+// panels[{title,tone,code,codeLang,diagram|image+alt,text}], panelHeight, callout
 function memCopias(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
@@ -386,7 +420,9 @@ function memCopias(ctx, s) {
     text(ctx, p.title, { x: x + 0.3, y: top + 0.15, w: pw - 0.6, h: 0.5, fontSize: 22, bold: true, color: t.text, fontFace: ctx.theme.fonts.heading, valign: 'middle' });
     const ch = codeBlock(ctx, { x: x + 0.3, y: top + 0.75, w: pw - 0.6, code: p.code, lang: p.codeLang, fontSize: s.codeSize || 14 });
     const iy = top + 0.75 + ch + 0.15;
-    imageCard(ctx, p.image, p.alt, { x: x + 0.3, y: iy, w: pw - 0.6, h: top + ph - iy - 0.5 }, { pad: 0.1 });
+    const area = { x: x + 0.3, y: iy, w: pw - 0.6, h: top + ph - iy - 0.5 };
+    if (p.diagram) ptrDiagram(ctx, p.diagram, area, p.tone);
+    else imageCard(ctx, p.image, p.alt, area, { pad: 0.1 });
     if (p.text) text(ctx, p.text, { x: x + 0.3, y: top + ph - 0.45, w: pw - 0.6, h: 0.35, fontSize: 15, bold: true, color: t.text, align: 'center', valign: 'middle' });
   });
   if (s.callout) callout(ctx, { x: mx, y: top + ph + 0.2, w: w - 2 * mx, h: 0.85, size: 16, ...s.callout });

@@ -869,16 +869,28 @@
           "title": "Shallow-copy",
           "tone": "amber",
           "code": "int* counterPtr = malloc(sizeof(int));\n*counterPtr = 5;\nint* counterPtr_2 = counterPtr;",
-          "image": "image-14.png",
-          "alt": "counterPtr y counterPtr_2 guardan la misma dirección 0x000A y apuntan a una sola celda con el valor 5",
+          "diagram": {
+           "pointers": [
+            { "name": "counterPtr", "addr": "0x000A" },
+            { "name": "counterPtr_2", "addr": "0x000A" }
+           ],
+           "targets": [{ "v": "5", "addr": "0x000A" }],
+           "links": [[0, 0], [1, 0]]
+          },
           "text": "Se copia el puntero: un solo valor"
         },
         {
           "title": "Deep-copy",
           "tone": "teal",
           "code": "int* counterPtr_2 = malloc(sizeof(int));\n*counterPtr_2 = *counterPtr;\n",
-          "image": "image-15.png",
-          "alt": "counterPtr guarda 0x000A y counterPtr_2 guarda 0x000B; cada uno apunta a su propia celda con el valor 5",
+          "diagram": {
+           "pointers": [
+            { "name": "counterPtr", "addr": "0x000A" },
+            { "name": "counterPtr_2", "addr": "0x000B" }
+           ],
+           "targets": [{ "v": "5", "addr": "0x000A" }, { "v": "5", "addr": "0x000B" }],
+           "links": [[0, 0], [1, 1]]
+          },
           "text": "Se copia el valor: dos espacios"
         }
       ],
