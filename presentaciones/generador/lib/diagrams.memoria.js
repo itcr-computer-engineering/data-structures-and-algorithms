@@ -57,8 +57,133 @@ function codeWithMarker(ctx, { x, y, w, code, lang, fontSize = 14, hl }) {
 const label = (ctx, str, o) =>
   text(ctx, str, { h: 0.35, fontSize: 16, bold: true, color: ctx.theme.colors.slate, valign: 'middle', ...o });
 
+// ------------------------------------------------------------------ figuras dibujadas con formas (reemplazan las imágenes del libro)
+// Celda rectangular con texto; `tone` colorea relleno y borde, sin `tone` es una celda neutra.
+function cellBox(ctx, str, { x, y, w, h, tone, size = 14, code = false, bold = true, dashed = false }) {
+  const { colors, fonts } = ctx.theme;
+  const t = tone ? ctx.T[tone] : null;
+  ctx.slide.addText(String(str), {
+    shape: ctx.pptx.ShapeType.rect, x, y, w, h,
+    fill: { color: t ? t.soft : colors.codeBg }, line: { color: t ? t.accent : colors.slate, width: 1.5, dashType: dashed ? 'dash' : 'solid' },
+    color: colors.heading, bold, fontSize: size, fontFace: code ? fonts.code : fonts.heading, align: 'center', valign: 'middle', margin: 0,
+  });
+}
+
+const smallLabel = (ctx, str, o) =>
+  text(ctx, str, { h: 0.3, fontSize: 12, fontFace: ctx.theme.fonts.code, color: ctx.theme.colors.slate, valign: 'middle', ...o });
+
+// Mapas de memoria: columns[{label, blocks[{t, tone, h}]}] (bloques de arriba hacia abajo; h = alto relativo), top (rótulo de la dirección más alta)
+function figMapas(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const n = f.columns.length, axisW = 0.85, gap = 0.25, labelH = 0.45;
+  const cw = (a.w - axisW - (n - 1) * gap) / n;
+  const H = a.h - labelH - 0.05;
+  smallLabel(ctx, f.top || '0xFFF…', { x: a.x, y: a.y - 0.02, w: axisW - 0.1, align: 'right', fontSize: 13 });
+  smallLabel(ctx, '0', { x: a.x, y: a.y + H - 0.3, w: axisW - 0.1, align: 'right', fontSize: 13 });
+  f.columns.forEach((c, i) => {
+    const x = a.x + axisW + i * (cw + gap);
+    const total = c.blocks.reduce((s, b) => s + (b.h || 1), 0);
+    let y = a.y;
+    c.blocks.forEach((b) => {
+      const h = (H * (b.h || 1)) / total;
+      cellBox(ctx, b.t, { x, y, w: cw, h, tone: b.tone, size: 15 });
+      y += h;
+    });
+    text(ctx, c.label, { x, y: a.y + H + 0.08, w: cw, h: 0.35, fontSize: 16, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+  });
+}
+
+// Columnas de celdas con direcciones a la derecha, alineadas abajo (dirección 0):
+// columns[{label, w, chan, rows[{addr, t, tone}]}] (filas de arriba hacia abajo; sin addr ni tone = puntos suspensivos; {gap:true} = espacio),
+// arrow{col, from, to} (flecha roja por el canal izquierdo de la columna, entre dos filas)
+function figReubicacion(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const addrW = 0.62, gap = 0.12, labelH = 0.45;
+  const maxRows = Math.max(...f.columns.map((c) => c.rows.length));
+  const rh = Math.min(0.42, (a.h - labelH) / maxRows);
+  const yB = a.y + maxRows * rh;
+  const total = f.columns.reduce((s, c) => s + (c.chan || 0) + c.w + addrW, 0) + gap * (f.columns.length - 1);
+  let x = a.x + (a.w - total) / 2;
+  const pos = [];
+  f.columns.forEach((c) => {
+    x += c.chan || 0;
+    pos.push({ x, rowY: (j) => yB - (c.rows.length - j) * rh });
+    c.rows.forEach((r, j) => {
+      const y = yB - (c.rows.length - j) * rh;
+      if (r.gap) return;
+      if (!r.addr && !r.tone && !r.t) return;
+      if (r.t === '…') text(ctx, '…', { x, y, w: c.w, h: rh, fontSize: 18, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+      else cellBox(ctx, r.t, { x, y, w: c.w, h: rh, tone: r.tone, size: 14, code: true });
+      if (r.addr) smallLabel(ctx, r.addr, { x: x + c.w + 0.06, y: y + (rh - 0.3) / 2, w: addrW });
+    });
+    text(ctx, c.label, { x, y: yB + 0.08, w: c.w, h: 0.35, fontSize: 16, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+    x += c.w + addrW + gap;
+  });
+  if (f.arrow) {
+    const c = f.columns[f.arrow.col], p = pos[f.arrow.col];
+    const y1 = p.rowY(f.arrow.from) + rh / 2, y2 = p.rowY(f.arrow.to) + rh / 2;
+    const xc = p.x - (c.chan || 0.3) / 2, col = ctx.T.red.accent;
+    arrow(ctx, { x1: p.x, y1, x2: xc, y2: y1, color: col, width: 2.5, head: false });
+    arrow(ctx, { x1: xc, y1, x2: xc, y2, color: col, width: 2.5, head: false });
+    arrow(ctx, { x1: xc, y1: y2, x2: p.x, y2, color: col, width: 2.5 });
+  }
+}
+
+// CPU, MMU, memoria y controlador de disco conectados por un bus: labels{package, cpu, mmu, memory, disk, bus, virtual, physical}
+function figMmu(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const L = f.labels;
+  const px = a.x + 0.05, py = a.y + 0.05 + Math.max(0, (a.h - 3.95) / 2), pkgW = 2.4, pkgH = 2.85;
+  box(ctx, { x: px, y: py, w: pkgW, h: pkgH, fill: colors.codeBg, line: colors.slate, radius: 0.1, lineWidth: 1.5 });
+  text(ctx, L.package, { x: px, y: py + 0.08, w: pkgW, h: 0.4, fontSize: 15, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+  const bx = px + 0.3, bw = 1.2, cx = bx + bw / 2;
+  cellBox(ctx, L.cpu, { x: bx, y: py + 0.65, w: bw, h: 0.6, tone: 'navy', size: 18 });
+  cellBox(ctx, L.mmu, { x: bx, y: py + 1.85, w: bw, h: 0.6, tone: 'teal', size: 18 });
+  arrow(ctx, { x1: cx, y1: py + 1.25, x2: cx, y2: py + 1.85, color: ctx.T.amber.accent, width: 2.5 });
+  chip(ctx, { x: cx + 0.12, y: py + 1.38, w: 0.95, h: 0.32, label: L.virtual, tone: 'amber', size: 12 });
+  const busY = py + pkgH + 0.6;
+  arrow(ctx, { x1: cx, y1: py + 2.45, x2: cx, y2: busY, color: ctx.T.teal.accent, width: 2.5 });
+  chip(ctx, { x: cx + 0.12, y: py + pkgH + 0.14, w: 0.95, h: 0.32, label: L.physical, tone: 'teal', size: 12 });
+  const right = a.x + a.w - 0.05;
+  arrow(ctx, { x1: cx, y1: busY, x2: right, y2: busY, color: colors.slate, width: 3, head: false });
+  smallLabel(ctx, L.bus, { x: right - 0.7, y: busY + 0.06, w: 0.7, align: 'right', fontSize: 14 });
+  const memW = 1.25, diskW = 1.45, memX = px + pkgW + 0.4, diskX = memX + memW + 0.25, boxH = 1.2, boxY = busY - 0.4 - boxH;
+  [[memX, memW, L.memory], [diskX, diskW, L.disk]].forEach(([x, w, t]) => {
+    cellBox(ctx, t, { x, y: boxY, w, h: boxH, size: 15 });
+    arrow(ctx, { x1: x + w / 2, y1: boxY + boxH, x2: x + w / 2, y2: busY, color: colors.slate, width: 2, head: false });
+  });
+}
+
+// Tabla de páginas: pages[] (de abajo hacia arriba; "X" = no cargada, número = marco), frames (cantidad de marcos), headers{virtual, physical}
+function figPaginas(ctx, f, a) {
+  const { colors } = ctx.theme;
+  const n = f.pages.length, headH = 0.6;
+  const ch = Math.min(0.28, (a.h - headH) / n);
+  const yB = a.y + headH + n * ch;
+  const rangeW = 0.95, cellW = 0.62, gapW = 1.55, frameW = 0.62, labelW = 0.95;
+  const total = rangeW + cellW + gapW + frameW + labelW;
+  const rx = a.x + (a.w - total) / 2, vx = rx + rangeW, fx = vx + cellW + gapW;
+  const rowY = (i) => yB - (i + 1) * ch;
+  text(ctx, f.headers.virtual, { x: rx - 0.1, y: a.y, w: rangeW + cellW + 0.2, h: headH - 0.05, fontSize: 13, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+  text(ctx, f.headers.physical, { x: fx - 0.2, y: a.y, w: frameW + labelW + 0.2, h: headH - 0.05, fontSize: 13, bold: true, color: colors.slate, align: 'center', valign: 'middle' });
+  for (let k = 0; k < f.frames; k++) {
+    cellBox(ctx, k, { x: fx, y: rowY(k), w: frameW, h: ch, tone: 'teal', size: 12 });
+    smallLabel(ctx, `${4 * k}K–${4 * k + 4}K`, { x: fx + frameW + 0.06, y: rowY(k) + (ch - 0.3) / 2, w: labelW });
+  }
+  f.pages.forEach((v, i) => {
+    smallLabel(ctx, `${4 * i}K–${4 * i + 4}K`, { x: rx, y: rowY(i) + (ch - 0.3) / 2, w: rangeW - 0.08, align: 'right' });
+    cellBox(ctx, v, { x: vx, y: rowY(i), w: cellW, h: ch, tone: v === 'X' ? undefined : 'amber', size: 12 });
+  });
+  f.pages.forEach((v, i) => {
+    if (v === 'X') return;
+    arrow(ctx, { x1: vx + cellW, y1: rowY(i) + ch / 2, x2: fx, y2: rowY(Number(v)) + ch / 2, color: ctx.T.amber.accent, width: 1.25 });
+  });
+}
+
+const FIGURES = { mapas: figMapas, reubicacion: figReubicacion, mmu: figMmu, paginas: figPaginas };
+
 // ------------------------------------------------------------------ imagen con texto al lado
-// left{label,code,codeLang,codeSize,cards[{title,text,tone,h}]}, image, alt, caption, imageW, callout
+// left{label,code,codeLang,codeSize,cards[{title,text,tone,h}]}, image+alt | figure{type: mapas|reubicacion|mmu|paginas, …}, caption, callout
 function memImagen(ctx, s) {
   const { colors } = ctx.theme;
   const { mx, w } = ctx.theme.page;
@@ -86,7 +211,13 @@ function memImagen(ctx, s) {
   }
   const ix = mx + leftW + 0.35;
   const capH = s.caption ? 0.6 : 0;
-  const rect = imageCard(ctx, s.image, s.alt, { x: ix, y: top, w: w - mx - ix, h: bottom - top - capH });
+  let rect;
+  if (s.figure) {
+    const fh = bottom - top - capH;
+    box(ctx, { x: ix, y: top, w: w - mx - ix, h: fh, fill: colors.panel, line: colors.border, radius: 0.12 });
+    FIGURES[s.figure.type](ctx, s.figure, { x: ix + 0.2, y: top + 0.2, w: w - mx - ix - 0.4, h: fh - 0.4 });
+    rect = { y: top, h: fh };
+  } else rect = imageCard(ctx, s.image, s.alt, { x: ix, y: top, w: w - mx - ix, h: bottom - top - capH });
   if (s.caption) {
     text(ctx, s.caption, { x: ix, y: rect.y + rect.h + 0.1, w: w - mx - ix, h: 0.5, fontSize: 16, color: colors.slate, align: 'center' });
   }
