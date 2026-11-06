@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const C = require('./components');
 
-const { text, box, chip, arrow, card, callout, codeBlock, highlightLine, surface, table } = C;
+const { text, box, chip, arrow, card, callout, codeBlock, highlightLine, surface, table, cellBox } = C;
 
 // ------------------------------------------------------------------ utilidades
 function pngSize(file) {
@@ -58,17 +58,6 @@ const label = (ctx, str, o) =>
   text(ctx, str, { h: 0.35, fontSize: 16, bold: true, color: ctx.theme.colors.slate, valign: 'middle', ...o });
 
 // ------------------------------------------------------------------ figuras dibujadas con formas (reemplazan las imágenes del libro)
-// Celda rectangular con texto; `tone` colorea relleno y borde, sin `tone` es una celda neutra.
-function cellBox(ctx, str, { x, y, w, h, tone, size = 14, code = false, bold = true, dashed = false }) {
-  const { colors, fonts } = ctx.theme;
-  const t = tone ? ctx.T[tone] : null;
-  ctx.slide.addText(String(str), {
-    shape: ctx.pptx.ShapeType.rect, x, y, w, h,
-    fill: { color: t ? t.soft : colors.codeBg }, line: { color: t ? t.accent : colors.slate, width: 1.5, dashType: dashed ? 'dash' : 'solid' },
-    color: colors.heading, bold, fontSize: size, fontFace: code ? fonts.code : fonts.heading, align: 'center', valign: 'middle', margin: 0,
-  });
-}
-
 const smallLabel = (ctx, str, o) =>
   text(ctx, str, { h: 0.3, fontSize: 12, fontFace: ctx.theme.fonts.code, color: ctx.theme.colors.slate, valign: 'middle', ...o });
 

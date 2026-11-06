@@ -53,13 +53,20 @@
       "notes": "Definición: una estructura de datos es una forma particular de organizar datos en una computadora para que puedan ser utilizados de manera eficiente; sirve para procesar, recuperar y almacenar datos. Existe una colección mínima de estructuras comunes en la mayoría de los lenguajes de programación. Las lineales organizan sus elementos secuencialmente: hay un solo nivel y se recorren en una sola pasada. Más adelante en el curso se verán estructuras jerárquicas (árboles) donde esta propiedad ya no se cumple."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "lineales-array",
       "section": "Arreglos y matrices",
       "title": "Arreglo: posiciones contiguas de memoria",
-      "image": "image-00.png",
-      "alt": "Arreglo de 12 enteros en posiciones contiguas de memoria con direcciones 200, 204, 208 hasta 244 y índices de 0 a 11",
-      "caption": "Mismo tipo y mismo tamaño: un `int` ocupa 4 bytes; las direcciones suben de 4 en 4.",
-      "notes": "Un arreglo es una colección de elementos del mismo tipo almacenados en posiciones contiguas de memoria. Es la estructura de datos más básica y la usan casi todos los lenguajes. En la imagen se ven las direcciones en decimal (200, 204, 208...) y debajo el índice de cada posición. Nota para el profesor: el tamaño de un `char` depende del lenguaje (1 byte en C/C++; 2 bytes en Java y C#). Para evitar confusión, en la lección se usa `int` (4 bytes) como ejemplo."
+      "labelW": 0.9,
+      "cellW": 0.88,
+      "cellH": 0.85,
+      "rows": [
+        { "label": "arr", "cells": [11, 9, 17, 89, 1, 90, 19, 5, 3, 23, 43, 99], "addr": { "start": 200, "step": 4 } }
+      ],
+      "callouts": [
+        { "tone": "teal", "text": "Mismo tipo y mismo tamaño: un `int` ocupa 4 bytes; las direcciones suben de 4 en 4." }
+      ],
+      "notes": "Un arreglo es una colección de elementos del mismo tipo almacenados en posiciones contiguas de memoria. Es la estructura de datos más básica y la usan casi todos los lenguajes. En la figura se ven las direcciones en decimal (200, 204, 208...) y debajo el índice de cada posición. Nota para el profesor: el tamaño de un `char` depende del lenguaje (1 byte en C/C++; 2 bytes en Java y C#). Para evitar confusión, en la lección se usa `int` (4 bytes) como ejemplo."
     },
     {
       "type": "diagram",
@@ -194,13 +201,21 @@
       "notes": "Insertar el valor 5 en la posición 1 de [4, 7, 9, 2, _] exige primero desplazar hacia la derecha los elementos 2, 9 y 7 (empezando por el último, para no sobrescribir) y recién entonces escribir el 5. Eliminar es el proceso inverso: se copian los elementos una posición a la izquierda. En el peor caso (posición 0) se mueven todos los elementos. Si el arreglo ya está lleno, ni siquiera hay hueco: hay que crear un arreglo más grande y copiar."
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "diseno-matriz",
       "section": "Arreglos y matrices",
       "title": "Matrices: arreglos de dos dimensiones",
-      "image": "image-01.png",
-      "alt": "Matriz de 3 filas por 3 columnas con valores 10, 8, 3 en la fila 0; 5, 20, 6 en la fila 1; y 7, 9, 30 en la fila 2",
-      "caption": "Una matriz es un arreglo de arreglos: se representa como una tabla de filas y columnas.",
-      "notes": "Una matriz es un arreglo de dos dimensiones, es decir, un arreglo de arreglos, y se usa para representar datos en forma de tabla. Cada elemento se identifica con dos índices: fila y columna. En la imagen, el elemento de la fila 1 y columna 2 es el 6."
+      "label": "Matriz de 3 filas × 3 columnas",
+      "cells": [[10, 8, 3], [5, 20, 6], [7, 9, 30]],
+      "colHeaders": ["0", "1", "2"],
+      "rowHeaders": ["0", "1", "2"],
+      "corner": "fila / col",
+      "headW": 1.5,
+      "cellW": 1.2,
+      "cellH": 0.75,
+      "size": 24,
+      "callout": { "tone": "teal", "text": "Una matriz es un arreglo de arreglos: se representa como una tabla de filas y columnas." },
+      "notes": "Una matriz es un arreglo de dos dimensiones, es decir, un arreglo de arreglos, y se usa para representar datos en forma de tabla. Cada elemento se identifica con dos índices: fila y columna. En la figura, el elemento de la fila 1 y columna 2 es el 6."
     },
     {
       "type": "code",

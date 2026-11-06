@@ -62,11 +62,11 @@ Todos excepto `title` aceptan `section` (etiqueta superior) y `title`. Los diagr
 |---------|--------------|--------|
 | `diagrams.memoria.js` | CE-2103 · Administración de memoria | `memoria-imagen`, `memoria-tabla`, `memoria-layout`, `memoria-trace`, `memoria-pila-pasos`, `memoria-espacios`, `memoria-base-limite`, `memoria-celdas`, `memoria-copias`, `memoria-fragmentos` |
 | `diagrams.analisis.js` | CE-2103 · Análisis de algoritmos | `analisis-casos-busqueda`, `analisis-codigo-grafica`, `analisis-imagen-tabla`, `analisis-arbol-niveles`, `analisis-costos-push`, `analisis-tabla-terminos`, `analisis-traza-loops` |
-| `diagrams.diseno.js` | CE-2103 · Diseño de algoritmos | `diseno-matriz`, `diseno-tablero`, `diseno-arbol`, `diseno-bloom`, `diseno-ciclo` |
+| `diagrams.diseno.js` | CE-2103 · Diseño de algoritmos | `diseno-matriz`, `diseno-tablero`, `diseno-arbol`, `diseno-bloom`, `diseno-ciclo`, `diseno-mergesort`, `diseno-subproblemas` |
 | `diagrams.busqueda.js` | CE-2103 · Algoritmos de búsqueda | `busqueda-array-steps`, `busqueda-formula`, `busqueda-paneles`, `busqueda-grid` |
 | `diagrams.externo.js` | CE-2103 · Almacenamiento externo | `externo-image-side`, `externo-images`, `externo-timebar`, `externo-bars`, `externo-partitions`, `externo-cache-flow`, `externo-cache-trace`, `externo-runs`, `externo-btree`, `externo-raid`, `externo-paridad`, `externo-raid5`, `externo-bloques`, `externo-asignacion`, `externo-inodo`, `externo-layout` |
 | `diagrams.compresion.js` | CE-2103 · Algoritmos de compresión | `compresion-intervalos` |
-| `diagrams.poo.js` | CE-1103 · POO | `poo-code`, `poo-uml`, `poo-memoria`, `poo-ecuacion`, `poo-imagen-lado`, `poo-relaciones` |
+| `diagrams.poo.js` | CE-1103 · POO | `poo-code`, `poo-uml`, `poo-memoria`, `poo-ecuacion`, `poo-imagen-lado`, `poo-relaciones`, `poo-ide` |
 | `diagrams.lineales.js` | CE-1103 · Estructuras lineales | `lineales-array`, `lineales-nodes`, `lineales-stack`, `lineales-ring`, `lineales-matrix-refs`, `lineales-doble-insertar` |
 | `diagrams.ordenamiento.js` | CE-1103 · Ordenamiento y búsqueda | `ordenamiento-array`, `ordenamiento-hash`, `ordenamiento-escalera` |
 | `diagrams.jerarquicas.js` | CE-1103 · Estructuras jerárquicas | `jerarquicas-trees`, `jerarquicas-imagegrid` |

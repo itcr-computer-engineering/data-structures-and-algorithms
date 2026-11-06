@@ -65,12 +65,27 @@
       "notes": "Una base de datos no tiene que ser electrónica: el catálogo de tarjetas de una biblioteca también lo es. Aquí nos enfocamos en bases de datos electrónicas administradas por un DBMS (Database Management System)."
     },
     {
-      "type": "image",
+      "type": "cards",
       "section": "Fundamentos",
       "title": "Algunos DBMS populares",
-      "image": "image-01.png",
-      "alt": "Logotipos de DBMS populares: MySQL, PostgreSQL, MariaDB, MongoDB, SQLite, CockroachDB, Redis, CouchDB, Neo4j, FirebirdSQL, OrientDB y Cassandra",
-      "caption": "Cada DBMS adopta un enfoque: relacional, orientado a objetos o NoSQL.",
+      "columns": 4,
+      "intro": "Cada DBMS adopta un enfoque: **relacional** (verde azulado) o **NoSQL** (ámbar).",
+      "titleSize": 20,
+      "textSize": 16,
+      "cards": [
+        { "title": "MySQL", "text": "Relacional", "tone": "teal" },
+        { "title": "PostgreSQL", "text": "Objeto-relacional", "tone": "teal" },
+        { "title": "MariaDB", "text": "Relacional", "tone": "teal" },
+        { "title": "MongoDB", "text": "NoSQL: documentos", "tone": "amber" },
+        { "title": "SQLite", "text": "Relacional (embebido)", "tone": "teal" },
+        { "title": "CockroachDB", "text": "Relacional distribuido", "tone": "teal" },
+        { "title": "Redis", "text": "NoSQL: clave-valor", "tone": "amber" },
+        { "title": "CouchDB", "text": "NoSQL: documentos", "tone": "amber" },
+        { "title": "Neo4j", "text": "NoSQL: grafos", "tone": "amber" },
+        { "title": "FirebirdSQL", "text": "Relacional", "tone": "teal" },
+        { "title": "OrientDB", "text": "NoSQL: multimodelo", "tone": "amber" },
+        { "title": "Cassandra", "text": "NoSQL: columnas", "tone": "amber" }
+      ],
       "notes": "Ejemplos: MySQL, PostgreSQL, MariaDB, SQLite, Oracle, SQL Server (relacionales); MongoDB, Redis, CouchDB, Neo4j, Cassandra (NoSQL). Algunos DBMS soportan más de un enfoque."
     },
     {

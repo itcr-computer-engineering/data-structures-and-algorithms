@@ -2,7 +2,7 @@
 // Se cargan solos desde diagrams.js. Solo usan colores semánticos del tema.
 const C = require('./components');
 
-const { text, chip, circleLabel, arrow, callout, codeBlock, card, table, surface } = C;
+const { text, chip, circleLabel, arrow, callout, codeBlock, card, table, surface, cellBox } = C;
 
 const chipW = (label, size = 14) => String(label).length * (size * 0.0072) + 0.45;
 
@@ -294,10 +294,115 @@ function ciclo(ctx, s) {
   if (s.callout) callout(ctx, { x: mx, y: s.calloutY || 5.95, w: w - 2 * mx, h: s.calloutH || 0.8, size: 17, ...s.callout });
 }
 
+// ------------------------------------------------------------------ merge sort: dividir, caso base y mezclar
+// Campos: values[], labels{unsorted, sorted, divide, base, merge}, cellW, caption.
+// Cada nodo se dibuja dos veces (al dividir y al mezclar, ya ordenado); todas las flechas bajan.
+function mergesort(ctx, s) {
+  const { colors } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const L = s.labels;
+  const build = (arr, depth) => {
+    const node = { arr, depth, kids: [] };
+    if (arr.length > 1) {
+      const mid = Math.ceil(arr.length / 2);
+      node.kids = [build(arr.slice(0, mid), depth + 1), build(arr.slice(mid), depth + 1)];
+    }
+    return node;
+  };
+  const root = build(s.values, 0);
+  let maxD = 0, leaves = 0;
+  const place = (n) => {
+    maxD = Math.max(maxD, n.depth);
+    if (!n.kids.length) n.slot = leaves++;
+    else n.kids.forEach(place);
+  };
+  place(root);
+  const slotW = s.slotW || 0.8, cw = s.cellW || 0.45, ch = 0.4;
+  const x0 = (w - leaves * slotW) / 2;
+  const cx = (n) => (n.kids.length ? (cx(n.kids[0]) + cx(n.kids[1])) / 2 : x0 + (n.slot + 0.5) * slotW);
+  const rows = 2 * maxD + 1;
+  const top = s.top || 1.95;
+  const pitch = Math.min(0.62, (5.85 - top - ch) / (rows - 1));
+  const ry = (r) => top + r * pitch;
+  const drawBox = (n, r, tone) => {
+    const bw = n.arr.length * cw, bx = cx(n) - bw / 2;
+    n.arr.forEach((v, i) => cellBox(ctx, v, { x: bx + i * cw, y: ry(r), w: cw, h: ch, tone, size: 14 }));
+  };
+  const link = (a, ra, b, rb, color) => arrow(ctx, { x1: cx(a), y1: ry(ra) + ch, x2: cx(b), y2: ry(rb), color, width: 1.75 });
+  const walk = (n) => {
+    const base = n.kids.length === 0 && n.depth === maxD;
+    drawBox(n, n.depth, undefined);
+    n.sorted = [...n.arr].sort((p, q) => p - q);
+    if (!base) {
+      const sortedRow = rows - 1 - n.depth;
+      drawBox({ ...n, arr: n.sorted }, sortedRow, 'green');
+      if (!n.kids.length) link(n, n.depth, n, sortedRow, colors.slate);
+    }
+    n.kids.forEach((k) => {
+      link(n, n.depth, k, k.depth, colors.slate);
+      walk(k);
+    });
+  };
+  walk(root);
+  const mergeLinks = (n) => {
+    n.kids.forEach((k) => {
+      const kRow = k.kids.length === 0 && k.depth === maxD ? k.depth : rows - 1 - k.depth;
+      link(k, kRow, n, rows - 1 - n.depth, ctx.T.green.accent);
+      mergeLinks(k);
+    });
+  };
+  mergeLinks(root);
+  const side = (str, r, o) => text(ctx, str, { y: ry(r), h: ch, fontSize: 15, bold: true, valign: 'middle', ...o });
+  const rootW = root.arr.length * cw;
+  side(L.unsorted, 0, { x: mx, w: cx(root) - rootW / 2 - 0.25 - mx, align: 'right', color: colors.slate });
+  side(L.sorted, rows - 1, { x: mx, w: cx(root) - rootW / 2 - 0.25 - mx, align: 'right', color: ctx.T.green.text });
+  const chipX = x0 + leaves * slotW + 0.7;
+  const mid = (a, b) => (ry(a) + ry(b) + ch) / 2 - 0.2;
+  chip(ctx, { x: chipX, y: mid(1, Math.max(1, maxD - 1)), w: 1.5, h: 0.4, label: L.divide, tone: 'teal', size: 14 });
+  chip(ctx, { x: chipX, y: mid(maxD, maxD), w: 1.5, h: 0.4, label: L.base, tone: 'slate', solid: false, size: 14 });
+  chip(ctx, { x: chipX, y: mid(maxD + 1, rows - 2), w: 1.5, h: 0.4, label: L.merge, tone: 'green', size: 14 });
+  if (s.caption) text(ctx, s.caption, { x: mx, y: 6.3, w: w - 2 * mx, h: 0.5, fontSize: 18, color: colors.slate, align: 'center', valign: 'middle' });
+}
+
+// ------------------------------------------------------------------ subproblemas independientes vs. compartidos
+// panels[2]{title, tone, text, nodes[{id,x,y,shared}] (x, y en 0–1), edges[[desde,hasta]]}, caption
+function subproblemas(ctx, s) {
+  const { colors, fonts } = ctx.theme;
+  const { mx, w } = ctx.theme.page;
+  const gap = 0.4, pw = (w - 2 * mx - gap) / 2, top = 1.85, ph = 4.1, d = 0.5;
+  s.panels.forEach((p, i) => {
+    const x = mx + i * (pw + gap);
+    const t = ctx.T[p.tone || 'teal'];
+    surface(ctx, p.tone, { x, y: top, w: pw, h: ph });
+    text(ctx, p.title, { x: x + 0.3, y: top + 0.15, w: pw - 0.6, h: 0.5, fontSize: 22, bold: true, color: t.text, fontFace: fonts.heading, valign: 'middle' });
+    text(ctx, p.text, { x: x + 0.3, y: top + 0.7, w: pw - 0.6, h: 0.65, fontSize: 16, color: colors.slate });
+    const ax = x + 0.9, aw = pw - 1.8, ay = top + 1.65, ah = ph - 2.1;
+    const pos = {};
+    p.nodes.forEach((n) => {
+      pos[n.id] = { cx: ax + n.x * aw, cy: ay + n.y * ah };
+    });
+    p.edges.forEach(([a, b]) => {
+      const A = pos[a], B = pos[b];
+      const len = Math.hypot(B.cx - A.cx, B.cy - A.cy), ux = (B.cx - A.cx) / len, uy = (B.cy - A.cy) / len, r = d / 2 + 0.03;
+      arrow(ctx, { x1: A.cx + ux * r, y1: A.cy + uy * r, x2: B.cx - ux * r, y2: B.cy - uy * r, color: t.accent, width: 2 });
+    });
+    p.nodes.forEach((n) => {
+      const q = pos[n.id];
+      ctx.slide.addShape(ctx.pptx.ShapeType.ellipse, {
+        x: q.cx - d / 2, y: q.cy - d / 2, w: d, h: d,
+        fill: { color: n.shared ? ctx.T.amber.accent : colors.codeBg }, line: { color: n.shared ? ctx.T.amber.accent : t.accent, width: 2 },
+      });
+    });
+  });
+  if (s.caption) text(ctx, s.caption, { x: mx, y: 6.3, w: w - 2 * mx, h: 0.5, fontSize: 18, color: colors.slate, align: 'center', valign: 'middle' });
+}
+
 module.exports = {
   'diseno-matriz': matriz,
   'diseno-tablero': tablero,
   'diseno-arbol': arbol,
   'diseno-bloom': bloom,
   'diseno-ciclo': ciclo,
+  'diseno-mergesort': mergesort,
+  'diseno-subproblemas': subproblemas,
 };

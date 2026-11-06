@@ -56,11 +56,12 @@
       "notes": "Un tipo de dato es una clasificación que especifica qué valores puede tomar una variable y qué operaciones se pueden realizar sobre ellos. Se usan al declarar variables y al definir funciones, entre otros usos. Se presentan los tipos más comunes de Python. Pregunta para la clase: ¿qué tipos de datos conocen en otros lenguajes que ya han usado?"
     },
     {
-      "type": "image",
+      "type": "diagram",
+      "kind": "poo-ide",
       "section": "Conceptos esenciales",
       "title": "Los IDE aprovechan los tipos de datos",
-      "image": "01-programación-orientada-a-objectos/image-00.png",
-      "alt": "Captura de Visual Studio: al escribir variableTipoString punto, el IDE sugiere los métodos del tipo string, como ToString, ToUpper, Trim y TrimEnd",
+      "code": "string variableTipoString = \"Hello World\";\nvariableTipoString.",
+      "popup": { "items": ["Replace", "Split", "Substring", "ToLower", "ToString", "ToUpper", "Trim", "TrimEnd"], "selected": 5, "w": 3.1 },
       "caption": "Autocompletado según el tipo de dato: la variable es un `string`, así que se sugieren sus operaciones.",
       "notes": "Los IDE suelen proporcionar herramientas para trabajar con tipos de datos, como autocompletado y resaltado de sintaxis, lo que facilita escribir y comprender el código. Aquí la variable es de tipo string y el IDE ofrece solo las operaciones válidas para ese tipo."
     },
@@ -133,14 +134,23 @@
     },
     {
       "type": "diagram",
-      "kind": "poo-imagen-lado",
+      "kind": "poo-uml",
       "section": "Conceptos esenciales",
       "title": "Un TDA, varias implementaciones",
-      "image": "01-programación-orientada-a-objectos/image-03.png",
-      "alt": "Diagrama de clases: las clases ArrayList (con un arreglo de enteros) y LinkedList (con un nodo inicial) implementan la interfaz List, que define AddFirst, AddLast, DeleteFirst, DeleteLast, Find y Clear",
-      "imageW": 4.2,
-      "imageH": 3.9,
+      "classes": [
+        { "id": "al", "name": "ArrayList", "tone": "teal", "x": 0.67, "y": 1.85, "w": 2.55, "attrs": ["internalArray: int[]"] },
+        { "id": "ll", "name": "LinkedList", "tone": "teal", "x": 3.5, "y": 1.85, "w": 2.2, "attrs": ["First: Node"] },
+        {
+          "id": "list", "name": "List", "stereotype": "Interface", "tone": "navy", "x": 1.85, "y": 3.2, "w": 2.9,
+          "methods": ["AddFirst(element: int)", "AddLast()", "DeleteFirst()", "DeleteLast()", "Find()", "Clear()"]
+        }
+      ],
+      "links": [
+        { "from": "al", "to": "list", "kind": "realize" },
+        { "from": "ll", "to": "list", "kind": "realize" }
+      ],
       "panel": {
+        "x": 6.1, "y": 1.85, "w": 6.56, "h": 4.1,
         "title": "Una interfaz, dos implementaciones",
         "tone": "teal",
         "size": 19,
@@ -152,6 +162,8 @@
         ]
       },
       "callout": { "tone": "teal", "text": "Quien usa `List` no necesita saber si por dentro hay **Nodos** o un **arreglo**." },
+      "calloutY": 6.3,
+      "calloutH": 0.65,
       "notes": "El diagrama ilustra cómo un TDA Lista puede implementarse mediante nodos con memoria dinámica o mediante un arreglo con memoria estática. Es también un diagrama de clases UML: el rectángulo superior es el nombre, el central los atributos y el inferior los métodos; la flecha punteada con triángulo hueco indica que la clase implementa la interfaz (notación UML para orientar la lectura de los diagramas que siguen)."
     },
     {
